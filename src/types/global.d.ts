@@ -1,3 +1,8 @@
+interface Window {
+    API_SERVER: string;
+    API_PATH: string;
+}
+
 declare module '*.json' {
     const src: string;
     export default src;

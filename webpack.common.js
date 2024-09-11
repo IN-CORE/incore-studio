@@ -88,7 +88,8 @@ module.exports = {
         modules: ['node_modules', 'src'],
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
         alias: {
-            '@app': path.resolve(__dirname, 'src/')
+            '@app': path.resolve(__dirname, 'src/'),
+            '@mui/material': '@mui/joy'
         }
     },
 
@@ -120,6 +121,8 @@ module.exports = {
             failOnError: false
         }),
         new CleanWebpackPlugin(),
-        new Dotenv()
+        new Dotenv({
+            path: process.env.MODE === '' ? './.env' : `./.env.${process.env.MODE}` // Load .env file based on the passed NODE_ENV
+        })
     ]
 };

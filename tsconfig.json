@@ -4,7 +4,8 @@
         "target": "es6",
         "lib": ["dom", "dom.iterable", "esnext"],
         "paths": {
-            "@app/*": ["./src/*"]
+            "@app/*": ["./src/*"],
+            "@mui/material": ["./node_modules/@mui/joy"]
         },
         "allowJs": true,
         "skipLibCheck": true,
