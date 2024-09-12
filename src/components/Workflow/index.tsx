@@ -4,15 +4,14 @@ import {
     Controls,
     MiniMap,
     ReactFlow,
-    applyEdgeChanges,
-    applyNodeChanges,
-    addEdge,
+    useNodesState,
+    useEdgesState,
     BackgroundVariant,
     useReactFlow,
     ReactFlowProvider,
     Panel
 } from "@xyflow/react";
-import type { OnConnect, OnNodesChange, OnEdgesChange, Edge } from "@xyflow/react";
+import type { Edge } from "@xyflow/react";
 import Dagre from "@dagrejs/dagre";
 import { Box, Button } from "@mui/joy";
 
@@ -24,43 +23,6 @@ const NodeMeasurements: { [key: string]: { width: number; height: number } } = {
     "analysis-output": { width: 383, height: 81 },
     "analysis": { width: 456, height: 148 }
 };
-
-// Define the shape of our elements
-// interface NodeDimension {
-//     width: number;
-//     height: number;
-// }
-
-// const getLayoutedElements = (nodes: AppNode[], edges: Edge[], nodeDimensions: { [key: string]: NodeDimension }) => {
-//     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-//     g.setGraph({ rankdir: "TD" });
-
-//     edges.forEach((edge) => g.setEdge(edge.source, edge.target));
-//     nodes.forEach((node) => {
-//         const { width = 460, height = 150 } = nodeDimensions[node.id] || {}; // Default values if not available
-//         g.setNode(node.id, {
-//             ...node,
-//             width: width,
-//             height: height
-//         });
-//     });
-
-//     Dagre.layout(g);
-
-//     return {
-//         nodes: nodes.map((node) => {
-//             const { width = 460, height = 150 } = nodeDimensions[node.id] || {}; // Default values if not available
-//             const position = g.node(node.id);
-//             // We are shifting the dagre node position (anchor=center center) to the top left
-//             // so it matches the React Flow node anchor point (top left).
-//             const x = position.x - width / 2;
-//             const y = position.y - height / 2;
-
-//             return { ...node, position: { x, y } };
-//         }),
-//         edges
-//     };
-// };
 
 const getLayoutedElements = (nodes: AppNode[], edges: Edge[]) => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -97,52 +59,68 @@ const getLayoutedElements = (nodes: AppNode[], edges: Edge[]) => {
 
 const LayoutFlow = () => {
     const { fitView } = useReactFlow();
-    const [nodes, setNodes] = React.useState<AppNode[]>(initialNodes);
-    const [edges, setEdges] = React.useState<Edge[]>(initialEdges);
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [layoutApplied, setLayoutApplied] = React.useState(false); // State to check if layout has been applied
-    const buttonRef = React.useRef<HTMLButtonElement | null>(null); // Ref for the button
+    const [nodesReady, setNodesReady] = React.useState(false);
 
-    const onNodesChange: OnNodesChange<AppNode> = useCallback(
-        (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-        [setNodes]
-    );
-    const onEdgesChange: OnEdgesChange = useCallback(
-        (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-        [setEdges]
-    );
+    // Function to check if all nodes have non-zero dimensions
+    const checkNodesReady = (nodes: AppNode[]) => {
+        return nodes.every(
+            (node) =>
+                node.measured?.width !== undefined &&
+                node.measured?.width > 0 &&
+                node.measured?.height !== undefined &&
+                node.measured?.height > 0
+        );
+    };
 
-    const onLayout = useCallback((nodes: AppNode[], edges: Edge[]) => {
+    const reformatNodes = () => {
         const layouted = getLayoutedElements(nodes, edges);
 
         setNodes([...layouted.nodes] as AppNode[]);
-        setEdges([...layouted.edges]);
+        setEdges([...layouted.edges.map((edge) => ({ ...edge, type: edge.type || "" }))]);
 
         // Use requestAnimationFrame to apply the layout after browser is ready to render
         requestAnimationFrame(() => {
             fitView();
         });
+    };
 
+    const onLayout = useCallback(() => {
+        reformatNodes();
         setLayoutApplied(true);
-    }, []);
+    }, [nodes, edges, fitView]);
+
+    // Automatically layout when all nodes have their dimensions ready
+    React.useEffect(() => {
+        if (nodesReady && !layoutApplied) {
+            onLayout(); // Apply the vertical layout
+        }
+    }, [nodesReady, layoutApplied, onLayout]);
 
     React.useEffect(() => {
-        onLayout(nodes, edges);
-        console.log(nodes);
-    }, [onLayout]);
+        if (layoutApplied) {
+            // Use requestAnimationFrame to apply the layout after browser is ready to render
+            requestAnimationFrame(() => {
+                fitView();
+            });
+        }
+    }, [layoutApplied]);
 
-    // Emulate button click after everything is loaded
-    // React.useEffect(() => {
-    //     if (layoutApplied && buttonRef.current) {
-    //         buttonRef.current.click();
-    //     }
-    // }, [layoutApplied]);
+    // Use useEffect to apply layout after a delay to ensure nodes have been rendered
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!layoutApplied) {
+                const allNodesReady = checkNodesReady(nodes);
+                if (allNodesReady) {
+                    setNodesReady(true); // Trigger layout after delay
+                }
+            }
+        }, 100); // Adjust the delay as necessary based on render performance
 
-    const onConnect: OnConnect = useCallback((connection) => setEdges((eds) => addEdge(connection, eds)), [setEdges]);
-
-    // Wait until layout is applied before rendering React Flow
-    if (!layoutApplied) {
-        return <div>Loading layout...</div>;
-    }
+        return () => clearTimeout(timer);
+    }, [nodes, layoutApplied]);
 
     return (
         <div style={{ width: "100vw", height: "100%" }}>
@@ -153,7 +131,7 @@ const LayoutFlow = () => {
                 edgeTypes={edgeTypes}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
+                nodesDraggable={true}
                 fitView
             >
                 <Background variant={BackgroundVariant.Dots} />
@@ -161,7 +139,11 @@ const LayoutFlow = () => {
                 <Controls />
                 <Panel position="top-right">
                     <Box>
-                        <Button ref={buttonRef} onClick={() => onLayout(nodes, edges)}>
+                        <Button
+                            onClick={() => {
+                                onLayout();
+                            }}
+                        >
                             Layout
                         </Button>
                     </Box>
