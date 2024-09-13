@@ -1,7 +1,7 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError } from "axios";
 
 export const getData = <T>(endpoint: string, success: (data: T) => void, err?: (error: Error | AxiosError) => void) => {
-    if (endpoint.startsWith('https://')) {
+    if (endpoint.startsWith("https://")) {
         return axios
             .get(endpoint)
             .then(({ data }) => success(data))
