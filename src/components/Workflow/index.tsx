@@ -9,14 +9,25 @@ import {
     BackgroundVariant,
     useReactFlow,
     ReactFlowProvider,
+    Position,
     Panel
 } from "@xyflow/react";
 import type { Edge } from "@xyflow/react";
 import Dagre from "@dagrejs/dagre";
 import { Box, Button } from "@mui/joy";
 
-import { initialNodes, nodeTypes, type AppNode } from "./nodes";
-import { initialEdges, edgeTypes } from "./edges";
+import {
+    // initialNodes,
+    nodeTypes,
+    type AppNode
+} from "./nodes";
+import {
+    // initialEdges,
+    edgeTypes
+} from "./edges";
+
+import workflowExample from "./example_workflow.json";
+import { readNodesAndEdgesFromWorkflowFile } from "./workflowUtils";
 
 const NodeMeasurements: { [key: string]: { width: number; height: number } } = {
     "analysis-input": { width: 383, height: 81 },
@@ -24,9 +35,11 @@ const NodeMeasurements: { [key: string]: { width: number; height: number } } = {
     "analysis": { width: 456, height: 148 }
 };
 
-const getLayoutedElements = (nodes: AppNode[], edges: Edge[]) => {
+const getLayoutedElements = (nodes: AppNode[], edges: Edge[]): { nodes: AppNode[]; edges: Edge[] } => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-    g.setGraph({ rankdir: "TD" });
+    let direction = "LR";
+    let isHorizontal = direction === "LR";
+    g.setGraph({ rankdir: direction });
 
     edges.forEach((edge) => g.setEdge(edge.source, edge.target));
     nodes.forEach((node) =>
@@ -51,16 +64,26 @@ const getLayoutedElements = (nodes: AppNode[], edges: Edge[]) => {
                 position.y -
                 (node.measured?.height ?? (node.type !== undefined ? NodeMeasurements[node.type].height : 0)) / 2;
 
-            return { ...node, position: { x, y } };
+            return {
+                ...node,
+                targetPosition: isHorizontal ? Position.Left : Position.Top,
+                sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
+                position: { x, y }
+            };
         }),
         edges
     };
 };
 
+const workflowFile: DatawolfWorkflowFile = workflowExample as DatawolfWorkflowFile;
+
+// remove this as this is only for testing purposes
+const initialNodesAndEdges = readNodesAndEdgesFromWorkflowFile(workflowFile);
+
 const LayoutFlow = () => {
     const { fitView } = useReactFlow();
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>(initialNodesAndEdges.nodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initialNodesAndEdges.edges);
     const [layoutApplied, setLayoutApplied] = React.useState(false); // State to check if layout has been applied
     const [nodesReady, setNodesReady] = React.useState(false);
 
@@ -78,12 +101,16 @@ const LayoutFlow = () => {
     const reformatNodes = () => {
         const layouted = getLayoutedElements(nodes, edges);
 
-        setNodes([...layouted.nodes] as AppNode[]);
-        setEdges([...layouted.edges.map((edge) => ({ ...edge, type: edge.type || "" }))]);
+        setNodes([...layouted.nodes]);
+        setEdges([...layouted.edges]);
 
         // Use requestAnimationFrame to apply the layout after browser is ready to render
         requestAnimationFrame(() => {
-            fitView();
+            fitView({
+                padding: 20,
+                duration: 500, // 0.5-second animation
+                minZoom: 0.75 // Minimum zoom level
+            });
         });
     };
 
@@ -103,7 +130,11 @@ const LayoutFlow = () => {
         if (layoutApplied) {
             // Use requestAnimationFrame to apply the layout after browser is ready to render
             requestAnimationFrame(() => {
-                fitView();
+                fitView({
+                    padding: 20,
+                    duration: 500, // 0.5-second animation
+                    minZoom: 0.75 // Minimum zoom level
+                });
             });
         }
     }, [layoutApplied]);

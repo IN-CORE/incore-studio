@@ -3,11 +3,12 @@ import type { Node, NodeTypes, BuiltInNode } from "@xyflow/react";
 import { AnalysisInputNode } from "./AnalysisInputNode";
 import { AnalysisOutputNode } from "./AnalysisOutputNode";
 import { AnalysisNode } from "./AnalysisNode";
-// import exampleWorkflow from './example_workflow.json';
 
 export type AnalysisInputNode = Node<
     {
         label?: string;
+        inputData?: DatawolfIO | { id: string; title: string };
+        type?: "dataset" | "hazard" | "dfr3_mapping";
     },
     "analysis-input"
 >;
@@ -15,6 +16,7 @@ export type AnalysisInputNode = Node<
 export type AnalysisOutputNode = Node<
     {
         label?: string;
+        outputData?: DatawolfIO | { id: string; title: string };
     },
     "analysis-output"
 >;
@@ -22,6 +24,7 @@ export type AnalysisOutputNode = Node<
 export type AnalysisNode = Node<
     {
         label?: string;
+        stepData?: DatawolfWorkflowFileStep;
     },
     "analysis"
 >;
