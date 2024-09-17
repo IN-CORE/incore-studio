@@ -25,7 +25,6 @@ const oidcConfig = {
 
 const App: FC = () => {
     const auth = useAuth();
-    // const navigate = useNavigate();
 
     useEffect(() => {
         if (auth.isLoading) return; // Do nothing while loading
