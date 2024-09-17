@@ -16,6 +16,12 @@ const Home = (): JSX.Element => {
         return <div>Oops... {auth.error.message}</div>;
     }
 
+    const handleLogin = () => {
+        auth.signinRedirect().catch(error => {
+            console.error('Login error:', error);
+        });
+    };
+
     if (auth.isAuthenticated) {
         return (
             <Box sx={{display: "flex", flexDirection: "column", height: "100vh"}}>
@@ -29,7 +35,7 @@ const Home = (): JSX.Element => {
         );
     }
 
-    return <Button onClick={auth.signinRedirect}>Log in</Button>;
+    return <Button onClick={handleLogin}>Log in</Button>;
 };
 
 export default Home;
