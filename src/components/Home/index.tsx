@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 import {Button, Box} from "@mui/joy";
 import {useAuth} from "react-oidc-context";
 
@@ -7,6 +8,14 @@ import Workflow from "../Workflow";
 
 const Home = (): JSX.Element => {
     const auth = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (auth.isAuthenticated) {
+            // Remove query parameters from URL
+            navigate(window.location.pathname, { replace: true });
+        }
+    }, [auth.isAuthenticated, navigate]);
 
     if (auth.isLoading) {
         return <div>Loading...</div>;
