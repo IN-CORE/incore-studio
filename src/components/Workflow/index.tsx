@@ -98,6 +98,12 @@ const LayoutFlow = () => {
         );
     };
 
+    const fitViewOptions = {
+        padding: 20,
+        duration: 500, // 0.5-second animation
+        minZoom: 0.75 // Minimum zoom level
+    };
+
     const reformatNodes = () => {
         const layouted = getLayoutedElements(nodes, edges);
 
@@ -106,11 +112,7 @@ const LayoutFlow = () => {
 
         // Use requestAnimationFrame to apply the layout after browser is ready to render
         requestAnimationFrame(() => {
-            fitView({
-                padding: 20,
-                duration: 500, // 0.5-second animation
-                minZoom: 0.75 // Minimum zoom level
-            });
+            fitView(fitViewOptions);
         });
     };
 
@@ -130,11 +132,7 @@ const LayoutFlow = () => {
         if (layoutApplied) {
             // Use requestAnimationFrame to apply the layout after browser is ready to render
             requestAnimationFrame(() => {
-                fitView({
-                    padding: 20,
-                    duration: 500, // 0.5-second animation
-                    minZoom: 0.75 // Minimum zoom level
-                });
+                fitView(fitViewOptions);
             });
         }
     }, [layoutApplied]);
