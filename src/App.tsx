@@ -1,14 +1,13 @@
-import React, { StrictMode, Suspense, FC } from "react";
+import React, { StrictMode, Suspense, FC, useEffect } from "react";
 // eslint-disable-next-line import/no-unresolved
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { CssVarsProvider } from "@mui/joy/styles";
-import { AuthProvider } from "react-oidc-context";
+import { AuthProvider, useAuth } from "react-oidc-context";
 
 import CssBaseline from "@mui/joy/CssBaseline";
 import "@fontsource/inter";
 import "@xyflow/react/dist/style.css";
-
 
 import routes from "./routes";
 import { theme } from "./theme";
@@ -25,6 +24,27 @@ const oidcConfig = {
 };
 
 const App: FC = () => {
+    const auth = useAuth();
+    // const navigate = useNavigate();
+
+    useEffect(() => {
+        if (auth.isLoading) return; // Do nothing while loading
+
+        if (!auth.isAuthenticated) {
+            auth.signinRedirect().catch((error) => {
+                console.error("Login error:", error);
+            });
+        }
+    }, [auth.isLoading, auth.isAuthenticated]);
+
+    if (auth.isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (auth.error) {
+        return <div>Oops... {auth.error.message}</div>;
+    }
+
     return (
         <StrictMode>
             <Router>
