@@ -1,16 +1,19 @@
-import React, { StrictMode, Suspense, FC } from 'react';
+import React, { StrictMode, Suspense, FC } from "react";
 // eslint-disable-next-line import/no-unresolved
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { CssVarsProvider } from '@mui/joy/styles';
-import CssBaseline from '@mui/joy/CssBaseline';
-import '@fontsource/inter';
+import { createRoot } from "react-dom/client";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { CssVarsProvider } from "@mui/joy/styles";
+import CssBaseline from "@mui/joy/CssBaseline";
+import "@fontsource/inter";
+import "@xyflow/react/dist/style.css";
 
-import routes from './routes';
-import { theme } from './theme';
+import routes from "./routes";
+import { theme } from "./theme";
 
-import Loading from './components/Loading';
-import './styles/main.scss';
+import Loading from "./components/Loading";
+import "./styles/main.scss";
+
+window.API_PATH = `${window.API_SERVER}/datawolf/api`;
 
 const App: FC = () => {
     return (
@@ -31,7 +34,7 @@ const App: FC = () => {
     );
 };
 
-const rootEl = document.getElementById('root');
+const rootEl = document.getElementById("root");
 if (rootEl) {
     createRoot(rootEl).render(<App />);
 }

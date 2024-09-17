@@ -8,11 +8,15 @@
         "node": ">=16.0.0"
     },
     "dependencies": {
+        "@dagrejs/dagre": "^1.1.4",
         "@emotion/react": "^11.13.3",
         "@emotion/styled": "^11.13.0",
         "@fontsource/inter": "^5.0.21",
+        "@mui/icons-material": "^6.0.2",
         "@mui/joy": "^5.0.0-beta.48",
+        "@mui/material": "^6.0.2",
         "@reduxjs/toolkit": "^2.2.7",
+        "@xyflow/react": "^12.2.1",
         "axios": "~1.4",
         "maplibre-gl": "^2.4.0",
         "maplibre-gl-basemaps": "^0.1.2",
@@ -78,6 +82,9 @@
     },
     "scripts": {
         "start": "webpack serve --config webpack.dev.js",
+        "start:tst": "MODE=test webpack serve --config webpack.dev.js",
+        "start:dev": "MODE=development webpack serve --config webpack.dev.js",
+        "start:prod": "MODE=production webpack serve --config webpack.prod.js",
         "build": "webpack --config ./webpack.prod.js",
         "eject": "react-scripts eject",
         "lint": "eslint src --color --ext=.tsx,.js",
