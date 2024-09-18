@@ -99,9 +99,9 @@ const LayoutFlow = () => {
     };
 
     const fitViewOptions = {
-        padding: 20,
+        padding: 0.2,
         duration: 500, // 0.5-second animation
-        minZoom: 0.75 // Minimum zoom level
+        minZoom: 0.7 // Minimum zoom level
     };
 
     const reformatNodes = () => {
