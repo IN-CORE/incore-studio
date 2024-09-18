@@ -1,6 +1,9 @@
 interface Window {
     API_SERVER: string;
     API_PATH: string;
+    AUTHORITY: string;
+    CLIENT_ID: string;
+    REDIRECT_URI: string;
 }
 
 declare module "*.json" {

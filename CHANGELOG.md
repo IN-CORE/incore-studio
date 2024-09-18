@@ -10,3 +10,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - React-flow package and workflow component. [#1](https://github.com/IN-CORE/incore-studio/issues/1)
+- Keycloak authentication to every route [#3](https://github.com/IN-CORE/incore-studio/issues/3)
