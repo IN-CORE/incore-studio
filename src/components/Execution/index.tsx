@@ -3,14 +3,18 @@ import React from "react";
 import Box from "@mui/joy/Box";
 
 import Workflow from "../Workflow";
+import Topbar from "@app/components/Home/Topbar";
 
 const Execution = (): JSX.Element => {
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-            <Box sx={{ flexGrow: 1, overflow: "auto" }}>
-                <Workflow />
+        <>
+            <Topbar />
+            <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+                <Box sx={{ flexGrow: 1, overflow: "auto" }}>
+                    <Workflow />
+                </Box>
             </Box>
-        </Box>
+        </>
     );
 };
 
