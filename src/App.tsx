@@ -15,8 +15,6 @@ import { theme } from "./theme";
 import Loading from "./components/Loading";
 import "./styles/main.scss";
 
-window.API_PATH = `${window.API_SERVER}/datawolf/api`;
-
 const oidcConfig = {
     authority: window.AUTHORITY,
     client_id: window.CLIENT_ID,
