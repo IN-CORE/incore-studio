@@ -1,10 +1,18 @@
-import React from 'react';
+import React from "react";
+import { Box } from "@mui/joy";
+
+import Topbar from "./Topbar";
 
 const Home = (): JSX.Element => {
     return (
-        <div>
-            <h1>Home</h1>
-        </div>
+        <>
+            <Topbar />
+            <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+                <Box sx={{ flexShrink: 0 }}>
+                    <h1>Home</h1>
+                </Box>
+            </Box>
+        </>
     );
 };
 

@@ -1,36 +1,36 @@
-const path = require('path');
-const Dotenv = require('dotenv-webpack');
-const Webpack = require('webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const ESLintPlugin = require('eslint-webpack-plugin');
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require("path");
+const Dotenv = require("dotenv-webpack");
+const Webpack = require("webpack");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const ESLintPlugin = require("eslint-webpack-plugin");
+const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-    target: 'web',
+    target: "web",
 
     context: __dirname,
 
     entry: {
-        maplibre: 'maplibre-gl/dist/maplibre-gl.css',
-        maplibreBasemapsControl: 'maplibre-gl-basemaps/lib/basemaps.css',
-        appStyle: './src/styles/main.scss',
-        config: './src/config.js',
-        app: './src/App.tsx'
+        maplibre: "maplibre-gl/dist/maplibre-gl.css",
+        maplibreBasemapsControl: "maplibre-gl-basemaps/lib/basemaps.css",
+        appStyle: "./src/styles/main.scss",
+        config: "./src/config.js",
+        app: "./src/App.tsx"
     },
 
     output: {
-        path: path.resolve(__dirname, 'build'),
-        publicPath: process.env.PUBLIC_PATH || '/',
+        path: path.resolve(__dirname, "build"),
+        publicPath: process.env.PUBLIC_PATH || "/",
         filename: (pathData) => {
-            if (pathData.chunk.name === 'config') {
-                return 'js/config.js';
+            if (pathData.chunk.name === "config") {
+                return "js/config.js";
             }
             return `js/${pathData.chunk.name}-${pathData.chunk.hash}.js`;
         },
-        assetModuleFilename: 'files/[name]-[hash].[ext]',
-        crossOriginLoading: 'anonymous'
+        assetModuleFilename: "files/[name]-[hash].[ext]",
+        crossOriginLoading: "anonymous"
     },
 
     module: {
@@ -39,7 +39,7 @@ module.exports = {
                 // Use ts-loader for ts, tsx, js, and jsx files
                 test: /\.[tj]sx?$/,
                 exclude: /node_modules/,
-                use: 'ts-loader'
+                use: "ts-loader"
             },
             {
                 test: /\.(s[ac]ss|css)$/,
@@ -47,36 +47,24 @@ module.exports = {
                     {
                         loader: MiniCssExtractPlugin.loader,
                         options: {
-                            publicPath: '../'
+                            publicPath: "../"
                         }
                     },
-                    'css-loader',
-                    'sass-loader'
+                    "css-loader",
+                    "sass-loader"
                 ]
             },
             {
                 test: /\.svg$/,
-                loader: 'svg-inline-loader'
-            },
-            {
-                type: 'javascript/auto',
-                test: /\.(geo)?json$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: 'files/[name]-[hash].[ext]'
-                        }
-                    }
-                ]
+                loader: "svg-inline-loader"
             },
             {
                 test: /\.(jpg|jpeg|png|eot|ttf|woff|woff2)$/,
                 use: [
                     {
-                        loader: 'file-loader',
+                        loader: "file-loader",
                         options: {
-                            name: 'files/[name]-[hash].[ext]'
+                            name: "files/[name]-[hash].[ext]"
                         }
                     }
                 ]
@@ -85,20 +73,21 @@ module.exports = {
     },
 
     resolve: {
-        modules: ['node_modules', 'src'],
-        extensions: ['.ts', '.tsx', '.js', '.jsx'],
+        modules: ["node_modules", "src"],
+        extensions: [".ts", ".tsx", ".js", ".jsx"],
         alias: {
-            '@app': path.resolve(__dirname, 'src/')
+            "@app": path.resolve(__dirname, "src/"),
+            "@mui/material": "@mui/joy"
         }
     },
 
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'src/index.html'
+            template: "src/index.html"
         }),
         new FaviconsWebpackPlugin({
-            logo: './src/images/favicon.ico',
-            prefix: 'icons/',
+            logo: "./src/images/favicon.ico",
+            prefix: "icons/",
             emitStats: false,
             inject: true,
             favicons: {
@@ -114,12 +103,14 @@ module.exports = {
                 }
             }
         }),
-        new MiniCssExtractPlugin({ filename: 'css/[name]-[fullhash].css' }),
+        new MiniCssExtractPlugin({ filename: "css/[name]-[fullhash].css" }),
         new ESLintPlugin({
             emitWarning: true,
             failOnError: false
         }),
         new CleanWebpackPlugin(),
-        new Dotenv()
+        new Dotenv({
+            path: process.env.MODE === "" ? "./.env" : `./.env.${process.env.MODE}` // Load .env file based on the passed NODE_ENV
+        })
     ]
 };
