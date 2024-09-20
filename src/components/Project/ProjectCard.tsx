@@ -23,8 +23,12 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
             <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {/* Project Name and Description */}
                 <Box sx={{ display: "flex", flexDirection: "column" }}>
-                    <Typography level="title-lg">{project.name.toUpperCase()}</Typography>
-                    <Typography level="body-xs">April 24 to May 02, 2021</Typography>
+                    <Typography level="title-lg" textColor="primary.main">
+                        {project.name.toUpperCase()}
+                    </Typography>
+                    <Typography level="body-xs" mb={2}>
+                        April 24 to May 02, 2021
+                    </Typography>
                     <Typography level="body-sm">{project.description}</Typography>
                 </Box>
 
