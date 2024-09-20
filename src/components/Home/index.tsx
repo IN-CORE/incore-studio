@@ -1,5 +1,5 @@
 import React from "react";
-import { Box } from "@mui/joy";
+import { Box, Container, Typography } from "@mui/joy";
 
 import Topbar from "./Topbar";
 
@@ -7,11 +7,20 @@ const Home = (): JSX.Element => {
     return (
         <>
             <Topbar />
-            <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-                <Box sx={{ flexShrink: 0 }}>
-                    <h1>Home</h1>
+            <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+                <Box sx={{ flexShrink: 0 }} mt={5}>
+                    <Typography level="h1" textColor="primary.main" fontWeight="md">
+                        Welcome to IN-CORE Studio
+                    </Typography>
+                    <Typography textColor="primary.main" mt={2}>
+                        Lorem ipsum dolor sit amet consectetur. Iaculis lorem arcu nunc quisque tristique aliquet ut
+                        aliquam arcu. Et est neque volutpat eu gravida convallis id pellentesque mattis. Id bibendum
+                        porttitor lectus lacus sodales ultrices id luctus ultrices. Interdum odio lorem aliquet integer
+                        morbi purus sit aenean. Rhoncus id viverra accumsan est vel vulputate elementum est id. Ut eget
+                        iaculis porta cursus volutpat malesuada habitant etiam.
+                    </Typography>
                 </Box>
-            </Box>
+            </Container>
         </>
     );
 };
