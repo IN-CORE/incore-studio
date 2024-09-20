@@ -15,7 +15,8 @@ export const themeOptions = {
             palette: {
                 primary: {
                     light: "#0052CC",
-                    main: "#344563"
+                    main: "#344563",
+                    subtle: "#44546F"
                 },
                 neutral: {
                     info: "#42526E",
@@ -29,6 +30,37 @@ export const themeOptions = {
     },
     typography: {
         fontFamily: "Open Sans, sans-serif"
+    },
+    components: {
+        JoyTabs: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: "transparent" // Remove background color for Tabs
+                },
+                indicator: {
+                    backgroundColor: "var(--joy-palette-primary-light)" // Underline color for selected tab
+                }
+            }
+        },
+        JoyTab: {
+            styleOverrides: {
+                root: {
+                    "color": "var(--joy-palette-primary-subtle)", // Text color for non-selected tab
+                    "backgroundColor": "transparent", // Remove background color for each Tab
+                    "&.Mui-selected": {
+                        color: "var(--joy-palette-primary-light)", // Text color for selected tab
+                        backgroundColor: "transparent" // Ensure selected Tab has no background color
+                    }
+                }
+            }
+        },
+        JoyCard: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: "transparent"
+                }
+            }
+        }
     }
 };
 
