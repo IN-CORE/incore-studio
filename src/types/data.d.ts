@@ -80,3 +80,37 @@ interface DatawolfWorkflowFile {
     contributors: DatawolfCreator[];
     steps: DatawolfWorkflowFileStep[];
 }
+
+interface Hazard {
+    id: string;
+    type: string;
+}
+
+interface Mapping {
+    id: string;
+    type: string;
+}
+
+interface Dataset {
+    id: string;
+    type: string;
+}
+
+interface Workflow {
+    id: string;
+    type: string;
+}
+
+interface Project {
+    id: string;
+    name: string;
+    description: string;
+    creator?: string;
+    date?: string;
+    owner?: string;
+    region: string;
+    hazards: Hazard[];
+    dfr3Mappings: Mapping[];
+    datasets: Dataset[];
+    workflows: Workflow[];
+}
