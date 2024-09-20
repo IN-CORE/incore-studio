@@ -114,3 +114,10 @@ interface Project {
     datasets: Dataset[];
     workflows: Workflow[];
 }
+
+interface ProjectState {
+    projects: Project[];
+    project: Project | null;
+    loading: boolean;
+    error: string | null;
+}

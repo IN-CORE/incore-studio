@@ -33,7 +33,7 @@ const Home = (): JSX.Element => {
                             <TabList>
                                 <Tab>All</Tab>
                                 <Tab>Recent</Tab>
-                                <Tab>Shared with me</Tab>
+                                <Tab>Shared With Me</Tab>
                                 <Tab>Archived</Tab>
                             </TabList>
                             <TabPanel value={0}>
