@@ -25,3 +25,20 @@ export const getHeaders = () => {
         "x-auth-usergroup": JSON.stringify({ groups: user?.profile?.groups })
     };
 };
+
+export function parseDateTime(dateString: string) {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const options = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone
+    };
+
+    const mydate = new Date(dateString);
+
+    // @ts-ignore
+    return mydate.toLocaleString("en-US", options);
+}

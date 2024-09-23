@@ -4,6 +4,7 @@ import DatasetIcon from "@mui/icons-material/Dataset"; // Example icon for datas
 import WorkflowIcon from "@mui/icons-material/Cable"; // Example icon for workflows
 import DFR3Icon from "@mui/icons-material/LineAxis"; // Example icon for DFR3 mappings
 import HazardIcon from "@mui/icons-material/Storm";
+import { parseDateTime } from "@app/utils";
 
 interface ProjectCardProps {
     project: Project;
@@ -27,7 +28,7 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
                         {project.name.toUpperCase()}
                     </Typography>
                     <Typography level="body-xs" mb={2}>
-                        April 24 to May 02, 2021
+                        {project.date ? parseDateTime(project.date) : "No date"}
                     </Typography>
                     <Typography level="body-sm">{project.description}</Typography>
                 </Box>
