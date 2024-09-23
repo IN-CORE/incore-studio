@@ -26,10 +26,24 @@ export const getProjects = createAsyncThunk(
         skip?: number;
         limit?: number;
     }) => {
+        // Create a params object and filter out undefined or empty values
+        const params: Record<string, string | number> = { skip, limit };
+
+        if (name && name.trim() !== "") {
+            params.name = name;
+        }
+        if (creator && creator.trim() !== "") {
+            params.creator = creator;
+        }
+        if (region && region.trim() !== "") {
+            params.region = region;
+        }
+
         const response = await axios.get(PROJECT_API_URL, {
             headers: getHeaders(),
-            params: { name, creator, region, skip, limit } // Send all params, undefined values will be ignored
+            params // Pass filtered params
         });
+
         return response.data;
     }
 );

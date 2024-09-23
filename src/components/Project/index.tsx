@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Box, Tab, TabList, TabPanel, Tabs, Typography, Link, Button, Autocomplete } from "@mui/joy";
+import { Box, Tab, TabList, TabPanel, Tabs, Typography, Link, Button, Autocomplete, Input } from "@mui/joy";
 import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import { getProjects } from "@app/reducer/projectSlice";
@@ -18,26 +19,10 @@ const Project = (): JSX.Element => {
 
     // Filter states
     const [filters, setFilters] = useState({ name: "", creator: "", region: "" });
-
-    // Pagination states
-    const [pageNumber, setPageNumber] = useState(1);
-    const dataPerPage = 10; // Number of items per page
-
-    const nextPage = () => {
-        setPageNumber((prevPage) => prevPage + 1);
+    const [showFilters, setShowFilters] = useState(false); // Show or hide filters
+    const toggleFilters = () => {
+        setShowFilters((prev) => !prev); // Toggle filter visibility
     };
-
-    const previousPage = () => {
-        setPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
-    };
-
-    // Fetch projects when filters change
-    useEffect(() => {
-        const skip = (pageNumber - 1) * dataPerPage;
-        // @ts-ignore
-        dispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
-    }, [dispatch, pageNumber, filters]);
-
     const handleFilterChange = (key: string, value: string) => {
         setFilters({
             ...filters,
@@ -45,6 +30,23 @@ const Project = (): JSX.Element => {
         });
         setPageNumber(1); // Reset to page 1 when filters change
     };
+
+    // Pagination states
+    const [pageNumber, setPageNumber] = useState(1);
+    const dataPerPage = 10; // Number of items per page
+    const nextPage = () => {
+        setPageNumber((prevPage) => prevPage + 1);
+    };
+    const previousPage = () => {
+        setPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
+    };
+
+    // Fetch projects when filters or pagination change
+    useEffect(() => {
+        const skip = (pageNumber - 1) * dataPerPage;
+        // @ts-ignore
+        dispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
+    }, [dispatch, pageNumber, filters]);
 
     return (
         <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -63,39 +65,54 @@ const Project = (): JSX.Element => {
                 </Box>
             </Box>
 
-            {/* Filter Dropdowns */}
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Autocomplete
-                    freeSolo
-                    options={projects.map((project) => project.name)}
-                    onInputChange={(_, value) => handleFilterChange("name", value)}
-                    sx={{ width: 200 }}
-                />
-                <Autocomplete
-                    freeSolo
-                    options={[auth?.user?.profile?.preferred_username ?? ""]}
-                    onInputChange={(_, value) => handleFilterChange("creator", value)}
-                    sx={{ width: 200 }}
-                />
-                <Autocomplete
-                    freeSolo
-                    options={["joplin", "galveston", "seaside", "MMSA", "slc"]}
-                    onInputChange={(_, value) => handleFilterChange("region", value)}
-                    sx={{ width: 200 }}
-                />
-            </Box>
+            {/* Tabs and Filters in the same flexbox */}
+            <Tabs aria-label="Project Tabs" defaultValue={0} sx={{ flexGrow: 1 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} sx={{ gap: 2 }}>
+                    {/* Tabs */}
+                    <TabList>
+                        <Tab>All</Tab>
+                        <Tab>Recent</Tab>
+                        <Tab>Shared With Me</Tab>
+                        <Tab>Archived</Tab>
+                    </TabList>
 
-            {/* Tabs Section */}
-            <Tabs aria-label="Project Tabs" defaultValue={0}>
-                <TabList>
-                    <Tab>All</Tab>
-                    <Tab>Recent</Tab>
-                    <Tab>Shared With Me</Tab>
-                    <Tab>Archived</Tab>
-                </TabList>
+                    {/* Filter Dropdowns aligned to the right */}
+                    <Box display="flex" gap={2}>
+                        <Button variant="soft" onClick={toggleFilters}>
+                            Filter
+                        </Button>
+                        {showFilters && (
+                            <>
+                                <Autocomplete
+                                    freeSolo
+                                    placeholder="Project Name"
+                                    options={projects.map((project) => project.name)}
+                                    onInputChange={(_, value) => handleFilterChange("name", value)}
+                                    sx={{ width: 100 }}
+                                />
+                                <Autocomplete
+                                    freeSolo
+                                    placeholder="Creator"
+                                    options={[auth?.user?.profile?.preferred_username ?? ""]}
+                                    onInputChange={(_, value) => handleFilterChange("creator", value)}
+                                    sx={{ width: 100 }}
+                                />
+                                <Autocomplete
+                                    freeSolo
+                                    placeholder="Region"
+                                    options={["Galveston", "Joplin", "MMSA", "Seaside", "SLC"]}
+                                    onInputChange={(_, value) => handleFilterChange("region", value)}
+                                    sx={{ width: 100 }}
+                                />
+                            </>
+                        )}
+                        {/* Search Box */}
+                        <Input startDecorator={<SearchIcon />} placeholder="Search" sx={{ width: 400 }} />
+                    </Box>
+                </Box>
 
+                {/* Project List and Pagination */}
                 <TabPanel value={0}>
-                    {/* Project List */}
                     <Box display="flex" flexWrap="wrap" justifyContent="left" gap={4}>
                         {loading ? (
                             <Typography>Loading...</Typography>
