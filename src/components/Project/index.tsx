@@ -34,7 +34,7 @@ const Project = (): JSX.Element => {
 
     // Pagination states
     const [pageNumber, setPageNumber] = useState(1);
-    const dataPerPage = 10; // Number of items per page
+    const dataPerPage = 9; // Number of items per page
     const nextPage = () => {
         setPageNumber((prevPage) => prevPage + 1);
     };
@@ -121,9 +121,7 @@ const Project = (): JSX.Element => {
                         {loading ? (
                             <Typography>Loading...</Typography>
                         ) : (
-                            projects
-                                .slice((pageNumber - 1) * dataPerPage, pageNumber * dataPerPage)
-                                .map((project) => <ProjectCard project={project} key={project.id ?? ""} />)
+                            projects.map((project) => <ProjectCard project={project} key={project.id ?? ""} />)
                         )}
                     </Box>
 

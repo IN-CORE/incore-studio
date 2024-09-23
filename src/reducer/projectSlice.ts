@@ -18,7 +18,7 @@ export const getProjects = createAsyncThunk(
         creator,
         region,
         skip = 0,
-        limit = 15
+        limit = 9
     }: {
         name?: string;
         creator?: string;
