@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Tab, TabList, TabPanel, Tabs, Typography, Link, Button, Autocomplete, Input } from "@mui/joy";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
+import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import { getProjects } from "@app/reducer/projectSlice";
@@ -85,24 +86,27 @@ const Project = (): JSX.Element => {
                             <>
                                 <Autocomplete
                                     freeSolo
-                                    placeholder="Project Name"
+                                    startDecorator={<FilterAltOutlinedIcon />}
+                                    placeholder="Name"
                                     options={projects.map((project) => project.name)}
                                     onInputChange={(_, value) => handleFilterChange("name", value)}
-                                    sx={{ width: 100 }}
+                                    sx={{ width: 150 }}
                                 />
                                 <Autocomplete
                                     freeSolo
+                                    startDecorator={<FilterAltOutlinedIcon />}
                                     placeholder="Creator"
                                     options={[auth?.user?.profile?.preferred_username ?? ""]}
                                     onInputChange={(_, value) => handleFilterChange("creator", value)}
-                                    sx={{ width: 100 }}
+                                    sx={{ width: 150 }}
                                 />
                                 <Autocomplete
                                     freeSolo
+                                    startDecorator={<FilterAltOutlinedIcon />}
                                     placeholder="Region"
                                     options={["Galveston", "Joplin", "MMSA", "Seaside", "SLC"]}
                                     onInputChange={(_, value) => handleFilterChange("region", value)}
-                                    sx={{ width: 100 }}
+                                    sx={{ width: 150 }}
                                 />
                             </>
                         )}
