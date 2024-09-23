@@ -1,34 +1,34 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { getHeaders } from "@app/utils";
 
-// TODO put it to config
-const PROJECT_API_URL = "/project/api/projects";
+const PROJECT_API_URL = `${window.API_SERVER}/project/api/projects`;
 
-// Define the initial state
 const initialState: ProjectState = {
-    projects: [],
+    projects: <Project[]>[],
     project: null,
     loading: false,
     error: null
 };
 
-const getProjects = createAsyncThunk(
+export const getProjects = createAsyncThunk(
     "projects/getProjects",
-    async ({ name, creator, skip, limit }: { name?: string; creator?: string; skip?: number; limit?: number }) => {
-        const response = await axios.get(`${PROJECT_API_URL}`, {
-            params: { name, creator, skip, limit }
+    async ({ skip = 0, limit = 15 }: { skip?: number; limit?: number }) => {
+        const response = await axios.get(PROJECT_API_URL, {
+            headers: getHeaders(),
+            params: { skip, limit }
         });
         return response.data;
     }
 );
 
-const getProject = createAsyncThunk("projects/getProject", async (id: string) => {
-    const response = await axios.get(`${PROJECT_API_URL}/${id}`);
+export const getProject = createAsyncThunk("projects/getProject", async (id: string) => {
+    const response = await axios.get(`${PROJECT_API_URL}/${id}`, { headers: getHeaders() });
     return response.data;
 });
 
-const deleteProject = createAsyncThunk("projects/deleteProject", async (id: string) => {
-    await axios.delete(`${PROJECT_API_URL}/${id}`);
+export const deleteProject = createAsyncThunk("projects/deleteProject", async (id: string) => {
+    await axios.delete(`${PROJECT_API_URL}/${id}`, { headers: getHeaders() });
     return id;
 });
 
