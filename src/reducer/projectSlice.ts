@@ -13,10 +13,22 @@ const initialState: ProjectState = {
 
 export const getProjects = createAsyncThunk(
     "projects/getProjects",
-    async ({ skip = 0, limit = 15 }: { skip?: number; limit?: number }) => {
+    async ({
+        name,
+        creator,
+        region,
+        skip = 0,
+        limit = 15
+    }: {
+        name?: string;
+        creator?: string;
+        region?: string;
+        skip?: number;
+        limit?: number;
+    }) => {
         const response = await axios.get(PROJECT_API_URL, {
             headers: getHeaders(),
-            params: { skip, limit }
+            params: { name, creator, region, skip, limit } // Send all params, undefined values will be ignored
         });
         return response.data;
     }
