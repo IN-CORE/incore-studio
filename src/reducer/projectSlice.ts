@@ -48,6 +48,18 @@ export const getProjects = createAsyncThunk(
     }
 );
 
+export const searchProjects = createAsyncThunk(
+    "projects/searchProjects",
+    async ({ text, skip = 0, limit = 9 }: { text?: string; skip?: number; limit?: number }) => {
+        const params: Record<string, string | number | undefined> = { text, skip, limit };
+        const response = await axios.get(`${PROJECT_API_URL}/search`, {
+            headers: getHeaders(),
+            params
+        });
+        return response.data;
+    }
+);
+
 export const getProject = createAsyncThunk("projects/getProject", async (id: string) => {
     const response = await axios.get(`${PROJECT_API_URL}/${id}`, { headers: getHeaders() });
     return response.data;
@@ -78,6 +90,19 @@ const projectSlice = createSlice({
             .addCase(getProjects.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to load projects";
+            })
+            // Handle SEARCH_PROJECTS
+            .addCase(searchProjects.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(searchProjects.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projects = action.payload;
+            })
+            .addCase(searchProjects.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to search projects";
             })
             // Handle GET_PROJECT
             .addCase(getProject.pending, (state) => {

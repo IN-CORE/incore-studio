@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { getProjects } from "@app/reducer/projectSlice";
+import { getProjects, searchProjects } from "@app/reducer/projectSlice";
 import { useAuth } from "react-oidc-context";
 import { ProjectCard } from "./ProjectCard";
 import { Pagination } from "../Home/Pagination";
@@ -24,12 +24,18 @@ const Project = (): JSX.Element => {
     const toggleFilters = () => {
         setShowFilters((prev) => !prev); // Toggle filter visibility
     };
+
     const handleFilterChange = (key: string, value: string) => {
         setFilters({
             ...filters,
             [key]: value
         });
         setPageNumber(1); // Reset to page 1 when filters change
+        resetSearch(); // Clear search term and set search mode to false
+    };
+
+    const resetFilters = () => {
+        setFilters({ name: "", creator: "", region: "" });
     };
 
     // Pagination states
@@ -42,12 +48,42 @@ const Project = (): JSX.Element => {
         setPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
     };
 
-    // Fetch projects when filters or pagination change
+    // Search Box
+    const [searchTerm, setSearchTerm] = useState(""); // State to hold search term
+    const [isSearching, setIsSearching] = useState(false); // Track if we are in search mode
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const searchTerm = e.target.value;
+        setSearchTerm(searchTerm); // Update the search term in state
+
+        // Reset to first page and reset filters
+        setPageNumber(1); // Reset to first page when a search is performed
+        resetFilters(); // Clear all filters
+        setIsSearching(true); // Mark as searching
+    };
+
+    const resetSearch = () => {
+        setSearchTerm("");
+        setIsSearching(false);
+    };
+
+    // Fetch projects when filters or pagination change (but not during search)
     useEffect(() => {
-        const skip = (pageNumber - 1) * dataPerPage;
-        // @ts-ignore
-        dispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
-    }, [dispatch, pageNumber, filters]);
+        if (!isSearching) {
+            const skip = (pageNumber - 1) * dataPerPage;
+            // @ts-ignore
+            dispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
+        }
+    }, [pageNumber, filters, isSearching]);
+
+    // Refetch projects when search mode is active
+    useEffect(() => {
+        if (isSearching) {
+            const skip = (pageNumber - 1) * dataPerPage;
+            // @ts-ignore
+            dispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
+        }
+    }, [pageNumber, searchTerm, isSearching]);
 
     return (
         <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -111,7 +147,13 @@ const Project = (): JSX.Element => {
                             </>
                         )}
                         {/* Search Box */}
-                        <Input startDecorator={<SearchIcon />} placeholder="Search" sx={{ width: 400 }} />
+                        <Input
+                            startDecorator={<SearchIcon />}
+                            placeholder="Search"
+                            sx={{ width: 400 }}
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                        />
                     </Box>
                 </Box>
 
