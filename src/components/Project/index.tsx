@@ -22,20 +22,36 @@ const Project = (): JSX.Element => {
     const [filters, setFilters] = useState({ name: "", creator: "", region: "" });
     const [showFilters, setShowFilters] = useState(false); // Show or hide filters
     const toggleFilters = () => {
+        resetFilters(); // Reset filters when toggling
         setShowFilters((prev) => !prev); // Toggle filter visibility
     };
+    const [nameInputValue, setNameInputValue] = useState(""); // Input value for Name filter
+    const [creatorInputValue, setCreatorInputValue] = useState(""); // Input value for Creator filter
+    const [regionInputValue, setRegionInputValue] = useState(""); // Input value for Region filter
 
     const handleFilterChange = (key: string, value: string) => {
         setFilters({
             ...filters,
             [key]: value
         });
+        if (key === "name") {
+            setNameInputValue(value);
+        } else if (key === "creator") {
+            setCreatorInputValue(value);
+        } else if (key === "region") {
+            setRegionInputValue(value);
+        }
+
         setPageNumber(1); // Reset to page 1 when filters change
         resetSearch(); // Clear search term and set search mode to false
     };
 
+    // Reset all filters and inputs
     const resetFilters = () => {
         setFilters({ name: "", creator: "", region: "" });
+        setNameInputValue(""); // Reset Name input
+        setCreatorInputValue(""); // Reset Creator input
+        setRegionInputValue(""); // Reset Region input
     };
 
     // Pagination states
@@ -125,6 +141,7 @@ const Project = (): JSX.Element => {
                                     startDecorator={<FilterAltOutlinedIcon />}
                                     placeholder="Name"
                                     options={projects.map((project) => project.name)}
+                                    inputValue={nameInputValue}
                                     onInputChange={(_, value) => handleFilterChange("name", value)}
                                     sx={{ width: 150 }}
                                 />
@@ -133,6 +150,7 @@ const Project = (): JSX.Element => {
                                     startDecorator={<FilterAltOutlinedIcon />}
                                     placeholder="Creator"
                                     options={[auth?.user?.profile?.preferred_username ?? ""]}
+                                    inputValue={creatorInputValue}
                                     onInputChange={(_, value) => handleFilterChange("creator", value)}
                                     sx={{ width: 150 }}
                                 />
@@ -141,6 +159,7 @@ const Project = (): JSX.Element => {
                                     startDecorator={<FilterAltOutlinedIcon />}
                                     placeholder="Region"
                                     options={["Galveston", "Joplin", "MMSA", "Seaside", "SLC"]}
+                                    inputValue={regionInputValue}
                                     onInputChange={(_, value) => handleFilterChange("region", value)}
                                     sx={{ width: 150 }}
                                 />
