@@ -86,7 +86,7 @@
         "start:tst": "MODE=test webpack serve --config webpack.dev.js",
         "start:dev": "MODE=development webpack serve --config webpack.dev.js",
         "start:prod": "MODE=production webpack serve --config webpack.prod.js",
-        "build": "MODE=development webpack --config ./webpack.prod.js",
+        "build": "webpack --config ./webpack.prod.js",
         "eject": "react-scripts eject",
         "lint": "eslint src --color --ext=.tsx,.js",
         "lint:fix": "eslint --fix src --color --ext=.tsx,.js",
