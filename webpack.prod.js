@@ -48,7 +48,11 @@ module.exports = merge(commonConfig, {
 
     plugins: [
         new Webpack.DefinePlugin({
-            ENV: JSON.stringify("production")
+            "process.env": {
+                NODE_ENV: JSON.stringify("production"),
+                INCORE_REMOTE_HOSTNAME: JSON.stringify(process.env.INCORE_REMOTE_HOSTNAME)
+            },
+            "__DEV__": false
         })
     ]
 });

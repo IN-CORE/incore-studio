@@ -1,4 +1,6 @@
-window.API_SERVER = process.env.API_SERVER || "http://localhost:8000";
-window.AUTHORITY = process.env.AUTHORITY || "https://incore-dev.ncsa.illinois.edu/auth/realms/In-core";
-window.CLIENT_ID = process.env.CLIENT_ID || "react-auth";
-window.REDIRECT_URI = process.env.REDIRECT_URI || "http://localhost:3000/";
+window.API_SERVER = process.env.INCORE_REMOTE_HOSTNAME || "http://localhost:8080";
+window.AUTHORITY =
+    `${process.env.INCORE_REMOTE_HOSTNAME}/auth/realms/In-core` ||
+    "https://incore-dev.ncsa.illinois.edu/auth/realms/In-core";
+window.CLIENT_ID = "react-auth";
+window.REDIRECT_URI = "http://localhost:3000/";

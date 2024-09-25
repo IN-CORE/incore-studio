@@ -23,7 +23,11 @@ module.exports = merge(commonConfig, {
 
     plugins: [
         new Webpack.DefinePlugin({
-            ENV: JSON.stringify("development")
+            "process.env": {
+                NODE_ENV: JSON.stringify("development"),
+                INCORE_REMOTE_HOSTNAME: JSON.stringify(process.env.INCORE_REMOTE_HOSTNAME)
+            },
+            "__DEV__": true
         }),
         new BundleAnalyzerPlugin({ openAnalyzer: false, analyzerPort: 3001 })
     ]

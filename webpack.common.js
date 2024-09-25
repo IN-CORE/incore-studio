@@ -1,9 +1,7 @@
 const path = require("path");
-const Dotenv = require("dotenv-webpack");
 const Webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const ESLintPlugin = require("eslint-webpack-plugin");
-const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
@@ -83,34 +81,14 @@ module.exports = {
 
     plugins: [
         new HtmlWebpackPlugin({
-            template: "src/index.html"
-        }),
-        new FaviconsWebpackPlugin({
-            logo: "./src/images/favicon.ico",
-            prefix: "icons/",
-            emitStats: false,
-            inject: true,
-            favicons: {
-                icons: {
-                    android: false,
-                    appleIcon: false,
-                    appleStartup: false,
-                    coast: false,
-                    favicons: true,
-                    firefox: false,
-                    windows: false,
-                    yandex: false
-                }
-            }
+            template: "src/index.html",
+            favicon: "./src/public/favicon.ico"
         }),
         new MiniCssExtractPlugin({ filename: "css/[name]-[fullhash].css" }),
         new ESLintPlugin({
             emitWarning: true,
             failOnError: false
         }),
-        new CleanWebpackPlugin(),
-        new Dotenv({
-            path: process.env.MODE === "" ? "./.env" : `./.env.${process.env.MODE}` // Load .env file based on the passed NODE_ENV
-        })
+        new CleanWebpackPlugin()
     ]
 };
