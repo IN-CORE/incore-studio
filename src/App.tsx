@@ -9,11 +9,14 @@ import CssBaseline from "@mui/joy/CssBaseline";
 import "@fontsource/inter";
 import "@xyflow/react/dist/style.css";
 
+import { Provider } from "react-redux";
 import routes from "./routes";
 import { theme } from "./theme";
 
 import Loading from "./components/Loading";
 import "./styles/main.scss";
+
+import store from "./store";
 
 const oidcConfig = {
     authority: window.AUTHORITY,
@@ -63,9 +66,11 @@ const App: FC = () => {
 const rootEl = document.getElementById("root");
 if (rootEl) {
     createRoot(rootEl).render(
-        <AuthProvider {...oidcConfig}>
-            <App />
-        </AuthProvider>
+        <Provider store={store}>
+            <AuthProvider {...oidcConfig}>
+                <App />
+            </AuthProvider>
+        </Provider>
     );
 }
 
