@@ -13,11 +13,15 @@ export function AnalysisOutputNode({
     return (
         <Box
             sx={{
-                border: "1px solid #E0E0E0",
+                border: "2px solid #E0E0E0",
                 borderRadius: "3px",
                 padding: "16px 24px 16px 24px",
                 gap: "16px",
-                backgroundColor: "#FFFFFF"
+                backgroundColor: "while",
+                height: "auto",
+                width: "250px",
+                wordWrap: "break-word",
+                hyphens: "auto"
             }}
         >
             <Handle type="target" position={targetPosition || Position.Top} />
@@ -25,7 +29,7 @@ export function AnalysisOutputNode({
                 <StorageIcon sx={{ color: "#AB47BC", marginRight: "5px" }} />
                 <Typography level="h4" sx={{ fontWeight: 400, fontSize: "16px", lineHeight: "24px" }}>
                     {" "}
-                    Output {data.label}
+                    {data.label}
                 </Typography>
             </Box>
             <Handle type="source" position={sourcePosition || Position.Bottom} />

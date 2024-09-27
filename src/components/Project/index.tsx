@@ -3,8 +3,7 @@ import { Box, Tab, TabList, TabPanel, Tabs, Typography, Link, Button, Autocomple
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@app/store";
+import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getProjects, searchProjects } from "@app/reducer/projectSlice";
 import { useAuth } from "react-oidc-context";
 import { ProjectCard } from "./ProjectCard";
@@ -12,11 +11,11 @@ import { Pagination } from "../Home/Pagination";
 
 const Project = (): JSX.Element => {
     const auth = useAuth();
-    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
     // Redux state
-    const projects = useSelector((state: RootState) => state.project.projects);
-    const loading = useSelector((state: RootState) => state.project.loading);
+    const projects = useAppSelector((state) => state.project.projects);
+    const loading = useAppSelector((state) => state.project.loading);
 
     // Filter states
     const [filters, setFilters] = useState({ name: "", creator: "", region: "" });
@@ -87,8 +86,8 @@ const Project = (): JSX.Element => {
     useEffect(() => {
         if (!isSearching) {
             const skip = (pageNumber - 1) * dataPerPage;
-            // @ts-ignore
-            dispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
+
+            appDispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
         }
     }, [pageNumber, filters, isSearching]);
 
@@ -96,8 +95,8 @@ const Project = (): JSX.Element => {
     useEffect(() => {
         if (isSearching) {
             const skip = (pageNumber - 1) * dataPerPage;
-            // @ts-ignore
-            dispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
+
+            appDispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
         }
     }, [pageNumber, searchTerm, isSearching]);
 

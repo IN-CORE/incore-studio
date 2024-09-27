@@ -1,9 +1,8 @@
 import React, { Suspense, lazy } from "react";
-import Loading from "./components/Loading";
+import Loading from "@app/components/Loading";
 
-const LazyHome = lazy(() => import("./components/Home"));
-const LazyExecution = lazy(() => import("./components/Execution"));
-const LazyWorkflowEditor = lazy(() => import("./components/WorkflowEditor"));
+const LazyHome = lazy(() => import("@app/components/Home"));
+const LazyWorkflowEditor = lazy(() => import("@app/components/WorkflowEditor"));
 
 /**
  A mapping of routes to `RouteProps`.
@@ -19,14 +18,7 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
             </Suspense>
         )
     },
-    "/execution": {
-        element: (
-            <Suspense fallback={<Loading />}>
-                <LazyExecution />
-            </Suspense>
-        )
-    },
-    "/workflow-editor": {
+    "/workflow-editor/:wfID": {
         element: (
             <Suspense fallback={<Loading />}>
                 <LazyWorkflowEditor />

@@ -9,11 +9,15 @@ export function AnalysisNode({ data, sourcePosition, targetPosition }: NodeProps
     return (
         <Box
             sx={{
-                border: "1px solid #E0E0E0",
+                border: "2px solid black",
                 borderRadius: "3px",
                 padding: "16px 24px 16px 24px",
                 gap: "20px",
-                backgroundColor: "white"
+                backgroundColor: "white",
+                height: "auto",
+                width: "250px",
+                wordWrap: "break-word",
+                hyphens: "auto"
             }}
         >
             <Handle type="target" position={targetPosition || Position.Top} />

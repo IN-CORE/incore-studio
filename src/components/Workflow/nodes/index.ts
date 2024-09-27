@@ -6,9 +6,10 @@ import { AnalysisNode } from "./AnalysisNode";
 
 export type AnalysisInputNode = Node<
     {
-        label?: string;
-        inputData?: DatawolfIO | { id: string; title: string };
-        type?: "dataset" | "hazard" | "dfr3_mapping";
+        label: string;
+        inputData: DatawolfIO | { id: string; title: string; dataId: string };
+        stepID: string;
+        type: "dataset" | "hazard" | "dfr3_mapping";
     },
     "analysis-input"
 >;
@@ -16,7 +17,8 @@ export type AnalysisInputNode = Node<
 export type AnalysisOutputNode = Node<
     {
         label?: string;
-        outputData?: DatawolfIO | { id: string; title: string };
+        outputData: DatawolfIO;
+        stepID: string;
     },
     "analysis-output"
 >;
@@ -25,22 +27,12 @@ export type AnalysisNode = Node<
     {
         label?: string;
         stepData?: DatawolfWorkflowFileStep;
+        toolID?: string;
     },
     "analysis"
 >;
 
 export type AppNode = BuiltInNode | AnalysisInputNode | AnalysisOutputNode | AnalysisNode;
-
-const position = { x: 0, y: 0 };
-
-export const initialNodes: AppNode[] = [
-    { id: "inpt1", type: "analysis-input", position: position, data: { label: "Bridge Dataset" } },
-    { id: "inpt2", type: "analysis-input", position: position, data: { label: "Hazard Type" } },
-    { id: "inpt3", type: "analysis-input", position: position, data: { label: "DFR3 Mapping Set" } },
-    { id: "analysis1", type: "analysis", position: position, data: { label: "Bridge Damage" } },
-    { id: "output1", type: "analysis-output", position: position, data: { label: "Type 1" } },
-    { id: "output2", type: "analysis-output", position: position, data: { label: "Type 2" } }
-];
 
 export const nodeTypes = {
     "analysis-input": AnalysisInputNode,

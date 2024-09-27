@@ -16,6 +16,9 @@ import type { Edge } from "@xyflow/react";
 import Dagre from "@dagrejs/dagre";
 import { Box, Button } from "@mui/joy";
 
+import { setWorkflow } from "@app/reducer/workflowSlice";
+import { useAppDispatch } from "@app/store/hooks";
+
 import {
     // initialNodes,
     nodeTypes,
@@ -25,9 +28,6 @@ import {
     // initialEdges,
     edgeTypes
 } from "./edges";
-
-import workflowExample from "./example_workflow.json";
-import { readNodesAndEdgesFromWorkflowFile } from "./workflowUtils";
 
 const NodeMeasurements: { [key: string]: { width: number; height: number } } = {
     "analysis-input": { width: 383, height: 81 },
@@ -75,17 +75,27 @@ const getLayoutedElements = (nodes: AppNode[], edges: Edge[]): { nodes: AppNode[
     };
 };
 
-const workflowFile: DatawolfWorkflowFile = workflowExample as DatawolfWorkflowFile;
+interface LayoutFlowProps {
+    initialNodesAndEdges: ReactFlowWorkflow;
+}
 
-// remove this as this is only for testing purposes
-const initialNodesAndEdges = readNodesAndEdgesFromWorkflowFile(workflowFile);
-
-const LayoutFlow = () => {
+const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
     const { fitView } = useReactFlow();
+    const appDispatch = useAppDispatch();
     const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>(initialNodesAndEdges.nodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initialNodesAndEdges.edges);
     const [layoutApplied, setLayoutApplied] = React.useState(false); // State to check if layout has been applied
     const [nodesReady, setNodesReady] = React.useState(false);
+
+    React.useEffect(() => {
+        setNodes(initialNodesAndEdges.nodes);
+        setEdges(initialNodesAndEdges.edges);
+    }, [initialNodesAndEdges]);
+
+    React.useEffect(() => {
+        appDispatch(setWorkflow({ nodes, edges }));
+        console.log("Nodes and edges updated");
+    }, [nodes, edges]);
 
     // Function to check if all nodes have non-zero dimensions
     const checkNodesReady = (nodes: AppNode[]) => {
@@ -100,8 +110,8 @@ const LayoutFlow = () => {
 
     const fitViewOptions = {
         padding: 0.2,
-        duration: 500, // 0.5-second animation
-        minZoom: 0.7 // Minimum zoom level
+        duration: 500 // 0.5-second animation
+        // minZoom: 0.7 // Minimum zoom level
     };
 
     const reformatNodes = () => {
@@ -169,6 +179,7 @@ const LayoutFlow = () => {
                 <Panel position="top-right">
                     <Box>
                         <Button
+                            sx={{ backgroundColor: "primary.main" }}
                             onClick={() => {
                                 onLayout();
                             }}
@@ -182,10 +193,10 @@ const LayoutFlow = () => {
     );
 };
 
-export default function Workflow() {
+export default function Workflow({ initialNodesAndEdges }: LayoutFlowProps) {
     return (
         <ReactFlowProvider>
-            <LayoutFlow />
+            <LayoutFlow initialNodesAndEdges={initialNodesAndEdges} />
         </ReactFlowProvider>
     );
 }

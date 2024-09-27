@@ -9,11 +9,15 @@ export function AnalysisInputNode({ data, sourcePosition, targetPosition }: Node
     return (
         <Box
             sx={{
-                border: "1px solid #E0E0E0",
+                border: "2px solid #E0E0E0",
                 borderRadius: "3px",
                 padding: "16px 24px 16px 24px",
                 gap: "16px",
-                backgroundColor: "white"
+                backgroundColor: "white",
+                height: "80px",
+                width: "250px",
+                wordWrap: "break-word",
+                hyphens: "auto"
             }}
         >
             <Handle type="target" position={targetPosition || Position.Top} />
@@ -21,7 +25,7 @@ export function AnalysisInputNode({ data, sourcePosition, targetPosition }: Node
                 <StorageIcon sx={{ color: "#007DFF", marginRight: "5px" }} />
                 <Typography level="h4" sx={{ fontWeight: 400, fontSize: "16px", lineHeight: "24px" }}>
                     {" "}
-                    Input {data.label}
+                    {data.label}
                 </Typography>
             </Box>
             <Handle type="source" position={sourcePosition || Position.Bottom} />
