@@ -140,7 +140,6 @@ interface WorkflowState {
     workflowError: string | null;
     saveWorkflowLoading: boolean;
     saveWorkflowError: string | null;
-    saveWorkflowSuccess: boolean;
     datawolfTools: DatawolfWorkflowTool[];
     datawolfToolLoading: boolean;
     datawolfToolError: string | null;

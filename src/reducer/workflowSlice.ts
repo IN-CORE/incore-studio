@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 // import { getHeaders } from "@app/utils";
-import { addNewAnalysisNodesAndEdgesWorkflow } from "@app/components/Workflow/workflowUtils";
+import { readNodesAndEdgesFromWorkflowFile } from "@app/components/Workflow/workflowUtils";
 
 // const DATAWOLF_API_URL = `${window.API_SERVER}/datawolf`;
 const DATAWOLF_API_URL = `http://localhost:8888/datawolf`;
@@ -24,7 +24,6 @@ const initialState: WorkflowState = {
     workflowError: null,
     saveWorkflowError: null,
     saveWorkflowLoading: false,
-    saveWorkflowSuccess: false,
     datawolfTools: [],
     datawolfToolLoading: false,
     datawolfToolError: null
@@ -127,7 +126,7 @@ const workflowSlice = createSlice({
             .addCase(createNewWorkflow.fulfilled, (state, action) => {
                 state.createdWorkflowLoading = false;
                 state.currentWorkflow = action.payload;
-                state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload);
+                state.reactFlowWorkflow = readNodesAndEdgesFromWorkflowFile(action.payload);
                 state.datawolfWorkflowID = action.payload.id;
             })
             .addCase(createNewWorkflow.rejected, (state, action) => {
@@ -141,7 +140,7 @@ const workflowSlice = createSlice({
             .addCase(getWorkflow.fulfilled, (state, action) => {
                 state.workflowLoading = false;
                 state.currentWorkflow = action.payload;
-                state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload);
+                state.reactFlowWorkflow = readNodesAndEdgesFromWorkflowFile(action.payload);
                 state.datawolfWorkflowID = action.payload.id;
             })
             .addCase(getWorkflow.rejected, (state, action) => {
@@ -154,12 +153,10 @@ const workflowSlice = createSlice({
             })
             .addCase(saveWorkflow.fulfilled, (state, action) => {
                 state.saveWorkflowLoading = false;
-                state.saveWorkflowSuccess = true;
                 state.currentWorkflow = action.payload;
             })
             .addCase(saveWorkflow.rejected, (state, action) => {
                 state.saveWorkflowLoading = false;
-                state.saveWorkflowSuccess = false;
                 state.saveWorkflowError = action.error.message || "Failed to save workflow";
             })
             .addCase(getWorkflowTools.pending, (state) => {

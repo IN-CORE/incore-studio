@@ -14,12 +14,13 @@ export function AnalysisInputNode({
     return (
         <Box
             sx={{
-                border: selected ? "3px solid #EF6C00" : "2px solid #E0E0E0",
+                border: "2px solid #E0E0E0",
                 borderRadius: "3px",
-                padding: "6px 14px 6px 14px",
+                padding: "16px 24px 16px 24px",
+                gap: "16px",
                 backgroundColor: "white",
-                height: "auto",
-                width: "130px",
+                height: "80px",
+                width: "250px",
                 wordWrap: "break-word",
                 hyphens: "auto"
             }}

@@ -65,7 +65,7 @@ export function AnalysisNode({
     return (
         <Box
             sx={{
-                border: selected ? "3px solid #EF6C00" : "2px solid black",
+                border: "2px solid black",
                 borderRadius: "3px",
                 padding: "16px 24px 16px 24px",
                 gap: "20px",

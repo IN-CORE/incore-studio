@@ -11,17 +11,15 @@ export type AnalysisInputNode = Node<
         inputData: DatawolfIO | { id: string; title: string; dataId: string };
         stepID: string;
         type: "dataset" | "hazard" | "dfr3_mapping";
-        analysisName: string;
     },
     "analysis-input"
 >;
 
 export type AnalysisOutputNode = Node<
     {
-        label: string;
+        label?: string;
         outputData: DatawolfIO;
         stepID: string;
-        analysisName: string;
     },
     "analysis-output"
 >;
@@ -47,8 +45,6 @@ export type NewAnalysisNode = Node<
     },
     "new-analysis-node"
 >;
-
-export type AppNode = BuiltInNode | AnalysisInputNode | AnalysisOutputNode | AnalysisNode | NewAnalysisNode;
 
 export const nodeTypes = {
     "analysis-input": AnalysisInputNode,
