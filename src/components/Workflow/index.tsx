@@ -15,7 +15,6 @@ import {
 import type { Edge, OnConnect } from "@xyflow/react";
 import Dagre from "@dagrejs/dagre";
 import { Button, Stack } from "@mui/joy";
-import { useShallow } from "zustand/react/shallow";
 
 import { setWorkflow } from "@app/reducer/workflowSlice";
 import { useAppDispatch } from "@app/store/hooks";
@@ -87,6 +86,8 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
     React.useEffect(() => {
         setNodes(initialNodesAndEdges.nodes);
         setEdges(initialNodesAndEdges.edges);
+        setNodesReady(false);
+        setLayoutApplied(false);
     }, [initialNodesAndEdges]);
 
     React.useEffect(() => {
@@ -139,7 +140,16 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
         if (nodesReady && !layoutApplied) {
             onLayout(); // Apply the vertical layout
         }
-    }, [nodesReady, layoutApplied]);
+    }, [nodesReady, layoutApplied, onLayout, initialNodesAndEdges]);
+
+    React.useEffect(() => {
+        if (layoutApplied) {
+            // Use requestAnimationFrame to apply the layout after browser is ready to render
+            requestAnimationFrame(() => {
+                fitView(fitViewOptions);
+            });
+        }
+    }, [layoutApplied]);
 
     // Use useEffect to apply layout after a delay to ensure nodes have been rendered
     React.useEffect(() => {
@@ -153,7 +163,7 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
         }, 250); // Adjust the delay as necessary based on render performance
 
         return () => clearTimeout(timer);
-    }, [nodes, layoutApplied]);
+    }, [nodes, layoutApplied, initialNodesAndEdges]);
 
     return (
         <div style={{ width: "100vw", height: "100%" }}>
