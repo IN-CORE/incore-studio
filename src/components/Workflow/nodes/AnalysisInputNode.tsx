@@ -19,7 +19,7 @@ export function AnalysisInputNode({
                 padding: "16px 24px 16px 24px",
                 gap: "16px",
                 backgroundColor: "white",
-                height: "80px",
+                height: "auto",
                 width: "250px",
                 wordWrap: "break-word",
                 hyphens: "auto"

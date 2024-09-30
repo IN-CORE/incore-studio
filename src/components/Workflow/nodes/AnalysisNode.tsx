@@ -1,35 +1,24 @@
 import React from "react";
-import { Handle, Position, type NodeProps, getIncomers, getOutgoers, getConnectedEdges } from "@xyflow/react";
-import { Box, Button, Typography, Stack, IconButton, Tooltip } from "@mui/joy";
+import {
+    Handle,
+    Position,
+    type NodeProps,
+    type Edge,
+    useReactFlow,
+    getIncomers,
+    getOutgoers,
+    getConnectedEdges
+} from "@xyflow/react";
+import { Box, Typography, Stack, IconButton, Tooltip } from "@mui/joy";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
-import { useShallow } from "zustand/react/shallow";
+import { type AnalysisNode, AppNode } from "@app/components/Workflow/nodes";
 
-import { type AnalysisNode } from "@app/components/Workflow/nodes";
-import AddAnalysisModal from "@app/components/AddAnalysisModal";
-import useStore, { type ReactFlowAppState } from "../reactFlowStore";
-import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
-
-const selector = (state: ReactFlowAppState) => ({
-    nodes: state.nodes,
-    edges: state.edges,
-    setNodes: state.setNodes,
-    setEdges: state.setEdges
-});
-
-export function AnalysisNode({
-    id,
-    data,
-    sourcePosition,
-    targetPosition,
-    selected
-}: NodeProps<AnalysisNode>): JSX.Element {
-    const { nodes, edges, setNodes, setEdges } = useStore(useShallow(selector));
-
-    const [selectPreviousAnalysisModalOpen, setSelectPreviousAnalysisModalOpen] = React.useState<boolean>(false);
-    const [selectAfterAnalysisModalOpen, setSelectAfterAnalysisModalOpen] = React.useState<boolean>(false);
+export function AnalysisNode({ id, data, sourcePosition, targetPosition }: NodeProps<AnalysisNode>): JSX.Element {
+    const { setNodes, setEdges, getNodes, getEdges } = useReactFlow<AppNode, Edge>();
+    const nodes = getNodes();
+    const edges = getEdges();
 
     const handleDelete = () => {
         const node = nodes.find((n) => n.id === id);
@@ -76,16 +65,7 @@ export function AnalysisNode({
                 hyphens: "auto"
             }}
         >
-            <Handle
-                type="target"
-                position={targetPosition || Position.Top}
-                style={{
-                    width: "14px",
-                    height: "30px",
-                    borderRadius: "3px",
-                    backgroundColor: "#007DFF"
-                }}
-            />
+            <Handle type="target" position={targetPosition || Position.Top} />
             <Stack direction="row" spacing={2} sx={{ justifyContent: "space-between" }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <TrendingUpIcon sx={{ color: "#EF6C00", marginRight: "5px" }} />
@@ -104,62 +84,12 @@ export function AnalysisNode({
                     </Tooltip>
                 </Box>
             </Stack>
-            <Stack direction="column" spacing={4}>
-                <Box sx={{ marginTop: "5px" }}>
-                    <Typography level="h2" sx={{ fontWeight: 600, fontSize: "24px", lineHeight: "28.64px" }}>
-                        {data.label}
-                    </Typography>
-                </Box>
-                <Button
-                    variant="solid"
-                    sx={{ backgroundColor: "#EF6C00", color: "white", fontWeight: 600 }}
-                    startDecorator={<AddRoundedIcon />}
-                    onClick={() => {
-                        setSelectPreviousAnalysisModalOpen(true);
-                    }}
-                >
-                    Add previous
-                </Button>
-                <Button
-                    variant="solid"
-                    sx={{ backgroundColor: "#EF6C00", color: "white", fontWeight: 600 }}
-                    startDecorator={<AddRoundedIcon />}
-                    onClick={() => {
-                        setSelectAfterAnalysisModalOpen(true);
-                    }}
-                >
-                    Add Next
-                </Button>
-            </Stack>
-            <AddAnalysisModal
-                selectAnalysisModalOpen={selectPreviousAnalysisModalOpen}
-                setSelectAnalysisModalOpen={setSelectPreviousAnalysisModalOpen}
-                dependencyGraph={dependencyGraph}
-                previousAnalysis={true}
-                currentAnalysis={{
-                    name: data.name,
-                    id: id
-                }}
-            />
-            <AddAnalysisModal
-                selectAnalysisModalOpen={selectAfterAnalysisModalOpen}
-                setSelectAnalysisModalOpen={setSelectAfterAnalysisModalOpen}
-                dependencyGraph={dependencyGraph}
-                currentAnalysis={{
-                    name: data.name,
-                    id: id
-                }}
-            />
-            <Handle
-                type="source"
-                position={sourcePosition || Position.Bottom}
-                style={{
-                    width: "14px",
-                    height: "30px",
-                    borderRadius: "3px",
-                    backgroundColor: "#AB47BC"
-                }}
-            />
+            <Box sx={{ marginTop: "5px" }}>
+                <Typography level="h2" sx={{ fontWeight: 600, fontSize: "24px", lineHeight: "28.64px" }}>
+                    {data.label}
+                </Typography>
+            </Box>
+            <Handle type="source" position={sourcePosition || Position.Bottom} />
         </Box>
     );
 }

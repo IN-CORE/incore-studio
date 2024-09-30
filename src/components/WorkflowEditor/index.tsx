@@ -35,8 +35,6 @@ const WorkflowEditor = (): JSX.Element => {
     const datawolfTools = useAppSelector((state) => state.workflow.datawolfTools);
     const datawolfUser = useAppSelector((state) => state.workflow.datawolfUser);
 
-    console.log("initialNodesAndEdges", initialNodesAndEdges);
-
     React.useEffect(() => {
         if (wfID !== workflowID) {
             appDispatch(getWorkflow({ workflowID: wfID }));
