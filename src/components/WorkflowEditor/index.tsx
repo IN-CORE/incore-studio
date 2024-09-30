@@ -2,27 +2,52 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 
-import { Box, Button, IconButton, Stack, Typography, Tooltip } from "@mui/joy";
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CardActions,
+    Checkbox,
+    List,
+    ListItem,
+    IconButton,
+    Input,
+    Modal,
+    ModalClose,
+    Stack,
+    Typography,
+    Tooltip
+} from "@mui/joy";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
+import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import Done from "@mui/icons-material/Done";
 
 import Workflow from "@app/components/Workflow";
 import Loading from "@app/components/Loading";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import {
     getWorkflow,
+    setWorkflow,
     clearWorkflowState,
     getWorkflowTools,
     saveWorkflow,
     getDatawolfUser
 } from "@app/reducer/workflowSlice";
-import { createWorkflowFileFromNodesAndEdges } from "@app/components/Workflow/workflowUtils";
+import { createWorkflowFileFromNodesAndEdges, getNodesAndEdgesFromTool } from "@app/components/Workflow/workflowUtils";
+import dependency_graph from "@app/components/WorkflowEditor/dependency_graph.json";
 
 const WorkflowEditor = (): JSX.Element => {
     const { wfID } = useParams<{ wfID: string }>();
     const appDispatch = useAppDispatch();
     const navigate = useNavigate();
     const auth = useAuth();
+
+    const dependencyGraph = dependency_graph;
 
     // Redux state
     const initialNodesAndEdges = useAppSelector((state) => state.workflow.reactFlowWorkflow);
@@ -35,6 +60,18 @@ const WorkflowEditor = (): JSX.Element => {
     const datawolfTools = useAppSelector((state) => state.workflow.datawolfTools);
     const datawolfUser = useAppSelector((state) => state.workflow.datawolfUser);
 
+    const [selectAnalysisModalOpen, setSelectAnalysisModalOpen] = React.useState<boolean>(false);
+    // const [addAnalysisDrawerOpen, setAddAnalysisDrawerOpen] = React.useState<boolean>(false);
+    const [searchAnalysisTerm, setSearchAnalysisTerm] = React.useState<string>("");
+    const [selectedAnalysis, setSelectedAnalysis] = React.useState<string>("");
+    const [availableAnalyses, setAvailableAnalyses] = React.useState<string[]>([]);
+
+    const clearItems = () => {
+        setSelectedAnalysis("");
+        setSearchAnalysisTerm("");
+        setSelectAnalysisModalOpen(false);
+    };
+
     React.useEffect(() => {
         if (wfID !== workflowID) {
             appDispatch(getWorkflow({ workflowID: wfID }));
@@ -42,6 +79,17 @@ const WorkflowEditor = (): JSX.Element => {
         appDispatch(getWorkflowTools());
         appDispatch(getDatawolfUser({ email: auth?.user?.profile?.email }));
     }, []);
+
+    React.useEffect(() => {
+        if (datawolfTools.length !== 0) {
+            let toolNames = datawolfTools.map((tool) => tool.title).sort();
+            toolNames = toolNames.filter(
+                (tool) =>
+                    dependencyGraph[tool].pretty_name.toLowerCase().search(searchAnalysisTerm.toLowerCase()) !== -1
+            );
+            setAvailableAnalyses(toolNames);
+        }
+    }, [datawolfTools, searchAnalysisTerm]);
 
     const handleBackClick = () => {
         appDispatch(clearWorkflowState());
@@ -99,6 +147,144 @@ const WorkflowEditor = (): JSX.Element => {
             appDispatch(saveWorkflow({ workflowID: workflowID, workflow: newWorkflowFile }));
         } // else dispatch save workflow error
     };
+
+    const AddAnalysisModal = (
+        <Modal
+            aria-labelledby="modal-title"
+            aria-describedby="modal-desc"
+            open={selectAnalysisModalOpen}
+            onClose={() => setSelectAnalysisModalOpen(false)}
+            sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+        >
+            <Card
+                sx={{
+                    width: 800,
+                    maxHeight: 800,
+                    backgroundColor: "white",
+                    padding: "24px"
+                }}
+            >
+                <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
+                    <TrendingUpRoundedIcon sx={{ color: "#EF6C00", marginRight: "10px" }} />
+                    <Typography
+                        level="title-lg"
+                        sx={{
+                            fontWeight: 500,
+                            fontSize: "24px",
+                            lineHeight: "24px",
+                            paragraph: "28px",
+                            my: "10px"
+                        }}
+                    >
+                        Select Analysis
+                    </Typography>
+                    <ModalClose variant="plain" sx={{ m: 1 }} />
+                </Box>
+                <CardContent>
+                    <Stack direction="column" spacing={3}>
+                        <Box>
+                            <Input
+                                startDecorator={<SearchRoundedIcon />}
+                                endDecorator={
+                                    searchAnalysisTerm.length > 0 ? (
+                                        <IconButton variant="plain" onClick={() => setSearchAnalysisTerm("")}>
+                                            <CloseRoundedIcon />
+                                        </IconButton>
+                                    ) : null
+                                }
+                                placeholder="Search Analysis"
+                                value={searchAnalysisTerm}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    setSearchAnalysisTerm(e.target.value.toLowerCase());
+                                }}
+                            />
+                        </Box>
+                        <Box sx={{ height: "400px", overflow: "auto", padding: "10px" }}>
+                            <List
+                                sx={{
+                                    "--List-gap": "8px",
+                                    "--ListItem-minHeight": "32px",
+                                    "--ListItem-gap": "4px"
+                                }}
+                            >
+                                {availableAnalyses.map((analysis) => (
+                                    <ListItem key={analysis}>
+                                        {analysis === selectedAnalysis && (
+                                            <Done
+                                                color="primary"
+                                                sx={{
+                                                    ml: -0.5,
+                                                    zIndex: 2,
+                                                    pointerEvents: "none"
+                                                }}
+                                            />
+                                        )}
+                                        <Checkbox
+                                            size="sm"
+                                            disableIcon
+                                            overlay
+                                            label={
+                                                dependencyGraph !== undefined && dependencyGraph[analysis] !== undefined
+                                                    ? dependencyGraph[analysis].pretty_name
+                                                    : analysis
+                                            }
+                                            checked={selectedAnalysis === analysis}
+                                            variant={selectedAnalysis === analysis ? "soft" : "outlined"}
+                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                if (event.target.checked) {
+                                                    setSelectedAnalysis(analysis);
+                                                } else {
+                                                    setSelectedAnalysis("");
+                                                }
+                                            }}
+                                            slotProps={{
+                                                action: ({ checked }) => ({
+                                                    sx: checked
+                                                        ? {
+                                                              border: "1px solid",
+                                                              borderColor: "primary.500"
+                                                          }
+                                                        : {}
+                                                })
+                                            }}
+                                        />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </Box>
+                    </Stack>
+                </CardContent>
+                <CardActions>
+                    <Button
+                        variant="solid"
+                        sx={{ backgroundColor: "primary.main" }}
+                        startDecorator={<AddRoundedIcon />}
+                        onClick={() => {
+                            if (selectedAnalysis !== "") {
+                                console.log(selectedAnalysis);
+                                const { nodes, edges } = getNodesAndEdgesFromTool(
+                                    datawolfTools.find((tool) => tool.title === selectedAnalysis)
+                                );
+                                console.log(
+                                    [...initialNodesAndEdges.nodes, ...nodes],
+                                    [...initialNodesAndEdges.edges, ...edges]
+                                );
+                                clearItems();
+                                appDispatch(
+                                    setWorkflow({
+                                        nodes: [...initialNodesAndEdges.nodes, ...nodes],
+                                        edges: [...initialNodesAndEdges.edges, ...edges]
+                                    })
+                                );
+                            }
+                        }}
+                    >
+                        Add
+                    </Button>
+                </CardActions>
+            </Card>
+        </Modal>
+    );
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
@@ -187,9 +373,86 @@ const WorkflowEditor = (): JSX.Element => {
                             </Box>
                         </Stack>
                     </Box>
-                    <Box sx={{ flexGrow: 1, overflow: "auto" }}>
-                        <Workflow initialNodesAndEdges={initialNodesAndEdges} />
-                    </Box>
+                    {initialNodesAndEdges.nodes.length === 0 ? (
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                height: "100%",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                backgroundColor: "#E0E0E0"
+                            }}
+                        >
+                            <Card
+                                variant="soft"
+                                sx={{
+                                    width: 600,
+                                    backgroundColor: "white",
+                                    textAlign: "center",
+                                    padding: "24px"
+                                }}
+                            >
+                                <Typography
+                                    level="title-lg"
+                                    sx={{
+                                        fontWeight: 500,
+                                        fontSize: "24px",
+                                        lineHeight: "24px",
+                                        paragraph: "28px",
+                                        my: "10px"
+                                    }}
+                                >
+                                    Create a Workflow
+                                </Typography>
+                                <CardContent>
+                                    <Typography
+                                        level="body-md"
+                                        sx={{
+                                            fontWeight: 400,
+                                            fontSize: "14px",
+                                            lineHeight: "20px",
+                                            paragraph: "10px",
+                                            mb: "10px"
+                                        }}
+                                    >
+                                        Get started with creating a workflow by choosing an analysis. You can then add
+                                        more analysis by choosing either from Analysis nodes or drag and drop from left
+                                        toolbar.
+                                    </Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <Button
+                                        variant="solid"
+                                        sx={{ backgroundColor: "primary.main" }}
+                                        onClick={() => setSelectAnalysisModalOpen(true)}
+                                    >
+                                        Select an analysis to start
+                                    </Button>
+                                </CardActions>
+                            </Card>
+                            {AddAnalysisModal}
+                        </Box>
+                    ) : (
+                        <Box sx={{ flexGrow: 1, overflow: "auto" }}>
+                            <Workflow initialNodesAndEdges={initialNodesAndEdges} />
+                            <Button
+                                variant="solid"
+                                sx={{
+                                    position: "fixed",
+                                    bottom: "20px",
+                                    left: "50%",
+                                    transform: "translateX(-50%)",
+                                    backgroundColor: "primary.main"
+                                }}
+                                onClick={() => setSelectAnalysisModalOpen(true)}
+                                startDecorator={<AddRoundedIcon />}
+                            >
+                                Add Analysis
+                            </Button>
+                            {AddAnalysisModal}
+                        </Box>
+                    )}
                 </>
             )}
         </Box>

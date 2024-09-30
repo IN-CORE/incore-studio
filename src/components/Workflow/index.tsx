@@ -14,7 +14,7 @@ import {
 } from "@xyflow/react";
 import type { Edge } from "@xyflow/react";
 import Dagre from "@dagrejs/dagre";
-import { Box, Button } from "@mui/joy";
+import { Button, Stack } from "@mui/joy";
 
 import { setWorkflow } from "@app/reducer/workflowSlice";
 import { useAppDispatch } from "@app/store/hooks";
@@ -90,6 +90,8 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
     React.useEffect(() => {
         setNodes(initialNodesAndEdges.nodes);
         setEdges(initialNodesAndEdges.edges);
+        setNodesReady(false);
+        setLayoutApplied(false);
     }, [initialNodesAndEdges]);
 
     React.useEffect(() => {
@@ -137,7 +139,7 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
         if (nodesReady && !layoutApplied) {
             onLayout(); // Apply the vertical layout
         }
-    }, [nodesReady, layoutApplied, onLayout]);
+    }, [nodesReady, layoutApplied, onLayout, initialNodesAndEdges]);
 
     React.useEffect(() => {
         if (layoutApplied) {
@@ -160,7 +162,7 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
         }, 100); // Adjust the delay as necessary based on render performance
 
         return () => clearTimeout(timer);
-    }, [nodes, layoutApplied]);
+    }, [nodes, layoutApplied, initialNodesAndEdges]);
 
     return (
         <div style={{ width: "100vw", height: "100%" }}>
@@ -179,7 +181,7 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
                 <MiniMap />
                 <Controls />
                 <Panel position="top-right">
-                    <Box>
+                    <Stack direction="row" spacing={3}>
                         <Button
                             sx={{ backgroundColor: "primary.main" }}
                             onClick={() => {
@@ -188,7 +190,7 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
                         >
                             Layout
                         </Button>
-                    </Box>
+                    </Stack>
                 </Panel>
             </ReactFlow>
         </div>

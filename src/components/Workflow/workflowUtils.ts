@@ -300,3 +300,127 @@ export const createWorkflowFileFromNodesAndEdges = ({
 
     return file;
 };
+
+export const getNodesAndEdgesFromTool = (
+    tool: DatawolfWorkflowTool | undefined
+): { nodes: AppNode[]; edges: Edge[] } => {
+    let nodes: AppNode[] = [];
+    let edges: Edge[] = [];
+
+    if (tool !== undefined) {
+        let stepId = uuidv4();
+        // First create analysis node
+        nodes.push({
+            id: stepId,
+            type: "analysis",
+            position: { x: 0, y: 0 },
+            data: {
+                label: tool.title,
+                toolID: tool.id
+            }
+        });
+
+        // Then create input nodes and add their corresponding edges to the analysis node
+        // for Dataset inputs or chained inputs
+        tool.inputs.forEach((input) => {
+            const newId = uuidv4();
+            nodes.push({
+                // id: input.id,
+                id: newId,
+                type: "analysis-input",
+                position: { x: 0, y: 0 },
+                data: {
+                    label: input.title,
+                    inputData: input,
+                    type: "dataset",
+                    stepID: stepId
+                }
+            });
+            edges.push({
+                id: `${newId}->${stepId}`,
+                source: newId,
+                target: stepId,
+                type: "default",
+                style: { stroke: "#000000" },
+                markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
+            });
+        });
+
+        // Now add hazard node and its edge to the analysis node if hazard_type or hazard_id is present in tool parameters
+        if (tool.parameters.some((param) => param.title === "hazard_type" || param.title === "hazard_id")) {
+            nodes.push({
+                id: `${stepId}_hazard`,
+                type: "analysis-input",
+                position: { x: 0, y: 0 },
+                data: {
+                    label: "Hazard",
+                    inputData: { id: `${stepId}_hazard`, title: "Hazard", dataId: "hazard" },
+                    type: "hazard",
+                    stepID: stepId
+                }
+            });
+            edges.push({
+                id: `${stepId}_hazard->${stepId}`,
+                source: `${stepId}_hazard`,
+                target: stepId,
+                type: "default",
+                style: { stroke: "#000000" },
+                markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
+            });
+        }
+
+        // Now add dfr3 mapping set node and its edge to the analysis node if dfr3_mapping_set is present in tool parameters
+        if (tool.parameters.some((param) => param.title === "dfr3_mapping_set")) {
+            nodes.push({
+                id: `${stepId}_dfr3_mapping_set`,
+                type: "analysis-input",
+                position: { x: 0, y: 0 },
+                data: {
+                    label: "DFR3 Mapping Set",
+                    inputData: {
+                        id: `${stepId}_dfr3_mapping_set`,
+                        title: "DFR3 Mapping Set",
+                        dataId: "dfr3_mapping"
+                    },
+                    type: "dfr3_mapping",
+                    stepID: stepId
+                }
+            });
+            edges.push({
+                id: `${stepId}_dfr3_mapping_set->${stepId}`,
+                source: `${stepId}_dfr3_mapping_set`,
+                target: stepId,
+                type: "default",
+                style: { stroke: "#000000" },
+                markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
+            });
+        }
+
+        // Finally create output nodes and add their corresponding edges to the analysis node
+        tool.outputs.forEach((output) => {
+            if (output.title !== "stdout") {
+                const newId = uuidv4();
+                nodes.push({
+                    id: newId,
+                    type: "analysis-output",
+                    position: { x: 0, y: 0 },
+                    data: {
+                        label: output.title,
+                        outputData: output,
+                        stepID: stepId
+                    }
+                });
+                edges.push({
+                    id: `${stepId}->${newId}`,
+                    source: stepId,
+                    target: newId,
+                    type: "default",
+                    style: { stroke: "#000000" },
+                    markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
+                });
+            }
+        });
+    }
+
+    return { nodes, edges };
+};
