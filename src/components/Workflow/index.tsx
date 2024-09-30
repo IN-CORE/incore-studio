@@ -93,8 +93,9 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
     }, [initialNodesAndEdges]);
 
     React.useEffect(() => {
-        appDispatch(setWorkflow({ nodes, edges }));
-        console.log("Nodes and edges updated");
+        if (nodes.length !== initialNodesAndEdges.nodes.length || edges.length !== initialNodesAndEdges.edges.length) {
+            appDispatch(setWorkflow({ nodes, edges }));
+        }
     }, [nodes, edges]);
 
     // Function to check if all nodes have non-zero dimensions
@@ -171,6 +172,7 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 nodesDraggable={true}
+                deleteKeyCode={null}
                 fitView
             >
                 <Background variant={BackgroundVariant.Dots} />
