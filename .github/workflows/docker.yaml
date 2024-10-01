@@ -16,7 +16,6 @@ on:
 env:
   MAIN_REPO: IN-CORE/incore-studio
   DOCKERHUB_ORG: incore
-  GITHUB_PUSH: "false"
   NCSAHUB: hub.ncsa.illinois.edu/incore
   PLATFORM: "linux/amd64,linux/arm64"
 
@@ -37,10 +36,6 @@ jobs:
       # calculate some variables that are used later
       - name: version information
         run: |
-          if [ "${GITHUB_PUSH}" == "true" ]; then
-            push_tags="${push_tags}ghcr.io/${OWNER_LC}/frontend:${tag},"
-          fi
-
           # find out what the BRANCH is, in case of a PR we will use the PR-<number>
           if [ "${{ github.event.release.target_commitish }}" != "" ]; then
             BRANCH="${{ github.event.release.target_commitish }}"
@@ -72,14 +67,14 @@ jobs:
           # should we push to dockerhub, and is there a README
           DOCKERHUB_PUSH="false"
           DOCKERHUB_README="false"
-          if [ "${{ github.repository }}" == "${{ env.MAIN_REPO }}" ]; then
-            if [ "${{ secrets.DOCKERHUB_USERNAME }}" != "" -a "${{ secrets.DOCKERHUB_PASSWORD }}" != "" ]; then
-              DOCKERHUB_PUSH="true"
-              if [ -e "README.md" ]; then
-                DOCKERHUB_README="true"
-              fi
-            fi
-          fi
+#          if [ "${{ github.repository }}" == "${{ env.MAIN_REPO }}" ]; then
+#            if [ "${{ secrets.DOCKERHUB_USERNAME }}" != "" -a "${{ secrets.DOCKERHUB_PASSWORD }}" != "" ]; then
+#              DOCKERHUB_PUSH="true"
+#              if [ -e "README.md" ]; then
+#                DOCKERHUB_README="true"
+#              fi
+#            fi
+#          fi
 
           # should we push to NCSA
           NCSAHUB_PUSH="false"
@@ -99,7 +94,9 @@ jobs:
             if [ "$NCSAHUB_PUSH" == "true" ]; then
               IMAGES="${IMAGES}${NCSAHUB}/${IMAGE}:${tag},"
             fi
-            IMAGES="${IMAGES}ghcr.io/${OWNER_LC}/${IMAGE}:${tag},"
+#            if [ "${GITHUB_PUSH}" == "true" ]; then
+#              IMAGES="${IMAGES}ghcr.io/${OWNER_LC}/${IMAGE}:${tag},"
+#            fi
           done
           IMAGES="${IMAGES%,*}"
 
@@ -150,13 +147,12 @@ jobs:
           username: ${{ secrets.HUB_USERNAME }}
           password: ${{ secrets.HUB_PASSWORD }}
 
-      - name: Login to GitHub Container Registry
-        if: env.GITHUB_PUSH == 'true'
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Login to GitHub Container Registry
+#        uses: docker/login-action@v2
+#        with:
+#          registry: ghcr.io
+#          username: ${{ github.actor }}
+#          password: ${{ secrets.GITHUB_TOKEN }}
 
       # build the docker images
       - name: Build and push docker
