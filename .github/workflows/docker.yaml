@@ -37,8 +37,8 @@ jobs:
       - name: version information
         run: |
           # find out what the BRANCH is, in case of a PR we will use the PR-<number>
-          if [ "${{ github.event.release.target_commitish }}" != "" ]; then
-            BRANCH="${{ github.event.release.target_commitish }}"
+          if [ "$GITHUB_EVENT_RELEASE_TARGET_COMMITISH" != "" ]; then
+            BRANCH="$GITHUB_EVENT_RELEASE_TARGET_COMMITISH"
           elif [[ $GITHUB_REF =~ pull ]]; then
             BRANCH="$(echo $GITHUB_REF | sed 's#refs/pull/\([0-9]*\)/merge#PR-\1#')"
           else
