@@ -5,6 +5,7 @@ import WorkflowIcon from "@mui/icons-material/Cable"; // Example icon for workfl
 import DFR3Icon from "@mui/icons-material/LineAxis"; // Example icon for DFR3 mappings
 import HazardIcon from "@mui/icons-material/Storm";
 import { parseDateTime } from "@app/utils";
+import { useNavigate } from "react-router-dom";
 
 interface ProjectCardProps {
     project: Project;
@@ -18,6 +19,8 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
     const datasetsCount = project.datasets.length;
     const workflowsCount = project.workflows.length;
     const dfr3MappingsCount = project.dfr3Mappings.length;
+
+    const navigate = useNavigate();
 
     return (
         <Card sx={{ width: 440, position: "relative" }}>
@@ -126,23 +129,25 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
                         {project.region}
                     </Chip>
                 </Box>
+                {/* Button positioned at bottom-right */}
+                <Button
+                    variant="solid"
+                    size="md"
+                    color="primary"
+                    aria-label="Open"
+                    sx={{
+                        position: "absolute",
+                        bottom: 15,
+                        right: 15,
+                        fontWeight: 600
+                    }}
+                    onClick={() => {
+                        navigate(`/project/${project.id}`);
+                    }}
+                >
+                    Open
+                </Button>
             </CardContent>
-
-            {/* Button positioned at bottom-right */}
-            <Button
-                variant="solid"
-                size="md"
-                color="primary"
-                aria-label="Open"
-                sx={{
-                    position: "absolute",
-                    bottom: 15,
-                    right: 15,
-                    fontWeight: 600
-                }}
-            >
-                Open
-            </Button>
         </Card>
     );
 };
