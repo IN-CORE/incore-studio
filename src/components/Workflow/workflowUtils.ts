@@ -229,8 +229,8 @@ export const createWorkflowFileFromNodesAndEdges = ({
                 analysisNode.data.stepData !== undefined
                     ? analysisNode.data.stepData.tool.id
                     : analysisNode.data.toolID !== undefined
-                    ? analysisNode.data.toolID
-                    : ""
+                      ? analysisNode.data.toolID
+                      : ""
             ];
         let stepId = analysisNode.id;
         let title = analysisNode.data.label === undefined ? tool.title : analysisNode.data.label;

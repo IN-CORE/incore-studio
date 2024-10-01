@@ -27,30 +27,40 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Done from "@mui/icons-material/Done";
 
+import { useShallow } from "zustand/react/shallow";
+
+import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import Workflow from "@app/components/Workflow";
 import Loading from "@app/components/Loading";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import {
     getWorkflow,
-    setWorkflow,
     clearWorkflowState,
     getWorkflowTools,
     saveWorkflow,
     getDatawolfUser
 } from "@app/reducer/workflowSlice";
 import { createWorkflowFileFromNodesAndEdges, getNodesAndEdgesFromTool } from "@app/components/Workflow/workflowUtils";
-import dependency_graph from "@app/components/WorkflowEditor/dependency_graph.json";
+import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
+
+const selector = (state: ReactFlowAppState) => ({
+    nodes: state.nodes,
+    edges: state.edges,
+    setNodes: state.setNodes,
+    setEdges: state.setEdges,
+    addNodes: state.addNodes,
+    addEdges: state.addEdges
+});
 
 const WorkflowEditor = (): JSX.Element => {
     const { wfID } = useParams<{ wfID: string }>();
     const appDispatch = useAppDispatch();
     const navigate = useNavigate();
     const auth = useAuth();
-
-    const dependencyGraph = dependency_graph;
+    const { nodes, edges, setNodes, setEdges, addNodes, addEdges } = useStore(useShallow(selector));
 
     // Redux state
-    const initialNodesAndEdges = useAppSelector((state) => state.workflow.reactFlowWorkflow);
+    const reactFlowWorkflow = useAppSelector((state) => state.workflow.reactFlowWorkflow);
     const workflowID = useAppSelector((state) => state.workflow.datawolfWorkflowID);
     const workflowLoading = useAppSelector((state) => state.workflow.workflowLoading);
     const workflowError = useAppSelector((state) => state.workflow.workflowError);
@@ -71,6 +81,13 @@ const WorkflowEditor = (): JSX.Element => {
         setSearchAnalysisTerm("");
         setSelectAnalysisModalOpen(false);
     };
+
+    React.useEffect(() => {
+        if (reactFlowWorkflow.nodes.length !== 0) {
+            setNodes(reactFlowWorkflow.nodes);
+            setEdges(reactFlowWorkflow.edges);
+        }
+    }, [reactFlowWorkflow]);
 
     React.useEffect(() => {
         if (wfID !== workflowID) {
@@ -99,8 +116,8 @@ const WorkflowEditor = (): JSX.Element => {
     const handleExportJSONClick = () => {
         if (currentWorkflow !== null && workflowID !== null) {
             const newWorkflowFile = createWorkflowFileFromNodesAndEdges({
-                nodes: initialNodesAndEdges.nodes,
-                edges: initialNodesAndEdges.edges,
+                nodes: nodes,
+                edges: edges,
                 creator: datawolfUser,
                 datawolfWorkflowFileID: workflowID,
                 title: currentWorkflow !== null ? currentWorkflow.title : "Untitled Workflow",
@@ -134,8 +151,8 @@ const WorkflowEditor = (): JSX.Element => {
     const handleSaveClick = () => {
         if (currentWorkflow !== null && workflowID !== null) {
             const newWorkflowFile = createWorkflowFileFromNodesAndEdges({
-                nodes: initialNodesAndEdges.nodes,
-                edges: initialNodesAndEdges.edges,
+                nodes: nodes,
+                edges: edges,
                 creator: datawolfUser,
                 datawolfWorkflowFileID: workflowID,
                 title: currentWorkflow !== null ? currentWorkflow.title : "Untitled Workflow",
@@ -261,16 +278,12 @@ const WorkflowEditor = (): JSX.Element => {
                         startDecorator={<AddRoundedIcon />}
                         onClick={() => {
                             if (selectedAnalysis !== "") {
-                                const { nodes, edges } = getNodesAndEdgesFromTool(
+                                const { nodes: newNodes, edges: newEdges } = getNodesAndEdgesFromTool(
                                     datawolfTools.find((tool) => tool.title === selectedAnalysis)
                                 );
                                 clearItems();
-                                appDispatch(
-                                    setWorkflow({
-                                        nodes: initialNodesAndEdges.nodes.concat(nodes),
-                                        edges: initialNodesAndEdges.edges.concat(edges)
-                                    })
-                                );
+                                addNodes(newNodes);
+                                addEdges(newEdges);
                             }
                         }}
                     >
@@ -368,7 +381,7 @@ const WorkflowEditor = (): JSX.Element => {
                             </Box>
                         </Stack>
                     </Box>
-                    {initialNodesAndEdges.nodes.length === 0 ? (
+                    {nodes.length === 0 ? (
                         <Box
                             sx={{
                                 flexGrow: 1,
@@ -430,7 +443,7 @@ const WorkflowEditor = (): JSX.Element => {
                         </Box>
                     ) : (
                         <Box sx={{ flexGrow: 1, overflow: "auto" }}>
-                            <Workflow initialNodesAndEdges={initialNodesAndEdges} />
+                            <Workflow />
                             <Button
                                 variant="solid"
                                 sx={{
