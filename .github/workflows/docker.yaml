@@ -45,8 +45,8 @@ jobs:
             BRANCH=${GITHUB_REF##*/}
           fi
 
-          OWNER=${{ github.repository_owner }}
-          OWNER_LC=${OWNER,,}
+#          OWNER=${{ github.repository_owner }}
+#          OWNER_LC=${OWNER,,}
 
           # calculate the version and all tags
           if [ "$BRANCH" == "main" ]; then
