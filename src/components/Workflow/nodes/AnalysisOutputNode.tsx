@@ -8,12 +8,13 @@ import { type AnalysisOutputNode } from "@app/components/Workflow/nodes";
 export function AnalysisOutputNode({
     data,
     sourcePosition,
-    targetPosition
+    targetPosition,
+    selected
 }: NodeProps<AnalysisOutputNode>): JSX.Element {
     return (
         <Box
             sx={{
-                border: "2px solid #E0E0E0",
+                border: selected ? "3px solid #EF6C00" : "2px solid #E0E0E0",
                 borderRadius: "3px",
                 padding: "16px 24px 16px 24px",
                 gap: "16px",

@@ -5,11 +5,16 @@ import StorageIcon from "@mui/icons-material/Storage";
 
 import { type AnalysisInputNode } from "@app/components/Workflow/nodes";
 
-export function AnalysisInputNode({ data, sourcePosition, targetPosition }: NodeProps<AnalysisInputNode>): JSX.Element {
+export function AnalysisInputNode({
+    data,
+    sourcePosition,
+    targetPosition,
+    selected
+}: NodeProps<AnalysisInputNode>): JSX.Element {
     return (
         <Box
             sx={{
-                border: "2px solid #E0E0E0",
+                border: selected ? "3px solid #EF6C00" : "2px solid #E0E0E0",
                 borderRadius: "3px",
                 padding: "16px 24px 16px 24px",
                 gap: "16px",

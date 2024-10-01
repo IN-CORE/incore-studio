@@ -10,22 +10,24 @@ export type AnalysisInputNode = Node<
         inputData: DatawolfIO | { id: string; title: string; dataId: string };
         stepID: string;
         type: "dataset" | "hazard" | "dfr3_mapping";
+        analysisName: string;
     },
     "analysis-input"
 >;
 
 export type AnalysisOutputNode = Node<
     {
-        label?: string;
+        label: string;
         outputData: DatawolfIO;
         stepID: string;
+        analysisName: string;
     },
     "analysis-output"
 >;
 
 export type AnalysisNode = Node<
     {
-        label?: string;
+        label: string;
         stepData?: DatawolfWorkflowFileStep;
         toolID?: string;
     },

@@ -2,6 +2,7 @@ import type { Edge } from "@xyflow/react";
 import { MarkerType } from "@xyflow/react";
 import type { AnalysisNode, AppNode, AnalysisOutputNode, AnalysisInputNode } from "./nodes";
 import { v4 as uuidv4 } from "uuid";
+import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
 export const readNodesAndEdgesFromWorkflowFile = (workflowFile: DatawolfWorkflowFile): ReactFlowWorkflow => {
     let nodes: AppNode[] = [];
@@ -18,7 +19,7 @@ export const readNodesAndEdgesFromWorkflowFile = (workflowFile: DatawolfWorkflow
                 type: "analysis",
                 position: { x: 0, y: 0 },
                 data: {
-                    label: step.title,
+                    label: dependencyGraph[step.title].pretty_name,
                     stepData: step
                 }
             });
@@ -36,7 +37,8 @@ export const readNodesAndEdgesFromWorkflowFile = (workflowFile: DatawolfWorkflow
                         label: input.title,
                         inputData: input,
                         type: "dataset",
-                        stepID: step.id
+                        stepID: step.id,
+                        analysisName: step.title
                     }
                 });
                 edges.push({
@@ -66,7 +68,8 @@ export const readNodesAndEdgesFromWorkflowFile = (workflowFile: DatawolfWorkflow
                         label: "Hazard",
                         inputData: { id: `${step.id}_hazard`, title: "Hazard", dataId: "hazard" },
                         type: "hazard",
-                        stepID: step.id
+                        stepID: step.id,
+                        analysisName: step.title
                     }
                 });
                 edges.push({
@@ -93,7 +96,8 @@ export const readNodesAndEdgesFromWorkflowFile = (workflowFile: DatawolfWorkflow
                             dataId: "dfr3_mapping"
                         },
                         type: "dfr3_mapping",
-                        stepID: step.id
+                        stepID: step.id,
+                        analysisName: step.title
                     }
                 });
                 edges.push({
@@ -117,7 +121,8 @@ export const readNodesAndEdgesFromWorkflowFile = (workflowFile: DatawolfWorkflow
                         data: {
                             label: output.title,
                             outputData: output,
-                            stepID: step.id
+                            stepID: step.id,
+                            analysisName: step.title
                         }
                     });
                     edges.push({
@@ -315,7 +320,7 @@ export const getNodesAndEdgesFromTool = (
             type: "analysis",
             position: { x: 0, y: 0 },
             data: {
-                label: tool.title,
+                label: dependencyGraph[tool.title].pretty_name,
                 toolID: tool.id
             }
         });
@@ -333,7 +338,8 @@ export const getNodesAndEdgesFromTool = (
                     label: input.title,
                     inputData: input,
                     type: "dataset",
-                    stepID: stepId
+                    stepID: stepId,
+                    analysisName: tool.title
                 }
             });
             edges.push({
@@ -356,7 +362,8 @@ export const getNodesAndEdgesFromTool = (
                     label: "Hazard",
                     inputData: { id: `${stepId}_hazard`, title: "Hazard", dataId: "hazard" },
                     type: "hazard",
-                    stepID: stepId
+                    stepID: stepId,
+                    analysisName: tool.title
                 }
             });
             edges.push({
@@ -383,7 +390,8 @@ export const getNodesAndEdgesFromTool = (
                         dataId: "dfr3_mapping"
                     },
                     type: "dfr3_mapping",
-                    stepID: stepId
+                    stepID: stepId,
+                    analysisName: tool.title
                 }
             });
             edges.push({
@@ -407,7 +415,8 @@ export const getNodesAndEdgesFromTool = (
                     data: {
                         label: output.title,
                         outputData: output,
-                        stepID: stepId
+                        stepID: stepId,
+                        analysisName: tool.title
                     }
                 });
                 edges.push({
