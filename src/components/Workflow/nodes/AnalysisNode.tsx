@@ -1,19 +1,19 @@
 import React from "react";
-import {
-    Handle,
-    Position,
-    type NodeProps,
-    type Edge,
-    useReactFlow,
-    getIncomers,
-    getOutgoers,
-    getConnectedEdges
-} from "@xyflow/react";
+import { Handle, Position, type NodeProps, getIncomers, getOutgoers, getConnectedEdges } from "@xyflow/react";
 import { Box, Typography, Stack, IconButton, Tooltip } from "@mui/joy";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 
-import { type AnalysisNode, AppNode } from "@app/components/Workflow/nodes";
+import { useShallow } from "zustand/react/shallow";
+
+import { type AnalysisNode } from "@app/components/Workflow/nodes";
+import useStore, { type ReactFlowAppState } from "../reactFlowStore";
+const selector = (state: ReactFlowAppState) => ({
+    nodes: state.nodes,
+    edges: state.edges,
+    setNodes: state.setNodes,
+    setEdges: state.setEdges
+});
 
 export function AnalysisNode({
     id,
@@ -22,9 +22,7 @@ export function AnalysisNode({
     targetPosition,
     selected
 }: NodeProps<AnalysisNode>): JSX.Element {
-    const { setNodes, setEdges, getNodes, getEdges } = useReactFlow<AppNode, Edge>();
-    const nodes = getNodes();
-    const edges = getEdges();
+    const { nodes, edges, setNodes, setEdges } = useStore(useShallow(selector));
 
     const handleDelete = () => {
         const node = nodes.find((n) => n.id === id);
