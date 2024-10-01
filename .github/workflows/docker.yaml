@@ -88,7 +88,7 @@ jobs:
           GITHUB_PUSH="false"
 
           # create a list of all images to be pushed
-          IMAGE="frontend"
+          IMAGE="studio"
           IMAGES=""
           for tag in ${tags}; do
             if [ "$DOCKERHUB_PUSH" == "true" ]; then
