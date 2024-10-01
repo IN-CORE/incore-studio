@@ -15,7 +15,13 @@ import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 
 import { type AnalysisNode, AppNode } from "@app/components/Workflow/nodes";
 
-export function AnalysisNode({ id, data, sourcePosition, targetPosition }: NodeProps<AnalysisNode>): JSX.Element {
+export function AnalysisNode({
+    id,
+    data,
+    sourcePosition,
+    targetPosition,
+    selected
+}: NodeProps<AnalysisNode>): JSX.Element {
     const { setNodes, setEdges, getNodes, getEdges } = useReactFlow<AppNode, Edge>();
     const nodes = getNodes();
     const edges = getEdges();
@@ -54,7 +60,7 @@ export function AnalysisNode({ id, data, sourcePosition, targetPosition }: NodeP
     return (
         <Box
             sx={{
-                border: "2px solid black",
+                border: selected ? "3px solid #EF6C00" : "2px solid black",
                 borderRadius: "3px",
                 padding: "16px 24px 16px 24px",
                 gap: "20px",

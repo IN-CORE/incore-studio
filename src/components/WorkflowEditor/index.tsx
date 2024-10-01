@@ -261,19 +261,14 @@ const WorkflowEditor = (): JSX.Element => {
                         startDecorator={<AddRoundedIcon />}
                         onClick={() => {
                             if (selectedAnalysis !== "") {
-                                console.log(selectedAnalysis);
                                 const { nodes, edges } = getNodesAndEdgesFromTool(
                                     datawolfTools.find((tool) => tool.title === selectedAnalysis)
-                                );
-                                console.log(
-                                    [...initialNodesAndEdges.nodes, ...nodes],
-                                    [...initialNodesAndEdges.edges, ...edges]
                                 );
                                 clearItems();
                                 appDispatch(
                                     setWorkflow({
-                                        nodes: [...initialNodesAndEdges.nodes, ...nodes],
-                                        edges: [...initialNodesAndEdges.edges, ...edges]
+                                        nodes: initialNodesAndEdges.nodes.concat(nodes),
+                                        edges: initialNodesAndEdges.edges.concat(edges)
                                     })
                                 );
                             }
@@ -448,7 +443,7 @@ const WorkflowEditor = (): JSX.Element => {
                                 onClick={() => setSelectAnalysisModalOpen(true)}
                                 startDecorator={<AddRoundedIcon />}
                             >
-                                Add Analysis
+                                Add another analysis
                             </Button>
                             {AddAnalysisModal}
                         </Box>

@@ -9,8 +9,8 @@ import {
     ReactFlowProvider,
     Position,
     Panel,
-    MarkerType,
-    getConnectedEdges
+    // MarkerType
+    addEdge
 } from "@xyflow/react";
 import type { Edge, OnConnect } from "@xyflow/react";
 import Dagre from "@dagrejs/dagre";
@@ -18,6 +18,7 @@ import { Button, Stack } from "@mui/joy";
 
 import { setWorkflow } from "@app/reducer/workflowSlice";
 import { useAppDispatch } from "@app/store/hooks";
+// import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
 import {
     // initialNodes,
@@ -29,11 +30,11 @@ import {
     edgeTypes
 } from "./edges";
 
-const NodeMeasurements: { [key: string]: { width: number; height: number } } = {
-    "analysis-input": { width: 383, height: 81 },
-    "analysis-output": { width: 383, height: 81 },
-    "analysis": { width: 456, height: 148 }
-};
+// const NodeMeasurements: { [key: string]: { width: number; height: number } } = {
+//     "analysis-input": { width: 383, height: 81 },
+//     "analysis-output": { width: 383, height: 81 },
+//     "analysis": { width: 456, height: 148 }
+// };
 
 const getLayoutedElements = (nodes: AppNode[], edges: Edge[]): { nodes: AppNode[]; edges: Edge[] } => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -47,6 +48,8 @@ const getLayoutedElements = (nodes: AppNode[], edges: Edge[]): { nodes: AppNode[
             ...node,
             width: node.measured?.width ?? 0,
             height: node.measured?.height ?? 0
+            // width: node.measured?.width ?? (node.type !== undefined ? NodeMeasurements[node.type].width : 0),
+            // height: node.measured?.height ?? (node.type !== undefined ? NodeMeasurements[node.type].height : 0)
         })
     );
 
@@ -59,6 +62,12 @@ const getLayoutedElements = (nodes: AppNode[], edges: Edge[]): { nodes: AppNode[
             // so it matches the React Flow node anchor point (top left).
             const x = position.x - (node.measured?.width ?? 0) / 2;
             const y = position.y - (node.measured?.height ?? 0) / 2;
+            // const x =
+            //     position.x -
+            //     (node.measured?.width ?? (node.type !== undefined ? NodeMeasurements[node.type].width : 0)) / 2;
+            // const y =
+            //     position.y -
+            //     (node.measured?.height ?? (node.type !== undefined ? NodeMeasurements[node.type].height : 0)) / 2;
 
             return {
                 ...node,
@@ -75,6 +84,26 @@ interface LayoutFlowProps {
     initialNodesAndEdges: ReactFlowWorkflow;
 }
 
+// const isConnectible = (srcNode: AppNode | undefined, tgtNode: AppNode | undefined): boolean => {
+//     if (
+//         srcNode !== undefined &&
+//         tgtNode !== undefined &&
+//         srcNode.type === "analysis-output" &&
+//         tgtNode.type === "analysis-input" &&
+//         tgtNode.data.inputData.dataId !== "hazard" &&
+//         tgtNode.data.inputData.dataId !== "dfr3_mapping"
+//     ) {
+//         if (dependencyGraph[srcNode.data.analysisName].after[tgtNode.data.analysisName] !== undefined) {
+//             return dependencyGraph[srcNode.data.analysisName].after[tgtNode.data.analysisName].some(
+//                 (criteria: { from: string; to: string }) =>
+//                     srcNode.data.outputData.title === criteria.from && tgtNode.data.inputData.title === criteria.to
+//             );
+//         }
+//     }
+
+//     return false;
+// };
+
 const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
     const { fitView } = useReactFlow();
     const appDispatch = useAppDispatch();
@@ -83,16 +112,47 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
     const [layoutApplied, setLayoutApplied] = React.useState(false); // State to check if layout has been applied
     const [nodesReady, setNodesReady] = React.useState(false);
 
+    // const onConnect: OnConnect = useCallback(
+    //     (connection) =>
+    //         setEdges((eds) => {
+    //             // prevent self loops
+    //             if (connection.source === connection.target) {
+    //                 return eds;
+    //             }
+    //             let srcNode = nodes.find((node) => node.id === connection.source);
+    //             let tgtNode = nodes.find((node) => node.id === connection.target);
+    //             if (srcNode && tgtNode && isConnectible(srcNode, tgtNode)) {
+    //                 return [
+    //                     ...eds,
+    //                     {
+    //                         id: `${connection.source}-${connection.target}`,
+    //                         source: connection.source,
+    //                         target: connection.target,
+    //                         type: "default",
+    //                         style: { stroke: "#000000" },
+    //                         markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
+    //                     }
+    //                 ];
+    //             }
+    //             return eds;
+    //         }),
+    //     [setEdges, nodes, edges]
+    // );
+
+    const onConnect: OnConnect = useCallback((connection) => setEdges((eds) => addEdge(connection, eds)), [setEdges]);
+
     React.useEffect(() => {
-        setNodes(initialNodesAndEdges.nodes);
-        setEdges(initialNodesAndEdges.edges);
+        if (nodes.length !== initialNodesAndEdges.nodes.length || edges.length !== initialNodesAndEdges.edges.length) {
+            setNodes(initialNodesAndEdges.nodes);
+            setEdges(initialNodesAndEdges.edges);
+        }
         setNodesReady(false);
         setLayoutApplied(false);
     }, [initialNodesAndEdges]);
 
     React.useEffect(() => {
         if (nodes.length !== initialNodesAndEdges.nodes.length || edges.length !== initialNodesAndEdges.edges.length) {
-            appDispatch(setWorkflow({ nodes, edges }));
+            appDispatch(setWorkflow({ nodes: nodes, edges: edges }));
         }
     }, [nodes, edges]);
 
@@ -116,8 +176,10 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
     const reformatNodes = () => {
         const layouted = getLayoutedElements(nodes, edges);
 
-        setNodes([...layouted.nodes]);
-        setEdges([...layouted.edges]);
+        // setNodes([...layouted.nodes]);
+        // setEdges([...layouted.edges]);
+        setNodes(layouted.nodes);
+        setEdges(layouted.edges);
 
         // Use requestAnimationFrame to apply the layout after browser is ready to render
         requestAnimationFrame(() => {
@@ -163,7 +225,7 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
         }, 250); // Adjust the delay as necessary based on render performance
 
         return () => clearTimeout(timer);
-    }, [nodes, layoutApplied, initialNodesAndEdges]);
+    }, [nodes, layoutApplied]);
 
     return (
         <div style={{ width: "100vw", height: "100%" }}>
@@ -177,6 +239,7 @@ const LayoutFlow = ({ initialNodesAndEdges }: LayoutFlowProps) => {
                 onConnect={onConnect}
                 nodesDraggable={true}
                 deleteKeyCode={null}
+                snapToGrid
                 fitView
             >
                 <Background variant={BackgroundVariant.Dots} />
