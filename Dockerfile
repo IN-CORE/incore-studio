@@ -13,7 +13,7 @@ COPY package*.json /usr/src/app/
 RUN npm install
 
 # copy rest of application
-COPY .babelrc .eslintrc .istanbul.yml *.js /usr/src/app/
+COPY .babelrc .eslintrc *.js /usr/src/app/
 COPY src /usr/src/app/src/
 
 # build application
