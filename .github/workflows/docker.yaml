@@ -37,16 +37,16 @@ jobs:
       - name: version information
         run: |
           # find out what the BRANCH is, in case of a PR we will use the PR-<number>
-          if [ "$GITHUB_EVENT_RELEASE_TARGET_COMMITISH" != "" ]; then
-            BRANCH="$GITHUB_EVENT_RELEASE_TARGET_COMMITISH"
+          if [ "${{ github.event.release.target_commitish }}" != "" ]; then
+            BRANCH="${{ github.event.release.target_commitish }}"
           elif [[ $GITHUB_REF =~ pull ]]; then
             BRANCH="$(echo $GITHUB_REF | sed 's#refs/pull/\([0-9]*\)/merge#PR-\1#')"
           else
             BRANCH=${GITHUB_REF##*/}
           fi
 
-#          OWNER=${{ github.repository_owner }}
-#          OWNER_LC=${OWNER,,}
+          OWNER=${{ github.repository_owner }}
+          OWNER_LC=${OWNER,,}
 
           # calculate the version and all tags
           if [ "$BRANCH" == "main" ]; then
@@ -67,14 +67,14 @@ jobs:
           # should we push to dockerhub, and is there a README
           DOCKERHUB_PUSH="false"
           DOCKERHUB_README="false"
-#          if [ "${{ github.repository }}" == "${{ env.MAIN_REPO }}" ]; then
-#            if [ "${{ secrets.DOCKERHUB_USERNAME }}" != "" -a "${{ secrets.DOCKERHUB_PASSWORD }}" != "" ]; then
-#              DOCKERHUB_PUSH="true"
-#              if [ -e "README.md" ]; then
-#                DOCKERHUB_README="true"
-#              fi
-#            fi
-#          fi
+          if [ "${{ github.repository }}" == "${{ env.MAIN_REPO }}" ]; then
+            if [ "${{ secrets.DOCKERHUB_USERNAME }}" != "" -a "${{ secrets.DOCKERHUB_PASSWORD }}" != "" ]; then
+              DOCKERHUB_PUSH="true"
+              if [ -e "README.md" ]; then
+                DOCKERHUB_README="true"
+              fi
+            fi
+          fi
 
           # should we push to NCSA
           NCSAHUB_PUSH="false"
@@ -83,6 +83,9 @@ jobs:
               NCSAHUB_PUSH="true"
             fi
           fi
+          
+          # decide if we should push to ghcr.io
+          GITHUB_PUSH="false"
 
           # create a list of all images to be pushed
           IMAGE="frontend"
@@ -94,9 +97,9 @@ jobs:
             if [ "$NCSAHUB_PUSH" == "true" ]; then
               IMAGES="${IMAGES}${NCSAHUB}/${IMAGE}:${tag},"
             fi
-#            if [ "${GITHUB_PUSH}" == "true" ]; then
-#              IMAGES="${IMAGES}ghcr.io/${OWNER_LC}/${IMAGE}:${tag},"
-#            fi
+            if [ "${GITHUB_PUSH}" == "true" ]; then
+              IMAGES="${IMAGES}ghcr.io/${OWNER_LC}/${IMAGE}:${tag},"
+            fi
           done
           IMAGES="${IMAGES%,*}"
 
@@ -147,12 +150,12 @@ jobs:
           username: ${{ secrets.HUB_USERNAME }}
           password: ${{ secrets.HUB_PASSWORD }}
 
-#      - name: Login to GitHub Container Registry
-#        uses: docker/login-action@v2
-#        with:
-#          registry: ghcr.io
-#          username: ${{ github.actor }}
-#          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       # build the docker images
       - name: Build and push docker
