@@ -16,6 +16,7 @@ on:
 env:
   MAIN_REPO: IN-CORE/incore-studio
   DOCKERHUB_ORG: incore
+  GITHUB_PUSH: "false"
   NCSAHUB: hub.ncsa.illinois.edu/incore
   PLATFORM: "linux/amd64,linux/arm64"
 
@@ -36,6 +37,10 @@ jobs:
       # calculate some variables that are used later
       - name: version information
         run: |
+          if [ "${GITHUB_PUSH}" == "true" ]; then
+            push_tags="${push_tags}ghcr.io/${OWNER_LC}/frontend:${tag},"
+          fi
+
           # find out what the BRANCH is, in case of a PR we will use the PR-<number>
           if [ "${{ github.event.release.target_commitish }}" != "" ]; then
             BRANCH="${{ github.event.release.target_commitish }}"
@@ -146,6 +151,7 @@ jobs:
           password: ${{ secrets.HUB_PASSWORD }}
 
       - name: Login to GitHub Container Registry
+        if: env.GITHUB_PUSH == 'true'
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
