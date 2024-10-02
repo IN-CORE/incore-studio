@@ -172,6 +172,17 @@ interface DFR3MappingState {
     error: string | null;
 }
 
+interface HazardState {
+    hazards: (Hazard | { id: string; status: "unavailable" })[];
+    loading: boolean;
+    error: string | null;
+}
+
+interface WorkflowState {
+    workflows: (Workflow | { id: string; status: "unavailable" })[];
+    loading: boolean;
+    error: string | null;
+}
 type Rule = string | RuleSet;
 
 interface RuleSet {
