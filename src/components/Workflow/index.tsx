@@ -147,7 +147,6 @@ const LayoutedWorkflow = () => {
     const onLayout = useCallback(() => {
         reformatNodes();
         setLayoutApplied(true);
-        console.log("Layout applied", layoutApplied);
     }, [nodes, edges, fitView]);
 
     React.useEffect(() => {
@@ -164,7 +163,6 @@ const LayoutedWorkflow = () => {
 
     // Use useEffect to apply layout after a delay to ensure nodes have been rendered
     React.useEffect(() => {
-        console.log("Checking nodes ready...", nodesReady);
         const timer = setTimeout(() => {
             if (!layoutApplied) {
                 const allNodesReady = checkNodesReady(nodes);

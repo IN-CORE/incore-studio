@@ -19,6 +19,7 @@ import {
     Typography,
     Tooltip
 } from "@mui/joy";
+import Snackbar from "@mui/joy/Snackbar";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
@@ -69,18 +70,41 @@ const WorkflowEditor = (): JSX.Element => {
     const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
     const datawolfTools = useAppSelector((state) => state.workflow.datawolfTools);
     const datawolfUser = useAppSelector((state) => state.workflow.datawolfUser);
+    const saveWorkflowLoading = useAppSelector((state) => state.workflow.saveWorkflowLoading);
+    const saveWorkflowError = useAppSelector((state) => state.workflow.saveWorkflowError);
+    const saveWorkflowSuccess = useAppSelector((state) => state.workflow.saveWorkflowSuccess);
 
     const [selectAnalysisModalOpen, setSelectAnalysisModalOpen] = React.useState<boolean>(false);
     // const [addAnalysisDrawerOpen, setAddAnalysisDrawerOpen] = React.useState<boolean>(false);
     const [searchAnalysisTerm, setSearchAnalysisTerm] = React.useState<string>("");
     const [selectedAnalysis, setSelectedAnalysis] = React.useState<string>("");
     const [availableAnalyses, setAvailableAnalyses] = React.useState<string[]>([]);
+    const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
+    const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
 
     const clearItems = () => {
         setSelectedAnalysis("");
         setSearchAnalysisTerm("");
         setSelectAnalysisModalOpen(false);
     };
+
+    React.useEffect(() => {
+        if (saveWorkflowError) {
+            setSnackbarMessage(`Couldn't save workflow. Error: ${saveWorkflowError}`);
+            setSnackbarColor("danger");
+        } else if (saveWorkflowLoading) {
+            setSnackbarMessage("Saving workflow...");
+            setSnackbarColor("warning");
+        } else if (saveWorkflowSuccess) {
+            setSnackbarMessage("Workflow Saved!");
+            setSnackbarColor("success");
+        } else {
+            setSnackbarMessage("Workflow Loaded!");
+            setSnackbarColor("neutral");
+        }
+        setSnackbarOpen(true);
+    }, [saveWorkflowError, saveWorkflowLoading]);
 
     React.useEffect(() => {
         if (reactFlowWorkflow.nodes.length !== 0) {
@@ -378,6 +402,19 @@ const WorkflowEditor = (): JSX.Element => {
                                         Set Exection Parameters
                                     </Button>
                                 </Stack>
+                                <Snackbar
+                                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                                    open={snackbarOpen}
+                                    onClose={() => {
+                                        setSnackbarOpen(false);
+                                        setSnackbarMessage("");
+                                    }}
+                                    variant="outlined"
+                                    color={snackbarColor}
+                                    autoHideDuration={2000}
+                                >
+                                    {snackbarMessage}
+                                </Snackbar>
                             </Box>
                         </Stack>
                     </Box>

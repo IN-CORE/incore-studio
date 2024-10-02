@@ -215,8 +215,6 @@ export const createWorkflowFileFromNodesAndEdges = ({
         }
     });
 
-    console.log(edgesFromOutputToInputNodes);
-
     let toolIdToToolMap: { [key: string]: DatawolfWorkflowTool } = {};
     tools.forEach((tool) => {
         toolIdToToolMap[tool.id] = tool;
@@ -228,11 +226,11 @@ export const createWorkflowFileFromNodesAndEdges = ({
                 analysisNode.data.stepData !== undefined
                     ? analysisNode.data.stepData.tool.id
                     : analysisNode.data.toolID !== undefined
-                      ? analysisNode.data.toolID
-                      : ""
+                    ? analysisNode.data.toolID
+                    : ""
             ];
         let stepId = analysisNode.id;
-        let title = analysisNode.data.label === undefined ? tool.title : analysisNode.data.label;
+        let title = tool.title;
         let date = new Date().toISOString();
         let inputs: { [key: string]: string } = {};
         let outputs: { [key: string]: string } = {};
@@ -271,14 +269,12 @@ export const createWorkflowFileFromNodesAndEdges = ({
             parameters: parameters
         };
     });
-    console.log(steps);
 
     Object.entries(edgesFromOutputToInputNodes).forEach(([outputNodeId, inputNodeIds]) => {
         let opNode = nodes.find((n) => n.id === outputNodeId) as AnalysisOutputNode;
         let ipNodes = inputNodeIds.map((id) => nodes.find((n) => n.id === id) as AnalysisInputNode);
         let stepID1 = opNode.data.stepID;
-        console.log("stepID1", stepID1);
-        console.log(steps[stepID1]);
+
         if (stepID1 !== undefined) {
             let commonUUID = uuidv4();
             ipNodes.forEach((ipNode) => {
