@@ -3,8 +3,6 @@ import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath } from "@xyflow/r
 import { Box, IconButton, Tooltip } from "@mui/joy";
 import CloseIcon from "@mui/icons-material/Close";
 
-import "./buttonedge.css";
-
 import { useShallow } from "zustand/react/shallow";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
 const selector = (state: ReactFlowAppState) => ({
@@ -51,7 +49,6 @@ export default function DeletableEdge({
                     sx={{
                         position: "absolute",
                         transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-                        fontSize: 10,
                         // everything inside EdgeLabelRenderer has no pointer events by default
                         // if you have an interactive element, set pointer-events: all
                         pointerEvents: "all"
@@ -60,23 +57,17 @@ export default function DeletableEdge({
                     <Tooltip title="Remove">
                         <IconButton
                             onClick={onEdgeClick}
-                            className="edgebutton"
                             sx={{
-                                "width": "15px",
-                                "height": "15px",
                                 "background": "#eee",
-                                "border": "1px solid #fff",
                                 "cursor": "pointer",
                                 "borderRadius": "50%",
-                                "fontSize": "10px",
-                                "lineHeight": "1",
                                 "pointerEvents": "all",
                                 ":hover": {
                                     boxShadow: "0 0 6px 2px rgba(0, 0, 0, 0.08)"
                                 }
                             }}
                         >
-                            <CloseIcon />
+                            <CloseIcon sx={{ fontSize: "14px" }} />
                         </IconButton>
                     </Tooltip>
                 </Box>

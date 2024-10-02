@@ -24,6 +24,7 @@ const initialState: WorkflowState = {
     workflowError: null,
     saveWorkflowError: null,
     saveWorkflowLoading: false,
+    saveWorkflowSuccess: false,
     datawolfTools: [],
     datawolfToolLoading: false,
     datawolfToolError: null
@@ -153,10 +154,12 @@ const workflowSlice = createSlice({
             })
             .addCase(saveWorkflow.fulfilled, (state, action) => {
                 state.saveWorkflowLoading = false;
+                state.saveWorkflowSuccess = true;
                 state.currentWorkflow = action.payload;
             })
             .addCase(saveWorkflow.rejected, (state, action) => {
                 state.saveWorkflowLoading = false;
+                state.saveWorkflowSuccess = false;
                 state.saveWorkflowError = action.error.message || "Failed to save workflow";
             })
             .addCase(getWorkflowTools.pending, (state) => {
