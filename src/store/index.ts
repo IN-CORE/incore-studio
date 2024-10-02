@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { combineReducers } from "redux";
-import projectSlice from "../reducer/projectSlice";
+import dataSlice from "@app/reducer/dataSlice";
+import projectSlice from "@app/reducer/projectSlice";
 
 // Combine multiple reducers
 const rootReducer = combineReducers({
-    project: projectSlice
+    project: projectSlice,
+    data: dataSlice
 });
 
 // Create and export the store

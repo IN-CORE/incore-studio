@@ -7,6 +7,10 @@ const PROJECT_API_URL = `${window.API_SERVER}/project/api/projects`;
 const initialState: ProjectState = {
     projects: <Project[]>[],
     project: null,
+    projectDatasets: <ProjectElement[]>[],
+    projectHazards: <ProjectElement[]>[],
+    projectDFR3Mappings: <ProjectElement[]>[],
+    projectWorkflows: <ProjectElement[]>[],
     loading: false,
     error: null
 };
@@ -70,6 +74,26 @@ export const deleteProject = createAsyncThunk("projects/deleteProject", async (i
     return id;
 });
 
+export const getProjectDatasets = createAsyncThunk("projects/getProjectDatasets", async (id: string) => {
+    const response = await axios.get(`${PROJECT_API_URL}/${id}/datasets`, { headers: getHeaders() });
+    return response.data;
+});
+
+export const getProjectHazards = createAsyncThunk("projects/getProjectHazards", async (id: string) => {
+    const response = await axios.get(`${PROJECT_API_URL}/${id}/hazards`, { headers: getHeaders() });
+    return response.data;
+});
+
+export const getProjectDRF3Mappings = createAsyncThunk("projects/getProjectDRF3Mappings", async (id: string) => {
+    const response = await axios.get(`${PROJECT_API_URL}/${id}/dfr3mappings`, { headers: getHeaders() });
+    return response.data;
+});
+
+export const getProjectWorkflows = createAsyncThunk("projects/getProjectWorkflows", async (id: string) => {
+    const response = await axios.get(`${PROJECT_API_URL}/${id}/workflows`, { headers: getHeaders() });
+    return response.data;
+});
+
 const projectSlice = createSlice({
     name: "projects",
     initialState,
@@ -116,6 +140,58 @@ const projectSlice = createSlice({
             .addCase(getProject.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project";
+            })
+            // Handle GET_PROJECT_DATASETS
+            .addCase(getProjectDatasets.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getProjectDatasets.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectDatasets = action.payload;
+            })
+            .addCase(getProjectDatasets.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to load the project datasets";
+            })
+            // Handle GET_PROJECT_WORKFLOWS
+            .addCase(getProjectWorkflows.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getProjectWorkflows.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectWorkflows = action.payload;
+            })
+            .addCase(getProjectWorkflows.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to load the project datasets";
+            })
+            // Handle GET_PROJECT_HAZARDS
+            .addCase(getProjectHazards.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getProjectHazards.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectHazards = action.payload;
+            })
+            .addCase(getProjectHazards.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to load the project datasets";
+            })
+            // Handle GET_PROJECT_DFR3_MAPPINGS
+            .addCase(getProjectDRF3Mappings.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getProjectDRF3Mappings.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectDFR3Mappings = action.payload;
+            })
+            .addCase(getProjectDRF3Mappings.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to load the project datasets";
             })
             // Handle DELETE_PROJECT
             .addCase(deleteProject.pending, (state) => {

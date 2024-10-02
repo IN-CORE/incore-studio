@@ -101,6 +101,11 @@ interface Workflow {
     type: string;
 }
 
+interface ProjectElement {
+    id: string;
+    type: string;
+}
+
 interface Project {
     id: string;
     name: string;
@@ -118,6 +123,45 @@ interface Project {
 interface ProjectState {
     projects: Project[];
     project: Project | null;
+    projectDatasets: ProjectElement[];
+    projectHazards: ProjectElement[];
+    projectDFR3Mappings: ProjectElement[];
+    projectWorkflows: ProjectElement[];
+    loading: boolean;
+    error: string | null;
+}
+
+interface FileDescriptor {
+    id: string;
+    deleted: boolean;
+    filename: string;
+    mimeType: string;
+    size: number;
+    dataURL: string;
+    md5sum: string;
+}
+
+interface Dataset {
+    id: string;
+    deleted: boolean;
+    title: string;
+    description: string;
+    date: string;
+    creator: string;
+    owner: string;
+    spaces: string[];
+    contributors: string[];
+    fileDescriptors?: FileDescriptor[];
+    dataType: string;
+    storedUrl: string;
+    format: string;
+    sourceDataset?: string;
+    boundingBox?: [number, number, number, number];
+    networkDataset?: string | null;
+}
+
+interface DataState {
+    dataset: Dataset;
     loading: boolean;
     error: string | null;
 }
