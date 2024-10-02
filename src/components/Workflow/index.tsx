@@ -105,7 +105,7 @@ const LayoutedWorkflow = () => {
                         id: `${connection.source}-${connection.target}`,
                         source: connection.source,
                         target: connection.target,
-                        type: "default",
+                        type: "deletableEdge",
                         style: { stroke: "#000000" },
                         markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
                     }
