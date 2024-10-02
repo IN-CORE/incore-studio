@@ -18,7 +18,7 @@ export function AnalysisOutputNode({
                 borderRadius: "3px",
                 padding: "16px 24px 16px 24px",
                 gap: "16px",
-                backgroundColor: "while",
+                backgroundColor: "white",
                 height: "auto",
                 width: "250px",
                 wordWrap: "break-word",

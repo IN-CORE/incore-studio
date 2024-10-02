@@ -148,8 +148,7 @@ export const readNodesAndEdgesFromWorkflowFile = (workflowFile: DatawolfWorkflow
                         id: `${sourceNodeLookup[mappingUUID]}->${targetNodeId}`,
                         source: sourceNodeLookup[mappingUUID],
                         target: targetNodeId,
-                        type: "default",
-                        style: { stroke: "#000000" },
+                        type: "deletableEdge",
                         markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
                     });
                 });
