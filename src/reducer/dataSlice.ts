@@ -4,13 +4,6 @@ import { getHeaders } from "@app/utils";
 
 const DATA_API_URL = `${window.API_SERVER}/data/api/datasets`;
 
-// Define your initial state
-interface DataState {
-    datasets: (Dataset | { id: string; status: "unavailable" })[]; // To store a list of datasets or error statuses
-    loading: boolean;
-    error: string | null;
-}
-
 const initialState: DataState = {
     datasets: [], // Initialize an empty array for datasets
     loading: false,
@@ -18,7 +11,7 @@ const initialState: DataState = {
 };
 
 // Fetch multiple datasets by a list of IDs, handle errors with "unavailable" status
-export const getDatasets = createAsyncThunk("data/getData", async (ids: string[]) => {
+export const getDatasets = createAsyncThunk("data/getDatasets", async (ids: string[]) => {
     // Use Promise.all to fetch each dataset in parallel
     const promises = ids.map(async (id) => {
         try {

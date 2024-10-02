@@ -14,7 +14,6 @@ export const DatasetTable = (props: DatasetTableProps) => {
     const { projectDatasets } = props;
     const dispatch = useDispatch();
 
-    // Redux state
     const datasets = useSelector((state: RootState) => state.data.datasets);
 
     useEffect(() => {

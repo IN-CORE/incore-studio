@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Typography, Card, Grid, Table, Container } from "@mui/joy";
+import { Box, Typography, Card, Grid, Container } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
@@ -13,6 +13,7 @@ import {
 import { parseDateTime } from "@app/utils";
 import Topbar from "@app/components/Home/Topbar";
 import { DatasetTable } from "@app/components/Project/DatasetTable";
+import { DFR3MappingTable } from "@app/components/Project/DFR3MappingTable";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -23,7 +24,7 @@ const ProjectPage = (): JSX.Element => {
     const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
     // const projectWorkflows = useSelector((state: RootState) => state.project.projectWorkflows);
     // const projectHazards = useSelector((state: RootState) => state.project.projectHazards);
-    // const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
+    const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
 
     const loading = useSelector((state: RootState) => state.project.loading);
 
@@ -120,49 +121,27 @@ const ProjectPage = (): JSX.Element => {
 
                             {/* Dataset Section */}
                             <DatasetTable projectDatasets={projectDatasets} />
+                            {/* DFR3Mapping Section */}
+                            <DFR3MappingTable projectDFR3Mappings={projectDFR3Mappings} />
 
-                            {/* Visualization Section */}
-                            <Typography level="h2" sx={{ mb: 2 }}>
-                                Visualization
-                            </Typography>
-                            <Grid container spacing={2} sx={{ mb: 4 }}>
-                                <Grid columns={6}>
-                                    <Card variant="outlined" sx={{ p: 2 }}>
-                                        <Typography level="h3">Joplin Building Damage</Typography>
-                                        <Typography level="body-sm">Buildings, tornado</Typography>
-                                    </Card>
-                                </Grid>
-                                <Grid columns={6}>
-                                    <Card variant="outlined" sx={{ p: 2 }}>
-                                        <Typography level="h3">Building Damage Histogram</Typography>
-                                        <Typography level="body-sm">Building damage</Typography>
-                                    </Card>
-                                </Grid>
-                            </Grid>
-
-                            {/* DFR3 Mapping Section */}
-                            <Typography level="h2" sx={{ mb: 2 }}>
-                                DFR3 Mapping
-                            </Typography>
-                            <Table aria-label="dfr3-mapping" hoverRow>
-                                <thead>
-                                    <tr>
-                                        <th>Mapping Name</th>
-                                        <th>Hazard Type</th>
-                                        <th>Inventory Type</th>
-                                        <th>Creator</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Joplin EFP Fragility Mapping</td>
-                                        <td>Tornado</td>
-                                        <td>Electric Power Facility</td>
-                                        <td>Owner Name</td>
-                                    </tr>
-                                    {/* Add more mapping rows as needed */}
-                                </tbody>
-                            </Table>
+                            {/* /!* Visualization Section *!/ */}
+                            {/* <Typography level="h2" sx={{ mb: 2 }}> */}
+                            {/*    Visualization */}
+                            {/* </Typography> */}
+                            {/* <Grid container spacing={2} sx={{ mb: 4 }}> */}
+                            {/*    <Grid columns={6}> */}
+                            {/*        <Card variant="outlined" sx={{ p: 2 }}> */}
+                            {/*            <Typography level="h3">Joplin Building Damage</Typography> */}
+                            {/*            <Typography level="body-sm">Buildings, tornado</Typography> */}
+                            {/*        </Card> */}
+                            {/*    </Grid> */}
+                            {/*    <Grid columns={6}> */}
+                            {/*        <Card variant="outlined" sx={{ p: 2 }}> */}
+                            {/*            <Typography level="h3">Building Damage Histogram</Typography> */}
+                            {/*            <Typography level="body-sm">Building damage</Typography> */}
+                            {/*        </Card> */}
+                            {/*    </Grid> */}
+                            {/* </Grid> */}
                         </>
                     )}
                 </Box>

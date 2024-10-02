@@ -161,7 +161,38 @@ interface Dataset {
 }
 
 interface DataState {
-    dataset: Dataset;
+    datasets: (Dataset | { id: string; status: "unavailable" })[]; // To store a list of datasets or error statuses
     loading: boolean;
     error: string | null;
+}
+
+interface DFR3MappingState {
+    dfr3mappings: (DFR3Mapping | { id: string; status: "unavailable" })[];
+    loading: boolean;
+    error: string | null;
+}
+
+type Rule = string | RuleSet;
+
+interface RuleSet {
+    [operator: string]: Rule[];
+}
+
+interface MappingRule {
+    legacyEntry: Record<string, string>;
+    entry: Record<string, string>;
+    rules: Rule;
+}
+
+interface DFR3Mapping {
+    id: string;
+    name: string;
+    hazardType: string;
+    inventoryType: string;
+    mappings: MappingRule[];
+    creator: string;
+    owner: string;
+    mappingEntryKeys: string | null;
+    spaces: string[];
+    mappingType: string;
 }
