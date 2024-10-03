@@ -100,7 +100,15 @@ const LayoutedWorkflow = () => {
             let srcNode = nodes.find((node) => node.id === connection.source) as AnalysisOutputNode;
             let tgtNode = nodes.find((node) => node.id === connection.target) as AnalysisInputNode;
             let edgeTobeDeletedId = "";
-            if (connection.source !== connection.target && srcNode && tgtNode && isConnectible(srcNode, tgtNode)) {
+            // allow only 1 input to an input node.
+            const existingInputEdges = getConnectedEdges([tgtNode], edges).filter((edge) => edge.target === tgtNode.id);
+            if (
+                existingInputEdges.length === 0 &&
+                connection.source !== connection.target &&
+                srcNode &&
+                tgtNode &&
+                isConnectible(srcNode, tgtNode)
+            ) {
                 if (dependencyGraph[srcNode.data.analysisName].after[tgtNode.data.analysisName].length > 1) {
                     // we need to remove the existing edge from this src node to one of the input nodes in the target analysis node
                     const connectedEdges = getConnectedEdges([srcNode], edges);
