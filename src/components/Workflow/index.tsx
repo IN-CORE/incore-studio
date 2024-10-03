@@ -9,7 +9,8 @@ import {
     ReactFlowProvider,
     Position,
     Panel,
-    MarkerType
+    MarkerType,
+    getConnectedEdges
 } from "@xyflow/react";
 import type { Edge, OnConnect } from "@xyflow/react";
 import Dagre from "@dagrejs/dagre";
@@ -19,7 +20,7 @@ import { useShallow } from "zustand/react/shallow";
 import useStore, { type ReactFlowAppState } from "./reactFlowStore";
 import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
-import { nodeTypes, type AppNode } from "./nodes";
+import { AnalysisInputNode, AnalysisOutputNode, nodeTypes, type AppNode } from "./nodes";
 import { edgeTypes } from "./edges";
 
 const getLayoutedElements = (nodes: AppNode[], edges: Edge[]): { nodes: AppNode[]; edges: Edge[] } => {
@@ -96,11 +97,26 @@ const LayoutedWorkflow = () => {
     const onConnect: OnConnect = useCallback(
         (connection) => {
             // prevent self loops
-            let srcNode = nodes.find((node) => node.id === connection.source);
-            let tgtNode = nodes.find((node) => node.id === connection.target);
+            let srcNode = nodes.find((node) => node.id === connection.source) as AnalysisOutputNode;
+            let tgtNode = nodes.find((node) => node.id === connection.target) as AnalysisInputNode;
+            let edgeTobeDeletedId = "";
             if (connection.source !== connection.target && srcNode && tgtNode && isConnectible(srcNode, tgtNode)) {
+                if (dependencyGraph[srcNode.data.analysisName].after[tgtNode.data.analysisName].length > 1) {
+                    // we need to remove the existing edge from this src node to one of the input nodes in the target analysis node
+                    const connectedEdges = getConnectedEdges([srcNode], edges);
+                    const edgeTobeDeleted = connectedEdges.find((edge) => {
+                        if (edge.source === srcNode.id && edge.target !== tgtNode.id) {
+                            const sameAnalysisNode = nodes.find((node) => node.id === edge.target) as AnalysisInputNode;
+                            return sameAnalysisNode.data.analysisName === tgtNode.data.analysisName;
+                        }
+                        return false;
+                    });
+                    if (edgeTobeDeleted) {
+                        edgeTobeDeletedId = edgeTobeDeleted.id;
+                    }
+                }
                 setEdges([
-                    ...edges,
+                    ...edges.filter((edge) => edge.id !== edgeTobeDeletedId),
                     {
                         id: `${connection.source}-${connection.target}`,
                         source: connection.source,

@@ -75,7 +75,6 @@ const WorkflowEditor = (): JSX.Element => {
     const saveWorkflowSuccess = useAppSelector((state) => state.workflow.saveWorkflowSuccess);
 
     const [selectAnalysisModalOpen, setSelectAnalysisModalOpen] = React.useState<boolean>(false);
-    // const [addAnalysisDrawerOpen, setAddAnalysisDrawerOpen] = React.useState<boolean>(false);
     const [searchAnalysisTerm, setSearchAnalysisTerm] = React.useState<string>("");
     const [selectedAnalysis, setSelectedAnalysis] = React.useState<string>("");
     const [availableAnalyses, setAvailableAnalyses] = React.useState<string[]>([]);
@@ -392,6 +391,14 @@ const WorkflowEditor = (): JSX.Element => {
                                         </IconButton>
                                     </Tooltip>
                                     <Button
+                                        variant="solid"
+                                        sx={{ backgroundColor: "primary.main" }}
+                                        onClick={() => setSelectAnalysisModalOpen(true)}
+                                        startDecorator={<AddRoundedIcon />}
+                                    >
+                                        Add another analysis
+                                    </Button>
+                                    <Button
                                         variant="outlined"
                                         sx={{ borderColor: "primary.subtle", color: "primary.subtle" }}
                                         onClick={handleSaveClick}
@@ -399,7 +406,7 @@ const WorkflowEditor = (): JSX.Element => {
                                         Save
                                     </Button>
                                     <Button variant="solid" sx={{ backgroundColor: "primary.main" }}>
-                                        Set Exection Parameters
+                                        Finalize
                                     </Button>
                                 </Stack>
                                 <Snackbar
@@ -481,20 +488,6 @@ const WorkflowEditor = (): JSX.Element => {
                     ) : (
                         <Box sx={{ flexGrow: 1, overflow: "auto" }}>
                             <Workflow />
-                            <Button
-                                variant="solid"
-                                sx={{
-                                    position: "fixed",
-                                    bottom: "20px",
-                                    left: "50%",
-                                    transform: "translateX(-50%)",
-                                    backgroundColor: "primary.main"
-                                }}
-                                onClick={() => setSelectAnalysisModalOpen(true)}
-                                startDecorator={<AddRoundedIcon />}
-                            >
-                                Add another analysis
-                            </Button>
                             {AddAnalysisModal}
                         </Box>
                     )}
