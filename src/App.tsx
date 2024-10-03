@@ -21,7 +21,7 @@ import store from "./store";
 const oidcConfig = {
     authority: window.AUTHORITY,
     client_id: window.CLIENT_ID,
-    redirect_uri: window.REDIRECT_URI
+    redirect_uri: `${location.origin}/`
 };
 
 const App: FC = () => {
@@ -44,7 +44,7 @@ const App: FC = () => {
     if (auth.error) {
         return <div>Oops... {auth.error.message}</div>;
     }
-
+    console.log(process.env);
     return (
         <StrictMode>
             <Router>
