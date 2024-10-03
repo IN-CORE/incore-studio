@@ -44,7 +44,7 @@ const App: FC = () => {
     if (auth.error) {
         return <div>Oops... {auth.error.message}</div>;
     }
-    console.log(process.env);
+    console.log(window.API_SERVER);
     return (
         <StrictMode>
             <Router>
