@@ -14,20 +14,14 @@ module.exports = {
         maplibre: "maplibre-gl/dist/maplibre-gl.css",
         maplibreBasemapsControl: "maplibre-gl-basemaps/lib/basemaps.css",
         appStyle: "./src/styles/main.scss",
-        config: "./src/config.js",
         app: "./src/App.tsx"
     },
 
     output: {
         path: path.resolve(__dirname, "build"),
         publicPath: process.env.PUBLIC_PATH || "/",
-        filename: (pathData) => {
-            if (pathData.chunk.name === "config") {
-                return "js/config.js";
-            }
-            return `js/${pathData.chunk.name}-${pathData.chunk.hash}.js`;
-        },
         assetModuleFilename: "files/[name]-[hash].[ext]",
+        filename: "[name].[chunkhash].js",
         crossOriginLoading: "anonymous"
     },
 
@@ -82,8 +76,21 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: "src/index.html",
-            favicon: "./src/public/favicon.ico"
+            favicon: "./src/public/favicon.ico",
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true,
+                useShortDoctype: true,
+                removeEmptyAttributes: true,
+                removeStyleLinkTypeAttributes: true,
+                keepClosingSlash: true,
+                minifyJS: true,
+                minifyCSS: true,
+                minifyURLs: true
+            },
+            inject: true
         }),
+        new Webpack.HotModuleReplacementPlugin(),
         new MiniCssExtractPlugin({ filename: "css/[name]-[fullhash].css" }),
         new ESLintPlugin({
             emitWarning: true,

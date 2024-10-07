@@ -1,6 +1,7 @@
 const Webpack = require("webpack");
 const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
 const { merge } = require("webpack-merge");
+const TerserPlugin = require("terser-webpack-plugin");
 
 const commonConfig = require("./webpack.common");
 
@@ -15,6 +16,14 @@ module.exports = merge(commonConfig, {
             "...",
             new JsonMinimizerPlugin({
                 test: /\..*json/i
+            }),
+            new TerserPlugin({
+                terserOptions: {
+                    ecma: 8,
+                    compress: {
+                        warnings: false
+                    }
+                }
             })
         ],
         splitChunks: {
