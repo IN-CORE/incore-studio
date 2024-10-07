@@ -20,6 +20,7 @@ export const readNodesAndEdgesFromWorkflowFile = (workflowFile: DatawolfWorkflow
                 position: { x: 0, y: 0 },
                 data: {
                     label: dependencyGraph[step.title].pretty_name,
+                    name: step.title,
                     stepData: step
                 }
             });
@@ -226,8 +227,8 @@ export const createWorkflowFileFromNodesAndEdges = ({
                 analysisNode.data.stepData !== undefined
                     ? analysisNode.data.stepData.tool.id
                     : analysisNode.data.toolID !== undefined
-                      ? analysisNode.data.toolID
-                      : ""
+                    ? analysisNode.data.toolID
+                    : ""
             ];
         let stepId = analysisNode.id;
         let title = tool.title;
@@ -316,6 +317,7 @@ export const getNodesAndEdgesFromTool = (
             position: { x: 0, y: 0 },
             data: {
                 label: dependencyGraph[tool.title].pretty_name,
+                name: tool.title,
                 toolID: tool.id
             }
         });

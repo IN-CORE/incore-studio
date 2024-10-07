@@ -211,7 +211,6 @@ const LayoutedWorkflow = () => {
                 onConnect={onConnect}
                 nodesDraggable={true}
                 deleteKeyCode={null}
-                snapToGrid
                 fitView
             >
                 <Background variant={BackgroundVariant.Dots} />

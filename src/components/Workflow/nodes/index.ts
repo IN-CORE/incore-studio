@@ -28,6 +28,7 @@ export type AnalysisOutputNode = Node<
 export type AnalysisNode = Node<
     {
         label: string;
+        name: string;
         stepData?: DatawolfWorkflowFileStep;
         toolID?: string;
     },

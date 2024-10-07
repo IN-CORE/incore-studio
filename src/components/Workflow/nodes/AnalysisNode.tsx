@@ -1,13 +1,17 @@
 import React from "react";
 import { Handle, Position, type NodeProps, getIncomers, getOutgoers, getConnectedEdges } from "@xyflow/react";
-import { Box, Typography, Stack, IconButton, Tooltip } from "@mui/joy";
+import { Box, Button, Typography, Stack, IconButton, Tooltip } from "@mui/joy";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 import { useShallow } from "zustand/react/shallow";
 
 import { type AnalysisNode } from "@app/components/Workflow/nodes";
+import AddAnalysisModal from "@app/components/AddAnalysisModal";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
+import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
+
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
     edges: state.edges,
@@ -23,6 +27,9 @@ export function AnalysisNode({
     selected
 }: NodeProps<AnalysisNode>): JSX.Element {
     const { nodes, edges, setNodes, setEdges } = useStore(useShallow(selector));
+
+    const [selectPreviousAnalysisModalOpen, setSelectPreviousAnalysisModalOpen] = React.useState<boolean>(false);
+    const [selectAfterAnalysisModalOpen, setSelectAfterAnalysisModalOpen] = React.useState<boolean>(false);
 
     const handleDelete = () => {
         const node = nodes.find((n) => n.id === id);
@@ -88,11 +95,52 @@ export function AnalysisNode({
                     </Tooltip>
                 </Box>
             </Stack>
-            <Box sx={{ marginTop: "5px" }}>
-                <Typography level="h2" sx={{ fontWeight: 600, fontSize: "24px", lineHeight: "28.64px" }}>
-                    {data.label}
-                </Typography>
-            </Box>
+            <Stack direction="column" spacing={4}>
+                <Box sx={{ marginTop: "5px" }}>
+                    <Typography level="h2" sx={{ fontWeight: 600, fontSize: "24px", lineHeight: "28.64px" }}>
+                        {data.label}
+                    </Typography>
+                </Box>
+                <Button
+                    variant="solid"
+                    sx={{ backgroundColor: "#EF6C00", color: "white", fontWeight: 600 }}
+                    startDecorator={<AddRoundedIcon />}
+                    onClick={() => {
+                        setSelectPreviousAnalysisModalOpen(true);
+                    }}
+                >
+                    Add previous
+                </Button>
+                <Button
+                    variant="solid"
+                    sx={{ backgroundColor: "#EF6C00", color: "white", fontWeight: 600 }}
+                    startDecorator={<AddRoundedIcon />}
+                    onClick={() => {
+                        setSelectAfterAnalysisModalOpen(true);
+                    }}
+                >
+                    Add Next
+                </Button>
+            </Stack>
+            <AddAnalysisModal
+                selectAnalysisModalOpen={selectPreviousAnalysisModalOpen}
+                setSelectAnalysisModalOpen={setSelectPreviousAnalysisModalOpen}
+                dependencyGraph={dependencyGraph}
+                previousAnalysis={true}
+                currentAnalysis={{
+                    name: data.name,
+                    id: id
+                }}
+            />
+            <AddAnalysisModal
+                selectAnalysisModalOpen={selectAfterAnalysisModalOpen}
+                setSelectAnalysisModalOpen={setSelectAfterAnalysisModalOpen}
+                dependencyGraph={dependencyGraph}
+                currentAnalysis={{
+                    name: data.name,
+                    id: id
+                }}
+            />
             <Handle type="source" position={sourcePosition || Position.Bottom} />
         </Box>
     );
