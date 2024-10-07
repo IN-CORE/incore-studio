@@ -9,6 +9,7 @@ import CssBaseline from "@mui/joy/CssBaseline";
 import "@fontsource/inter";
 import "@xyflow/react/dist/style.css";
 
+import config from "@app/app.config";
 import { Provider } from "react-redux";
 import routes from "./routes";
 import { theme } from "./theme";
@@ -18,13 +19,11 @@ import "./styles/main.scss";
 
 import store from "./store";
 
-window.API_SERVER = process.env.INCORE_REMOTE_HOSTNAME || window.location.origin;
-window.AUTHORITY = `${window.API_SERVER}/auth/realms/In-core`;
-window.CLIENT_ID = "react-auth";
+console.log("API_SERVER", process.env.INCORE_REMOTE_HOSTNAME, config.hostname);
 
 const oidcConfig = {
-    authority: window.AUTHORITY,
-    client_id: window.CLIENT_ID,
+    authority: config.keycloakConfig.authority,
+    client_id: config.keycloakConfig.client_id,
     redirect_uri: `${location.origin}/`
 };
 
@@ -48,7 +47,7 @@ const App: FC = () => {
     if (auth.error) {
         return <div>Oops... {auth.error.message}</div>;
     }
-    console.log(window.API_SERVER);
+
     return (
         <StrictMode>
             <Router>
