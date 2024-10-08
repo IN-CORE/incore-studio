@@ -24,7 +24,7 @@ console.log("API_SERVER", process.env.INCORE_REMOTE_HOSTNAME, config.hostname);
 const oidcConfig = {
     authority: config.keycloakConfig.authority,
     client_id: config.keycloakConfig.client_id,
-    redirect_uri: `${location.origin}/`
+    redirect_uri: `${location.origin}/studio/`
 };
 
 const App: FC = () => {
