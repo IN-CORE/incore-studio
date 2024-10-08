@@ -1,42 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode'; // Import jwtDecode as a named export
-import cookies from 'js-cookie';
-import { FaBell, FaQuestionCircle, FaCog } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode"; // Import jwtDecode as a named export
+import cookies from "js-cookie";
+import { FaBell, FaQuestionCircle, FaCog } from "react-icons/fa";
 
 interface JwtPayload {
-  exp?: number;
-  iat?: number;
-  [key: string]: any; // Add this to allow other fields like `name`, `profileImage`
+    exp?: number;
+    iat?: number;
+    [key: string]: any; // Add this to allow other fields like `name`, `profileImage`
 }
 
 interface DecodedToken extends JwtPayload {
-  name?: string;
-  profileImage?: string;
+    name?: string;
+    profileImage?: string;
 }
 
 // Define getCurrUserInfo in the same file
 export function getCurrUserInfo() {
-  const config = { hostname: window.location.hostname };
-  console.log('config Info:', config);
+    const config = { hostname: window.location.hostname };
+    // eslint-disable-next-line no-console
+    console.log("config Info:", config);
 
-  if (config.hostname.includes("localhost")) {
-    return {};
-  }
+    if (config.hostname.includes("localhost")) {
+        return {};
+    }
 
-  const cookie = cookies.get("Authorization");
-  console.log('cookie Info:', cookie);
+    const cookie = cookies.get("Authorization");
+    // eslint-disable-next-line no-console
+    console.log("cookie Info:", cookie);
 
-  if (!cookie || cookie.split(" ").length < 2) {
-    return {};
-  }
+    if (!cookie || cookie.split(" ").length < 2) {
+        return {};
+    }
 
-  try {
-    // Use jwtDecode as a named export
-    return jwtDecode<DecodedToken>(cookie.split(" ")[1]);
-  } catch (err) {
-    console.error("Error decoding token:", err);
-    return {}; // Return an empty object if decoding fails
-  }
+    try {
+        // Use jwtDecode as a named export
+        return jwtDecode<DecodedToken>(cookie.split(" ")[1]);
+    } catch (err) {
+        console.error("Error decoding token:", err);
+        return {}; // Return an empty object if decoding fails
+    }
 }
 
 const Navbar = () => {
