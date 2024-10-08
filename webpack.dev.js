@@ -62,6 +62,7 @@ module.exports = {
             inject: true
         }),
         new Webpack.HotModuleReplacementPlugin(),
+        new MiniCssExtractPlugin({ filename: "css/[name]-[fullhash].css" }),
         new ESLintPlugin({
             emitWarning: true,
             failOnError: false
