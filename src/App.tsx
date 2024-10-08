@@ -19,12 +19,22 @@ import "./styles/main.scss";
 
 import store from "./store";
 
-console.log("API_SERVER", process.env.INCORE_REMOTE_HOSTNAME, config.hostname, location.pathname, location.origin);
+const basename = process.env.NODE_ENV === "production" ? "/studio/" : "/";
 
+console.log(
+    "API_SERVER",
+    process.env.INCORE_REMOTE_HOSTNAME,
+    config.hostname,
+    location.pathname,
+    location.origin,
+    `${location.origin}${basename}`
+);
+
+console.log("BASENAME", basename);
 const oidcConfig = {
     authority: config.keycloakConfig.authority,
     client_id: config.keycloakConfig.client_id,
-    redirect_uri: `${location.origin}${location.pathname}`
+    redirect_uri: `${location.origin}${basename}`
 };
 
 const App: FC = () => {
@@ -50,7 +60,7 @@ const App: FC = () => {
 
     return (
         <StrictMode>
-            <Router basename="studio">
+            <Router basename={basename}>
                 <CssVarsProvider theme={theme}>
                     <CssBaseline />
                     <Suspense fallback={<Loading />}>

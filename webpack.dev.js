@@ -1,16 +1,38 @@
 const Webpack = require("webpack");
-const { merge } = require("webpack-merge");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const path = require("path");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const ESLintPlugin = require("eslint-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const commonConfig = require("./webpack.common");
-
-module.exports = merge(commonConfig, {
+module.exports = {
     mode: "development",
-
+    resolve: {
+        modules: ["node_modules", "src"],
+        extensions: [".ts", ".tsx", ".js", ".jsx"],
+        alias: {
+            "@app": path.resolve(__dirname, "src/"),
+            "@mui/material": "@mui/joy"
+        }
+    },
     devtool: "eval-source-map",
-
+    entry: [
+        "maplibre-gl/dist/maplibre-gl.css",
+        "maplibre-gl-basemaps/lib/basemaps.css",
+        path.resolve(__dirname, "src/styles/main.scss"),
+        path.resolve(__dirname, "src/App.tsx"),
+        path.resolve(__dirname, "src/webpack-public-path")
+    ],
     stats: "minimal",
-
+    target: "web",
+    context: __dirname,
+    output: {
+        path: path.resolve(__dirname, "build"),
+        publicPath: "",
+        filename: "[name].[chunkhash].js",
+        crossOriginLoading: "anonymous"
+    },
     devServer: {
         hot: true,
         host: "localhost",
@@ -29,6 +51,56 @@ module.exports = merge(commonConfig, {
             },
             "__DEV__": true
         }),
-        new BundleAnalyzerPlugin({ openAnalyzer: false, analyzerPort: 3001 })
-    ]
-});
+        new BundleAnalyzerPlugin({ openAnalyzer: false, analyzerPort: 3001 }),
+        new HtmlWebpackPlugin({
+            template: "src/index.html",
+            favicon: "./src/public/favicon.ico",
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true
+            },
+            inject: true
+        }),
+        new Webpack.HotModuleReplacementPlugin(),
+        new ESLintPlugin({
+            emitWarning: true,
+            failOnError: false
+        }),
+        new CleanWebpackPlugin()
+    ],
+    module: {
+        rules: [
+            {
+                // Use ts-loader for ts, tsx, js, and jsx files
+                test: /\.[tj]sx?$/,
+                exclude: /node_modules/,
+                use: "ts-loader"
+            },
+            {
+                test: /\.(s[ac]ss|css)$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    "css-loader",
+                    "sass-loader"
+                ]
+            },
+            {
+                test: /\.svg$/,
+                loader: "svg-inline-loader"
+            },
+            {
+                test: /\.(jpg|jpeg|png|eot|ttf|woff|woff2)$/,
+                use: [
+                    {
+                        loader: "file-loader",
+                        options: {
+                            name: "files/[name]-[hash].[ext]"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+};
