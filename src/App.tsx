@@ -19,12 +19,12 @@ import "./styles/main.scss";
 
 import store from "./store";
 
-console.log("API_SERVER", process.env.INCORE_REMOTE_HOSTNAME, config.hostname);
+console.log("API_SERVER", process.env.INCORE_REMOTE_HOSTNAME, config.hostname, location.pathname, location.origin);
 
 const oidcConfig = {
     authority: config.keycloakConfig.authority,
     client_id: config.keycloakConfig.client_id,
-    redirect_uri: `${location.origin}/studio/`
+    redirect_uri: `${location.origin}${location.pathname}`
 };
 
 const App: FC = () => {
