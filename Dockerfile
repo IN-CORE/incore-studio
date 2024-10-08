@@ -27,9 +27,11 @@ RUN npm run build
 FROM nginx:alpine AS runtime
 
 RUN apk add --no-cache jq
-RUN mkdir /usr/share/nginx/html/studio && \
-    mkdir /usr/share/nginx/html/studio/public
+# RUN mkdir /usr/share/nginx/html/studio && \
+#     mkdir /usr/share/nginx/html/studio/public
 
-COPY --from=builder /usr/src/app/build/ /usr/share/nginx/html/studio/
-COPY src/public /usr/share/nginx/html/studio/public/
+COPY --from=builder /usr/src/app/build/ /usr/share/nginx/html/
+COPY src/public /usr/share/nginx/html/public/
+# COPY --from=builder /usr/src/app/build/ /usr/share/nginx/html/studio/
+# COPY src/public /usr/share/nginx/html/studio/public/
 COPY landing.conf /etc/nginx/conf.d/default.conf
