@@ -83,7 +83,7 @@ jobs:
               NCSAHUB_PUSH="true"
             fi
           fi
-          
+
           # decide if we should push to ghcr.io
           GITHUB_PUSH="false"
 
