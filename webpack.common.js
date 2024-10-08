@@ -27,7 +27,7 @@ module.exports = {
 
     output: {
         path: path.resolve(__dirname, "build"),
-        publicPath: "",
+        publicPath: "/studio/",
         assetModuleFilename: "files/[name]-[hash].[ext]",
         filename: "[name].[chunkhash].js",
         crossOriginLoading: "anonymous"
@@ -45,10 +45,7 @@ module.exports = {
                 test: /\.(s[ac]ss|css)$/,
                 use: [
                     {
-                        loader: MiniCssExtractPlugin.loader,
-                        options: {
-                            publicPath: "../"
-                        }
+                        loader: MiniCssExtractPlugin.loader
                     },
                     "css-loader",
                     "sass-loader"

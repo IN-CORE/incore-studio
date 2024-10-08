@@ -50,7 +50,7 @@ const App: FC = () => {
 
     return (
         <StrictMode>
-            <Router>
+            <Router basename="studio">
                 <CssVarsProvider theme={theme}>
                     <CssBaseline />
                     <Suspense fallback={<Loading />}>
