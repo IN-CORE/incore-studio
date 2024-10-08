@@ -10,12 +10,20 @@ module.exports = {
 
     context: __dirname,
 
-    entry: {
-        maplibre: "maplibre-gl/dist/maplibre-gl.css",
-        maplibreBasemapsControl: "maplibre-gl-basemaps/lib/basemaps.css",
-        appStyle: "./src/styles/main.scss",
-        app: "./src/App.tsx"
-    },
+    entry: [
+        "maplibre-gl/dist/maplibre-gl.css",
+        "maplibre-gl-basemaps/lib/basemaps.css",
+        path.resolve(__dirname, "src/styles/main.scss"),
+        path.resolve(__dirname, "src/App.tsx"),
+        path.resolve(__dirname, "src/webpack-public-path")
+    ],
+    // entry: {
+    //     maplibre: "maplibre-gl/dist/maplibre-gl.css",
+    //     maplibreBasemapsControl: "maplibre-gl-basemaps/lib/basemaps.css",
+    //     appStyle: "./src/styles/main.scss",
+    //     app: "./src/App.tsx",
+    //     publicPath: "./src/webpack-public-path",
+    // },
 
     output: {
         path: path.resolve(__dirname, "build"),
