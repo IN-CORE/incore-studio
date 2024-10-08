@@ -1,10 +1,7 @@
 const Webpack = require("webpack");
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const path = require("path");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const ESLintPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const autoprefixer = require("autoprefixer");
 
 module.exports = {
     mode: "development",
@@ -51,7 +48,6 @@ module.exports = {
             },
             "__DEV__": true
         }),
-        new BundleAnalyzerPlugin({ openAnalyzer: false, analyzerPort: 3001 }),
         new HtmlWebpackPlugin({
             template: "src/index.html",
             favicon: "./src/public/favicon.ico",
@@ -62,12 +58,16 @@ module.exports = {
             inject: true
         }),
         new Webpack.HotModuleReplacementPlugin(),
-        new MiniCssExtractPlugin({ filename: "css/[name]-[fullhash].css" }),
-        new ESLintPlugin({
-            emitWarning: true,
-            failOnError: false
-        }),
-        new CleanWebpackPlugin()
+        new Webpack.LoaderOptionsPlugin({
+            debug: true,
+            options: {
+                sassLoader: {
+                    includePaths: [path.resolve(__dirname, "src", "scss")]
+                },
+                context: "/",
+                postcss: [autoprefixer()]
+            }
+        })
     ],
     module: {
         rules: [
@@ -78,28 +78,33 @@ module.exports = {
                 use: "ts-loader"
             },
             {
-                test: /\.(s[ac]ss|css)$/,
+                test: /\.eot(\?v=\d+.\d+.\d+)?$/,
+                type: "asset/inline"
+            },
+            {
+                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                type: "asset/inline"
+            },
+            {
+                test: /\.[ot]tf(\?v=\d+.\d+.\d+)?$/,
+                type: "asset/inline"
+            },
+            { test: /\.ico$/, type: "asset/resource" },
+            {
+                test: /\.svg(\?v=\d+.\d+.\d+)?$/,
+                type: "svg-inline-loader"
+            },
+            {
+                test: /\.(jpe?g|png|gif)$/i,
+                type: "asset/resource"
+            },
+            {
+                test: /(\.css|\.scss)$/i,
                 use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader
-                    },
+                    "style-loader",
                     "css-loader",
-                    "sass-loader"
-                ]
-            },
-            {
-                test: /\.svg$/,
-                loader: "svg-inline-loader"
-            },
-            {
-                test: /\.(jpg|jpeg|png|eot|ttf|woff|woff2)$/,
-                use: [
-                    {
-                        loader: "file-loader",
-                        options: {
-                            name: "files/[name]-[hash].[ext]"
-                        }
-                    }
+                    { loader: "postcss-loader", options: { postcssOptions: { plugins: ["autoprefixer"] } } },
+                    { loader: "sass-loader", options: { sourceMap: true } }
                 ]
             }
         ]

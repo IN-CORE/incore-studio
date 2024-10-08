@@ -1,12 +1,9 @@
 const Webpack = require("webpack");
-const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
-const { merge } = require("webpack-merge");
 const TerserPlugin = require("terser-webpack-plugin");
 const path = require("path");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const ESLintPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const autoprefixer = require("autoprefixer");
 
 module.exports = {
     mode: "production",
@@ -31,7 +28,6 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "build"),
         publicPath: "/studio/",
-        // assetModuleFilename: "files/[name]-[hash].[ext]",
         filename: "[name].[chunkhash].js",
         crossOriginLoading: "anonymous"
     },
@@ -44,28 +40,40 @@ module.exports = {
                 use: "ts-loader"
             },
             {
-                test: /\.(s[ac]ss|css)$/,
+                test: /\.eot(\?v=\d+.\d+.\d+)?$/,
+                type: "asset/inline"
+            },
+            {
+                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                type: "asset/inline"
+            },
+            {
+                test: /\.[ot]tf(\?v=\d+.\d+.\d+)?$/,
+                type: "asset/inline"
+            },
+            {
+                test: /\.svg(\?v=\d+.\d+.\d+)?$/,
+                type: "asset/inline"
+            },
+            {
+                test: /\.(jpe?g|png|gif)$/i,
+                type: "asset/resource"
+            },
+            { test: /\.ico$/, type: "asset/resource" },
+            {
+                test: /(\.css|\.scss)$/,
                 use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader
-                    },
+                    MiniCssExtractPlugin.loader,
                     "css-loader",
-                    "sass-loader"
-                ]
-            },
-            {
-                test: /\.svg$/,
-                loader: "svg-inline-loader"
-            },
-            {
-                test: /\.(jpg|jpeg|png|eot|ttf|woff|woff2)$/,
-                use: [
                     {
-                        loader: "file-loader",
+                        loader: "postcss-loader",
                         options: {
-                            name: "files/[name]-[hash].[ext]"
+                            postcssOptions: {
+                                plugins: ["autoprefixer"]
+                            }
                         }
-                    }
+                    },
+                    "sass-loader"
                 ]
             }
         ]
@@ -73,10 +81,6 @@ module.exports = {
     optimization: {
         minimize: true,
         minimizer: [
-            "...",
-            new JsonMinimizerPlugin({
-                test: /\..*json/i
-            }),
             new TerserPlugin({
                 terserOptions: {
                     ecma: 8,
@@ -85,34 +89,7 @@ module.exports = {
                     }
                 }
             })
-        ],
-        splitChunks: {
-            chunks: "all",
-            cacheGroups: {
-                vendor: {
-                    test(module) {
-                        return (
-                            module.resource &&
-                            !module.resource.endsWith(".css") &&
-                            module.resource.match(/[\\/]node_modules[\\/]/)
-                        );
-                    },
-                    name(module) {
-                        // get the name. E.g. node_modules/packageName/not/this/part.js or node_modules/packageName
-                        const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-
-                        // npm package names are URL-safe, but some servers don't like @ symbols
-                        return `npm.${packageName.replace("@", "")}`;
-                    }
-                },
-                // Create a commons chunk, which includes all code shared between entry points.
-                commons: {
-                    name: "commons",
-                    chunks: "initial",
-                    minChunks: 2
-                }
-            }
-        }
+        ]
     },
 
     plugins: [
@@ -140,11 +117,16 @@ module.exports = {
             inject: true
         }),
         new Webpack.HotModuleReplacementPlugin(),
-        new MiniCssExtractPlugin({ filename: "css/[name]-[fullhash].css" }),
-        new ESLintPlugin({
-            emitWarning: true,
-            failOnError: false
-        }),
-        new CleanWebpackPlugin()
+        new MiniCssExtractPlugin({ filename: "[name].[contenthash].css" }),
+        new Webpack.LoaderOptionsPlugin({
+            debug: true,
+            options: {
+                sassLoader: {
+                    includePaths: [path.resolve(__dirname, "src", "scss")]
+                },
+                context: "/",
+                postcss: [autoprefixer()]
+            }
+        })
     ]
 };
