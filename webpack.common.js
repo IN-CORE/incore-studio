@@ -27,7 +27,7 @@ module.exports = {
 
     output: {
         path: path.resolve(__dirname, "build"),
-        publicPath: process.env.PUBLIC_PATH || "/",
+        publicPath: "",
         assetModuleFilename: "files/[name]-[hash].[ext]",
         filename: "[name].[chunkhash].js",
         crossOriginLoading: "anonymous"
