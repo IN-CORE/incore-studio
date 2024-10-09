@@ -19,7 +19,7 @@ import "./styles/main.scss";
 
 import store from "./store";
 
-const basename = process.env.NODE_ENV === "production" ? "/studio/" : "/";
+const basename = process.env.NODE_ENV === "production" ? "/studio" : "/";
 
 console.log(
     "API_SERVER",

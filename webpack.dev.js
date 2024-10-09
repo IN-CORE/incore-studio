@@ -14,13 +14,7 @@ module.exports = {
         }
     },
     devtool: "eval-source-map",
-    entry: [
-        "maplibre-gl/dist/maplibre-gl.css",
-        "maplibre-gl-basemaps/lib/basemaps.css",
-        path.resolve(__dirname, "src/styles/main.scss"),
-        path.resolve(__dirname, "src/App.tsx"),
-        path.resolve(__dirname, "src/webpack-public-path")
-    ],
+    entry: ["maplibre-gl/dist/maplibre-gl.css", "maplibre-gl-basemaps/lib/basemaps.css", "./src/App.tsx"],
     stats: "minimal",
     target: "web",
     context: __dirname,
