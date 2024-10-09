@@ -2,7 +2,7 @@ import React from "react";
 import { FaBell, FaQuestionCircle, FaCog, FaUser } from "react-icons/fa";
 import { useAuth } from "react-oidc-context";
 import { IconButton, Menu, MenuItem } from "@mui/material";
-import { Link } from "@mui/joy";
+import { Divider, Link, Typography } from "@mui/joy";
 // eslint-disable-next-line import/no-unresolved
 import config from "../../app.config";
 
@@ -50,6 +50,13 @@ const Navbar = () => {
                 </IconButton>
 
                 <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                    {auth?.user && (
+                        <Typography style={{ padding: "8px 16px", margin: "0 auto" }}>
+                            <div>Hi! {auth.user.profile.given_name || "Unknown User"} </div>
+                            <div>{auth.user.profile.email}</div>
+                        </Typography>
+                    )}
+                    <Divider orientation="horizontal" />
                     <MenuItem onClick={handleClose}>
                         <Link href={`mailto:${config.mailingList}`} target="_blank" style={{ textDecoration: "none" }}>
                             Contact Us
@@ -58,6 +65,11 @@ const Navbar = () => {
                     <MenuItem onClick={handleClose}>
                         <Link href={config.slackInvitationLink} target="_blank" style={{ textDecoration: "none" }}>
                             Join Slack
+                        </Link>
+                    </MenuItem>
+                    <MenuItem onClick={handleClose}>
+                        <Link href={config.tosURL} target="_blank" style={{ textDecoration: "none" }}>
+                            Terms of Service
                         </Link>
                     </MenuItem>
                     <MenuItem onClick={handleLogout}>Log out</MenuItem>
