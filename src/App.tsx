@@ -21,16 +21,6 @@ import store from "./store";
 
 const basename = process.env.NODE_ENV === "production" ? "/studio" : "/";
 
-console.log(
-    "API_SERVER",
-    process.env.INCORE_REMOTE_HOSTNAME,
-    config.hostname,
-    location.pathname,
-    location.origin,
-    `${location.origin}${basename}`
-);
-
-console.log("BASENAME", basename);
 const oidcConfig = {
     authority: config.keycloakConfig.authority,
     client_id: config.keycloakConfig.client_id,

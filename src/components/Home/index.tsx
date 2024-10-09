@@ -5,7 +5,6 @@ import Topbar from "./Topbar";
 import Project from "../Project";
 
 const Home = (): JSX.Element => {
-    console.log("Home component rendered");
     return (
         <>
             <Topbar />
