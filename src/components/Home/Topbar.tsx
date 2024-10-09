@@ -1,16 +1,8 @@
 import React from "react";
-import { Box, Typography, Button } from "@mui/joy";
-import { useAuth } from "react-oidc-context";
+import { Box, Typography } from "@mui/joy";
 import Navbar from "@app/components/Home/Navbar";
 
 const Topbar: React.FC = () => {
-    const auth = useAuth();
-    const handleLogout = () => {
-        auth.signoutPopup().catch((error) => {
-            console.error("Login error:", error);
-        });
-    };
-
     return (
         <Box
             sx={{
@@ -30,9 +22,6 @@ const Topbar: React.FC = () => {
                 IN-CORE Studio
             </Typography>
             <Navbar />
-            <Button color="primary" onClick={handleLogout} variant="plain">
-                Log out
-            </Button>
         </Box>
     );
 };
