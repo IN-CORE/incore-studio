@@ -81,31 +81,6 @@ interface DatawolfWorkflowFile {
     steps: DatawolfWorkflowFileStep[];
 }
 
-interface Hazard {
-    id: string;
-    type: string;
-}
-
-interface Mapping {
-    id: string;
-    type: string;
-}
-
-interface Dataset {
-    id: string;
-    type: string;
-}
-
-interface Workflow {
-    id: string;
-    type: string;
-}
-
-interface ProjectElement {
-    id: string;
-    type: string;
-}
-
 interface Project {
     id: string;
     name: string;
@@ -123,10 +98,11 @@ interface Project {
 interface ProjectState {
     projects: Project[];
     project: Project | null;
-    projectDatasets: ProjectElement[];
-    projectHazards: ProjectElement[];
-    projectDFR3Mappings: ProjectElement[];
-    projectWorkflows: ProjectElement[];
+    projectDatasets: Dataset[];
+    projectHazards: Hazard[];
+    projectDFR3Mappings: DFR3Mapping[];
+    projectWorkflows: Workflow[];
+    projectVisualizations: Visualization[];
     loading: boolean;
     error: string | null;
 }
@@ -160,29 +136,6 @@ interface Dataset {
     networkDataset?: string | null;
 }
 
-interface DataState {
-    datasets: (Dataset | { id: string; status: "unavailable" })[]; // To store a list of datasets or error statuses
-    loading: boolean;
-    error: string | null;
-}
-
-interface DFR3MappingState {
-    dfr3mappings: (DFR3Mapping | { id: string; status: "unavailable" })[];
-    loading: boolean;
-    error: string | null;
-}
-
-interface HazardState {
-    hazards: (Hazard | { id: string; status: "unavailable" })[];
-    loading: boolean;
-    error: string | null;
-}
-
-interface WorkflowState {
-    workflows: (Workflow | { id: string; status: "unavailable" })[];
-    loading: boolean;
-    error: string | null;
-}
 type Rule = string | RuleSet;
 
 interface RuleSet {
@@ -197,6 +150,7 @@ interface MappingRule {
 
 interface DFR3Mapping {
     id: string;
+    type: string;
     name: string;
     hazardType: string;
     inventoryType: string;
@@ -206,4 +160,51 @@ interface DFR3Mapping {
     mappingEntryKeys: string | null;
     spaces: string[];
     mappingType: string;
+}
+
+interface Hazard {
+    id: string;
+    type: string;
+    name: string;
+    description: string;
+    date: string;
+    creator: string;
+    owner: string;
+    hazardDatasets: HazardDataset[];
+}
+
+interface HazardDataset {
+    datasetId: string;
+    demandType: string;
+    demandUnits: string;
+    threshold: number | null;
+}
+
+interface Visualization {
+    id: string;
+    type: string;
+    boundingBox?: number[];
+    layers?: Layer[];
+    vegaJson?: string;
+    sourceDatasetIds?: string[];
+}
+
+interface WorkflowCreator {
+    id: string;
+    deleted: boolean;
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
+interface Workflow {
+    id: string;
+    type: string;
+    isFinalized: boolean;
+    deleted: boolean;
+    title: string;
+    description: string;
+    date: string;
+    creator: WorkflowCreator;
+    contributors: string[];
 }

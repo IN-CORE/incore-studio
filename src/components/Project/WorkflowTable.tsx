@@ -7,33 +7,38 @@ import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import { parseDateTime } from "@app/utils";
 
-export const DatasetTable = () => {
-    const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
+export const WorkflowTable = () => {
+    const projectWorkflows = useSelector((state: RootState) => state.project.projectWorkflows);
 
     return (
         <>
-            {/* Datasets Section */}
             <Typography level="h2" sx={{ mb: 2 }}>
-                Datasets
+                Workflows
             </Typography>
             <Table aria-label="datasets" hoverRow>
                 <thead>
                     <tr>
-                        <th>Dataset Name</th>
+                        <th>Workflow Title</th>
                         <th>Description</th>
                         <th>Date</th>
-                        <th>Owner</th>
+                        <th>Creator</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {/* Loop through filtered datasets and render a row for each one */}
-                    {projectDatasets.map((dataset) => (
-                        <tr key={dataset.id}>
-                            <td>{dataset.title || "No title provided"}</td>
-                            <td>{dataset.description || "No description provided"}</td>
-                            <td>{dataset.date ? parseDateTime(dataset.date) : "No date provided"}</td>
-                            <td>{dataset.owner || "No owner provided"}</td>
+                    {projectWorkflows.map((workflow) => (
+                        <tr key={workflow.id}>
+                            <td>{workflow.title || "No title provided"}</td>
+                            <td>{workflow.description || "No description provided"}</td>
+                            <td>{workflow.date ? parseDateTime(workflow.date) : "No date provided"}</td>
+                            <td>
+                                {workflow.creator && workflow.creator.firstName && workflow.creator.lastName
+                                    ? `${workflow.creator.firstName} ${workflow.creator.lastName}`
+                                    : "No creator provided"}
+                            </td>
+                            <td>{workflow.isFinalized ? "Finalized" : "Pending"}</td>
                             <td>
                                 <IconButton variant="plain">
                                     <MoreVertIcon />

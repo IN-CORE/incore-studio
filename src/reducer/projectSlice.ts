@@ -7,10 +7,11 @@ const PROJECT_API_URL = `${window.API_SERVER}/project/api/projects`;
 const initialState: ProjectState = {
     projects: <Project[]>[],
     project: null,
-    projectDatasets: <ProjectElement[]>[],
-    projectHazards: <ProjectElement[]>[],
-    projectDFR3Mappings: <ProjectElement[]>[],
-    projectWorkflows: <ProjectElement[]>[],
+    projectDatasets: <Dataset[]>[],
+    projectHazards: <Hazard[]>[],
+    projectDFR3Mappings: <DFR3Mapping[]>[],
+    projectWorkflows: <Workflow[]>[],
+    projectVisualizations: <Visualization[]>[],
     loading: false,
     error: null
 };

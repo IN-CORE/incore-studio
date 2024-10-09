@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Typography, Card, Grid, Container } from "@mui/joy";
+import { Box, Typography, Container } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
@@ -14,6 +14,9 @@ import { parseDateTime } from "@app/utils";
 import Topbar from "@app/components/Home/Topbar";
 import { DatasetTable } from "@app/components/Project/DatasetTable";
 import { DFR3MappingTable } from "@app/components/Project/DFR3MappingTable";
+import { HazardCards } from "@app/components/Project/HazardCards";
+import { WorkflowTable } from "@app/components/Project/WorkflowTable";
+import { VisualizationCards } from "@app/components/Project/VisualizationCards";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -21,10 +24,8 @@ const ProjectPage = (): JSX.Element => {
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
-    const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
     // const projectWorkflows = useSelector((state: RootState) => state.project.projectWorkflows);
     // const projectHazards = useSelector((state: RootState) => state.project.projectHazards);
-    const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
 
     const loading = useSelector((state: RootState) => state.project.loading);
 
@@ -69,79 +70,16 @@ const ProjectPage = (): JSX.Element => {
                                 </Box>
                             </Box>
 
-                            {/* Workflow Section */}
-                            <Typography level="h2" sx={{ mb: 2 }}>
-                                Workflow
-                            </Typography>
-                            <Grid container spacing={2} sx={{ mb: 4 }}>
-                                <Grid columns={6}>
-                                    <Card variant="outlined" sx={{ p: 2 }}>
-                                        <Typography level="h3">Joplin Infrastructure Damage</Typography>
-                                        <Typography level="body-sm" sx={{ mt: 1 }}>
-                                            Joplin building, power, and water damage analysis
-                                        </Typography>
-                                        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-                                            <Typography>5 Executions</Typography>
-                                            <Typography>3 Analyses</Typography>
-                                        </Box>
-                                    </Card>
-                                </Grid>
-                                <Grid columns={6}>
-                                    <Card variant="outlined" sx={{ p: 2 }}>
-                                        <Typography level="h3">Socio-Economic Impact of Joplin Tornado 2021</Typography>
-                                        <Typography level="body-sm" sx={{ mt: 1 }}>
-                                            Population dislocation analysis and economic impact analysis
-                                        </Typography>
-                                        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-                                            <Typography>5 Executions</Typography>
-                                            <Typography>3 Analyses</Typography>
-                                        </Box>
-                                    </Card>
-                                </Grid>
-                            </Grid>
-
                             {/* Hazard Section */}
-                            <Typography level="h2" sx={{ mb: 2 }}>
-                                Hazard
-                            </Typography>
-                            <Grid container spacing={2} sx={{ mb: 4 }}>
-                                <Grid columns={6}>
-                                    <Card variant="outlined" sx={{ p: 2 }}>
-                                        <Typography level="h3">2011 Joplin Tornado Hindcast</Typography>
-                                        <Typography level="body-sm">EFS Joplin tornado 2011</Typography>
-                                    </Card>
-                                </Grid>
-                                <Grid columns={6}>
-                                    <Card variant="outlined" sx={{ p: 2 }}>
-                                        <Typography level="h3">Joplin Model Based Tornado</Typography>
-                                        <Typography level="body-sm">EFS random tornado</Typography>
-                                    </Card>
-                                </Grid>
-                            </Grid>
-
+                            <HazardCards />
+                            {/* Visualization Section */}
+                            <VisualizationCards />
+                            {/* Workflow Section */}
+                            <WorkflowTable />
                             {/* Dataset Section */}
-                            <DatasetTable projectDatasets={projectDatasets} />
+                            <DatasetTable />
                             {/* DFR3Mapping Section */}
-                            <DFR3MappingTable projectDFR3Mappings={projectDFR3Mappings} />
-
-                            {/* /!* Visualization Section *!/ */}
-                            {/* <Typography level="h2" sx={{ mb: 2 }}> */}
-                            {/*    Visualization */}
-                            {/* </Typography> */}
-                            {/* <Grid container spacing={2} sx={{ mb: 4 }}> */}
-                            {/*    <Grid columns={6}> */}
-                            {/*        <Card variant="outlined" sx={{ p: 2 }}> */}
-                            {/*            <Typography level="h3">Joplin Building Damage</Typography> */}
-                            {/*            <Typography level="body-sm">Buildings, tornado</Typography> */}
-                            {/*        </Card> */}
-                            {/*    </Grid> */}
-                            {/*    <Grid columns={6}> */}
-                            {/*        <Card variant="outlined" sx={{ p: 2 }}> */}
-                            {/*            <Typography level="h3">Building Damage Histogram</Typography> */}
-                            {/*            <Typography level="body-sm">Building damage</Typography> */}
-                            {/*        </Card> */}
-                            {/*    </Grid> */}
-                            {/* </Grid> */}
+                            <DFR3MappingTable />
                         </>
                     )}
                 </Box>

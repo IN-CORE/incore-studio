@@ -14,11 +14,12 @@ const Home = (): JSX.Element => {
                         Welcome to IN-CORE Studio
                     </Typography>
                     <Typography textColor="primary.main" mt={2}>
-                        Lorem ipsum dolor sit amet consectetur. Iaculis lorem arcu nunc quisque tristique aliquet ut
-                        aliquam arcu. Et est neque volutpat eu gravida convallis id pellentesque mattis. Id bibendum
-                        porttitor lectus lacus sodales ultrices id luctus ultrices. Interdum odio lorem aliquet integer
-                        morbi purus sit aenean. Rhoncus id viverra accumsan est vel vulputate elementum est id. Ut eget
-                        iaculis porta cursus volutpat malesuada habitant etiam.
+                        IN-CORE Studio is built upon the IN-CORE (Interdependent Networked Community Resilience Modeling
+                        Environment) platform, which enables the modeling and analysis of community resilience to
+                        various hazards. IN-CORE Studio allows users to create customized workflows to simulate
+                        resilience scenarios for their communities, reproduce results consistently, and share findings
+                        with others. It facilitates knowledge discovery and helps users explore the interdependencies
+                        between infrastructure systems and community resilience in the face of disasters.
                     </Typography>
                 </Box>
                 <Project />
