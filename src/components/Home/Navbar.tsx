@@ -1,12 +1,15 @@
-import React from "react";
-import { FaBell, FaQuestionCircle, FaCog } from "react-icons/fa";
-// eslint-disable-next-line import/no-unresolved
+import React, { useState } from "react";
+import { FaBell, FaQuestionCircle, FaCog, FaUser } from "react-icons/fa";
 import { useAuth } from "react-oidc-context";
-// eslint-disable-next-line import/no-unresolved
+import { Menu, MenuItem } from "@mui/material";
 
-// Define getCurrUserInfo in the same file
 const Navbar = () => {
     const auth = useAuth();
+    const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+    const handleIconClick = () => {
+        setIsMenuVisible((prevState) => !prevState); // Toggle visibility
+    };
 
     return (
         <div className="navbar">
@@ -14,14 +17,14 @@ const Navbar = () => {
                 <FaBell className="icon" />
                 <FaQuestionCircle className="icon" />
                 <FaCog className="icon" />
+                <FaUser className="icon" onClick={handleIconClick} />
+                {/* Dropdown menu */}
+                {isMenuVisible && (
+                    <Menu className="dropdown-menu">
+                        {auth.isAuthenticated ? <MenuItem>Log out</MenuItem> : <MenuItem>Log in</MenuItem>}
+                    </Menu>
+                )}
             </div>
-            {auth.isAuthenticated ? (
-                <div className="profile">
-                    <p>Log in</p>
-                </div>
-            ) : (
-                <p>Not logged in</p>
-            )}
         </div>
     );
 };
