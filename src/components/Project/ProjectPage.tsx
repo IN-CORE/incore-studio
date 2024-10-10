@@ -10,7 +10,6 @@ import {
     getProjectHazards,
     getProjectWorkflows
 } from "@app/reducer/projectSlice";
-import { parseDateTime } from "@app/utils";
 import Topbar from "@app/components/Home/Topbar";
 import { DatasetTable } from "@app/components/Project/DatasetTable";
 import { DFR3MappingTable } from "@app/components/Project/DFR3MappingTable";
@@ -18,6 +17,7 @@ import { HazardCards } from "@app/components/Project/HazardCards";
 import { WorkflowTable } from "@app/components/Project/WorkflowTable";
 import { VisualizationCards } from "@app/components/Project/VisualizationCards";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
+import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -25,8 +25,6 @@ const ProjectPage = (): JSX.Element => {
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
-    // const projectWorkflows = useSelector((state: RootState) => state.project.projectWorkflows);
-    // const projectHazards = useSelector((state: RootState) => state.project.projectHazards);
 
     const loading = useSelector((state: RootState) => state.project.loading);
 
@@ -55,22 +53,7 @@ const ProjectPage = (): JSX.Element => {
                         <>
                             {/* Header Section */}
                             <ProjectBreadcrumb project={{ href: `/project/${project.id}`, label: project.name }} />
-                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
-                                <Box>
-                                    <Typography level="h1" sx={{ fontSize: "24px" }}>
-                                        {project.name}
-                                    </Typography>
-                                    <Typography level="body-md" sx={{ mt: 1 }}>
-                                        {project.description}
-                                    </Typography>
-                                </Box>
-                                <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                                    <Typography>{project.workflows.length}</Typography>
-                                    <Typography>{project.region}</Typography>
-                                    <Typography>{project.owner}</Typography>
-                                    <Typography>{project.date ? parseDateTime(project.date) : "No date"}</Typography>
-                                </Box>
-                            </Box>
+                            <ProjectHeader project={project} />
 
                             {/* Hazard Section */}
                             <HazardCards />
