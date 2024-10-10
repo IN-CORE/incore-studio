@@ -4,6 +4,7 @@ import { Box, Button, Typography, Stack, IconButton, Tooltip } from "@mui/joy";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+// import StorageIcon from "@mui/icons-material/Storage";
 
 import { useShallow } from "zustand/react/shallow";
 
@@ -57,34 +58,62 @@ export function ExperimentalNode({ id, data, selected }: NodeProps<ExperimentalN
     };
 
     // Function to calculate positions (percentage) based on the number of handles
-    // const calculateHandlePosition = (index: number, total: number) => {
-    //     return (index + 1) * (100 / (total + 1));
-    // };
+    const calculateHandlePosition = (index: number, total: number) => {
+        return (index + 1) * (100 / (total + 1));
+    };
 
     return (
         <Box
             sx={{
                 border: selected ? "3px solid #EF6C00" : "2px solid black",
                 borderRadius: "3px",
-                padding: "16px 24px 16px 24px",
-                gap: "20px",
+                padding: "6px 14px 6px 14px",
                 backgroundColor: "white",
                 height: "auto",
-                width: "250px",
+                width: "400px",
                 wordWrap: "break-word",
                 hyphens: "auto"
             }}
         >
-            <Handle
-                type="target"
-                position={Position.Left}
-                style={{
-                    width: "14px",
-                    height: "30px",
-                    borderRadius: "3px",
-                    backgroundColor: "#007DFF"
-                }}
-            />
+            {data.inputHandles.map((inpt, index) => (
+                // <Tooltip
+                //     title={inpt.label}
+                //     variant="plain"
+                //     color="neutral"
+                //     placement="right"
+                //     sx={{ color: "#172B4D", fontWeight: 400, fontSize: "16px", lineHeight: "24px" }}
+                // >
+                <Box
+                    display="flex"
+                    alignContent="center"
+                    key={inpt.label}
+                    sx={{
+                        position: "absolute",
+                        left: 0,
+                        top: `${calculateHandlePosition(index, data.inputHandles.length)}%`,
+                        transform: "translate(-50%, -50%)"
+                    }}
+                >
+                    <Typography level="h4" sx={{ fontWeight: 400, fontSize: "16px", lineHeight: "24px" }}>
+                        {inpt.label}
+                    </Typography>
+                    <Handle
+                        type="target"
+                        position={Position.Left}
+                        style={{
+                            height: "20px",
+                            width: "20px",
+                            borderRadius: "3px",
+                            backgroundColor: "#E3F2FD",
+                            borderColor: "#007DFF"
+                            // left: "-10%",
+                        }}
+                        id={inpt.id}
+                        key={inpt.label}
+                    />
+                </Box>
+                // </Tooltip>
+            ))}
             <Stack direction="row" spacing={2} sx={{ justifyContent: "space-between" }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <TrendingUpIcon sx={{ color: "#EF6C00", marginRight: "5px" }} />
@@ -149,16 +178,33 @@ export function ExperimentalNode({ id, data, selected }: NodeProps<ExperimentalN
                     id: id
                 }}
             />
-            <Handle
-                type="source"
-                position={Position.Right}
-                style={{
-                    width: "14px",
-                    height: "30px",
-                    borderRadius: "3px",
-                    backgroundColor: "#AB47BC"
-                }}
-            />
+
+            {data.outputHandles.map((outpt, index) => (
+                <Tooltip
+                    title={outpt.label}
+                    variant="plain"
+                    color="neutral"
+                    placement="left"
+                    sx={{ color: "#172B4D", fontWeight: 400, fontSize: "16px", lineHeight: "24px" }}
+                >
+                    <Handle
+                        type="source"
+                        position={Position.Right}
+                        style={{
+                            height: "20px",
+                            width: "20px",
+                            borderRadius: "3px",
+                            backgroundColor: "#AB47BC",
+                            top: `${calculateHandlePosition(index, data.outputHandles.length)}%`,
+                            right: "-11px",
+                            textWrap: "nowrap",
+                            textAlign: "center"
+                        }}
+                        id={outpt.id}
+                        key={outpt.label}
+                    ></Handle>
+                </Tooltip>
+            ))}
         </Box>
     );
 }

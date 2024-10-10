@@ -40,6 +40,8 @@ export type ExperimentalNode = Node<
     {
         label: string;
         name: string;
+        inputHandles: { id: string; label: string }[];
+        outputHandles: { id: string; label: string }[];
         stepData?: DatawolfWorkflowFileStep;
         tool?: DatawolfWorkflowTool;
     },

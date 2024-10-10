@@ -1,7 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 // import { getHeaders } from "@app/utils";
-import { readNodesAndEdgesFromWorkflowFile } from "@app/components/Workflow/workflowUtils";
+import {
+    readNodesAndEdgesFromWorkflowFile,
+    addExperimentalNodesAndEdgesWorkflow
+} from "@app/components/Workflow/workflowUtils";
 
 // const DATAWOLF_API_URL = `${window.API_SERVER}/datawolf`;
 const DATAWOLF_API_URL = `http://localhost:8888/datawolf`;
@@ -141,7 +144,8 @@ const workflowSlice = createSlice({
             .addCase(getWorkflow.fulfilled, (state, action) => {
                 state.workflowLoading = false;
                 state.currentWorkflow = action.payload;
-                state.reactFlowWorkflow = readNodesAndEdgesFromWorkflowFile(action.payload);
+                // state.reactFlowWorkflow = readNodesAndEdgesFromWorkflowFile(action.payload);
+                state.reactFlowWorkflow = addExperimentalNodesAndEdgesWorkflow(action.payload);
                 state.datawolfWorkflowID = action.payload.id;
             })
             .addCase(getWorkflow.rejected, (state, action) => {

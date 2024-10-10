@@ -430,3 +430,78 @@ export const getNodesAndEdgesFromTool = (
 
     return { nodes, edges };
 };
+
+export const addExperimentalNodesAndEdgesWorkflow = (workflowFile: DatawolfWorkflowFile): ReactFlowWorkflow => {
+    let nodes: AppNode[] = [];
+    let edges: Edge[] = [];
+
+    let sourceNodeLookup: { [key: string]: { analysisId: string; handleId: string } } = {};
+    let targetNodeLookup: { [key: string]: { analysisId: string; handleId: string }[] } = {};
+    let mappingUUIDSet: Set<string> = new Set();
+    if (workflowFile.steps.length > 0) {
+        workflowFile.steps.forEach((step) => {
+            let inputHandles = step.tool.inputs.map((input) => {
+                const newId = uuidv4();
+                mappingUUIDSet.add(step.inputs[input.dataId]);
+                if (targetNodeLookup[step.inputs[input.dataId]] === undefined) {
+                    targetNodeLookup[step.inputs[input.dataId]] = [{ analysisId: step.id, handleId: newId }];
+                } else {
+                    targetNodeLookup[step.inputs[input.dataId]].push({ analysisId: step.id, handleId: newId });
+                }
+                return { id: newId, label: input.title };
+            });
+            // add Hazard input handle
+            if (step.tool.parameters.some((param) => param.title === "hazard_type" || param.title === "hazard_id")) {
+                inputHandles.push({ id: `${step.id}_hazard`, label: "Hazard" });
+            }
+            // add DFR3 Mapping Set input handle
+            if (step.tool.parameters.some((param) => param.title === "dfr3_mapping_set")) {
+                inputHandles.push({ id: `${step.id}_dfr3_mapping_set`, label: "DFR3 Mapping Set" });
+            }
+
+            let outputHandles: { id: string; label: string }[] = [];
+            step.tool.outputs.forEach((output) => {
+                if (output.title !== "stdout") {
+                    const newId = uuidv4();
+                    mappingUUIDSet.add(step.outputs[output.dataId]);
+                    sourceNodeLookup[step.outputs[output.dataId]] = { analysisId: step.id, handleId: newId };
+                    outputHandles.push({ id: newId, label: output.title });
+                }
+            });
+
+            nodes.push({
+                id: step.id,
+                type: "experimental",
+                position: { x: 0, y: 0 },
+                data: {
+                    label: dependencyGraph[step.title].pretty_name,
+                    name: step.title,
+                    stepData: step,
+                    inputHandles: inputHandles,
+                    outputHandles: outputHandles
+                }
+            });
+        });
+
+        // Add edges for chained inputs
+        Array.from(mappingUUIDSet).forEach((mappingUUID) => {
+            if (targetNodeLookup[mappingUUID] !== undefined && sourceNodeLookup[mappingUUID] !== undefined) {
+                targetNodeLookup[mappingUUID].forEach((targetNodeId) => {
+                    edges.push({
+                        id: `${sourceNodeLookup[mappingUUID]}->${targetNodeId}`,
+                        source: sourceNodeLookup[mappingUUID].analysisId,
+                        target: targetNodeId.analysisId,
+                        sourceHandle: sourceNodeLookup[mappingUUID].handleId,
+                        targetHandle: targetNodeId.handleId,
+                        type: "deletableEdge",
+                        markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
+                    });
+                });
+            }
+        });
+
+        return { nodes, edges };
+    }
+
+    return { nodes, edges };
+};
