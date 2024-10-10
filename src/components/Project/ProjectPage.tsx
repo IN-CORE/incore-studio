@@ -17,6 +17,7 @@ import { DFR3MappingTable } from "@app/components/Project/DFR3MappingTable";
 import { HazardCards } from "@app/components/Project/HazardCards";
 import { WorkflowTable } from "@app/components/Project/WorkflowTable";
 import { VisualizationCards } from "@app/components/Project/VisualizationCards";
+import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -53,6 +54,7 @@ const ProjectPage = (): JSX.Element => {
                     ) : (
                         <>
                             {/* Header Section */}
+                            <ProjectBreadcrumb project={{ href: `/project/${project.id}`, label: project.name }} />
                             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
                                 <Box>
                                     <Typography level="h1" sx={{ fontSize: "24px" }}>

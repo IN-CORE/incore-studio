@@ -1,9 +1,10 @@
 import * as React from "react";
 import { Button, Card, CardContent, Typography, Box, Chip } from "@mui/joy";
-import DatasetIcon from "@mui/icons-material/Dataset"; // Example icon for datasets
-import WorkflowIcon from "@mui/icons-material/Cable"; // Example icon for workflows
-import DFR3Icon from "@mui/icons-material/LineAxis"; // Example icon for DFR3 mappings
+import DatasetIcon from "@mui/icons-material/FormatListBulleted";
+import WorkflowIcon from "@mui/icons-material/Polyline";
+import DFR3Icon from "@mui/icons-material/ShowChart";
 import HazardIcon from "@mui/icons-material/Storm";
+import VisualizationIcon from "@mui/icons-material/Map";
 import { parseDateTime } from "@app/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -19,6 +20,7 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
     const datasetsCount = project.datasets.length;
     const workflowsCount = project.workflows.length;
     const dfr3MappingsCount = project.dfr3Mappings.length;
+    const visualizationCount = project.visualizations.length;
 
     const navigate = useNavigate();
 
@@ -36,7 +38,7 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
                     <Typography level="body-sm">{project.description}</Typography>
                 </Box>
 
-                {/* Hazards, Datasets, Workflows, DFR3 Mappings with Icons */}
+                {/* Hazards, Datasets, Workflows, DFR3 Mappings, Visualization with Icons */}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                     {/* Hazards */}
                     <Box
@@ -57,7 +59,25 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
                             &nbsp;× {hazardsCount}
                         </Typography>
                     </Box>
-
+                    {/* Visualization */}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center"
+                        }}
+                    >
+                        <VisualizationIcon fontSize="small" />
+                        <Typography level="body-md" ml={1}>
+                            Visualizations
+                        </Typography>
+                        <Typography
+                            level="body-md"
+                            textColor={visualizationCount > 0 ? "success.400" : "danger.main"}
+                            sx={{ fontWeight: 600 }}
+                        >
+                            &nbsp;× {visualizationCount}
+                        </Typography>{" "}
+                    </Box>
                     {/* Datasets */}
                     <Box
                         sx={{

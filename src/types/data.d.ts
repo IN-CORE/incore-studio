@@ -93,6 +93,7 @@ interface Project {
     dfr3Mappings: Mapping[];
     datasets: Dataset[];
     workflows: Workflow[];
+    visualizations: Visualization[];
 }
 
 interface ProjectState {
