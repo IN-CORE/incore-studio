@@ -7,7 +7,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 import { useShallow } from "zustand/react/shallow";
 
-import { type AnalysisNode } from "@app/components/Workflow/nodes";
+import { type ExperimentalNode } from "@app/components/Workflow/nodes";
 import AddAnalysisModal from "@app/components/AddAnalysisModal";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
 import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
@@ -19,13 +19,7 @@ const selector = (state: ReactFlowAppState) => ({
     setEdges: state.setEdges
 });
 
-export function AnalysisNode({
-    id,
-    data,
-    sourcePosition,
-    targetPosition,
-    selected
-}: NodeProps<AnalysisNode>): JSX.Element {
+export function ExperimentalNode({ id, data, selected }: NodeProps<ExperimentalNode>): JSX.Element {
     const { nodes, edges, setNodes, setEdges } = useStore(useShallow(selector));
 
     const [selectPreviousAnalysisModalOpen, setSelectPreviousAnalysisModalOpen] = React.useState<boolean>(false);
@@ -62,6 +56,11 @@ export function AnalysisNode({
         }
     };
 
+    // Function to calculate positions (percentage) based on the number of handles
+    // const calculateHandlePosition = (index: number, total: number) => {
+    //     return (index + 1) * (100 / (total + 1));
+    // };
+
     return (
         <Box
             sx={{
@@ -78,7 +77,7 @@ export function AnalysisNode({
         >
             <Handle
                 type="target"
-                position={targetPosition || Position.Top}
+                position={Position.Left}
                 style={{
                     width: "14px",
                     height: "30px",
@@ -152,7 +151,7 @@ export function AnalysisNode({
             />
             <Handle
                 type="source"
-                position={sourcePosition || Position.Bottom}
+                position={Position.Right}
                 style={{
                     width: "14px",
                     height: "30px",

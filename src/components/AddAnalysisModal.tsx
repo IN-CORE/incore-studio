@@ -72,20 +72,37 @@ const AddAnalysisModal = ({
         setSelectAnalysisModalOpen(false);
     };
 
-    const getExtraEdgeFromCurrentAnalysis = (newNodes: AppNode[]): Edge | null => {
+    const checkEdgetoNodeExists = (nodeNameLabel: string): boolean => {
         if (currentAnalysis !== undefined) {
             const currAnalysisNode = nodes.find((node) => node.id === currentAnalysis.id);
+            if (currAnalysisNode && previousAnalysis) {
+                const incomers = getIncomers(currAnalysisNode, nodes, edges);
+                const testNode = incomers.find((nd) => nd.type === "analysis-input" && nd.data.label === nodeNameLabel);
+                if (testNode) {
+                    return edges.find((ed) => ed.target === testNode.id) !== undefined;
+                }
+            }
+        }
+        return false;
+    };
+
+    const getExtraEdgeFromCurrentAnalysis = (newNodes: AppNode[]): Edge | null => {
+        console.log(currentAnalysis !== undefined);
+        if (currentAnalysis !== undefined) {
+            const currAnalysisNode = nodes.find((node) => node.id === currentAnalysis.id);
+            console.log(currAnalysisNode);
             if (currAnalysisNode) {
                 let srcNode: AppNode | null = null;
                 let destNode: AppNode | null = null;
                 if (previousAnalysis) {
                     const incomers = getIncomers(currAnalysisNode, nodes, edges);
                     srcNode = newNodes.find(
-                        (nd) => nd.type === "analysis-input" && nd.data.label === srcNodeName
+                        (nd) => nd.type === "analysis-output" && nd.data.label === srcNodeName
                     ) as AppNode;
                     destNode = incomers.find(
-                        (nd) => nd.type === "analysis-output" && nd.data.label === destNodeName
+                        (nd) => nd.type === "analysis-input" && nd.data.label === destNodeName
                     ) as AppNode;
+                    console.log(srcNode, destNode);
                 } else {
                     const outgoers = getOutgoers(currAnalysisNode, nodes, edges);
                     srcNode = outgoers.find(
@@ -251,11 +268,12 @@ const AddAnalysisModal = ({
                                                                     size="sm"
                                                                     disableIcon
                                                                     overlay
+                                                                    disabled={checkEdgetoNodeExists(link.to)}
                                                                     label={
                                                                         dependencyGraph !== undefined &&
                                                                         dependencyGraph[analysis] !== undefined
-                                                                            ? `${dependencyGraph[analysis].pretty_name},  from: ${link.from}`
-                                                                            : `${analysis},  from: ${link.from}`
+                                                                            ? `${dependencyGraph[analysis].pretty_name},  from: ${link.from} --> to: ${link.to}`
+                                                                            : `${analysis},  from: ${link.from}  --> to: ${link.to}`
                                                                     }
                                                                     checked={
                                                                         selectedAnalysis === analysis &&
@@ -325,8 +343,8 @@ const AddAnalysisModal = ({
                                                                 label={
                                                                     dependencyGraph !== undefined &&
                                                                     dependencyGraph[analysis] !== undefined
-                                                                        ? `${dependencyGraph[analysis].pretty_name},  to: ${link.to}`
-                                                                        : `${analysis},  to: ${link.to}`
+                                                                        ? `${dependencyGraph[analysis].pretty_name},  from: ${link.from} --> to: ${link.to}`
+                                                                        : `${analysis},  from: ${link.from} --> to: ${link.to}`
                                                                 }
                                                                 checked={
                                                                     selectedAnalysis === analysis &&
