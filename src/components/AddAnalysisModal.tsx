@@ -21,13 +21,13 @@ import Done from "@mui/icons-material/Done";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import { type Edge, getOutgoers, getIncomers, MarkerType } from "@xyflow/react";
+import { type Edge, MarkerType } from "@xyflow/react";
 
 import { useShallow } from "zustand/react/shallow";
 
 import { useAppSelector } from "@app/store/hooks";
-import { type AppNode } from "@app/components/Workflow/nodes";
-import { getNodesAndEdgesFromTool } from "@app/components/Workflow/workflowUtils";
+import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
+import { getNodeFromToolV2 } from "@app/components/Workflow/workflowUtils";
 import useStore, { type ReactFlowAppState } from "./Workflow/reactFlowStore";
 
 interface AddAnalysisModalProps {
@@ -72,54 +72,67 @@ const AddAnalysisModal = ({
         setSelectAnalysisModalOpen(false);
     };
 
-    const checkEdgetoNodeExists = (nodeNameLabel: string): boolean => {
+    const checkEdgetoHandleExists = (nodeNameLabel: string): boolean => {
         if (currentAnalysis !== undefined) {
-            const currAnalysisNode = nodes.find((node) => node.id === currentAnalysis.id);
+            const currAnalysisNode = nodes.find((node) => node.id === currentAnalysis.id) as NewAnalysisNode;
             if (currAnalysisNode && previousAnalysis) {
-                const incomers = getIncomers(currAnalysisNode, nodes, edges);
-                const testNode = incomers.find((nd) => nd.type === "analysis-input" && nd.data.label === nodeNameLabel);
-                if (testNode) {
-                    return edges.find((ed) => ed.target === testNode.id) !== undefined;
+                const testHandle = currAnalysisNode.data.inputHandles.find((inpt) => inpt.label === nodeNameLabel);
+                if (testHandle) {
+                    return (
+                        edges.find((ed) => ed.target === currAnalysisNode.id && ed.targetHandle === testHandle.id) !==
+                        undefined
+                    );
                 }
             }
         }
         return false;
     };
 
-    const getExtraEdgeFromCurrentAnalysis = (newNodes: AppNode[]): Edge | null => {
-        console.log(currentAnalysis !== undefined);
-        if (currentAnalysis !== undefined) {
-            const currAnalysisNode = nodes.find((node) => node.id === currentAnalysis.id);
+    const getEdgeFromCurrentAnalysis = (newNode: NewAnalysisNode | null): Edge | null => {
+        if (currentAnalysis !== undefined && newNode !== null) {
+            const currAnalysisNode = nodes.find((node) => node.id === currentAnalysis.id) as NewAnalysisNode;
             console.log(currAnalysisNode);
             if (currAnalysisNode) {
-                let srcNode: AppNode | null = null;
-                let destNode: AppNode | null = null;
+                let srcNodeHandleId: string | null = null;
+                let destNodeHandleId: string | null = null;
+                let srcId = "";
+                let tarId = "";
                 if (previousAnalysis) {
-                    const incomers = getIncomers(currAnalysisNode, nodes, edges);
-                    srcNode = newNodes.find(
-                        (nd) => nd.type === "analysis-output" && nd.data.label === srcNodeName
-                    ) as AppNode;
-                    destNode = incomers.find(
-                        (nd) => nd.type === "analysis-input" && nd.data.label === destNodeName
-                    ) as AppNode;
-                    console.log(srcNode, destNode);
+                    srcId = newNode.id;
+                    tarId = currAnalysisNode.id;
+                    newNode.data.outputHandles.forEach((handle) => {
+                        if (handle.label === srcNodeName) {
+                            srcNodeHandleId = handle.id;
+                        }
+                    });
+                    currAnalysisNode.data.inputHandles.forEach((handle) => {
+                        if (handle.label === destNodeName) {
+                            destNodeHandleId = handle.id;
+                        }
+                    });
                 } else {
-                    const outgoers = getOutgoers(currAnalysisNode, nodes, edges);
-                    srcNode = outgoers.find(
-                        (nd) => nd.type === "analysis-output" && nd.data.label === srcNodeName
-                    ) as AppNode;
-                    destNode = newNodes.find(
-                        (nd) => nd.type === "analysis-input" && nd.data.label === destNodeName
-                    ) as AppNode;
+                    srcId = currAnalysisNode.id;
+                    tarId = newNode.id;
+                    currAnalysisNode.data.outputHandles.forEach((handle) => {
+                        if (handle.label === srcNodeName) {
+                            srcNodeHandleId = handle.id;
+                        }
+                    });
+                    newNode.data.inputHandles.forEach((handle) => {
+                        if (handle.label === destNodeName) {
+                            destNodeHandleId = handle.id;
+                        }
+                    });
                 }
 
-                if (srcNode && destNode) {
+                if (srcNodeHandleId && destNodeHandleId) {
                     return {
-                        id: `${srcNode.id}->${destNode.id}`,
-                        source: srcNode.id,
-                        target: destNode.id,
+                        id: `${srcId}_handle_${srcNodeHandleId}->${tarId}_ handle_${destNodeHandleId}`,
+                        source: srcId,
+                        target: tarId,
+                        sourceHandle: srcNodeHandleId,
+                        targetHandle: destNodeHandleId,
                         type: "deletableEdge",
-                        style: { stroke: "#000000" },
                         markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
                     };
                 }
@@ -268,7 +281,7 @@ const AddAnalysisModal = ({
                                                                     size="sm"
                                                                     disableIcon
                                                                     overlay
-                                                                    disabled={checkEdgetoNodeExists(link.to)}
+                                                                    disabled={checkEdgetoHandleExists(link.to)}
                                                                     label={
                                                                         dependencyGraph !== undefined &&
                                                                         dependencyGraph[analysis] !== undefined
@@ -401,15 +414,16 @@ const AddAnalysisModal = ({
                         startDecorator={<AddRoundedIcon />}
                         onClick={() => {
                             if (selectedAnalysis !== "") {
-                                const { nodes: newNodes, edges: newEdges } = getNodesAndEdgesFromTool(
+                                const newNode = getNodeFromToolV2(
                                     datawolfTools.find((tool) => tool.title === selectedAnalysis)
                                 );
-                                const extraEdge = getExtraEdgeFromCurrentAnalysis(newNodes);
+                                const edgeToAdd = getEdgeFromCurrentAnalysis(newNode);
                                 clearItems();
-                                addNodes(newNodes);
-                                addEdges(newEdges);
-                                if (extraEdge) {
-                                    addEdges([extraEdge]);
+                                if (newNode !== null) {
+                                    addNodes([newNode]);
+                                }
+                                if (edgeToAdd !== null) {
+                                    addEdges([edgeToAdd]);
                                 }
                             }
                         }}
