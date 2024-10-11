@@ -184,6 +184,9 @@ interface HazardDataset {
 interface Visualization {
     id: string;
     type: string;
+    name: string;
+    description: string;
+    date: string;
     boundingBox?: number[];
     layers?: Layer[];
     vegaJson?: string;

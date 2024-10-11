@@ -15,7 +15,7 @@ export const ProjectHeader = ({ project }: { project: any }) => {
                 <Typography level="h1" textColor="primary.main" sx={{ fontSize: "24px" }}>
                     {project.name}
                 </Typography>
-                <Typography level="body-md" textColor="primary.main" sx={{ mt: 1 }}>
+                <Typography level="body-sm" textColor="primary.main" sx={{ mt: 1 }}>
                     {project.description}
                 </Typography>
             </Box>

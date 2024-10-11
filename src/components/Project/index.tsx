@@ -89,17 +89,12 @@ const Project = (): JSX.Element => {
             const skip = (pageNumber - 1) * dataPerPage;
             // @ts-ignore
             dispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
-        }
-    }, [pageNumber, filters, isSearching]);
-
-    // Refetch projects when search mode is active
-    useEffect(() => {
-        if (isSearching) {
+        } else {
             const skip = (pageNumber - 1) * dataPerPage;
             // @ts-ignore
             dispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
         }
-    }, [pageNumber, searchTerm, isSearching]);
+    }, [pageNumber, filters, isSearching]);
 
     return (
         <Box sx={{ flexShrink: 0 }} mt={5}>
