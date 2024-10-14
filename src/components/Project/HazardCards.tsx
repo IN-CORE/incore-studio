@@ -12,7 +12,7 @@ export const HazardCards: React.FC<{ projectHazards: Hazard[] }> = ({ projectHaz
                     <Card variant="plain" sx={{ display: "flex", flexDirection: "column", height: "100%", padding: 0 }}>
                         <CardContent>
                             {/* TODO take first layer for thumbnail */}
-                            <MapThumbnail id={hazard?.hazardDatasets[0]?.datasetId} />
+                            <MapThumbnail id={hazard?.hazardDatasets?.[0]?.datasetId} />
                             <Box sx={{ p: 1, flexGrow: 1, height: 80, overflow: "auto" }}>
                                 <Typography level="body-sm" mb={1} textColor="primary.main">
                                     {hazard.name || "Name not provided"}
