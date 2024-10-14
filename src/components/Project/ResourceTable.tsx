@@ -1,12 +1,8 @@
 import React from "react";
-import Typography from "@mui/joy/Typography";
 import Table from "@mui/joy/Table";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Box, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { formatHeaderName, parseDateTime } from "@app/utils";
-import SearchIcon from "@mui/icons-material/Search";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import AddIcon from "@mui/icons-material/Add";
 
 interface TableProps {
     resourceTitle: string;
@@ -66,41 +62,22 @@ export const ResourceTable = ({ resourceTitle, columns, data }: TableProps): JSX
     };
 
     return (
-        <>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                <Typography level="h4">{resourceTitle}</Typography>
-                <Box display="flex" alignItems="center">
-                    <IconButton>
-                        <SearchIcon />
-                    </IconButton>
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                    <IconButton>
-                        <AddIcon />
-                        <Typography level="body-sm" ml={1}>
-                            Add from Service
-                        </Typography>
-                    </IconButton>
-                </Box>
-            </Box>
-            <Table aria-label={resourceTitle.toLowerCase()}>
-                <thead>
-                    <tr>
-                        {columns.map((column) => (
-                            <th key={column} style={{ backgroundColor: "white" }}>
-                                {formatHeaderName(column)}
-                            </th>
-                        ))}
-                        <th style={{ backgroundColor: "white" }}>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((item) => (
-                        <tr key={item.id}>{renderRow(item)}</tr>
+        <Table aria-label={resourceTitle.toLowerCase()}>
+            <thead>
+                <tr>
+                    {columns.map((column) => (
+                        <th key={column} style={{ backgroundColor: "white" }}>
+                            {formatHeaderName(column)}
+                        </th>
                     ))}
-                </tbody>
-            </Table>
-        </>
+                    <th style={{ backgroundColor: "white" }}>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {data.map((item) => (
+                    <tr key={item.id}>{renderRow(item)}</tr>
+                ))}
+            </tbody>
+        </Table>
     );
 };
