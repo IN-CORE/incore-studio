@@ -20,6 +20,7 @@ import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/ResourceTable";
 import { Pagination } from "@app/components/Home/Pagination";
 import ResourceFilterBar from "@app/components/Project/ResourceFilterBar";
+import Divider from "@mui/joy/Divider";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -116,11 +117,11 @@ const ProjectPage = (): JSX.Element => {
                             {/* Header Section */}
                             <ProjectBreadcrumb project={{ href: `/project/${project.id}`, label: project.name }} />
                             <ProjectHeader project={project} />
-
+                            <Divider />
                             <Grid container spacing={5} mt={3} ml={0}>
                                 {/* Left Column: Hazard and Visualization Cards */}
                                 <Grid sm={6}>
-                                    <Box>
+                                    <Box mb={1}>
                                         <ResourceFilterBar title="Hazards" createLabel="Add from Service" />
                                         <HazardCards projectHazards={projectHazards} />
                                         <Box mt={4} display="flex" justifyContent="center">
@@ -147,10 +148,27 @@ const ProjectPage = (): JSX.Element => {
                                         </Box>
                                     </Box>
                                 </Grid>
-
                                 {/* Right Column: Workflow, Dataset, and DFR3Mapping Tables */}
                                 <Grid sm={6}>
-                                    <Box>
+                                    <Box mb={1}>
+                                        <ResourceFilterBar title="Workflows" createLabel="Create Workflow" />
+                                        <ResourceTable
+                                            resourceTitle="Workflows"
+                                            columns={["title", "description", "date", "creator", "isFinalized"]}
+                                            data={projectWorkflows}
+                                        />
+                                        <Box mt={4} display="flex" justifyContent="center">
+                                            <Pagination
+                                                pageNumber={wfPageNumber}
+                                                data={projectWorkflows}
+                                                dataPerPage={5}
+                                                previous={wfPreviousPage}
+                                                next={wfNextPage}
+                                            />
+                                        </Box>
+                                    </Box>
+
+                                    <Box mb={1}>
                                         <ResourceFilterBar title="Datasets" createLabel="Add from Service" />
                                         <ResourceTable
                                             resourceTitle="Datasets"
@@ -168,23 +186,6 @@ const ProjectPage = (): JSX.Element => {
                                         </Box>
                                     </Box>
 
-                                    <Box>
-                                        <ResourceFilterBar title="Workflows" createLabel="Add from Service" />
-                                        <ResourceTable
-                                            resourceTitle="Workflows"
-                                            columns={["title", "description", "date", "creator", "isFinalized"]}
-                                            data={projectWorkflows}
-                                        />
-                                        <Box mt={4} display="flex" justifyContent="center">
-                                            <Pagination
-                                                pageNumber={wfPageNumber}
-                                                data={projectWorkflows}
-                                                dataPerPage={5}
-                                                previous={wfPreviousPage}
-                                                next={wfNextPage}
-                                            />
-                                        </Box>
-                                    </Box>
                                     <Box>
                                         <ResourceFilterBar title="DFR3 Mappings" createLabel="Add from Service" />
                                         <ResourceTable

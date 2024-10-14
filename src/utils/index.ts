@@ -26,20 +26,36 @@ export const getHeaders = () => {
     };
 };
 
-export function parseDateTime(dateString: string) {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const options = {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone
-    };
+// export function parseDateTime(dateString: string) {
+//     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+//     const options = {
+//         year: "numeric",
+//         month: "short",
+//         day: "numeric",
+//         hour: "2-digit",
+//         minute: "2-digit",
+//         timeZone
+//     };
+//
+//     const mydate = new Date(dateString);
+//
+//     // @ts-ignore
+//     return mydate.toLocaleString("en-US", options);
+// }
 
+export function parseDateTime(dateString: string) {
     const mydate = new Date(dateString);
 
-    // @ts-ignore
+    const options: Intl.DateTimeFormatOptions = {
+        year: "2-digit",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true, // Ensures AM/PM format
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    };
+
     return mydate.toLocaleString("en-US", options);
 }
 

@@ -6,6 +6,7 @@ import PlaceIcon from "@mui/icons-material/Place";
 import PersonIcon from "@mui/icons-material/Person";
 import CalendarIcon from "@mui/icons-material/CalendarToday";
 import { parseDateTime } from "@app/utils";
+import Divider from "@mui/joy/Divider";
 
 export const ProjectHeader = ({ project }: { project: any }) => {
     return (
@@ -27,21 +28,24 @@ export const ProjectHeader = ({ project }: { project: any }) => {
                     <WorkflowIcon />
                     <Typography>{project.workflows.length} Workflows</Typography>
                 </Box>
+                <Divider orientation="vertical" />
 
                 {/* Region */}
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "5em" }}>
                     <PlaceIcon />
                     <Typography>{project.region}</Typography>
                 </Box>
+                <Divider orientation="vertical" />
 
                 {/* Owner */}
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "5em" }}>
                     <PersonIcon />
                     <Typography>{project.owner}</Typography>
                 </Box>
+                <Divider orientation="vertical" />
 
                 {/* Date */}
-                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "12em" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "10em" }}>
                     <CalendarIcon />
                     <Typography>{project.date ? parseDateTime(project.date) : "No date"}</Typography>
                 </Box>
