@@ -16,11 +16,10 @@ export function AnalysisOutputNode({
             sx={{
                 border: selected ? "3px solid #EF6C00" : "2px solid #E0E0E0",
                 borderRadius: "3px",
-                padding: "16px 24px 16px 24px",
-                gap: "16px",
+                padding: "6px 14px 6px 14px",
                 backgroundColor: "white",
                 height: "auto",
-                width: "250px",
+                width: "130px",
                 wordWrap: "break-word",
                 hyphens: "auto"
             }}

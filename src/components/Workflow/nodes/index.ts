@@ -29,6 +29,7 @@ export type AnalysisOutputNode = Node<
 export type AnalysisNode = Node<
     {
         label: string;
+        name: string;
         stepData?: DatawolfWorkflowFileStep;
         toolID?: string;
     },
@@ -46,6 +47,8 @@ export type NewAnalysisNode = Node<
     },
     "new-analysis-node"
 >;
+
+export type AppNode = BuiltInNode | AnalysisInputNode | AnalysisOutputNode | AnalysisNode | NewAnalysisNode;
 
 export const nodeTypes = {
     "analysis-input": AnalysisInputNode,

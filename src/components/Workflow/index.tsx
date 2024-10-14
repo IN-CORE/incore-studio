@@ -20,7 +20,7 @@ import { useShallow } from "zustand/react/shallow";
 import useStore, { type ReactFlowAppState } from "./reactFlowStore";
 import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
-import { AnalysisInputNode, AnalysisOutputNode, nodeTypes, type AppNode } from "./nodes";
+import { NewAnalysisNode, nodeTypes, type AppNode } from "./nodes";
 import { edgeTypes } from "./edges";
 
 const getLayoutedElements = (nodes: AppNode[], edges: Edge[]): { nodes: AppNode[]; edges: Edge[] } => {
@@ -59,19 +59,30 @@ const getLayoutedElements = (nodes: AppNode[], edges: Edge[]): { nodes: AppNode[
     };
 };
 
-const isConnectible = (srcNode: AppNode | undefined, tgtNode: AppNode | undefined): boolean => {
-    if (
-        srcNode !== undefined &&
-        tgtNode !== undefined &&
-        srcNode.type === "analysis-output" &&
-        tgtNode.type === "analysis-input" &&
-        tgtNode.data.inputData.dataId !== "hazard" &&
-        tgtNode.data.inputData.dataId !== "dfr3_mapping"
-    ) {
-        if (dependencyGraph[srcNode.data.analysisName].after[tgtNode.data.analysisName] !== undefined) {
-            return dependencyGraph[srcNode.data.analysisName].after[tgtNode.data.analysisName].some(
+const isConnectible = (
+    srcNode: NewAnalysisNode | undefined,
+    tgtNode: NewAnalysisNode | undefined,
+    srcNodeHandle: string | null,
+    tgtNodeHandle: string | null
+): boolean => {
+    if (srcNode !== undefined && tgtNode !== undefined && srcNodeHandle !== null && tgtNodeHandle !== null) {
+        let srcHandle = srcNode.data.outputHandles.find((handle) => handle.id === srcNodeHandle);
+        let tgtHandle = tgtNode.data.inputHandles.find((handle) => handle.id === tgtNodeHandle);
+        if (
+            srcHandle === undefined ||
+            tgtHandle === undefined ||
+            srcHandle.type !== "output" ||
+            tgtHandle.type !== "input" ||
+            tgtHandle.dataId === "hazard" ||
+            tgtHandle.dataId === "dfr3_mapping"
+        ) {
+            return false;
+        }
+        if (dependencyGraph[srcNode.data.name].after[tgtNode.data.name] !== undefined) {
+            return dependencyGraph[srcNode.data.name].after[tgtNode.data.name].some(
                 (criteria: { from: string; to: string }) =>
-                    srcNode.data.outputData.title === criteria.from && tgtNode.data.inputData.title === criteria.to
+                    // @ts-ignore
+                    srcHandle.label === criteria.from && tgtHandle.label === criteria.to
             );
         }
     }
@@ -97,38 +108,60 @@ const LayoutedWorkflow = () => {
     const onConnect: OnConnect = useCallback(
         (connection) => {
             // prevent self loops
-            let srcNode = nodes.find((node) => node.id === connection.source) as AnalysisOutputNode;
-            let tgtNode = nodes.find((node) => node.id === connection.target) as AnalysisInputNode;
+            let srcNode = nodes.find((node) => node.id === connection.source) as NewAnalysisNode;
+            let tgtNode = nodes.find((node) => node.id === connection.target) as NewAnalysisNode;
+            let srcNodeHandle = connection.sourceHandle;
+            let tgtNodeHandle = connection.targetHandle;
             let edgeTobeDeletedId = "";
+            const existingEdgesToTargetHandle = getConnectedEdges([tgtNode], edges).filter(
+                (edge) => edge.target === tgtNode.id && edge.targetHandle === tgtNodeHandle
+            );
             // allow only 1 input to an input node.
-            const existingInputEdges = getConnectedEdges([tgtNode], edges).filter((edge) => edge.target === tgtNode.id);
             if (
-                existingInputEdges.length === 0 &&
+                existingEdgesToTargetHandle.length === 0 &&
                 connection.source !== connection.target &&
                 srcNode &&
                 tgtNode &&
-                isConnectible(srcNode, tgtNode)
+                srcNodeHandle &&
+                tgtNodeHandle &&
+                isConnectible(srcNode, tgtNode, srcNodeHandle, tgtNodeHandle)
             ) {
-                if (dependencyGraph[srcNode.data.analysisName].after[tgtNode.data.analysisName].length > 1) {
-                    // we need to remove the existing edge from this src node to one of the input nodes in the target analysis node
-                    const connectedEdges = getConnectedEdges([srcNode], edges);
-                    const edgeTobeDeleted = connectedEdges.find((edge) => {
-                        if (edge.source === srcNode.id && edge.target !== tgtNode.id) {
-                            const sameAnalysisNode = nodes.find((node) => node.id === edge.target) as AnalysisInputNode;
-                            return sameAnalysisNode.data.analysisName === tgtNode.data.analysisName;
+                const existingInputEdges = getConnectedEdges([tgtNode], edges).filter(
+                    (edge) => edge.target === tgtNode.id && edge.source === srcNode.id
+                );
+                if (
+                    dependencyGraph[srcNode.data.name].after[tgtNode.data.name].length > 1 &&
+                    existingInputEdges.length > 0
+                ) {
+                    // we need to remove the existing edge from the src node to one of the input nodes in the target analysis node
+                    dependencyGraph[srcNode.data.name].after[tgtNode.data.name].forEach(
+                        (criteria: { from: string; to: string }) => {
+                            if (
+                                criteria.to ===
+                                tgtNode.data.inputHandles.find((handle) => handle.id === tgtNodeHandle)?.label
+                            ) {
+                                const existingEdge = existingInputEdges.find((edge) => {
+                                    const srcNode = nodes.find((node) => node.id === edge.source) as NewAnalysisNode;
+                                    return (
+                                        srcNode.data.outputHandles.find((handle) => handle.id === edge.sourceHandle)
+                                            ?.label === criteria.from
+                                    );
+                                });
+                                if (existingEdge) {
+                                    edgeTobeDeletedId = existingEdge.id;
+                                }
+                            }
                         }
-                        return false;
-                    });
-                    if (edgeTobeDeleted) {
-                        edgeTobeDeletedId = edgeTobeDeleted.id;
-                    }
+                    );
                 }
                 setEdges([
                     ...edges.filter((edge) => edge.id !== edgeTobeDeletedId),
                     {
-                        id: `${connection.source}-${connection.target}`,
+                        id: `${connection.source}_handle_${connection.sourceHandle}-${connection.target}_handle_${connection.targetHandle}`,
                         source: connection.source,
                         target: connection.target,
+                        sourceHandle: connection.sourceHandle,
+                        targetHandle: connection.targetHandle,
                         type: "deletableEdge",
                         style: { stroke: "#000000" },
                         markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
@@ -152,8 +185,8 @@ const LayoutedWorkflow = () => {
 
     const fitViewOptions = {
         padding: 0.2,
-        duration: 500 // 0.5-second animation
-        // minZoom: 0.7 // Minimum zoom level
+        duration: 500, // 0.5-second animation
+        zoom: 0.5 // Minimum zoom level
     };
 
     const reformatNodes = () => {
@@ -211,7 +244,6 @@ const LayoutedWorkflow = () => {
                 onConnect={onConnect}
                 nodesDraggable={true}
                 deleteKeyCode={null}
-                snapToGrid
                 fitView
             >
                 <Background variant={BackgroundVariant.Dots} />
