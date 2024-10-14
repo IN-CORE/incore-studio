@@ -3,7 +3,7 @@ import Typography from "@mui/joy/Typography";
 import Table from "@mui/joy/Table";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Box, IconButton } from "@mui/material";
-import { parseDateTime } from "@app/utils";
+import { formatHeaderName, parseDateTime } from "@app/utils";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import AddIcon from "@mui/icons-material/Add";
@@ -67,7 +67,7 @@ export const ResourceTable = ({ resourceTitle, columns, data }: TableProps): JSX
 
     return (
         <>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Typography level="h4">{resourceTitle}</Typography>
                 <Box display="flex" alignItems="center">
                     <IconButton>
@@ -88,9 +88,11 @@ export const ResourceTable = ({ resourceTitle, columns, data }: TableProps): JSX
                 <thead>
                     <tr>
                         {columns.map((column) => (
-                            <th key={column}>{column}</th>
+                            <th key={column} style={{ backgroundColor: "white" }}>
+                                {formatHeaderName(column)}
+                            </th>
                         ))}
-                        <th>Action</th>
+                        <th style={{ backgroundColor: "white" }}>Action</th>
                     </tr>
                 </thead>
                 <tbody>

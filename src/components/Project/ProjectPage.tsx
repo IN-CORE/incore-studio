@@ -8,7 +8,6 @@ import {
     getProject,
     getProjectDatasets,
     getProjectDRF3Mappings,
-    getProjectHazards,
     getProjectVisualizations,
     getProjectWorkflows
 } from "@app/reducer/projectSlice";
@@ -33,8 +32,6 @@ const ProjectPage = (): JSX.Element => {
         dispatch(getProject(id));
         // @ts-ignore
         dispatch(getProjectDatasets(id));
-        // @ts-ignore
-        dispatch(getProjectHazards(id));
         // @ts-ignore
         dispatch(getProjectWorkflows(id));
         // @ts-ignore
@@ -63,21 +60,21 @@ const ProjectPage = (): JSX.Element => {
                             <Grid container spacing={2} mt={3}>
                                 {/* Left Column: Hazard and Visualization Cards */}
                                 <Grid sm={6}>
-                                    <HazardCards />
+                                    <HazardCards projectId={project.id} />
                                     <VisualizationCards />
                                 </Grid>
 
                                 {/* Right Column: Workflow, Dataset, and DFR3Mapping Tables */}
                                 <Grid sm={6}>
                                     <ResourceTable
-                                        resourceTitle="Workflows"
+                                        resourceTitle="Datasets"
                                         columns={["name", "description", "date", "owner"]}
-                                        data={projectWorkflows}
+                                        data={projectDatasets}
                                     />
                                     <ResourceTable
-                                        resourceTitle="Datasets"
+                                        resourceTitle="Workflows"
                                         columns={["title", "description", "date", "creator", "isFinalized"]}
-                                        data={projectDatasets}
+                                        data={projectWorkflows}
                                     />
                                     <ResourceTable
                                         resourceTitle="DFR3 Mappings"

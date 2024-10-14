@@ -42,3 +42,14 @@ export function parseDateTime(dateString: string) {
     // @ts-ignore
     return mydate.toLocaleString("en-US", options);
 }
+
+export function formatHeaderName(header: string) {
+    // Break camelCase and snake_case
+    const result = header
+        .replace(/([a-z])([A-Z])/g, "$1 $2") // Break camelCase
+        .replace(/_/g, " ") // Replace underscores with spaces
+        .toLowerCase(); // Convert to lowercase for uniformity
+
+    // Capitalize each word
+    return result.replace(/\b\w/g, (char) => char.toUpperCase());
+}
