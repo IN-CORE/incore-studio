@@ -1,6 +1,7 @@
 import { Box, Card, CardContent, Chip, Grid, Typography } from "@mui/material";
 import React from "react";
 import { parseDateTime } from "@app/utils";
+import { MapThumbnail } from "@app/components/Project/MapThumbnail";
 
 export const VisualizationCards: React.FC<{ projectVisualizations: Visualization[] }> = ({ projectVisualizations }) => {
     return (
@@ -14,17 +15,7 @@ export const VisualizationCards: React.FC<{ projectVisualizations: Visualization
                             sx={{ display: "flex", flexDirection: "column", height: "100%", padding: 0 }}
                         >
                             <CardContent>
-                                <Box
-                                    sx={{
-                                        height: 200,
-                                        backgroundColor: "#e0e0e0",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center"
-                                    }}
-                                >
-                                    <Typography level="body-sm">Visualization Placeholder</Typography>
-                                </Box>
+                                <MapThumbnail id={visualization?.layers?.[0]?.layerId} />
                                 <Box sx={{ p: 1, flexGrow: 1, height: 80, overflow: "auto" }}>
                                     <Typography level="body-sm" mb={1} textColor="primary.main">
                                         {visualization.name || "Name not provided"}
