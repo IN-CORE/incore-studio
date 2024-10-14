@@ -22,7 +22,7 @@ import {
     saveWorkflow,
     getDatawolfUser
 } from "@app/reducer/workflowSlice";
-import { createWorkflowFileFromNodesAndEdges } from "@app/components/Workflow/workflowUtils";
+import { createWorkflowFileFromNodesAndEdgesV2 } from "@app/components/Workflow/workflowUtils";
 import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
 const selector = (state: ReactFlowAppState) => ({
@@ -97,7 +97,7 @@ const WorkflowEditor = (): JSX.Element => {
 
     const handleExportJSONClick = () => {
         if (currentWorkflow !== null && workflowID !== null) {
-            const newWorkflowFile = createWorkflowFileFromNodesAndEdges({
+            const newWorkflowFile = createWorkflowFileFromNodesAndEdgesV2({
                 nodes: nodes,
                 edges: edges,
                 creator: datawolfUser,
@@ -132,7 +132,7 @@ const WorkflowEditor = (): JSX.Element => {
 
     const handleSaveClick = () => {
         if (currentWorkflow !== null && workflowID !== null) {
-            const newWorkflowFile = createWorkflowFileFromNodesAndEdges({
+            const newWorkflowFile = createWorkflowFileFromNodesAndEdgesV2({
                 nodes: nodes,
                 edges: edges,
                 creator: datawolfUser,
@@ -146,135 +146,6 @@ const WorkflowEditor = (): JSX.Element => {
             appDispatch(saveWorkflow({ workflowID: workflowID, workflow: newWorkflowFile }));
         } // else dispatch save workflow error
     };
-
-    // const AddAnalysisModal = (
-    //     <Modal
-    //         aria-labelledby="modal-title"
-    //         aria-describedby="modal-desc"
-    //         open={selectAnalysisModalOpen}
-    //         onClose={() => setSelectAnalysisModalOpen(false)}
-    //         sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-    //     >
-    //         <Card
-    //             sx={{
-    //                 width: 800,
-    //                 maxHeight: 800,
-    //                 backgroundColor: "white",
-    //                 padding: "24px"
-    //             }}
-    //         >
-    //             <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
-    //                 <TrendingUpRoundedIcon sx={{ color: "#EF6C00", marginRight: "10px" }} />
-    //                 <Typography
-    //                     level="title-lg"
-    //                     sx={{
-    //                         fontWeight: 500,
-    //                         fontSize: "24px",
-    //                         lineHeight: "24px",
-    //                         paragraph: "28px",
-    //                         my: "10px"
-    //                     }}
-    //                 >
-    //                     Select Analysis
-    //                 </Typography>
-    //                 <ModalClose variant="plain" sx={{ m: 1 }} />
-    //             </Box>
-    //             <CardContent>
-    //                 <Stack direction="column" spacing={3}>
-    //                     <Box>
-    //                         <Input
-    //                             startDecorator={<SearchRoundedIcon />}
-    //                             endDecorator={
-    //                                 searchAnalysisTerm.length > 0 ? (
-    //                                     <IconButton variant="plain" onClick={() => setSearchAnalysisTerm("")}>
-    //                                         <CloseRoundedIcon />
-    //                                     </IconButton>
-    //                                 ) : null
-    //                             }
-    //                             placeholder="Search Analysis"
-    //                             value={searchAnalysisTerm}
-    //                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-    //                                 setSearchAnalysisTerm(e.target.value.toLowerCase());
-    //                             }}
-    //                         />
-    //                     </Box>
-    //                     <Box sx={{ height: "400px", overflow: "auto", padding: "10px" }}>
-    //                         <List
-    //                             sx={{
-    //                                 "--List-gap": "8px",
-    //                                 "--ListItem-minHeight": "32px",
-    //                                 "--ListItem-gap": "4px"
-    //                             }}
-    //                         >
-    //                             {availableAnalyses.map((analysis) => (
-    //                                 <ListItem key={analysis}>
-    //                                     {analysis === selectedAnalysis && (
-    //                                         <Done
-    //                                             color="primary"
-    //                                             sx={{
-    //                                                 ml: -0.5,
-    //                                                 zIndex: 2,
-    //                                                 pointerEvents: "none"
-    //                                             }}
-    //                                         />
-    //                                     )}
-    //                                     <Checkbox
-    //                                         size="sm"
-    //                                         disableIcon
-    //                                         overlay
-    //                                         label={
-    //                                             dependencyGraph !== undefined && dependencyGraph[analysis] !== undefined
-    //                                                 ? dependencyGraph[analysis].pretty_name
-    //                                                 : analysis
-    //                                         }
-    //                                         checked={selectedAnalysis === analysis}
-    //                                         variant={selectedAnalysis === analysis ? "soft" : "outlined"}
-    //                                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-    //                                             if (event.target.checked) {
-    //                                                 setSelectedAnalysis(analysis);
-    //                                             } else {
-    //                                                 setSelectedAnalysis("");
-    //                                             }
-    //                                         }}
-    //                                         slotProps={{
-    //                                             action: ({ checked }) => ({
-    //                                                 sx: checked
-    //                                                     ? {
-    //                                                           border: "1px solid",
-    //                                                           borderColor: "primary.500"
-    //                                                       }
-    //                                                     : {}
-    //                                             })
-    //                                         }}
-    //                                     />
-    //                                 </ListItem>
-    //                             ))}
-    //                         </List>
-    //                     </Box>
-    //                 </Stack>
-    //             </CardContent>
-    //             <CardActions>
-    //                 <Button
-    //                     variant="solid"
-    //                     sx={{ backgroundColor: "primary.main" }}
-    //                     startDecorator={<AddRoundedIcon />}
-    //                     onClick={() => {
-    //                         if (selectedAnalysis !== "") {
-    //                             const { nodes: newNodes, edges: newEdges } = getNodesAndEdgesFromTool(
-    //                                 datawolfTools.find((tool) => tool.title === selectedAnalysis)
-    //                             );
-    //                             clearItems();
-    //                             addNodes(newNodes);
-    //                             addEdges(newEdges);
-    //                         }
-    //                     }}
-    //                 >
-    //                     Add
-    //                 </Button>
-    //             </CardActions>
-    //         </Card>
-    //     </Modal>
-    // );
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>

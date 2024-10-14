@@ -76,7 +76,16 @@ export function AnalysisNode({
                 hyphens: "auto"
             }}
         >
-            <Handle type="target" position={targetPosition || Position.Top} />
+            <Handle
+                type="target"
+                position={targetPosition || Position.Top}
+                style={{
+                    width: "14px",
+                    height: "30px",
+                    borderRadius: "3px",
+                    backgroundColor: "#007DFF"
+                }}
+            />
             <Stack direction="row" spacing={2} sx={{ justifyContent: "space-between" }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <TrendingUpIcon sx={{ color: "#EF6C00", marginRight: "5px" }} />
@@ -141,7 +150,16 @@ export function AnalysisNode({
                     id: id
                 }}
             />
-            <Handle type="source" position={sourcePosition || Position.Bottom} />
+            <Handle
+                type="source"
+                position={sourcePosition || Position.Bottom}
+                style={{
+                    width: "14px",
+                    height: "30px",
+                    borderRadius: "3px",
+                    backgroundColor: "#AB47BC"
+                }}
+            />
         </Box>
     );
 }

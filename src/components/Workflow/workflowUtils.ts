@@ -1,6 +1,6 @@
 import type { Edge } from "@xyflow/react";
 import { MarkerType } from "@xyflow/react";
-import type { AnalysisNode, AppNode, AnalysisOutputNode, AnalysisInputNode } from "./nodes";
+import type { AnalysisNode, AppNode, AnalysisOutputNode, AnalysisInputNode, NewAnalysisNode } from "./nodes";
 import { v4 as uuidv4 } from "uuid";
 import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
@@ -227,8 +227,8 @@ export const createWorkflowFileFromNodesAndEdges = ({
                 analysisNode.data.stepData !== undefined
                     ? analysisNode.data.stepData.tool.id
                     : analysisNode.data.toolID !== undefined
-                    ? analysisNode.data.toolID
-                    : ""
+                      ? analysisNode.data.toolID
+                      : ""
             ];
         let stepId = analysisNode.id;
         let title = tool.title;
@@ -429,4 +429,294 @@ export const getNodesAndEdgesFromTool = (
     }
 
     return { nodes, edges };
+};
+
+export const addNewAnalysisNodesAndEdgesWorkflow = (workflowFile: DatawolfWorkflowFile): ReactFlowWorkflow => {
+    let nodes: AppNode[] = [];
+    let edges: Edge[] = [];
+
+    let sourceNodeLookup: { [key: string]: { analysisId: string; handleId: string } } = {};
+    let targetNodeLookup: { [key: string]: { analysisId: string; handleId: string }[] } = {};
+    let mappingUUIDSet: Set<string> = new Set();
+    if (workflowFile.steps.length > 0) {
+        workflowFile.steps.forEach((step) => {
+            let inputHandles = step.tool.inputs.map((input) => {
+                const newId = uuidv4();
+                mappingUUIDSet.add(step.inputs[input.dataId]);
+                if (targetNodeLookup[step.inputs[input.dataId]] === undefined) {
+                    targetNodeLookup[step.inputs[input.dataId]] = [{ analysisId: step.id, handleId: newId }];
+                } else {
+                    targetNodeLookup[step.inputs[input.dataId]].push({ analysisId: step.id, handleId: newId });
+                }
+                return { id: newId, label: input.title, dataId: input.dataId, type: "input" };
+            });
+            // add Hazard input handle
+            if (step.tool.parameters.some((param) => param.title === "hazard_type" || param.title === "hazard_id")) {
+                inputHandles.push({ id: `${step.id}_hazard`, label: "Hazard", dataId: "hazard", type: "input" });
+            }
+            // add DFR3 Mapping Set input handle
+            if (step.tool.parameters.some((param) => param.title === "dfr3_mapping_set")) {
+                inputHandles.push({
+                    id: `${step.id}_dfr3_mapping_set`,
+                    label: "DFR3 Mapping Set",
+                    dataId: "dfr3_mapping",
+                    type: "input"
+                });
+            }
+
+            let outputHandles: { id: string; label: string; dataId: string; type: string }[] = [];
+            step.tool.outputs.forEach((output) => {
+                if (output.title !== "stdout") {
+                    const newId = uuidv4();
+                    mappingUUIDSet.add(step.outputs[output.dataId]);
+                    sourceNodeLookup[step.outputs[output.dataId]] = { analysisId: step.id, handleId: newId };
+                    outputHandles.push({ id: newId, label: output.title, dataId: output.dataId, type: "output" });
+                }
+            });
+
+            nodes.push({
+                id: step.id,
+                type: "new-analysis-node",
+                position: { x: 0, y: 0 },
+                data: {
+                    label: dependencyGraph[step.title].pretty_name,
+                    name: step.title,
+                    stepData: step,
+                    inputHandles: inputHandles,
+                    outputHandles: outputHandles
+                }
+            });
+        });
+
+        // Add edges for chained inputs
+        Array.from(mappingUUIDSet).forEach((mappingUUID) => {
+            if (targetNodeLookup[mappingUUID] !== undefined && sourceNodeLookup[mappingUUID] !== undefined) {
+                targetNodeLookup[mappingUUID].forEach((targetNodeId) => {
+                    edges.push({
+                        id: `${sourceNodeLookup[mappingUUID].analysisId}_handle_${sourceNodeLookup[mappingUUID].handleId}->${targetNodeId.analysisId}_ handle_${targetNodeId.handleId}`,
+                        source: sourceNodeLookup[mappingUUID].analysisId,
+                        target: targetNodeId.analysisId,
+                        sourceHandle: sourceNodeLookup[mappingUUID].handleId,
+                        targetHandle: targetNodeId.handleId,
+                        type: "deletableEdge",
+                        markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
+                    });
+                });
+            }
+        });
+
+        return { nodes, edges };
+    }
+
+    return { nodes, edges };
+};
+
+export const createWorkflowFileFromNodesAndEdgesV2 = ({
+    nodes,
+    edges,
+    creator,
+    datawolfWorkflowFileID,
+    title,
+    description,
+    created,
+    tools
+}: {
+    nodes: AppNode[];
+    edges: Edge[];
+    creator: DatawolfCreator | null;
+    datawolfWorkflowFileID: string | null;
+    title: string;
+    description: string;
+    created: string;
+    tools: DatawolfWorkflowTool[];
+}): DatawolfWorkflowFile => {
+    if (tools.length === 0 || nodes.length === 0) {
+        console.info("No tools or nodes found. Proceeding with empty workflow file.");
+        return {
+            id: datawolfWorkflowFileID,
+            deleted: false,
+            title: title,
+            description: description,
+            created: created,
+            creator: creator,
+            contributors: [],
+            steps: []
+        };
+    }
+
+    let steps: { [key: string]: DatawolfWorkflowFileStep } = {};
+    let contributors: DatawolfCreator[] = [];
+    let edgesFromOutputToInputHandles: {
+        [key: string]: {
+            [key: string]: {
+                toAnalysisId: string;
+                toHandleDataId: string;
+            }[];
+        };
+    } = {};
+
+    let dataIdReverseLookup: { [key: string]: { [key: string]: string } } = {};
+    nodes.forEach((node) => {
+        (node as NewAnalysisNode).data.inputHandles.forEach((handle) => {
+            if (dataIdReverseLookup[node.id] === undefined) {
+                dataIdReverseLookup[node.id] = { [handle.id]: handle.dataId };
+            } else {
+                dataIdReverseLookup[node.id][handle.id] = handle.dataId;
+            }
+        });
+        (node as NewAnalysisNode).data.outputHandles.forEach((handle) => {
+            if (dataIdReverseLookup[node.id] === undefined) {
+                dataIdReverseLookup[node.id] = { [handle.id]: handle.dataId };
+            } else {
+                dataIdReverseLookup[node.id][handle.id] = handle.dataId;
+            }
+        });
+    });
+
+    edges.forEach((edge) => {
+        // @ts-ignore
+        if (edgesFromOutputToInputHandles[edge.source] === undefined) {
+            edgesFromOutputToInputHandles[edge.source] = {
+                // @ts-ignore
+                [dataIdReverseLookup[edge.source][edge.sourceHandle]]: [
+                    {
+                        toAnalysisId: edge.target,
+                        // @ts-ignore
+                        toHandleDataId: dataIdReverseLookup[edge.target][edge.targetHandle]
+                    }
+                ]
+            };
+        } else if (
+            // @ts-ignore
+            edgesFromOutputToInputHandles[edge.source][dataIdReverseLookup[edge.source][edge.sourceHandle]] ===
+            undefined
+        ) {
+            // @ts-ignore
+            edgesFromOutputToInputHandles[edge.source][dataIdReverseLookup[edge.source][edge.sourceHandle]] = [
+                {
+                    toAnalysisId: edge.target,
+                    // @ts-ignore
+                    toHandleDataId: dataIdReverseLookup[edge.target][edge.targetHandle]
+                }
+            ];
+        } else {
+            // @ts-ignore
+            edgesFromOutputToInputHandles[edge.source][dataIdReverseLookup[edge.source][edge.sourceHandle]].push({
+                toAnalysisId: edge.target,
+                // @ts-ignore
+                toHandleDataId: dataIdReverseLookup[edge.target][edge.targetHandle]
+            });
+        }
+    });
+
+    nodes.forEach((node) => {
+        let tool: DatawolfWorkflowTool = ((node as NewAnalysisNode).data.stepData?.tool ??
+            (node as NewAnalysisNode).data.tool) as DatawolfWorkflowTool;
+        let stepId = node.id;
+        let title = tool?.title;
+        let date = new Date().toISOString();
+        let inputs: { [key: string]: string } = {};
+        let outputs: { [key: string]: string } = {};
+        let inputsToolData: { [key: string]: string | null } = {};
+        let outputsToolData: { [key: string]: string | null } = {};
+        let parameters: { [key: string]: string } = {};
+
+        // set parameters ids
+        tool?.parameters.forEach((param) => {
+            parameters[param.parameterId] = uuidv4();
+        });
+
+        //set inputstooldata to null
+        tool?.inputs.forEach((input) => {
+            inputsToolData[input.dataId] = null;
+            inputs[input.dataId] = uuidv4();
+        });
+
+        //set outputstooldata null
+        tool?.outputs.forEach((output) => {
+            outputsToolData[output.dataId] = null;
+            outputs[output.dataId] = uuidv4();
+        });
+
+        steps[stepId] = {
+            id: stepId,
+            deleted: false,
+            creator: creator,
+            title: title ?? "",
+            createDate: date,
+            tool: tool,
+            inputs: inputs,
+            outputs: outputs,
+            inputsToolData: inputsToolData,
+            outputsToolData: outputsToolData,
+            parameters: parameters
+        };
+    });
+
+    Object.entries(edgesFromOutputToInputHandles).forEach(([fromStepId, toSteps]) => {
+        Object.entries(toSteps).forEach(([fromDataId, toSteps]) => {
+            let commonUUID = uuidv4();
+            toSteps.forEach((toStep) => {
+                steps[fromStepId].outputs[fromDataId] = commonUUID;
+                steps[toStep.toAnalysisId].inputs[toStep.toHandleDataId] = commonUUID;
+            });
+        });
+    });
+
+    let file: DatawolfWorkflowFile = {
+        id: datawolfWorkflowFileID,
+        deleted: false,
+        title: title,
+        description: description,
+        created: created,
+        creator: creator,
+        contributors: contributors,
+        steps: Object.values(steps)
+    };
+
+    return file;
+};
+
+export const getNodeFromToolV2 = (tool: DatawolfWorkflowTool | undefined): NewAnalysisNode | null => {
+    if (tool !== undefined) {
+        let stepId = uuidv4();
+        let inputHandles = tool.inputs.map((input) => {
+            return { id: uuidv4(), label: input.title, dataId: input.dataId, type: "input" };
+        });
+        // add Hazard input handle
+        if (tool.parameters.some((param) => param.title === "hazard_type" || param.title === "hazard_id")) {
+            inputHandles.push({ id: `${stepId}_hazard`, label: "Hazard", dataId: "hazard", type: "input" });
+        }
+        // add DFR3 Mapping Set input handle
+        if (tool.parameters.some((param) => param.title === "dfr3_mapping_set")) {
+            inputHandles.push({
+                id: `${stepId}_dfr3_mapping_set`,
+                label: "DFR3 Mapping Set",
+                dataId: "dfr3_mapping",
+                type: "input"
+            });
+        }
+
+        let outputHandles: { id: string; label: string; dataId: string; type: string }[] = [];
+        tool.outputs.forEach((output) => {
+            if (output.title !== "stdout") {
+                outputHandles.push({ id: uuidv4(), label: output.title, dataId: output.dataId, type: "output" });
+            }
+        });
+
+        return {
+            id: stepId,
+            type: "new-analysis-node",
+            position: { x: 0, y: 0 },
+            data: {
+                label: dependencyGraph[tool.title].pretty_name,
+                name: tool.title,
+                tool: tool,
+                inputHandles: inputHandles,
+                outputHandles: outputHandles
+            }
+        };
+    }
+
+    return null;
 };

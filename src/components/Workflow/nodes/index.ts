@@ -3,6 +3,7 @@ import type { Node, NodeTypes, BuiltInNode } from "@xyflow/react";
 import { AnalysisInputNode } from "./AnalysisInputNode";
 import { AnalysisOutputNode } from "./AnalysisOutputNode";
 import { AnalysisNode } from "./AnalysisNode";
+import { NewAnalysisNode } from "./NewAnalysisNode";
 
 export type AnalysisInputNode = Node<
     {
@@ -35,11 +36,24 @@ export type AnalysisNode = Node<
     "analysis"
 >;
 
-export type AppNode = BuiltInNode | AnalysisInputNode | AnalysisOutputNode | AnalysisNode;
+export type NewAnalysisNode = Node<
+    {
+        label: string;
+        name: string;
+        inputHandles: { id: string; label: string; dataId: string; type: string }[];
+        outputHandles: { id: string; label: string; dataId: string; type: string }[];
+        stepData?: DatawolfWorkflowFileStep;
+        tool?: DatawolfWorkflowTool;
+    },
+    "new-analysis-node"
+>;
+
+export type AppNode = BuiltInNode | AnalysisInputNode | AnalysisOutputNode | AnalysisNode | NewAnalysisNode;
 
 export const nodeTypes = {
     "analysis-input": AnalysisInputNode,
     "analysis-output": AnalysisOutputNode,
-    "analysis": AnalysisNode
+    "analysis": AnalysisNode,
+    "new-analysis-node": NewAnalysisNode
     // Add any of your custom nodes here!
 } satisfies NodeTypes;
