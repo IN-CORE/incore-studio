@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { Box, Typography, Container, Grid } from "@mui/joy";
+import { Box, Typography, Container } from "@mui/joy";
+import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
@@ -61,13 +62,13 @@ const ProjectPage = (): JSX.Element => {
 
                             <Grid container spacing={2} mt={3}>
                                 {/* Left Column: Hazard and Visualization Cards */}
-                                <Grid columns={6}>
+                                <Grid sm={6}>
                                     <HazardCards />
                                     <VisualizationCards />
                                 </Grid>
 
                                 {/* Right Column: Workflow, Dataset, and DFR3Mapping Tables */}
-                                <Grid columns={6}>
+                                <Grid sm={6}>
                                     <ResourceTable
                                         resourceTitle="Workflows"
                                         columns={["name", "description", "date", "owner"]}

@@ -12,7 +12,7 @@ export const VisualizationCards = () => {
 
     return (
         <>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} pl={2} pr={2}>
                 <Typography level="h4">Visualizations</Typography>
                 <Box display="flex" alignItems="center">
                     <IconButton>
@@ -32,12 +32,12 @@ export const VisualizationCards = () => {
             {/* Wrapping Cards inside Grid Container */}
             <Grid container spacing={3}>
                 {projectVisualizations.map((visualization) => (
-                    <Grid key={visualization.id} columns={4}>
-                        <Card variant="plain" sx={{ width: 300 }}>
+                    <Grid key={visualization.id} xs={12} sm={12} md={6} lg={6}>
+                        <Card variant="plain" sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
                             <CardContent>
                                 <Box
                                     sx={{
-                                        height: 150,
+                                        height: 200,
                                         backgroundColor: "#e0e0e0",
                                         display: "flex",
                                         justifyContent: "center",

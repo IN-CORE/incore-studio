@@ -1,4 +1,5 @@
-import { Card, Grid, Typography, IconButton, Box, CardContent, Chip } from "@mui/joy";
+import { Card, Typography, IconButton, Box, CardContent, Chip } from "@mui/joy";
+import { Grid } from "@mui/material";
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
@@ -12,7 +13,7 @@ export const HazardCards = () => {
 
     return (
         <>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} pl={2} pr={2}>
                 <Typography level="h4">Hazards</Typography>
                 <Box display="flex" alignItems="center">
                     <IconButton>
@@ -29,15 +30,16 @@ export const HazardCards = () => {
                     </IconButton>
                 </Box>
             </Box>
+
             {/* Wrapping Cards inside Grid Container */}
             <Grid container spacing={3}>
                 {projectHazards.map((hazard) => (
-                    <Grid key={hazard.id} columns={4}>
-                        <Card variant="plain" sx={{ width: 300 }}>
+                    <Grid key={hazard.id} xs={12} sm={12} md={6} lg={6}>
+                        <Card variant="plain" sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
                             <CardContent>
                                 <Box
                                     sx={{
-                                        height: 150,
+                                        height: 200,
                                         backgroundColor: "#e0e0e0",
                                         display: "flex",
                                         justifyContent: "center",
@@ -77,7 +79,6 @@ export const HazardCards = () => {
                     </Grid>
                 ))}
             </Grid>
-            <Grid container spacing={3} />
         </>
     );
 };
