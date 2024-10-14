@@ -41,7 +41,11 @@ export default function DeletableEdge({
             <BaseEdge
                 path={edgePath}
                 markerEnd={markerEnd}
-                style={{ ...style, stroke: selected ? "#EF6C00" : "#000000", strokeWidth: selected ? "1px" : "2px" }}
+                style={{
+                    ...style,
+                    stroke: selected ? "#EF6C00" : "#000000",
+                    strokeWidth: selected ? "1px" : "2px"
+                }}
             />
             <EdgeLabelRenderer>
                 <Box
