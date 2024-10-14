@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Typography, Container } from "@mui/joy";
+import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
@@ -8,16 +8,15 @@ import {
     getProjectDatasets,
     getProjectDRF3Mappings,
     getProjectHazards,
+    getProjectVisualizations,
     getProjectWorkflows
 } from "@app/reducer/projectSlice";
 import Topbar from "@app/components/Home/Topbar";
-import { DatasetTable } from "@app/components/Project/DatasetTable";
-import { DFR3MappingTable } from "@app/components/Project/DFR3MappingTable";
 import { HazardCards } from "@app/components/Project/HazardCards";
-import { WorkflowTable } from "@app/components/Project/WorkflowTable";
 import { VisualizationCards } from "@app/components/Project/VisualizationCards";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
+import { ResourceTable } from "@app/components/Project/ResourceTable";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -25,7 +24,6 @@ const ProjectPage = (): JSX.Element => {
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
-
     const loading = useSelector((state: RootState) => state.project.loading);
 
     // Fetch projects when filters or pagination change (but not during search)
@@ -40,7 +38,13 @@ const ProjectPage = (): JSX.Element => {
         dispatch(getProjectWorkflows(id));
         // @ts-ignore
         dispatch(getProjectDRF3Mappings(id));
+        // @ts-ignore
+        dispatch(getProjectVisualizations(id));
     }, [id]);
+
+    const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
+    const projectWorkflows = useSelector((state: RootState) => state.project.projectWorkflows);
+    const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
 
     return (
         <>
@@ -55,16 +59,32 @@ const ProjectPage = (): JSX.Element => {
                             <ProjectBreadcrumb project={{ href: `/project/${project.id}`, label: project.name }} />
                             <ProjectHeader project={project} />
 
-                            {/* Hazard Section */}
-                            <HazardCards />
-                            {/* Visualization Section */}
-                            <VisualizationCards />
-                            {/* Workflow Section */}
-                            <WorkflowTable />
-                            {/* Dataset Section */}
-                            <DatasetTable />
-                            {/* DFR3Mapping Section */}
-                            <DFR3MappingTable />
+                            <Grid container spacing={2} mt={3}>
+                                {/* Left Column: Hazard and Visualization Cards */}
+                                <Grid columns={6}>
+                                    <HazardCards />
+                                    <VisualizationCards />
+                                </Grid>
+
+                                {/* Right Column: Workflow, Dataset, and DFR3Mapping Tables */}
+                                <Grid columns={6}>
+                                    <ResourceTable
+                                        resourceTitle="Workflows"
+                                        columns={["name", "description", "date", "owner"]}
+                                        data={projectWorkflows}
+                                    />
+                                    <ResourceTable
+                                        resourceTitle="Datasets"
+                                        columns={["title", "description", "date", "creator", "isFinalized"]}
+                                        data={projectDatasets}
+                                    />
+                                    <ResourceTable
+                                        resourceTitle="DFR3 Mappings"
+                                        columns={["name", "hazardType", "inventoryType", "mappingType", "owner"]}
+                                        data={projectDFR3Mappings}
+                                    />
+                                </Grid>
+                            </Grid>
                         </>
                     )}
                 </Box>

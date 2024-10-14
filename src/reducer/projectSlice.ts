@@ -95,6 +95,11 @@ export const getProjectWorkflows = createAsyncThunk("projects/getProjectWorkflow
     return response.data;
 });
 
+export const getProjectVisualizations = createAsyncThunk("projects/getProjectVisualizations", async (id: string) => {
+    const response = await axios.get(`${PROJECT_API_URL}/${id}/visualizations`, { headers: getHeaders() });
+    return response.data;
+});
+
 const projectSlice = createSlice({
     name: "projects",
     initialState,
@@ -166,7 +171,7 @@ const projectSlice = createSlice({
             })
             .addCase(getProjectWorkflows.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || "Failed to load the project datasets";
+                state.error = action.error.message || "Failed to load the project workflows";
             })
             // Handle GET_PROJECT_HAZARDS
             .addCase(getProjectHazards.pending, (state) => {
@@ -179,7 +184,7 @@ const projectSlice = createSlice({
             })
             .addCase(getProjectHazards.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || "Failed to load the project datasets";
+                state.error = action.error.message || "Failed to load the project hazards";
             })
             // Handle GET_PROJECT_DFR3_MAPPINGS
             .addCase(getProjectDRF3Mappings.pending, (state) => {
@@ -192,7 +197,20 @@ const projectSlice = createSlice({
             })
             .addCase(getProjectDRF3Mappings.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || "Failed to load the project datasets";
+                state.error = action.error.message || "Failed to load the project dfr3mappings";
+            })
+            // Handle GET_PROJECT_VISUALIZATIONS
+            .addCase(getProjectVisualizations.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getProjectVisualizations.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectVisualizations = action.payload;
+            })
+            .addCase(getProjectVisualizations.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to load the project visualizations";
             })
             // Handle DELETE_PROJECT
             .addCase(deleteProject.pending, (state) => {
