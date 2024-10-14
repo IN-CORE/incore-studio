@@ -9,6 +9,7 @@ import CssBaseline from "@mui/joy/CssBaseline";
 import "@fontsource/inter";
 import "@xyflow/react/dist/style.css";
 
+import config from "@app/app.config";
 import { Provider } from "react-redux";
 import routes from "./routes";
 import { theme } from "./theme";
@@ -18,10 +19,12 @@ import "./styles/main.scss";
 
 import store from "./store";
 
+const basename = process.env.NODE_ENV === "production" ? "/studio" : "/";
+
 const oidcConfig = {
-    authority: window.AUTHORITY,
-    client_id: window.CLIENT_ID,
-    redirect_uri: window.REDIRECT_URI
+    authority: config.keycloakConfig.authority,
+    client_id: config.keycloakConfig.client_id,
+    redirect_uri: `${location.origin}${basename}/`
 };
 
 const App: FC = () => {
@@ -47,7 +50,7 @@ const App: FC = () => {
 
     return (
         <StrictMode>
-            <Router>
+            <Router basename={basename}>
                 <CssVarsProvider theme={theme}>
                     <CssBaseline />
                     <Suspense fallback={<Loading />}>
