@@ -2,6 +2,7 @@ import { Card, Typography, Box, CardContent, Chip } from "@mui/joy";
 import { Grid } from "@mui/material";
 import React from "react";
 import { parseDateTime } from "@app/utils";
+import { MapThumbnail } from "@app/components/Project/MapThumbnail";
 
 export const HazardCards: React.FC<{ projectHazards: Hazard[] }> = ({ projectHazards }) => {
     return (
@@ -10,17 +11,8 @@ export const HazardCards: React.FC<{ projectHazards: Hazard[] }> = ({ projectHaz
                 <Grid key={hazard.id} xs={12} sm={12} md={6} lg={6}>
                     <Card variant="plain" sx={{ display: "flex", flexDirection: "column", height: "100%", padding: 0 }}>
                         <CardContent>
-                            <Box
-                                sx={{
-                                    height: 200,
-                                    backgroundColor: "#e0e0e0",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center"
-                                }}
-                            >
-                                <Typography level="body-sm">Hazard Placeholder</Typography>
-                            </Box>
+                            {/* TODO take first layer for thumbnail */}
+                            <MapThumbnail hazard={hazard} />
                             <Box sx={{ p: 1, flexGrow: 1, height: 80, overflow: "auto" }}>
                                 <Typography level="body-sm" mb={1} textColor="primary.main">
                                     {hazard.name || "Name not provided"}

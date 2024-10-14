@@ -8,7 +8,7 @@ import CalendarIcon from "@mui/icons-material/CalendarToday";
 import { parseDateTime } from "@app/utils";
 import Divider from "@mui/joy/Divider";
 
-export const ProjectHeader = ({ project }: { project: any }) => {
+export const ProjectHeader = ({ project }: { project: Project }) => {
     return (
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4, ml: 2, mt: 5 }}>
             {/* Left section with project name and description */}
