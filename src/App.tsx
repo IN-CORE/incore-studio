@@ -19,7 +19,7 @@ import "./styles/main.scss";
 
 import store from "./store";
 
-const basename = process.env.NODE_ENV === "production" ? "/studio" : "/";
+const basename = process.env.NODE_ENV === "production" ? "/studio" : "";
 
 const oidcConfig = {
     authority: config.keycloakConfig.authority,
@@ -29,6 +29,7 @@ const oidcConfig = {
 
 const App: FC = () => {
     const auth = useAuth();
+    console.log(process.env.PUBLIC_URL);
 
     useEffect(() => {
         if (auth.isLoading) return; // Do nothing while loading
