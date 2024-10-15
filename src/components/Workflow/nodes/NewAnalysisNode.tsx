@@ -71,7 +71,11 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                 minHeight: `${MIN_HEIGHT}px`,
                 width: "400px",
                 wordWrap: "break-word",
-                hyphens: "auto"
+                hyphens: "auto",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "column"
             }}
         >
             {data.inputHandles.map((inpt, index) => (
@@ -130,11 +134,15 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     </Typography>
                 </Box>
             )}
-            <Stack direction="column" spacing={2} sx={{ my: "6px", height: "100%" }}>
-                <Stack
-                    direction="row"
-                    spacing={2}
-                    sx={{ justifyContent: "space-between", alignContent: "center", textAlign: "center" }}
+            <Stack direction="column" spacing={4} sx={{ my: "6px", height: "100%", width: "100%" }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        my: "4px",
+                        width: "100%",
+                        justifyContent: "space-between"
+                    }}
                 >
                     <Box>
                         <Typography level="h2" sx={{ fontWeight: 600, fontSize: zoom > 1 ? "24px" : "28px" }}>
@@ -154,7 +162,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                             </IconButton>
                         </Tooltip>
                     </Box>
-                </Stack>
+                </Box>
                 <Stack direction="row" spacing={2} justifyContent="space-between">
                     <Button
                         variant="solid"
