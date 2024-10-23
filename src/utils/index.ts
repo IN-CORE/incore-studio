@@ -1,7 +1,10 @@
 import { User } from "oidc-client";
+import config from "@app/app.config";
 
 export function getOidcUser() {
-    const oidcStorage = sessionStorage.getItem(`oidc.user:${window.AUTHORITY}:${window.CLIENT_ID}`);
+    const oidcStorage = sessionStorage.getItem(
+        `oidc.user:${config.keycloakConfig.authority}:${config.keycloakConfig.client_id}`
+    );
     if (!oidcStorage) {
         return null;
     }
@@ -12,7 +15,7 @@ export function getOidcUser() {
 export const getHeaders = () => {
     const user = getOidcUser(); // Assuming this function retrieves the user object with the access token
     const token = user?.access_token;
-    const isLocalhost = window.API_SERVER.includes("localhost");
+    const isLocalhost = config.hostname.includes("localhost");
 
     if (!isLocalhost) {
         return {

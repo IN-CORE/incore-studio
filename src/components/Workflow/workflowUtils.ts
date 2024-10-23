@@ -10,7 +10,6 @@ export const readNodesAndEdgesFromWorkflowFile = (
 
     let sourceNodeLookup: { [key: string]: string } = {};
     let targetNodeLookup: { [key: string]: string } = {};
-    console.log(workflowFile);
     if (workflowFile.steps.length > 0) {
         workflowFile.steps.forEach((step) => {
             // First create analysis node
