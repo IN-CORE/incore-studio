@@ -2,9 +2,11 @@ import type { Edge } from "@xyflow/react";
 import { MarkerType } from "@xyflow/react";
 import type { AnalysisNode, AppNode, AnalysisOutputNode, AnalysisInputNode, NewAnalysisNode } from "./nodes";
 import { v4 as uuidv4 } from "uuid";
-import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
-export const readNodesAndEdgesFromWorkflowFile = (workflowFile: DatawolfWorkflowFile): ReactFlowWorkflow => {
+export const readNodesAndEdgesFromWorkflowFile = (
+    workflowFile: DatawolfWorkflowFile,
+    dependencyGraph: DependencyGraph | null
+): ReactFlowWorkflow => {
     let nodes: AppNode[] = [];
     let edges: Edge[] = [];
 
@@ -19,7 +21,7 @@ export const readNodesAndEdgesFromWorkflowFile = (workflowFile: DatawolfWorkflow
                 type: "analysis",
                 position: { x: 0, y: 0 },
                 data: {
-                    label: dependencyGraph[step.title].pretty_name,
+                    label: dependencyGraph !== null ? dependencyGraph[step.title].pretty_name : step.title,
                     name: step.title,
                     stepData: step
                 }
@@ -303,7 +305,8 @@ export const createWorkflowFileFromNodesAndEdges = ({
 };
 
 export const getNodesAndEdgesFromTool = (
-    tool: DatawolfWorkflowTool | undefined
+    tool: DatawolfWorkflowTool | undefined,
+    dependencyGraph: DependencyGraph | null
 ): { nodes: AppNode[]; edges: Edge[] } => {
     let nodes: AppNode[] = [];
     let edges: Edge[] = [];
@@ -316,7 +319,7 @@ export const getNodesAndEdgesFromTool = (
             type: "analysis",
             position: { x: 0, y: 0 },
             data: {
-                label: dependencyGraph[tool.title].pretty_name,
+                label: dependencyGraph !== null ? dependencyGraph[tool.title].pretty_name : tool.title,
                 name: tool.title,
                 toolID: tool.id
             }
@@ -431,7 +434,10 @@ export const getNodesAndEdgesFromTool = (
     return { nodes, edges };
 };
 
-export const addNewAnalysisNodesAndEdgesWorkflow = (workflowFile: DatawolfWorkflowFile): ReactFlowWorkflow => {
+export const addNewAnalysisNodesAndEdgesWorkflow = (
+    workflowFile: DatawolfWorkflowFile,
+    dependencyGraph: DependencyGraph | null
+): ReactFlowWorkflow => {
     let nodes: AppNode[] = [];
     let edges: Edge[] = [];
 
@@ -479,7 +485,7 @@ export const addNewAnalysisNodesAndEdgesWorkflow = (workflowFile: DatawolfWorkfl
                 type: "new-analysis-node",
                 position: { x: 0, y: 0 },
                 data: {
-                    label: dependencyGraph[step.title].pretty_name,
+                    label: dependencyGraph !== null ? dependencyGraph[step.title].pretty_name : step.title,
                     name: step.title,
                     stepData: step,
                     inputHandles: inputHandles,
@@ -677,7 +683,10 @@ export const createWorkflowFileFromNodesAndEdgesV2 = ({
     return file;
 };
 
-export const getNodeFromToolV2 = (tool: DatawolfWorkflowTool | undefined): NewAnalysisNode | null => {
+export const getNodeFromToolV2 = (
+    tool: DatawolfWorkflowTool | undefined,
+    dependencyGraph: DependencyGraph | null
+): NewAnalysisNode | null => {
     if (tool !== undefined) {
         let stepId = uuidv4();
         let inputHandles = tool.inputs.map((input) => {
@@ -709,7 +718,7 @@ export const getNodeFromToolV2 = (tool: DatawolfWorkflowTool | undefined): NewAn
             type: "new-analysis-node",
             position: { x: 0, y: 0 },
             data: {
-                label: dependencyGraph[tool.title].pretty_name,
+                label: dependencyGraph !== null ? dependencyGraph[tool.title].pretty_name : tool.title,
                 name: tool.title,
                 tool: tool,
                 inputHandles: inputHandles,

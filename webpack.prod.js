@@ -4,6 +4,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const autoprefixer = require("autoprefixer");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
     mode: "production",
@@ -23,7 +24,8 @@ module.exports = {
         path: path.resolve(__dirname, "build"),
         publicPath: "/studio/",
         filename: "[name].[chunkhash].js",
-        crossOriginLoading: "anonymous"
+        crossOriginLoading: "anonymous",
+        clean: true
     },
     module: {
         rules: [
@@ -97,7 +99,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             template: "src/index.html",
-            favicon: "./src/public/favicon.ico",
+            favicon: "public/favicon.ico",
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,
@@ -110,6 +112,9 @@ module.exports = {
                 minifyURLs: true
             },
             inject: true
+        }),
+        new CopyWebpackPlugin({
+            patterns: [{ from: "public", to: "" }]
         }),
         new Webpack.HotModuleReplacementPlugin(),
         new MiniCssExtractPlugin({ filename: "[name].[contenthash].css" }),

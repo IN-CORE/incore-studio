@@ -20,7 +20,6 @@ import { useShallow } from "zustand/react/shallow";
 import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
 import AddAnalysisModal from "@app/components/AddAnalysisModal";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
-import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -191,7 +190,6 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
             <AddAnalysisModal
                 selectAnalysisModalOpen={selectPreviousAnalysisModalOpen}
                 setSelectAnalysisModalOpen={setSelectPreviousAnalysisModalOpen}
-                dependencyGraph={dependencyGraph}
                 previousAnalysis={true}
                 currentAnalysis={{
                     name: data.name,
@@ -201,7 +199,6 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
             <AddAnalysisModal
                 selectAnalysisModalOpen={selectAfterAnalysisModalOpen}
                 setSelectAnalysisModalOpen={setSelectAfterAnalysisModalOpen}
-                dependencyGraph={dependencyGraph}
                 currentAnalysis={{
                     name: data.name,
                     id: id

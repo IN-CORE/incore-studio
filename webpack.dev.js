@@ -2,6 +2,7 @@ const Webpack = require("webpack");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const autoprefixer = require("autoprefixer");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
     mode: "development",
@@ -22,7 +23,8 @@ module.exports = {
         path: path.resolve(__dirname, "build"),
         publicPath: "/",
         filename: "[name].[chunkhash].js",
-        crossOriginLoading: "anonymous"
+        crossOriginLoading: "anonymous",
+        clean: true
     },
     devServer: {
         hot: true,
@@ -44,12 +46,15 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             template: "src/index.html",
-            favicon: "./src/public/favicon.ico",
+            favicon: "public/favicon.ico",
             minify: {
                 removeComments: true,
                 collapseWhitespace: true
             },
             inject: true
+        }),
+        new CopyWebpackPlugin({
+            patterns: [{ from: "public", to: "" }]
         }),
         new Webpack.LoaderOptionsPlugin({
             debug: true,

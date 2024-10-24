@@ -17,8 +17,8 @@ import Dagre from "@dagrejs/dagre";
 import { Button, Stack } from "@mui/joy";
 import { useShallow } from "zustand/react/shallow";
 
+import { useAppSelector } from "@app/store/hooks";
 import useStore, { type ReactFlowAppState } from "./reactFlowStore";
-import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
 import { NewAnalysisNode, nodeTypes, type AppNode } from "./nodes";
 import { edgeTypes } from "./edges";
@@ -59,37 +59,6 @@ const getLayoutedElements = (nodes: AppNode[], edges: Edge[]): { nodes: AppNode[
     };
 };
 
-const isConnectible = (
-    srcNode: NewAnalysisNode | undefined,
-    tgtNode: NewAnalysisNode | undefined,
-    srcNodeHandle: string | null,
-    tgtNodeHandle: string | null
-): boolean => {
-    if (srcNode !== undefined && tgtNode !== undefined && srcNodeHandle !== null && tgtNodeHandle !== null) {
-        let srcHandle = srcNode.data.outputHandles.find((handle) => handle.id === srcNodeHandle);
-        let tgtHandle = tgtNode.data.inputHandles.find((handle) => handle.id === tgtNodeHandle);
-        if (
-            srcHandle === undefined ||
-            tgtHandle === undefined ||
-            srcHandle.type !== "output" ||
-            tgtHandle.type !== "input" ||
-            tgtHandle.dataId === "hazard" ||
-            tgtHandle.dataId === "dfr3_mapping"
-        ) {
-            return false;
-        }
-        if (dependencyGraph[srcNode.data.name].after[tgtNode.data.name] !== undefined) {
-            return dependencyGraph[srcNode.data.name].after[tgtNode.data.name].some(
-                (criteria: { from: string; to: string }) =>
-                    // @ts-ignore
-                    srcHandle.label === criteria.from && tgtHandle.label === criteria.to
-            );
-        }
-    }
-
-    return false;
-};
-
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
     edges: state.edges,
@@ -101,9 +70,41 @@ const selector = (state: ReactFlowAppState) => ({
 
 const LayoutedWorkflow = () => {
     const { fitView } = useReactFlow();
+    const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
     const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges } = useStore(useShallow(selector));
     const [layoutApplied, setLayoutApplied] = React.useState(false); // State to check if layout has been applied
     const [nodesReady, setNodesReady] = React.useState(false);
+
+    const isConnectible = (
+        srcNode: NewAnalysisNode | undefined,
+        tgtNode: NewAnalysisNode | undefined,
+        srcNodeHandle: string | null,
+        tgtNodeHandle: string | null
+    ): boolean => {
+        if (srcNode !== undefined && tgtNode !== undefined && srcNodeHandle !== null && tgtNodeHandle !== null) {
+            let srcHandle = srcNode.data.outputHandles.find((handle) => handle.id === srcNodeHandle);
+            let tgtHandle = tgtNode.data.inputHandles.find((handle) => handle.id === tgtNodeHandle);
+            if (
+                srcHandle === undefined ||
+                tgtHandle === undefined ||
+                srcHandle.type !== "output" ||
+                tgtHandle.type !== "input" ||
+                tgtHandle.dataId === "hazard" ||
+                tgtHandle.dataId === "dfr3_mapping"
+            ) {
+                return false;
+            }
+            if (dependencyGraph !== null && dependencyGraph[srcNode.data.name].after[tgtNode.data.name] !== undefined) {
+                return dependencyGraph[srcNode.data.name].after[tgtNode.data.name].some(
+                    (criteria: { from: string; to: string }) =>
+                        // @ts-ignore
+                        srcHandle.label === criteria.from && tgtHandle.label === criteria.to
+                );
+            }
+        }
+
+        return false;
+    };
 
     const onConnect: OnConnect = useCallback(
         (connection) => {
@@ -130,6 +131,7 @@ const LayoutedWorkflow = () => {
                     (edge) => edge.target === tgtNode.id && edge.source === srcNode.id
                 );
                 if (
+                    dependencyGraph !== null &&
                     dependencyGraph[srcNode.data.name].after[tgtNode.data.name].length > 1 &&
                     existingInputEdges.length > 0
                 ) {
