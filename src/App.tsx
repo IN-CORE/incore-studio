@@ -1,6 +1,7 @@
 import React, { StrictMode, Suspense, FC, useEffect } from "react";
 // eslint-disable-next-line import/no-unresolved
 import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { CssVarsProvider } from "@mui/joy/styles";
 import { AuthProvider, useAuth } from "react-oidc-context";
@@ -10,14 +11,15 @@ import "@fontsource/inter";
 import "@xyflow/react/dist/style.css";
 
 import config from "@app/app.config";
-import { Provider } from "react-redux";
-import routes from "./routes";
-import { theme } from "./theme";
+import routes from "@app/routes";
+import { theme } from "@app/theme";
+import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { getDependencyGraph } from "@app/reducer/workflowSlice";
 
-import Loading from "./components/Loading";
-import "./styles/main.scss";
+import Loading from "@app/components/Loading";
+import "@app/styles/main.scss";
 
-import store from "./store";
+import store from "@app/store";
 
 const basename = process.env.NODE_ENV === "production" ? "/studio" : "";
 
@@ -29,7 +31,14 @@ const oidcConfig = {
 
 const App: FC = () => {
     const auth = useAuth();
-    console.log(process.env.PUBLIC_URL);
+    const appDispatch = useAppDispatch();
+    const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
+
+    useEffect(() => {
+        if (dependencyGraph === null) {
+            appDispatch(getDependencyGraph());
+        }
+    }, []);
 
     useEffect(() => {
         if (auth.isLoading) return; // Do nothing while loading

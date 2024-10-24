@@ -23,7 +23,6 @@ import {
     getDatawolfUser
 } from "@app/reducer/workflowSlice";
 import { createWorkflowFileFromNodesAndEdgesV2 } from "@app/components/Workflow/workflowUtils";
-import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -317,7 +316,6 @@ const WorkflowEditor = (): JSX.Element => {
                             <AddAnalysisModal
                                 selectAnalysisModalOpen={selectAnalysisModalOpen}
                                 setSelectAnalysisModalOpen={setSelectAnalysisModalOpen}
-                                dependencyGraph={dependencyGraph}
                                 isEmpty
                             />
                         </Box>
@@ -328,7 +326,6 @@ const WorkflowEditor = (): JSX.Element => {
                             <AddAnalysisModal
                                 selectAnalysisModalOpen={selectAnalysisModalOpen}
                                 setSelectAnalysisModalOpen={setSelectAnalysisModalOpen}
-                                dependencyGraph={dependencyGraph}
                                 isEmpty
                             />
                         </Box>

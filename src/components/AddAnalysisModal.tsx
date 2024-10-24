@@ -33,7 +33,6 @@ import useStore, { type ReactFlowAppState } from "./Workflow/reactFlowStore";
 interface AddAnalysisModalProps {
     selectAnalysisModalOpen: boolean;
     setSelectAnalysisModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    dependencyGraph: any;
     isEmpty?: boolean;
     previousAnalysis?: boolean;
     currentAnalysis?: {
@@ -52,11 +51,11 @@ const selector = (state: ReactFlowAppState) => ({
 const AddAnalysisModal = ({
     selectAnalysisModalOpen,
     setSelectAnalysisModalOpen,
-    dependencyGraph,
     isEmpty,
     previousAnalysis,
     currentAnalysis
 }: AddAnalysisModalProps) => {
+    const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
     const [selectedAnalysis, setSelectedAnalysis] = React.useState<string>("");
     const [searchAnalysisTerm, setSearchAnalysisTerm] = React.useState<string>("");
     const [availableAnalyses, setAvailableAnalyses] = React.useState<string[]>([]);
@@ -142,7 +141,7 @@ const AddAnalysisModal = ({
     };
 
     React.useEffect(() => {
-        if (datawolfTools.length !== 0) {
+        if (datawolfTools.length !== 0 && dependencyGraph !== null) {
             let toolNames = datawolfTools.map((tool) => tool.title).sort();
             toolNames = toolNames.filter(
                 (tool) =>
@@ -230,7 +229,7 @@ const AddAnalysisModal = ({
                                                     disableIcon
                                                     overlay
                                                     label={
-                                                        dependencyGraph !== undefined &&
+                                                        dependencyGraph !== null &&
                                                         dependencyGraph[analysis] !== undefined
                                                             ? dependencyGraph[analysis].pretty_name
                                                             : analysis
@@ -258,7 +257,7 @@ const AddAnalysisModal = ({
                                             </ListItem>
                                         );
                                     }
-                                    if (dependencyGraph !== undefined && currentAnalysis !== undefined) {
+                                    if (dependencyGraph !== null && currentAnalysis !== undefined) {
                                         if (previousAnalysis !== undefined) {
                                             if (dependencyGraph[currentAnalysis.name].before[analysis] !== undefined) {
                                                 return dependencyGraph[currentAnalysis.name].before[analysis].map(
@@ -415,7 +414,8 @@ const AddAnalysisModal = ({
                         onClick={() => {
                             if (selectedAnalysis !== "") {
                                 const newNode = getNodeFromToolV2(
-                                    datawolfTools.find((tool) => tool.title === selectedAnalysis)
+                                    datawolfTools.find((tool) => tool.title === selectedAnalysis),
+                                    dependencyGraph
                                 );
                                 const edgeToAdd = getEdgeFromCurrentAnalysis(newNode);
                                 clearItems();
