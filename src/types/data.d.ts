@@ -166,4 +166,12 @@ interface WorkflowState {
     dependencyGraph: DependencyGraph | null;
     dependencyGraphLoading: boolean;
     dependencyGraphError: string | null;
+    sidePanelData: {
+        open: boolean;
+        type: "previous" | "next" | "";
+        currentAnalysis: {
+            name: string;
+            id: string;
+        };
+    };
 }

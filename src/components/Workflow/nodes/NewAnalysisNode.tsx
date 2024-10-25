@@ -18,8 +18,10 @@ import StorageIcon from "@mui/icons-material/Storage";
 import { useShallow } from "zustand/react/shallow";
 
 import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
-import AddAnalysisModal from "@app/components/AddAnalysisModal";
+import { useAppDispatch } from "@app/store/hooks";
+import { setSidePanelData } from "@app/reducer/workflowSlice";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
+import AddAnalysisModal from "@app/components/AddAnalysisModal";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -32,6 +34,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const { nodes, edges, setNodes, setEdges } = useStore(useShallow(selector));
     const { zoom } = useViewport();
     const updateNodeInternals = useUpdateNodeInternals();
+    const appDispatch = useAppDispatch();
 
     React.useEffect(() => {
         updateNodeInternals(id);
@@ -148,7 +151,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                             {data.label}
                         </Typography>
                     </Box>
-                    <Box>
+                    <Box sx={{ position: "absolute", right: "5px", top: "5px" }}>
                         <Tooltip
                             title="Delete"
                             variant="plain"
@@ -169,7 +172,13 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         startDecorator={<AddRoundedIcon />}
                         fullWidth
                         onClick={() => {
-                            setSelectPreviousAnalysisModalOpen(true);
+                            appDispatch(
+                                setSidePanelData({
+                                    open: true,
+                                    type: "previous",
+                                    currentAnalysis: { name: data.name, id: id }
+                                })
+                            );
                         }}
                     >
                         Add previous
@@ -180,7 +189,13 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         startDecorator={<AddRoundedIcon />}
                         fullWidth
                         onClick={() => {
-                            setSelectAfterAnalysisModalOpen(true);
+                            appDispatch(
+                                setSidePanelData({
+                                    open: true,
+                                    type: "next",
+                                    currentAnalysis: { name: data.name, id: id }
+                                })
+                            );
                         }}
                     >
                         Add Next

@@ -30,7 +30,15 @@ const initialState: WorkflowState = {
     datawolfToolError: null,
     dependencyGraph: null,
     dependencyGraphLoading: false,
-    dependencyGraphError: null
+    dependencyGraphError: null,
+    sidePanelData: {
+        open: false,
+        type: "",
+        currentAnalysis: {
+            name: "",
+            id: ""
+        }
+    }
 };
 
 export const getDatawolfUser = createAsyncThunk(
@@ -113,6 +121,19 @@ const workflowSlice = createSlice({
             state.reactFlowWorkflow = initialReactFlowWorkflow;
             state.datawolfWorkflowID = null;
             state.currentWorkflow = null;
+        },
+        setSidePanelData: (state, action) => {
+            state.sidePanelData = action.payload;
+        },
+        clearSidePanelData: (state) => {
+            state.sidePanelData = {
+                open: false,
+                type: "",
+                currentAnalysis: {
+                    name: "",
+                    id: ""
+                }
+            };
         }
     },
     extraReducers: (builder) => {
@@ -198,6 +219,6 @@ const workflowSlice = createSlice({
     }
 });
 
-export const { setWorkflow, clearWorkflowState } = workflowSlice.actions;
+export const { setWorkflow, clearWorkflowState, setSidePanelData, clearSidePanelData } = workflowSlice.actions;
 
 export default workflowSlice.reducer;

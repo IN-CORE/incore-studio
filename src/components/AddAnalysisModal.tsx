@@ -55,7 +55,6 @@ const AddAnalysisModal = ({
     previousAnalysis,
     currentAnalysis
 }: AddAnalysisModalProps) => {
-    const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
     const [selectedAnalysis, setSelectedAnalysis] = React.useState<string>("");
     const [searchAnalysisTerm, setSearchAnalysisTerm] = React.useState<string>("");
     const [availableAnalyses, setAvailableAnalyses] = React.useState<string[]>([]);
@@ -63,6 +62,7 @@ const AddAnalysisModal = ({
     const [destNodeName, setDestNodeName] = React.useState<string>("");
 
     const { nodes, edges, addNodes, addEdges } = useStore(useShallow(selector));
+    const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
     const datawolfTools = useAppSelector((state) => state.workflow.datawolfTools);
 
     const clearItems = () => {
