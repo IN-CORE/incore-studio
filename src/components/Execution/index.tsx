@@ -3,7 +3,7 @@ import React from "react";
 import Box from "@mui/joy/Box";
 
 import Workflow from "../Workflow";
-import Topbar from "@app/components/Home/Topbar";
+import Topbar from "@app/components/Navigation/Topbar";
 
 const Execution = (): JSX.Element => {
     return (

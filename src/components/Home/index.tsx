@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Container, Typography } from "@mui/joy";
 
-import Topbar from "./Topbar";
+import Topbar from "../Navigation/Topbar";
 import Project from "../Project";
 
 const Home = (): JSX.Element => {
