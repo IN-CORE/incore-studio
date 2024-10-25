@@ -23,6 +23,10 @@ const Navbar: React.FC = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+    const handleLinkClick = (url: string | URL | undefined) => {
+        window.open(url, "_blank"); // Opens the specified URL in a new tab
+        handleClose();
+    };
     const handleLogout = () => {
         auth.signoutPopup().catch((error) => {
             console.error("Login error:", error);
@@ -95,21 +99,9 @@ const Navbar: React.FC = () => {
                         </Typography>
                     )}
                     <Divider orientation="horizontal" />
-                    <MenuItem onClick={handleClose}>
-                        <Link to={`mailto:${config.mailingList}`} target="_blank" style={{ textDecoration: "none" }}>
-                            Contact Us
-                        </Link>
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
-                        <Link to={config.slackInvitationLink} target="_blank" style={{ textDecoration: "none" }}>
-                            Join Slack
-                        </Link>
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
-                        <Link to={config.tosURL} target="_blank" style={{ textDecoration: "none" }}>
-                            Terms of Service
-                        </Link>
-                    </MenuItem>
+                    <MenuItem onClick={() => handleLinkClick(`mailto:${config.mailingList}`)}>Contact Us</MenuItem>
+                    <MenuItem onClick={() => handleLinkClick(config.slackInvitationLink)}>Join Slack</MenuItem>
+                    <MenuItem onClick={() => handleLinkClick(config.tosURL)}>Terms of Service</MenuItem>
                     <MenuItem onClick={handleLogout}>Log out</MenuItem>
                 </Menu>
             </div>
