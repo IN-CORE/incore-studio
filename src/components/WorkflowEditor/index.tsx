@@ -158,7 +158,7 @@ const WorkflowEditor = (): JSX.Element => {
                 </Typography>
             ) : (
                 <>
-                    <Box sx={{ padding: "20px", borderBottom: "solid 1px black" }}>
+                    <Box sx={{ padding: "20px", height: "8vh", borderBottom: "solid 1px black" }}>
                         <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                             <Box sx={{ alignContent: "center" }}>
                                 <Stack direction="row" spacing={2}>
@@ -322,7 +322,7 @@ const WorkflowEditor = (): JSX.Element => {
                             />
                         </Box>
                     ) : (
-                        <Box sx={{ display: "flex", flexGrow: 1, overflow: "auto", position: "relative" }}>
+                        <Box sx={{ display: "flex", flexGrow: 1, position: "relative" }}>
                             <Workflow sidePanelOpen={sidePanelData.open} />
                             {sidePanelData.open && (
                                 <Box
@@ -330,7 +330,6 @@ const WorkflowEditor = (): JSX.Element => {
                                         width: "25vw",
                                         borderLeft: "1px solid black",
                                         backgroundColor: "white",
-                                        height: "100%",
                                         padding: 0
                                     }}
                                 >

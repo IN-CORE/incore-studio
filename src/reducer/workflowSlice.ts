@@ -38,7 +38,8 @@ const initialState: WorkflowState = {
             name: "",
             id: ""
         }
-    }
+    },
+    hoveredAnalysis: null
 };
 
 export const getDatawolfUser = createAsyncThunk(
@@ -134,6 +135,12 @@ const workflowSlice = createSlice({
                     id: ""
                 }
             };
+        },
+        setHoveredAnalysis: (state, action) => {
+            state.hoveredAnalysis = action.payload;
+        },
+        clearHoveredAnalysis: (state) => {
+            state.hoveredAnalysis = null;
         }
     },
     extraReducers: (builder) => {
@@ -219,6 +226,13 @@ const workflowSlice = createSlice({
     }
 });
 
-export const { setWorkflow, clearWorkflowState, setSidePanelData, clearSidePanelData } = workflowSlice.actions;
+export const {
+    setWorkflow,
+    clearWorkflowState,
+    setSidePanelData,
+    clearSidePanelData,
+    setHoveredAnalysis,
+    clearHoveredAnalysis
+} = workflowSlice.actions;
 
 export default workflowSlice.reducer;

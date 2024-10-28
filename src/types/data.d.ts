@@ -174,4 +174,5 @@ interface WorkflowState {
             id: string;
         };
     };
+    hoveredAnalysis: string | null;
 }

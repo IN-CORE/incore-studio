@@ -18,7 +18,7 @@ import StorageIcon from "@mui/icons-material/Storage";
 import { useShallow } from "zustand/react/shallow";
 
 import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
-import { useAppDispatch } from "@app/store/hooks";
+import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { setSidePanelData } from "@app/reducer/workflowSlice";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
 import AddAnalysisModal from "@app/components/AddAnalysisModal";
@@ -35,6 +35,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const { zoom } = useViewport();
     const updateNodeInternals = useUpdateNodeInternals();
     const appDispatch = useAppDispatch();
+    const hoveredAnalysisID = useAppSelector((state) => state.workflow.hoveredAnalysis);
 
     React.useEffect(() => {
         updateNodeInternals(id);
@@ -65,10 +66,10 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     return (
         <Box
             sx={{
-                border: selected ? "3px solid #EF6C00" : "2px solid black",
+                border: selected || hoveredAnalysisID === id ? "3px solid #EF6C00" : "2px solid black",
                 borderRadius: "3px",
                 padding: "6px 14px 6px 14px",
-                backgroundColor: "white",
+                backgroundColor: selected ? "#DF6500" : hoveredAnalysisID === id ? "#F58B34" : "white",
                 height: "auto",
                 minHeight: `${MIN_HEIGHT}px`,
                 width: "400px",
@@ -127,10 +128,17 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
             ))}
             {zoom > 1 && (
                 <Box sx={{ display: "flex", alignItems: "center", my: "4px", width: "100%" }}>
-                    <TrendingUpIcon sx={{ color: "#EF6C00", marginRight: "5px" }} />
+                    <TrendingUpIcon
+                        sx={{ color: hoveredAnalysisID === id || selected ? "white" : "#EF6C00", marginRight: "5px" }}
+                    />
                     <Typography
                         level="h4"
-                        sx={{ fontWeight: 400, fontSize: "16px", lineHeight: "24px", color: "#EF6C00" }}
+                        sx={{
+                            fontWeight: 400,
+                            fontSize: "16px",
+                            lineHeight: "24px",
+                            color: hoveredAnalysisID === id || selected ? "white" : "#EF6C00"
+                        }}
                     >
                         Analysis Type
                     </Typography>
