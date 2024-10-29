@@ -13,14 +13,13 @@ import {
     getProjectWorkflows
 } from "@app/reducer/projectSlice";
 import Topbar from "@app/components/Home/Topbar";
-import { HazardCards } from "@app/components/Project/HazardCards";
-import { VisualizationCards } from "@app/components/Project/VisualizationCards";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/ResourceTable";
 import { Pagination } from "@app/components/Home/Pagination";
 import ResourceFilterBar from "@app/components/Project/ResourceFilterBar";
 import Divider from "@mui/joy/Divider";
+import { ResourceCards } from "@app/components/Project/ResourceCards";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -123,7 +122,7 @@ const ProjectPage = (): JSX.Element => {
                                 <Grid sm={6}>
                                     <Box mb={1}>
                                         <ResourceFilterBar title="Hazards" createLabel="Add from Service" />
-                                        <HazardCards projectHazards={projectHazards} />
+                                        <ResourceCards resources={projectHazards} />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination
                                                 pageNumber={hazardPageNumber}
@@ -136,7 +135,7 @@ const ProjectPage = (): JSX.Element => {
                                     </Box>
                                     <Box>
                                         <ResourceFilterBar title="Visualization" createLabel="Create Visualization" />
-                                        <VisualizationCards projectVisualizations={projectVisualizations} />
+                                        <ResourceCards resources={projectVisualizations} />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination
                                                 pageNumber={visPageNumber}
@@ -172,7 +171,7 @@ const ProjectPage = (): JSX.Element => {
                                         <ResourceFilterBar title="Datasets" createLabel="Add from Service" />
                                         <ResourceTable
                                             resourceTitle="Datasets"
-                                            columns={["name", "description", "date", "owner"]}
+                                            columns={["title", "description", "date", "owner"]}
                                             data={projectDatasets}
                                         />
                                         <Box mt={4} display="flex" justifyContent="center">

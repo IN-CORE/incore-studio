@@ -4,21 +4,34 @@ import React from "react";
 import { parseDateTime } from "@app/utils";
 import { MapThumbnail } from "@app/components/Project/MapThumbnail";
 
-export const HazardCards: React.FC<{ projectHazards: Hazard[] }> = ({ projectHazards }) => {
+function isHazard(resource: any): resource is Hazard {
+    return "hazardDatasets" in resource;
+}
+
+function isVisualization(resource: any): resource is Visualization {
+    return "layers" in resource;
+}
+
+export const ResourceCards: React.FC<{ resources: Hazard[] | Visualization[] }> = ({ resources }) => {
     return (
         <Grid container spacing={3}>
-            {projectHazards.map((hazard) => (
-                <Grid key={hazard.id} xs={12} sm={12} md={6} lg={6}>
+            {resources.map((resource) => (
+                <Grid key={resource.id} xs={12} sm={12} md={6} lg={6}>
                     <Card variant="plain" sx={{ display: "flex", flexDirection: "column", height: "100%", padding: 0 }}>
                         <CardContent>
-                            {/* TODO take first layer for thumbnail */}
-                            <MapThumbnail id={hazard?.hazardDatasets?.[0]?.datasetId} />
+                            {isHazard(resource) ? (
+                                <MapThumbnail id={resource?.hazardDatasets?.[0]?.datasetId} />
+                            ) : isVisualization(resource) ? (
+                                <MapThumbnail id={resource?.layers?.[0]?.layerId} />
+                            ) : (
+                                <></>
+                            )}
                             <Box sx={{ p: 1, flexGrow: 1, height: 80, overflow: "auto" }}>
                                 <Typography level="body-sm" mb={1} textColor="primary.main">
-                                    {hazard.name || "Name not provided"}
+                                    {resource.name || "Name not provided"}
                                 </Typography>
                                 <Typography level="body-sm">
-                                    {hazard.description || "Description not provided"}
+                                    {resource.description || "Description not provided"}
                                 </Typography>
                             </Box>
                         </CardContent>
@@ -30,14 +43,14 @@ export const HazardCards: React.FC<{ projectHazards: Hazard[] }> = ({ projectHaz
                                 alignItems: "center"
                             }}
                         >
-                            {/* Pill for hazard type */}
+                            {/* Pill for resource type */}
                             <Chip size="sm" sx={{ borderRadius: 0 }}>
-                                {hazard.type || "Type not provided"}
+                                {resource.type || "Type not provided"}
                             </Chip>
 
                             {/* Date on the right */}
                             <Typography level="body-sm">
-                                {hazard.date ? parseDateTime(hazard.date) : "Date not provided"}
+                                {resource.date ? parseDateTime(resource.date) : "Date not provided"}
                             </Typography>
                         </Box>
                     </Card>
