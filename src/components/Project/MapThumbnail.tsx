@@ -3,22 +3,43 @@ import { getGeoServerImageUrlAsDataUrl } from "@app/utils";
 import { Box, Typography } from "@mui/material";
 
 export const MapThumbnail = ({ id }: { id: string }) => {
-    const [imageSrc, setImageSrc] = useState<string | null>(null);
+    const [imageUrls, setImageUrls] = useState<{ basemapUrl: string; wmsUrl: string } | null>(null);
 
     useEffect(() => {
-        // Fetch the image for the first hazard dataset
-        async function fetchImage() {
-            const dataUrl = await getGeoServerImageUrlAsDataUrl(id, 200, 200);
-            setImageSrc(dataUrl); // Set the image source once it's ready
-        }
+        async function fetchImageUrls() {
+            const urls = await getGeoServerImageUrlAsDataUrl(id, 200, 200);
 
-        fetchImage(); // Call the async function
-    }, [id]); // This effect will run when the hazard prop changes
+            if (urls && typeof urls.basemapUrl === "string" && typeof urls.wmsUrl === "string") {
+                setImageUrls({
+                    basemapUrl: urls.basemapUrl,
+                    wmsUrl: urls.wmsUrl
+                });
+            } else {
+                console.error("Invalid URL types:", urls);
+            }
+        }
+        fetchImageUrls();
+    }, [id]);
 
     return (
         <>
-            {imageSrc ? (
-                <img src={imageSrc} alt="Hazard" style={{ height: 200, width: "100%" }} />
+            {imageUrls ? (
+                <div style={{ position: "relative", width: "100%", height: 200 }}>
+                    {imageUrls.basemapUrl ? (
+                        <img
+                            src={imageUrls.basemapUrl}
+                            alt="Basemap"
+                            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 200 }}
+                        />
+                    ) : null}
+                    {imageUrls.wmsUrl ? (
+                        <img
+                            src={imageUrls.wmsUrl}
+                            alt="WMS Overlay"
+                            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 200 }}
+                        />
+                    ) : null}
+                </div>
             ) : (
                 <Box
                     sx={{

@@ -93,51 +93,73 @@ export async function getGeoServerImageUrlAsDataUrl(id: string, width: number, h
     const geoserverBaseUrl = `${window.API_SERVER}/geoserver/incore/wms`;
     const layerName = `incore:${id}`;
     const srs = "EPSG:4326"; // Projection
-    const url = `${geoserverBaseUrl}?service=WMS&version=1.1.0&request=GetMap&layers=${layerName}&width=${width}&height=${height}&srs=${srs}&format=image/png&datasetId=${id}`;
 
+    // Fetch the bounding box as a string
+    const boundingBox = await getBoundingBoxFromDataset(id);
+    if (!boundingBox) {
+        console.error("Bounding box not found.");
+        return null;
+    }
+    const url = `${geoserverBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&tiled=true&STYLES=&LAYERS=${layerName}&WIDTH=${width}&HEIGHT=${height}&SRS=${srs}&BBOX=${boundingBox.join()}`;
+
+    // Basemap URL (e.g., OpenStreetMap Static Image)
+    const basemapUrl = getOpenStreetMapUrl(boundingBox);
     try {
-        // Fetch the image using axios
-        const response = await axios.get(url, {
-            headers: getHeaders(), // Include your auth headers
-            responseType: "arraybuffer" // Important: fetch binary data
+        // Fetch the image as binary data
+        const response = await axios.get(url, { responseType: "arraybuffer" });
+
+        // Convert binary data to a Blob, then to a Data URL
+        const blob = new Blob([response.data], { type: "image/png" });
+        const wmsUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
         });
 
-        // Convert binary data to base64
-        const base64Image = Buffer.from(response.data, "binary").toString("base64");
-
-        // Create a Data URL
-        return `data:image/png;base64,${base64Image}`;
+        return { wmsUrl, basemapUrl };
     } catch (error) {
         console.error("Error fetching image:", error);
         return null;
     }
 }
 
-export function getBoundingBoxFromCapabilities(layerName: string) {
-    const capabilitiesUrl = `${window.API_SERVER}/geoserver/wms?service=WMS&request=GetCapabilities`;
+const getOpenStreetMapUrl = (boundingBox?: Array<number>) => {
+    if (!boundingBox) {
+        return "https://tile.openstreetmap.org/9/265/181.png";
+    }
+    const zoom = 9;
+    const centerLon = (boundingBox[0] + boundingBox[2]) / 2; // (minX + maxX) / 2
+    const centerLat = (boundingBox[1] + boundingBox[3]) / 2; // (minY + maxY) / 2
 
-    return axios
-        .get(capabilitiesUrl, { headers: getHeaders() }) // Use axios with getHeaders()
-        .then((response) => {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(response.data, "text/xml"); // Parse the XML response
-            const layer = Array.from(xmlDoc.getElementsByTagName("Layer")).find(
-                (layer) => layer.getElementsByTagName("Name")[0].textContent === layerName
-            );
+    const { x: mercatorX, y: mercatorY } = toWebMercator(centerLon, centerLat);
 
-            if (layer) {
-                const bboxElement = layer.getElementsByTagName("EX_GeographicBoundingBox")[0];
-                const minLon = bboxElement.getElementsByTagName("westBoundLongitude")[0].textContent;
-                const minLat = bboxElement.getElementsByTagName("southBoundLatitude")[0].textContent;
-                const maxLon = bboxElement.getElementsByTagName("eastBoundLongitude")[0].textContent;
-                const maxLat = bboxElement.getElementsByTagName("northBoundLatitude")[0].textContent;
+    // Calculate tile X and Y based on center of bounding box
+    const tileX = Math.floor(((mercatorX + 20037508.34) / 40075016.68) * 2 ** zoom);
+    const tileY = Math.floor(((20037508.34 - mercatorY) / 40075016.68) * 2 ** zoom);
 
-                return `${minLon},${minLat},${maxLon},${maxLat}`;
-            }
-            throw new Error("Layer not found");
-        })
-        .catch((error) => {
-            console.error("Error fetching bounding box:", error);
-            return null;
-        });
+    return `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`;
+};
+
+function toWebMercator(lon: number, lat: number) {
+    const x = (lon * 20037508.34) / 180;
+    const y = Math.log(Math.tan(((90 + lat) * Math.PI) / 360)) / (Math.PI / 180);
+    return { x, y: (y * 20037508.34) / 180 };
+}
+
+export async function getBoundingBoxFromDataset(layerId: string) {
+    const apiUrl = `${window.API_SERVER}/data/api/datasets/${layerId}`;
+
+    try {
+        const response = await axios.get(apiUrl, { headers: getHeaders() });
+        const boundingBox = response.data.boundingBox;
+
+        if (boundingBox && boundingBox.length === 4) {
+            return boundingBox;
+        }
+        throw new Error("Bounding box not found or invalid format.");
+    } catch (error) {
+        console.error("Error fetching bounding box from dataset API:", error);
+        return null;
+    }
 }
