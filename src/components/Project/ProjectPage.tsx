@@ -133,7 +133,7 @@ const ProjectPage = (): JSX.Element => {
                                     <Box mb={1}>
                                         <ResourceFilterBar
                                             title="Hazards"
-                                            icon={<HazardIcon />}
+                                            icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
                                             createLabel="Add from Service"
                                         />
                                         <ResourceCards resources={projectHazards} />
@@ -150,7 +150,7 @@ const ProjectPage = (): JSX.Element => {
                                     <Box>
                                         <ResourceFilterBar
                                             title="Visualization"
-                                            icon={<VisualizationIcon />}
+                                            icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
                                             createLabel="Create Visualization"
                                         />
                                         <ResourceCards resources={projectVisualizations} />
@@ -170,7 +170,7 @@ const ProjectPage = (): JSX.Element => {
                                     <Box mb={1}>
                                         <ResourceFilterBar
                                             title="Workflows"
-                                            icon={<WorkflowIcon />}
+                                            icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
                                             createLabel="Create Workflow"
                                         />
                                         <ResourceTable
@@ -192,7 +192,7 @@ const ProjectPage = (): JSX.Element => {
                                     <Box mb={1}>
                                         <ResourceFilterBar
                                             title="Datasets"
-                                            icon={<DatasetIcon />}
+                                            icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
                                             createLabel="Add from Service"
                                         />
                                         <ResourceTable
@@ -214,7 +214,7 @@ const ProjectPage = (): JSX.Element => {
                                     <Box>
                                         <ResourceFilterBar
                                             title="DFR3 Mappings"
-                                            icon={<DFR3Icon />}
+                                            icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
                                             createLabel="Add from Service"
                                         />
                                         <ResourceTable
