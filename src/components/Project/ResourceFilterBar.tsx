@@ -1,7 +1,8 @@
 import React from "react";
 import { Box, Typography, IconButton } from "@mui/joy";
 import SearchIcon from "@mui/icons-material/Search";
-import FilterListIcon from "@mui/icons-material/FilterList";
+import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import SortIcon from "@mui/icons-material/Sort";
 import AddIcon from "@mui/icons-material/Add";
 import { SvgIconProps } from "@mui/material";
 
@@ -10,6 +11,7 @@ interface ResourceFilterBarProps {
     onSearchClick?: () => void;
     onFilterClick?: () => void;
     onCreateClick?: () => void;
+    onSortClick?: () => void;
     createLabel?: string;
     icon: React.ReactElement<SvgIconProps>;
 }
@@ -19,6 +21,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     icon,
     onSearchClick,
     onFilterClick,
+    onSortClick,
     onCreateClick,
     createLabel = "Create Item" // Default label for the create button
 }) => {
@@ -26,7 +29,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             {/* Grouped Icon and Title */}
             <Box display="flex" alignItems="center">
-                <Box sx={{ marginRight: "10px" }}>{icon}</Box>
+                <Box mr={1}>{icon}</Box>
                 <Typography level="h4">{title}</Typography>
             </Box>
             <Box display="flex" alignItems="center">
@@ -37,12 +40,17 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                 )}
                 {onFilterClick && (
                     <IconButton onClick={onFilterClick}>
-                        <FilterListIcon />
+                        <FilterAltOutlinedIcon />
                     </IconButton>
                 )}
-                <IconButton onClick={onCreateClick}>
+                {onSortClick && (
+                    <IconButton onClick={onSortClick}>
+                        <SortIcon />
+                    </IconButton>
+                )}
+                <IconButton onClick={onCreateClick} variant="outlined">
                     <AddIcon />
-                    <Typography level="body-sm" ml={1}>
+                    <Typography level="body-sm" mr={1}>
                         {createLabel}
                     </Typography>
                 </IconButton>

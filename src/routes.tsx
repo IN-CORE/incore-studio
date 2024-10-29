@@ -4,6 +4,7 @@ import Loading from "./components/Loading";
 const LazyHome = lazy(() => import("./components/Home"));
 const LazyExecution = lazy(() => import("./components/Execution"));
 const LazyProjectPage = lazy(() => import("./components/Project/ProjectPage"));
+const LazyProjectDatasetsPage = lazy(() => import("./components/Project/DatasetPage"));
 
 /**
  A mapping of routes to `RouteProps`.
@@ -30,6 +31,13 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
         element: (
             <Suspense fallback={<Loading />}>
                 <LazyProjectPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/datasets": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyProjectDatasetsPage />
             </Suspense>
         )
     }

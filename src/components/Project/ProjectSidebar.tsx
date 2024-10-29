@@ -21,7 +21,7 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
     ];
 
     return (
-        <Box>
+        <Box mt={-2}>
             <List>
                 {menuItems.map((item, index) => {
                     const isSelected = location.pathname === item.path;
@@ -55,13 +55,7 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
                                     width: "100%"
                                 }}
                             >
-                                <Box
-                                    sx={{
-                                        marginRight: "10px"
-                                    }}
-                                >
-                                    {iconWithColor}
-                                </Box>
+                                <Box mr={1}>{iconWithColor}</Box>
                                 <Typography level="body-md" textColor={isSelected ? "primary.light" : "primary.main"}>
                                     {item.label}
                                 </Typography>

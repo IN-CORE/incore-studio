@@ -92,17 +92,17 @@ const ProjectPage = (): JSX.Element => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(getProjectDRF3Mappings({ projectId: id, skip: (hazardPageNumber - 1) * 5, limit: 5 }));
+        dispatch(getProjectDRF3Mappings({ projectId: id, skip: (dfr3mappingPageNumber - 1) * 5, limit: 5 }));
     }, [id, dfr3mappingPageNumber]);
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(getProjectWorkflows({ projectId: id, skip: (hazardPageNumber - 1) * 5, limit: 5 }));
+        dispatch(getProjectWorkflows({ projectId: id, skip: (wfPageNumber - 1) * 5, limit: 5 }));
     }, [id, wfPageNumber]);
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(getProjectDatasets({ projectId: id, skip: (hazardPageNumber - 1) * 5, limit: 5 }));
+        dispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 5, limit: 5 }));
     }, [id, datasetPageNumber]);
 
     const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
