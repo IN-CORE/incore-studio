@@ -1,14 +1,41 @@
 import React from "react";
 
 import { Stack, Typography } from "@mui/joy";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import StorageIcon from "@mui/icons-material/Storage";
 
-const CheckboxLabel = ({ name, from, to, disabled }: { name: string; from: string; to: string; disabled: boolean }) => {
+const CheckboxLabel = ({
+    name,
+    property,
+    disabled,
+    input
+}: {
+    name: string;
+    property: string;
+    disabled: boolean;
+    input: boolean;
+}) => {
     return (
         <Stack spacing={0} direction="column">
-            <Typography level="body-md" sx={{ color: disabled ? "#42526EB2" : "#172B4D" }}>
+            {disabled && (
+                <CheckCircleIcon
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        right: "5px",
+                        color: "#EF6C00",
+                        transform: "translate(0, -50%)",
+                        fontSize: "20px"
+                    }}
+                />
+            )}
+            <Typography level="body-md" sx={{ color: "#172B4D" }}>
                 {name}
             </Typography>
-            <Typography level="body-sm">{`${from} -> ${to}`}</Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+                <StorageIcon sx={{ color: input ? "#007DFF" : "#AB47BC" }} />
+                <Typography level="body-sm">{property}</Typography>
+            </Stack>
         </Stack>
     );
 };

@@ -314,11 +314,9 @@ const WorkflowEditor = (): JSX.Element => {
                                     </Button>
                                 </CardActions>
                             </Card>
-                            {/* {AddAnalysisModal} */}
                             <AddAnalysisModal
                                 selectAnalysisModalOpen={selectAnalysisModalOpen}
                                 setSelectAnalysisModalOpen={setSelectAnalysisModalOpen}
-                                isEmpty
                             />
                         </Box>
                     ) : (
@@ -339,7 +337,6 @@ const WorkflowEditor = (): JSX.Element => {
                             <AddAnalysisModal
                                 selectAnalysisModalOpen={selectAnalysisModalOpen}
                                 setSelectAnalysisModalOpen={setSelectAnalysisModalOpen}
-                                isEmpty
                             />
                         </Box>
                     )}

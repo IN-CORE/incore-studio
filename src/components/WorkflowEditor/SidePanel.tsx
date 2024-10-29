@@ -1,21 +1,7 @@
 import React from "react";
 
-import {
-    Box,
-    Button,
-    Checkbox,
-    List,
-    ListItem,
-    Input,
-    Divider,
-    Sheet,
-    Stack,
-    IconButton,
-    Tooltip,
-    Typography
-} from "@mui/joy";
+import { Box, Button, Input, Divider, Sheet, Stack, IconButton, Tooltip, Typography } from "@mui/joy";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import Done from "@mui/icons-material/Done";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -27,8 +13,8 @@ import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
 import { getNodeFromToolV2 } from "@app/components/Workflow/workflowUtils";
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
-import { clearSidePanelData, setHoveredAnalysis, clearHoveredAnalysis } from "@app/reducer/workflowSlice";
-import CheckboxLabel from "./CheckboxLabel";
+import { clearSidePanelData } from "@app/reducer/workflowSlice";
+import GroupedList from "./GroupedList";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -46,16 +32,21 @@ const SidePanel = () => {
     const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
     const datawolfTools = useAppSelector((state) => state.workflow.datawolfTools);
 
-    const [selectedAnalysis, setSelectedAnalysis] = React.useState<{ value: string; existing: boolean }>({
+    const [selectedAnalysis, setSelectedAnalysis] = React.useState<{
+        value: string;
+        existing: boolean;
+        analysisId: string | null;
+    }>({
         value: "",
-        existing: false
+        existing: false,
+        analysisId: null
     });
     const [searchAnalysisTerm, setSearchAnalysisTerm] = React.useState<string>("");
     const [availableAnalyses, setAvailableAnalyses] = React.useState<string[]>([]);
     const [nodeLink, setNodeLink] = React.useState<{ from: string; to: string }>({ from: "", to: "" });
 
     const clearItems = () => {
-        setSelectedAnalysis({ value: "", existing: false });
+        setSelectedAnalysis({ value: "", existing: false, analysisId: null });
         setSearchAnalysisTerm("");
         appDispatch(clearSidePanelData());
     };
@@ -78,7 +69,10 @@ const SidePanel = () => {
         return false;
     };
 
-    const checkEdgetoTargetHandleExists = (nodeNameLabel: string, targetNode: NewAnalysisNode): boolean => {
+    const checkEdgetoTargetHandleExists = (nodeNameLabel: string, targetNode: NewAnalysisNode | undefined): boolean => {
+        if (!targetNode) {
+            return false;
+        }
         const testHandle = targetNode.data.inputHandles.find((inpt) => inpt.label === nodeNameLabel);
         if (testHandle) {
             return edges.find((ed) => ed.target === targetNode.id && ed.targetHandle === testHandle.id) !== undefined;
@@ -176,6 +170,154 @@ const SidePanel = () => {
         return null;
     };
 
+    const getGroupedEntries = (
+        before: boolean,
+        analyses: NewAnalysisNode[]
+    ): Map<
+        string,
+        {
+            analysisName: string;
+            analysisProperty: string;
+            analysisNode: NewAnalysisNode;
+            link: { from: string; to: string };
+        }[]
+    > => {
+        let restructuredData = new Map<
+            string,
+            {
+                analysisName: string;
+                analysisProperty: string;
+                analysisNode: NewAnalysisNode;
+                link: { from: string; to: string };
+            }[]
+        >();
+        if (dependencyGraph !== null) {
+            analyses.forEach((analysis) => {
+                if (
+                    before &&
+                    dependencyGraph[sidePanelData.currentAnalysis.name].before[analysis.data.name] !== undefined
+                ) {
+                    dependencyGraph[sidePanelData.currentAnalysis.name].before[analysis.data.name].forEach(
+                        (link: { from: string; to: string }) => {
+                            if (restructuredData.has(link.to)) {
+                                restructuredData.get(link.to)?.push({
+                                    analysisName: analysis.data.name,
+                                    analysisProperty: link.from,
+                                    analysisNode: analysis,
+                                    link: link
+                                });
+                            } else {
+                                restructuredData.set(link.to, [
+                                    {
+                                        analysisName: analysis.data.name,
+                                        analysisProperty: link.from,
+                                        analysisNode: analysis,
+                                        link: link
+                                    }
+                                ]);
+                            }
+                        }
+                    );
+                } else if (
+                    !before &&
+                    dependencyGraph[sidePanelData.currentAnalysis.name].after[analysis.data.name] !== undefined
+                ) {
+                    dependencyGraph[sidePanelData.currentAnalysis.name].after[analysis.data.name].forEach(
+                        (link: { from: string; to: string }) => {
+                            if (restructuredData.has(link.from)) {
+                                restructuredData.get(link.from)?.push({
+                                    analysisName: analysis.data.name,
+                                    analysisProperty: link.to,
+                                    analysisNode: analysis,
+                                    link: link
+                                });
+                            } else {
+                                restructuredData.set(link.from, [
+                                    {
+                                        analysisName: analysis.data.name,
+                                        analysisProperty: link.to,
+                                        analysisNode: analysis,
+                                        link: link
+                                    }
+                                ]);
+                            }
+                        }
+                    );
+                }
+            });
+        }
+        return restructuredData;
+    };
+
+    const getGroupedEntriesForNew = (
+        before: boolean,
+        analyses: string[]
+    ): Map<
+        string,
+        {
+            analysisName: string;
+            analysisProperty: string;
+            link: { from: string; to: string };
+        }[]
+    > => {
+        let restructuredData = new Map<
+            string,
+            {
+                analysisName: string;
+                analysisProperty: string;
+                link: { from: string; to: string };
+            }[]
+        >();
+        if (dependencyGraph !== null) {
+            analyses.forEach((analysis) => {
+                if (before && dependencyGraph[sidePanelData.currentAnalysis.name].before[analysis] !== undefined) {
+                    dependencyGraph[sidePanelData.currentAnalysis.name].before[analysis].forEach(
+                        (link: { from: string; to: string }) => {
+                            if (restructuredData.has(link.to)) {
+                                restructuredData.get(link.to)?.push({
+                                    analysisName: analysis,
+                                    analysisProperty: link.from,
+                                    link: link
+                                });
+                            } else {
+                                restructuredData.set(link.to, [
+                                    {
+                                        analysisName: analysis,
+                                        analysisProperty: link.from,
+                                        link: link
+                                    }
+                                ]);
+                            }
+                        }
+                    );
+                } else if (
+                    !before &&
+                    dependencyGraph[sidePanelData.currentAnalysis.name].after[analysis] !== undefined
+                ) {
+                    dependencyGraph[sidePanelData.currentAnalysis.name].after[analysis].forEach(
+                        (link: { from: string; to: string }) => {
+                            if (restructuredData.has(link.from)) {
+                                restructuredData.get(link.from)?.push({
+                                    analysisName: analysis,
+                                    analysisProperty: link.to,
+                                    link: link
+                                });
+                            } else {
+                                restructuredData.set(link.from, [
+                                    {
+                                        analysisName: analysis,
+                                        analysisProperty: link.to,
+                                        link: link
+                                    }
+                                ]);
+                            }
+                        }
+                    );
+                }
+            });
+        }
+        return restructuredData;
+    };
     React.useEffect(() => {
         if (dependencyGraph !== null) {
             let toolNames = datawolfTools.map((tool) => tool.title).sort();
@@ -205,9 +347,9 @@ const SidePanel = () => {
                 <Typography
                     level="h4"
                     sx={{
-                        fontWeight: 800,
+                        fontWeight: 590,
                         fontSize: "18px",
-                        lineHeight: "24px",
+                        lineHeight: "22px",
                         color: "#172B4D"
                     }}
                 >
@@ -231,7 +373,7 @@ const SidePanel = () => {
                     <Typography
                         level="h3"
                         sx={{
-                            fontWeight: 800,
+                            fontWeight: 700,
                             fontSize: "20px",
                             lineHeight: "24px",
                             color: "#172B4D"
@@ -242,6 +384,93 @@ const SidePanel = () => {
                             : sidePanelData.currentAnalysis.name}
                     </Typography>
                 </Box>
+                {dependencyGraph !== null && (
+                    <Box sx={{ padding: "2px" }}>
+                        <Typography
+                            level="h4"
+                            sx={{
+                                fontWeight: 590,
+                                fontSize: "16px",
+                                lineHeight: "24px",
+                                paragraph: "28px",
+                                color: "#172B4D",
+                                letter: "5%",
+                                textTransform: "uppercase",
+                                mb: "10px"
+                            }}
+                        >
+                            {`Connect ${sidePanelData.type === "previous" ? "From" : "To"} existing workflow analysis`}
+                        </Typography>
+                        {/* previous */}
+                        {sidePanelData.type === "previous" &&
+                            Array.from(
+                                getGroupedEntries(
+                                    true,
+                                    nodes.map((node) => node as NewAnalysisNode)
+                                ).entries()
+                            ).map(
+                                ([key, value]: [
+                                    string,
+                                    {
+                                        analysisName: string;
+                                        analysisProperty: string;
+                                        analysisNode: NewAnalysisNode;
+                                        link: { from: string; to: string };
+                                    }[]
+                                ]) => {
+                                    return (
+                                        <GroupedList
+                                            key={`${key}-previous`}
+                                            existing={true}
+                                            previous={true}
+                                            propertyName={key}
+                                            optionsList={value}
+                                            selectedAnalysis={selectedAnalysis}
+                                            nodeLink={nodeLink}
+                                            setSelectedAnalysis={setSelectedAnalysis}
+                                            setNodeLink={setNodeLink}
+                                            checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
+                                            checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
+                                        />
+                                    );
+                                }
+                            )}
+                        {/* next */}
+                        {sidePanelData.type !== "previous" &&
+                            Array.from(
+                                getGroupedEntries(
+                                    false,
+                                    nodes.map((node) => node as NewAnalysisNode)
+                                ).entries()
+                            ).map(
+                                ([key, value]: [
+                                    string,
+                                    {
+                                        analysisName: string;
+                                        analysisProperty: string;
+                                        analysisNode: NewAnalysisNode;
+                                        link: { from: string; to: string };
+                                    }[]
+                                ]) => {
+                                    return (
+                                        <GroupedList
+                                            key={`${key}-previous`}
+                                            existing={true}
+                                            previous={false}
+                                            propertyName={key}
+                                            optionsList={value}
+                                            selectedAnalysis={selectedAnalysis}
+                                            nodeLink={nodeLink}
+                                            setSelectedAnalysis={setSelectedAnalysis}
+                                            setNodeLink={setNodeLink}
+                                            checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
+                                            checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
+                                        />
+                                    );
+                                }
+                            )}
+                    </Box>
+                )}
                 <Box>
                     <Input
                         startDecorator={<SearchRoundedIcon />}
@@ -264,416 +493,74 @@ const SidePanel = () => {
                         <Typography
                             level="h4"
                             sx={{
-                                fontWeight: 500,
+                                fontWeight: 590,
                                 fontSize: "16px",
-                                lineHeight: "18px",
+                                lineHeight: "24px",
+                                paragraph: "28px",
                                 color: "#172B4D",
-                                mb: "5px"
+                                letter: "5%",
+                                textTransform: "uppercase",
+                                mb: "10px"
                             }}
                         >
-                            {sidePanelData.type === "previous"
-                                ? "From existing workflow analysis"
-                                : "To existing workflow analysis"}
+                            {`Connect ${sidePanelData.type === "previous" ? "From" : "To"} New workflow analysis`}
                         </Typography>
-                        <List
-                            sx={{
-                                "--List-gap": "8px",
-                                "--ListItem-minHeight": "32px",
-                                "--ListItem-gap": "4px"
-                            }}
-                        >
-                            {nodes.map((node) => {
-                                if (
-                                    sidePanelData.type === "previous" &&
-                                    dependencyGraph[sidePanelData.currentAnalysis.name].before[
-                                        (node as NewAnalysisNode).data.name
-                                    ] !== undefined
-                                ) {
-                                    return dependencyGraph[sidePanelData.currentAnalysis.name].before[
-                                        (node as NewAnalysisNode).data.name
-                                    ].map((link: { from: string; to: string }) => {
-                                        return (
-                                            <ListItem
-                                                key={`${(node as NewAnalysisNode).data.name}-${link.from}-${link.to}`}
-                                                slotProps={{
-                                                    root: {
-                                                        onMouseEnter: () =>
-                                                            appDispatch(
-                                                                setHoveredAnalysis((node as NewAnalysisNode).id)
-                                                            ),
-                                                        onMouseLeave: () => appDispatch(clearHoveredAnalysis())
-                                                    }
-                                                }}
-                                            >
-                                                {selectedAnalysis.value === (node as NewAnalysisNode).data.name &&
-                                                    selectedAnalysis.existing === true &&
-                                                    nodeLink.from === link.from &&
-                                                    nodeLink.to === link.to && (
-                                                        <Done
-                                                            color="primary"
-                                                            sx={{
-                                                                ml: -0.5,
-                                                                zIndex: 2,
-                                                                pointerEvents: "none"
-                                                            }}
-                                                        />
-                                                    )}
-                                                <Checkbox
-                                                    size="sm"
-                                                    disableIcon
-                                                    overlay
-                                                    disabled={checkEdgetoCurrHandleExists(link.to)}
-                                                    label={
-                                                        <CheckboxLabel
-                                                            name={
-                                                                dependencyGraph[(node as NewAnalysisNode).data.name] !==
-                                                                undefined
-                                                                    ? dependencyGraph[
-                                                                          (node as NewAnalysisNode).data.name
-                                                                      ].pretty_name
-                                                                    : (node as NewAnalysisNode).data.name
-                                                            }
-                                                            from={link.from}
-                                                            to={link.to}
-                                                            disabled={checkEdgetoCurrHandleExists(link.to)}
-                                                        />
-                                                    }
-                                                    checked={
-                                                        selectedAnalysis.value ===
-                                                            (node as NewAnalysisNode).data.name &&
-                                                        selectedAnalysis.existing === true &&
-                                                        nodeLink.from === link.from &&
-                                                        nodeLink.to === link.to
-                                                    }
-                                                    variant={
-                                                        selectedAnalysis.value ===
-                                                            (node as NewAnalysisNode).data.name &&
-                                                        selectedAnalysis.existing === true &&
-                                                        nodeLink.from === link.from &&
-                                                        nodeLink.to === link.to
-                                                            ? "soft"
-                                                            : "outlined"
-                                                    }
-                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                        if (event.target.checked) {
-                                                            setSelectedAnalysis({
-                                                                value: (node as NewAnalysisNode).data.name,
-                                                                existing: true
-                                                            });
-                                                            setNodeLink(link);
-                                                        } else {
-                                                            setSelectedAnalysis({ value: "", existing: false });
-                                                            setNodeLink({ from: "", to: "" });
-                                                        }
-                                                    }}
-                                                    slotProps={{
-                                                        action: ({ checked }) => ({
-                                                            sx: checked
-                                                                ? {
-                                                                      border: "1px solid",
-                                                                      borderColor: "primary.500"
-                                                                  }
-                                                                : {}
-                                                        })
-                                                    }}
-                                                />
-                                            </ListItem>
-                                        );
-                                    });
-                                } else if (
-                                    sidePanelData.type === "next" &&
-                                    dependencyGraph[sidePanelData.currentAnalysis.name].after[
-                                        (node as NewAnalysisNode).data.name
-                                    ] !== undefined
-                                ) {
-                                    return dependencyGraph[sidePanelData.currentAnalysis.name].after[
-                                        (node as NewAnalysisNode).data.name
-                                    ].map((link: { from: string; to: string }) => {
-                                        return (
-                                            <ListItem
-                                                key={`${(node as NewAnalysisNode).data.name}-${link.from}-${link.to}`}
-                                                slotProps={{
-                                                    root: {
-                                                        onMouseEnter: () =>
-                                                            appDispatch(
-                                                                setHoveredAnalysis((node as NewAnalysisNode).id)
-                                                            ),
-                                                        onMouseLeave: () => appDispatch(clearHoveredAnalysis())
-                                                    }
-                                                }}
-                                            >
-                                                {selectedAnalysis.value === (node as NewAnalysisNode).data.name &&
-                                                    selectedAnalysis.existing === true &&
-                                                    nodeLink.from === link.from &&
-                                                    nodeLink.to === link.to && (
-                                                        <Done
-                                                            color="primary"
-                                                            sx={{
-                                                                ml: -0.5,
-                                                                zIndex: 2,
-                                                                pointerEvents: "none"
-                                                            }}
-                                                        />
-                                                    )}
-                                                <Checkbox
-                                                    size="sm"
-                                                    disableIcon
-                                                    overlay
-                                                    disabled={checkEdgetoTargetHandleExists(
-                                                        link.to,
-                                                        node as NewAnalysisNode
-                                                    )}
-                                                    label={
-                                                        <CheckboxLabel
-                                                            name={
-                                                                dependencyGraph[(node as NewAnalysisNode).data.name] !==
-                                                                undefined
-                                                                    ? dependencyGraph[
-                                                                          (node as NewAnalysisNode).data.name
-                                                                      ].pretty_name
-                                                                    : (node as NewAnalysisNode).data.name
-                                                            }
-                                                            from={link.from}
-                                                            to={link.to}
-                                                            disabled={checkEdgetoTargetHandleExists(
-                                                                link.to,
-                                                                node as NewAnalysisNode
-                                                            )}
-                                                        />
-                                                    }
-                                                    checked={
-                                                        selectedAnalysis.value ===
-                                                            (node as NewAnalysisNode).data.name &&
-                                                        selectedAnalysis.existing === true &&
-                                                        nodeLink.from === link.from &&
-                                                        nodeLink.to === link.to
-                                                    }
-                                                    variant={
-                                                        selectedAnalysis.value ===
-                                                            (node as NewAnalysisNode).data.name &&
-                                                        selectedAnalysis.existing === true &&
-                                                        nodeLink.from === link.from &&
-                                                        nodeLink.to === link.to
-                                                            ? "soft"
-                                                            : "outlined"
-                                                    }
-                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                        if (event.target.checked) {
-                                                            setSelectedAnalysis({
-                                                                value: (node as NewAnalysisNode).data.name,
-                                                                existing: true
-                                                            });
-                                                            setNodeLink(link);
-                                                        } else {
-                                                            setSelectedAnalysis({ value: "", existing: false });
-                                                            setNodeLink({ from: "", to: "" });
-                                                        }
-                                                    }}
-                                                    slotProps={{
-                                                        action: ({ checked }) => ({
-                                                            sx: checked
-                                                                ? {
-                                                                      border: "1px solid",
-                                                                      borderColor: "primary.500"
-                                                                  }
-                                                                : {}
-                                                        })
-                                                    }}
-                                                />
-                                            </ListItem>
-                                        );
-                                    });
-                                }
-                                return null;
-                            })}
-                        </List>
-                    </Box>
-                )}
-                {dependencyGraph !== null && (
-                    <Box sx={{ padding: "2px" }}>
-                        <Typography
-                            level="h4"
-                            sx={{
-                                fontWeight: 500,
-                                fontSize: "16px",
-                                lineHeight: "18px",
-                                color: "#172B4D",
-                                mb: "5px"
-                            }}
-                        >
-                            {sidePanelData.type === "previous"
-                                ? "From new workflow analysis"
-                                : "To new workflow analysis"}
-                        </Typography>
-                        <List
-                            sx={{
-                                "--List-gap": "8px",
-                                "--ListItem-minHeight": "32px",
-                                "--ListItem-gap": "4px"
-                            }}
-                        >
-                            {availableAnalyses.map((analysis) => {
-                                if (
-                                    sidePanelData.type === "previous" &&
-                                    dependencyGraph[sidePanelData.currentAnalysis.name].before[analysis] !== undefined
-                                ) {
-                                    return dependencyGraph[sidePanelData.currentAnalysis.name].before[analysis].map(
-                                        (link: { from: string; to: string }) => {
-                                            return (
-                                                <ListItem key={`${analysis}-${link.from}-${link.to}`}>
-                                                    {selectedAnalysis.value === analysis &&
-                                                        selectedAnalysis.existing === false &&
-                                                        nodeLink.from === link.from &&
-                                                        nodeLink.to === link.to && (
-                                                            <Done
-                                                                color="primary"
-                                                                sx={{
-                                                                    ml: -0.5,
-                                                                    zIndex: 2,
-                                                                    pointerEvents: "none"
-                                                                }}
-                                                            />
-                                                        )}
-                                                    <Checkbox
-                                                        size="sm"
-                                                        disableIcon
-                                                        overlay
-                                                        disabled={checkEdgetoCurrHandleExists(link.to)}
-                                                        label={
-                                                            <CheckboxLabel
-                                                                name={
-                                                                    dependencyGraph[analysis] !== undefined
-                                                                        ? dependencyGraph[analysis].pretty_name
-                                                                        : analysis
-                                                                }
-                                                                from={link.from}
-                                                                to={link.to}
-                                                                disabled={checkEdgetoCurrHandleExists(link.to)}
-                                                            />
-                                                        }
-                                                        checked={
-                                                            selectedAnalysis.value === analysis &&
-                                                            selectedAnalysis.existing === false &&
-                                                            nodeLink.from === link.from &&
-                                                            nodeLink.to === link.to
-                                                        }
-                                                        variant={
-                                                            selectedAnalysis.value === analysis &&
-                                                            selectedAnalysis.existing === false &&
-                                                            nodeLink.from === link.from &&
-                                                            nodeLink.to === link.to
-                                                                ? "soft"
-                                                                : "outlined"
-                                                        }
-                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                            if (event.target.checked) {
-                                                                setSelectedAnalysis({
-                                                                    value: analysis,
-                                                                    existing: false
-                                                                });
-                                                                setNodeLink(link);
-                                                            } else {
-                                                                setSelectedAnalysis({ value: "", existing: false });
-                                                                setNodeLink({ from: "", to: "" });
-                                                            }
-                                                        }}
-                                                        slotProps={{
-                                                            action: ({ checked }) => ({
-                                                                sx: checked
-                                                                    ? {
-                                                                          border: "1px solid",
-                                                                          borderColor: "primary.500"
-                                                                      }
-                                                                    : {}
-                                                            })
-                                                        }}
-                                                    />
-                                                </ListItem>
-                                            );
-                                        }
-                                    );
-                                } else if (
-                                    sidePanelData.type === "next" &&
-                                    dependencyGraph[sidePanelData.currentAnalysis.name].after[analysis] !== undefined
-                                ) {
-                                    return dependencyGraph[sidePanelData.currentAnalysis.name].after[analysis].map(
-                                        (link: { from: string; to: string }) => {
-                                            return (
-                                                <ListItem key={`${analysis}-${link.from}-${link.to}`}>
-                                                    {selectedAnalysis.value === analysis &&
-                                                        selectedAnalysis.existing === false &&
-                                                        nodeLink.from === link.from &&
-                                                        nodeLink.to === link.to && (
-                                                            <Done
-                                                                color="primary"
-                                                                sx={{
-                                                                    ml: -0.5,
-                                                                    zIndex: 2,
-                                                                    pointerEvents: "none"
-                                                                }}
-                                                            />
-                                                        )}
-                                                    <Checkbox
-                                                        size="sm"
-                                                        disableIcon
-                                                        overlay
-                                                        label={
-                                                            <CheckboxLabel
-                                                                name={
-                                                                    dependencyGraph[analysis] !== undefined
-                                                                        ? dependencyGraph[analysis].pretty_name
-                                                                        : analysis
-                                                                }
-                                                                from={link.from}
-                                                                to={link.to}
-                                                                disabled={checkEdgetoCurrHandleExists(link.to)}
-                                                            />
-                                                        }
-                                                        checked={
-                                                            selectedAnalysis.value === analysis &&
-                                                            selectedAnalysis.existing === false &&
-                                                            nodeLink.from === link.from &&
-                                                            nodeLink.to === link.to
-                                                        }
-                                                        variant={
-                                                            selectedAnalysis.value === analysis &&
-                                                            selectedAnalysis.existing === false &&
-                                                            nodeLink.from === link.from &&
-                                                            nodeLink.to === link.to
-                                                                ? "soft"
-                                                                : "outlined"
-                                                        }
-                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                            if (event.target.checked) {
-                                                                setSelectedAnalysis({
-                                                                    value: analysis,
-                                                                    existing: false
-                                                                });
-                                                                setNodeLink(link);
-                                                            } else {
-                                                                setSelectedAnalysis({ value: "", existing: false });
-                                                                setNodeLink({ from: "", to: "" });
-                                                            }
-                                                        }}
-                                                        slotProps={{
-                                                            action: ({ checked }) => ({
-                                                                sx: checked
-                                                                    ? {
-                                                                          border: "1px solid",
-                                                                          borderColor: "primary.500"
-                                                                      }
-                                                                    : {}
-                                                            })
-                                                        }}
-                                                    />
-                                                </ListItem>
-                                            );
-                                        }
+                        {/* previous */}
+                        {sidePanelData.type === "previous" &&
+                            Array.from(getGroupedEntriesForNew(true, availableAnalyses).entries()).map(
+                                ([key, value]: [
+                                    string,
+                                    {
+                                        analysisName: string;
+                                        analysisProperty: string;
+                                        link: { from: string; to: string };
+                                    }[]
+                                ]) => {
+                                    return (
+                                        <GroupedList
+                                            key={`${key}-previous`}
+                                            existing={false}
+                                            previous={true}
+                                            propertyName={key}
+                                            optionsList={value}
+                                            selectedAnalysis={selectedAnalysis}
+                                            nodeLink={nodeLink}
+                                            setSelectedAnalysis={setSelectedAnalysis}
+                                            setNodeLink={setNodeLink}
+                                            checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
+                                            checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
+                                        />
                                     );
                                 }
-                                return null;
-                            })}
-                        </List>
+                            )}
+                        {/* next */}
+                        {sidePanelData.type !== "previous" &&
+                            Array.from(getGroupedEntriesForNew(false, availableAnalyses).entries()).map(
+                                ([key, value]: [
+                                    string,
+                                    {
+                                        analysisName: string;
+                                        analysisProperty: string;
+                                        link: { from: string; to: string };
+                                    }[]
+                                ]) => {
+                                    return (
+                                        <GroupedList
+                                            key={`${key}-previous`}
+                                            existing={false}
+                                            previous={false}
+                                            propertyName={key}
+                                            optionsList={value}
+                                            selectedAnalysis={selectedAnalysis}
+                                            nodeLink={nodeLink}
+                                            setSelectedAnalysis={setSelectedAnalysis}
+                                            setNodeLink={setNodeLink}
+                                            checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
+                                            checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
+                                        />
+                                    );
+                                }
+                            )}
                     </Box>
                 )}
                 <Button
@@ -698,7 +585,7 @@ const SidePanel = () => {
                             clearItems();
                         } else if (selectedAnalysis.value !== "" && selectedAnalysis.existing) {
                             const existingNode = nodes.find(
-                                (node) => (node as NewAnalysisNode).data.name === selectedAnalysis.value
+                                (node) => node.id === selectedAnalysis.analysisId
                             ) as NewAnalysisNode;
                             const edgeToRemove = getEdgeToRemoveFromExistingAnalysis(existingNode);
                             const edgeToAdd = getEdgeFromCurrentAnalysis(existingNode);

@@ -3,8 +3,6 @@ import {
     Handle,
     Position,
     type NodeProps,
-    // getIncomers,
-    // getOutgoers,
     getConnectedEdges,
     useViewport,
     useUpdateNodeInternals
@@ -21,7 +19,6 @@ import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { setSidePanelData } from "@app/reducer/workflowSlice";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
-import AddAnalysisModal from "@app/components/AddAnalysisModal";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -41,9 +38,6 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
         updateNodeInternals(id);
     }, [zoom]);
 
-    const [selectPreviousAnalysisModalOpen, setSelectPreviousAnalysisModalOpen] = React.useState<boolean>(false);
-    const [selectAfterAnalysisModalOpen, setSelectAfterAnalysisModalOpen] = React.useState<boolean>(false);
-
     const handleDelete = () => {
         const node = nodes.find((n) => n.id === id);
         if (node) {
@@ -60,16 +54,15 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const calculateHandlePosition = (index: number, total: number) => {
         return (index + 1) * (100 / (total + 1));
     };
-
     const MIN_HEIGHT = data.inputHandles.length * 20 + 60;
 
     return (
         <Box
             sx={{
-                border: selected || hoveredAnalysisID === id ? "3px solid #EF6C00" : "2px solid black",
+                border: selected || hoveredAnalysisID === id ? "4px solid #EF6C00" : "2px solid black",
                 borderRadius: "3px",
                 padding: "6px 14px 6px 14px",
-                backgroundColor: selected ? "#DF6500" : hoveredAnalysisID === id ? "#F58B34" : "white",
+                backgroundColor: selected ? "#FFE3CC" : "white",
                 height: "auto",
                 minHeight: `${MIN_HEIGHT}px`,
                 width: "400px",
@@ -87,7 +80,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     position={Position.Left}
                     style={{
                         height: "20px",
-                        width: zoom > 1.5 ? "auto" : "20px",
+                        width: zoom > 1.2 ? "auto" : "20px",
                         borderRadius: "3px",
                         backgroundColor: "#E3F2FD",
                         borderColor: "#007DFF",
@@ -114,11 +107,11 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                             color: "#007DFF"
                         }}
                     >
-                        {zoom > 1.5 ? inpt.label : ""}
+                        {zoom > 1.2 ? inpt.label : ""}
                         <StorageIcon
                             sx={{
                                 color: "#007DFF",
-                                marginLeft: zoom > 1.5 ? "5px" : 0,
+                                marginLeft: zoom > 1.2 ? "5px" : 0,
                                 pointerEvents: "none",
                                 fontSize: "15px"
                             }}
@@ -176,7 +169,13 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                 <Stack direction="row" spacing={2} justifyContent="space-between">
                     <Button
                         variant="solid"
-                        sx={{ backgroundColor: "#EF6C00", color: "white", fontWeight: 600, borderRadius: "2px" }}
+                        sx={{
+                            "backgroundColor": "#EF6C00",
+                            "color": "white",
+                            "fontWeight": 600,
+                            "borderRadius": "2px",
+                            ":hover": { backgroundColor: "#DF6500" }
+                        }}
                         startDecorator={<AddRoundedIcon />}
                         fullWidth
                         onClick={() => {
@@ -193,7 +192,13 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     </Button>
                     <Button
                         variant="solid"
-                        sx={{ backgroundColor: "#EF6C00", color: "white", fontWeight: 600, borderRadius: "2px" }}
+                        sx={{
+                            "backgroundColor": "#EF6C00",
+                            "color": "white",
+                            "fontWeight": 600,
+                            "borderRadius": "2px",
+                            ":hover": { backgroundColor: "#DF6500" }
+                        }}
                         startDecorator={<AddRoundedIcon />}
                         fullWidth
                         onClick={() => {
@@ -210,23 +215,6 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     </Button>
                 </Stack>
             </Stack>
-            <AddAnalysisModal
-                selectAnalysisModalOpen={selectPreviousAnalysisModalOpen}
-                setSelectAnalysisModalOpen={setSelectPreviousAnalysisModalOpen}
-                previousAnalysis={true}
-                currentAnalysis={{
-                    name: data.name,
-                    id: id
-                }}
-            />
-            <AddAnalysisModal
-                selectAnalysisModalOpen={selectAfterAnalysisModalOpen}
-                setSelectAnalysisModalOpen={setSelectAfterAnalysisModalOpen}
-                currentAnalysis={{
-                    name: data.name,
-                    id: id
-                }}
-            />
 
             {data.outputHandles.map((outpt, index) => (
                 <Handle
@@ -234,7 +222,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     position={Position.Right}
                     style={{
                         height: "20px",
-                        width: zoom > 1.5 ? "auto" : "20px",
+                        width: zoom > 1.2 ? "auto" : "20px",
                         borderRadius: "3px",
                         backgroundColor: "#F3E5F5",
                         borderColor: "#AB47BC",
@@ -264,12 +252,12 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         <StorageIcon
                             sx={{
                                 color: "#AB47BC",
-                                marginRight: zoom > 1.5 ? "5px" : 0,
+                                marginRight: zoom > 1.2 ? "5px" : 0,
                                 pointerEvents: "none",
                                 fontSize: "15px"
                             }}
                         />
-                        {zoom > 1.5 ? outpt.label : ""}
+                        {zoom > 1.2 ? outpt.label : ""}
                     </Box>
                 </Handle>
             ))}
