@@ -22,6 +22,12 @@ import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 
+import DatasetIcon from "@mui/icons-material/FormatListBulleted";
+import WorkflowIcon from "@mui/icons-material/Polyline";
+import DFR3Icon from "@mui/icons-material/ShowChart";
+import HazardIcon from "@mui/icons-material/Storm";
+import VisualizationIcon from "@mui/icons-material/Map";
+
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
     const dispatch = useDispatch();
@@ -125,7 +131,11 @@ const ProjectPage = (): JSX.Element => {
                                 {/* Left Column: Hazard and Visualization Cards */}
                                 <Grid sm={5}>
                                     <Box mb={1}>
-                                        <ResourceFilterBar title="Hazards" createLabel="Add from Service" />
+                                        <ResourceFilterBar
+                                            title="Hazards"
+                                            icon={<HazardIcon />}
+                                            createLabel="Add from Service"
+                                        />
                                         <ResourceCards resources={projectHazards} />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination
@@ -138,7 +148,11 @@ const ProjectPage = (): JSX.Element => {
                                         </Box>
                                     </Box>
                                     <Box>
-                                        <ResourceFilterBar title="Visualization" createLabel="Create Visualization" />
+                                        <ResourceFilterBar
+                                            title="Visualization"
+                                            icon={<VisualizationIcon />}
+                                            createLabel="Create Visualization"
+                                        />
                                         <ResourceCards resources={projectVisualizations} />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination
@@ -154,7 +168,11 @@ const ProjectPage = (): JSX.Element => {
                                 {/* Right Column: Workflow, Dataset, and DFR3Mapping Tables */}
                                 <Grid sm={5}>
                                     <Box mb={1}>
-                                        <ResourceFilterBar title="Workflows" createLabel="Create Workflow" />
+                                        <ResourceFilterBar
+                                            title="Workflows"
+                                            icon={<WorkflowIcon />}
+                                            createLabel="Create Workflow"
+                                        />
                                         <ResourceTable
                                             resourceTitle="Workflows"
                                             columns={["title", "description", "date", "creator", "isFinalized"]}
@@ -172,7 +190,11 @@ const ProjectPage = (): JSX.Element => {
                                     </Box>
 
                                     <Box mb={1}>
-                                        <ResourceFilterBar title="Datasets" createLabel="Add from Service" />
+                                        <ResourceFilterBar
+                                            title="Datasets"
+                                            icon={<DatasetIcon />}
+                                            createLabel="Add from Service"
+                                        />
                                         <ResourceTable
                                             resourceTitle="Datasets"
                                             columns={["title", "description", "date", "owner"]}
@@ -190,7 +212,11 @@ const ProjectPage = (): JSX.Element => {
                                     </Box>
 
                                     <Box>
-                                        <ResourceFilterBar title="DFR3 Mappings" createLabel="Add from Service" />
+                                        <ResourceFilterBar
+                                            title="DFR3 Mappings"
+                                            icon={<DFR3Icon />}
+                                            createLabel="Add from Service"
+                                        />
                                         <ResourceTable
                                             resourceTitle="DFR3 Mappings"
                                             columns={["name", "hazardType", "inventoryType", "mappingType", "owner"]}

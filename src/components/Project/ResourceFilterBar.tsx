@@ -3,6 +3,7 @@ import { Box, Typography, IconButton } from "@mui/joy";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import AddIcon from "@mui/icons-material/Add";
+import { SvgIconProps } from "@mui/material";
 
 interface ResourceFilterBarProps {
     title: string;
@@ -10,10 +11,12 @@ interface ResourceFilterBarProps {
     onFilterClick?: () => void;
     onCreateClick?: () => void;
     createLabel?: string;
+    icon: React.ReactElement<SvgIconProps>;
 }
 
 const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     title,
+    icon,
     onSearchClick,
     onFilterClick,
     onCreateClick,
@@ -21,7 +24,11 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
 }) => {
     return (
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography level="h4">{title}</Typography>
+            {/* Grouped Icon and Title */}
+            <Box display="flex" alignItems="center">
+                <Box sx={{ marginRight: "10px" }}>{icon}</Box>
+                <Typography level="h4">{title}</Typography>
+            </Box>
             <Box display="flex" alignItems="center">
                 {onSearchClick && (
                     <IconButton onClick={onSearchClick}>
