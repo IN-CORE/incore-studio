@@ -20,6 +20,7 @@ import { Pagination } from "@app/components/Home/Pagination";
 import ResourceFilterBar from "@app/components/Project/ResourceFilterBar";
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/ResourceCards";
+import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -118,8 +119,11 @@ const ProjectPage = (): JSX.Element => {
                             <ProjectHeader project={project} />
                             <Divider />
                             <Grid container spacing={5} mt={3} ml={0}>
+                                <Grid sm={2}>
+                                    <ProjectSidebar id={project.id} />
+                                </Grid>
                                 {/* Left Column: Hazard and Visualization Cards */}
-                                <Grid sm={6}>
+                                <Grid sm={5}>
                                     <Box mb={1}>
                                         <ResourceFilterBar title="Hazards" createLabel="Add from Service" />
                                         <ResourceCards resources={projectHazards} />
@@ -148,7 +152,7 @@ const ProjectPage = (): JSX.Element => {
                                     </Box>
                                 </Grid>
                                 {/* Right Column: Workflow, Dataset, and DFR3Mapping Tables */}
-                                <Grid sm={6}>
+                                <Grid sm={5}>
                                     <Box mb={1}>
                                         <ResourceFilterBar title="Workflows" createLabel="Create Workflow" />
                                         <ResourceTable
