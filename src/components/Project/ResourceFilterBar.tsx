@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, IconButton } from "@mui/joy";
+import { Box, Typography, IconButton, Button, ButtonGroup } from "@mui/joy";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SortIcon from "@mui/icons-material/Sort";
@@ -41,36 +41,51 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
             </Box>
             <Box display="flex" alignItems="center">
                 {onSearchClick && (
-                    <IconButton onClick={onSearchClick}>
+                    <IconButton onClick={onSearchClick} variant="soft">
                         <SearchIcon />
                     </IconButton>
                 )}
                 {onFilterClick && (
-                    <IconButton onClick={onFilterClick}>
-                        <FilterAltOutlinedIcon />
-                    </IconButton>
+                    <Button
+                        onClick={onFilterClick}
+                        variant="soft"
+                        startDecorator={<FilterAltOutlinedIcon />}
+                        color="neutral"
+                        sx={{ ml: 1 }}
+                    >
+                        Filter
+                    </Button>
                 )}
                 {onSortClick && (
-                    <IconButton onClick={onSortClick}>
-                        <SortIcon />
-                    </IconButton>
+                    <Button
+                        onClick={onSortClick}
+                        variant="soft"
+                        startDecorator={<SortIcon />}
+                        color="neutral"
+                        sx={{ ml: 1 }}
+                    >
+                        Sort
+                    </Button>
                 )}
                 {onViewChangeClick && (
-                    <>
+                    <ButtonGroup variant="soft" sx={{ ml: 1 }}>
                         <IconButton onClick={onViewChangeClick}>
                             <GridViewOutlinedIcon sx={{ color: !isTableView ? "primary.light" : "primary.main" }} />
                         </IconButton>
                         <IconButton onClick={onViewChangeClick}>
                             <FormatListBulletedIcon sx={{ color: isTableView ? "primary.light" : "text.secondary" }} />
                         </IconButton>
-                    </>
+                    </ButtonGroup>
                 )}
-                <IconButton onClick={onCreateClick} variant="outlined">
-                    <AddIcon />
-                    <Typography level="body-sm" mr={1}>
-                        {createLabel}
-                    </Typography>
-                </IconButton>
+                <Button
+                    onClick={onCreateClick}
+                    variant="soft"
+                    startDecorator={<AddIcon />}
+                    color="neutral"
+                    sx={{ ml: 1 }}
+                >
+                    {createLabel}
+                </Button>
             </Box>
         </Box>
     );
