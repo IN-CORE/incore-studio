@@ -2,7 +2,7 @@ import React from "react";
 import { Box, List, ListItem, Typography } from "@mui/joy";
 import { Link, useLocation } from "react-router-dom";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
-import WorkflowIcon from "@mui/icons-material/Polyline";
+import WorkflowIcon from "@mui/icons-material/AccountTree";
 import DFR3Icon from "@mui/icons-material/ShowChart";
 import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";

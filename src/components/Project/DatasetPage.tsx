@@ -50,6 +50,12 @@ const DatasetPage = (): JSX.Element => {
     const onCreateClick = () => {};
     const onSortClick = () => {};
 
+    // Table view vs Card view
+    const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
+    const onViewChangeClick = () => {
+        setIsTableView((prev) => !prev); // Toggle between table and card view
+    };
+
     const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
 
     return (
@@ -77,15 +83,18 @@ const DatasetPage = (): JSX.Element => {
                                         onFilterClick={onFilterClick}
                                         onCreateClick={onCreateClick}
                                         onSortClick={onSortClick}
+                                        onViewChangeClick={onViewChangeClick}
+                                        isTableView={isTableView}
                                         createLabel="Add from Service"
                                     />
-                                    {/* Table View */}
-                                    <ResourceTable
-                                        columns={["title", "description", "date", "owner"]}
-                                        data={projectDatasets}
-                                    />
-                                    {/* Card View */}
-                                    <ResourceCards resources={projectDatasets} cardPerRow={4} />
+                                    {isTableView ? (
+                                        <ResourceTable
+                                            columns={["title", "description", "date", "owner"]}
+                                            data={projectDatasets}
+                                        />
+                                    ) : (
+                                        <ResourceCards resources={projectDatasets} cardPerRow={4} />
+                                    )}
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination
                                             pageNumber={datasetPageNumber}

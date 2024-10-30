@@ -5,7 +5,7 @@ import Typography from "@mui/joy/Typography";
 import HomeIcon from "@mui/icons-material/Home";
 import FolderIcon from "@mui/icons-material/Folder";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
-import WorkflowIcon from "@mui/icons-material/Polyline";
+import WorkflowIcon from "@mui/icons-material/AccountTree";
 import DFR3Icon from "@mui/icons-material/ShowChart";
 import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";

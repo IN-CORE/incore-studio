@@ -60,7 +60,7 @@ export const ResourceCards: React.FC<{ resources: Hazard[] | Visualization[] | D
                         >
                             {/* Pill for resource type */}
                             <Chip size="sm" sx={{ borderRadius: 0 }}>
-                                {resource.type || "Type not provided"}
+                                {isDataset(resource) ? resource.format : resource.type || "Type not provided"}
                             </Chip>
 
                             {/* Date on the right */}

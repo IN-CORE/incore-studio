@@ -4,6 +4,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SortIcon from "@mui/icons-material/Sort";
 import AddIcon from "@mui/icons-material/Add";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
+
 import { SvgIconProps } from "@mui/material";
 
 interface ResourceFilterBarProps {
@@ -12,6 +15,8 @@ interface ResourceFilterBarProps {
     onFilterClick?: () => void;
     onCreateClick?: () => void;
     onSortClick?: () => void;
+    onViewChangeClick?: () => void;
+    isTableView?: boolean;
     createLabel?: string;
     icon: React.ReactElement<SvgIconProps>;
 }
@@ -22,6 +27,8 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     onSearchClick,
     onFilterClick,
     onSortClick,
+    onViewChangeClick,
+    isTableView,
     onCreateClick,
     createLabel = "Create Item" // Default label for the create button
 }) => {
@@ -47,6 +54,16 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                     <IconButton onClick={onSortClick}>
                         <SortIcon />
                     </IconButton>
+                )}
+                {onViewChangeClick && (
+                    <>
+                        <IconButton onClick={onViewChangeClick}>
+                            <GridViewOutlinedIcon sx={{ color: !isTableView ? "primary.light" : "primary.main" }} />
+                        </IconButton>
+                        <IconButton onClick={onViewChangeClick}>
+                            <FormatListBulletedIcon sx={{ color: isTableView ? "primary.light" : "text.secondary" }} />
+                        </IconButton>
+                    </>
                 )}
                 <IconButton onClick={onCreateClick} variant="outlined">
                     <AddIcon />
