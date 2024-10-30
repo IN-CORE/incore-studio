@@ -33,7 +33,6 @@ const App: FC = () => {
     const auth = useAuth();
     const appDispatch = useAppDispatch();
     const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
-
     useEffect(() => {
         if (dependencyGraph === null) {
             appDispatch(getDependencyGraph());

@@ -114,7 +114,7 @@ module.exports = {
             inject: true
         }),
         new CopyWebpackPlugin({
-            patterns: [{ from: "public", to: "public" }]
+            patterns: [{ from: "public", to: "" }]
         }),
         new Webpack.HotModuleReplacementPlugin(),
         new MiniCssExtractPlugin({ filename: "[name].[contenthash].css" }),
