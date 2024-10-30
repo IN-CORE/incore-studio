@@ -399,7 +399,7 @@ const SidePanel = () => {
                                 mb: "10px"
                             }}
                         >
-                            {`Connect ${sidePanelData.type === "previous" ? "From" : "To"} existing workflow analysis`}
+                            {`Connect ${sidePanelData.type === "previous" ? "From" : "To"} existing analysis`}
                         </Typography>
                         {/* previous */}
                         {sidePanelData.type === "previous" &&
@@ -471,23 +471,6 @@ const SidePanel = () => {
                             )}
                     </Box>
                 )}
-                <Box>
-                    <Input
-                        startDecorator={<SearchRoundedIcon />}
-                        endDecorator={
-                            searchAnalysisTerm.length > 0 ? (
-                                <IconButton variant="plain" onClick={() => setSearchAnalysisTerm("")}>
-                                    <CloseRoundedIcon />
-                                </IconButton>
-                            ) : null
-                        }
-                        placeholder="Search Analysis"
-                        value={searchAnalysisTerm}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            setSearchAnalysisTerm(e.target.value.toLowerCase());
-                        }}
-                    />
-                </Box>
                 {dependencyGraph !== null && (
                     <Box sx={{ padding: "2px" }}>
                         <Typography
@@ -503,8 +486,25 @@ const SidePanel = () => {
                                 mb: "10px"
                             }}
                         >
-                            {`Connect ${sidePanelData.type === "previous" ? "From" : "To"} New workflow analysis`}
+                            {`Connect ${sidePanelData.type === "previous" ? "From" : "To"} New analysis`}
                         </Typography>
+                        <Box sx={{ mb: "10px" }}>
+                            <Input
+                                startDecorator={<SearchRoundedIcon />}
+                                endDecorator={
+                                    searchAnalysisTerm.length > 0 ? (
+                                        <IconButton variant="plain" onClick={() => setSearchAnalysisTerm("")}>
+                                            <CloseRoundedIcon />
+                                        </IconButton>
+                                    ) : null
+                                }
+                                placeholder="Search Analysis"
+                                value={searchAnalysisTerm}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    setSearchAnalysisTerm(e.target.value.toLowerCase());
+                                }}
+                            />
+                        </Box>
                         {/* previous */}
                         {sidePanelData.type === "previous" &&
                             Array.from(getGroupedEntriesForNew(true, availableAnalyses).entries()).map(

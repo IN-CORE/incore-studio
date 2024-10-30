@@ -4,17 +4,7 @@ import { Stack, Typography } from "@mui/joy";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import StorageIcon from "@mui/icons-material/Storage";
 
-const CheckboxLabel = ({
-    name,
-    property,
-    disabled,
-    input
-}: {
-    name: string;
-    property: string;
-    disabled: boolean;
-    input: boolean;
-}) => {
+const CheckboxLabel = ({ property, disabled, input }: { property: string; disabled: boolean; input: boolean }) => {
     return (
         <Stack spacing={0} direction="column">
             {disabled && (
@@ -29,9 +19,6 @@ const CheckboxLabel = ({
                     }}
                 />
             )}
-            <Typography level="body-md" sx={{ color: "#172B4D" }}>
-                {name}
-            </Typography>
             <Stack direction="row" spacing={1} alignItems="center">
                 <StorageIcon sx={{ color: input ? "#007DFF" : "#AB47BC" }} />
                 <Typography level="body-sm">{property}</Typography>
