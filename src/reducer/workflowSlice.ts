@@ -97,7 +97,7 @@ export const getWorkflowTools = createAsyncThunk("workflow/getWorkflowTools", as
 });
 
 export const getDependencyGraph = createAsyncThunk("workflow/getDependencyGraph", async () => {
-    const response = await axios.get("dependencyGraph.json");
+    const response = await axios.get("config/dependencyGraph.json");
 
     return response.data;
 });
