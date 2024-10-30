@@ -174,7 +174,6 @@ const ProjectPage = (): JSX.Element => {
                                             createLabel="Create Workflow"
                                         />
                                         <ResourceTable
-                                            resourceTitle="Workflows"
                                             columns={["title", "description", "date", "creator", "isFinalized"]}
                                             data={projectWorkflows}
                                         />
@@ -196,7 +195,6 @@ const ProjectPage = (): JSX.Element => {
                                             createLabel="Add from Service"
                                         />
                                         <ResourceTable
-                                            resourceTitle="Datasets"
                                             columns={["title", "description", "date", "owner"]}
                                             data={projectDatasets}
                                         />
@@ -218,7 +216,6 @@ const ProjectPage = (): JSX.Element => {
                                             createLabel="Add from Service"
                                         />
                                         <ResourceTable
-                                            resourceTitle="DFR3 Mappings"
                                             columns={["name", "hazardType", "inventoryType", "mappingType", "owner"]}
                                             data={projectDFR3Mappings}
                                         />

@@ -12,23 +12,38 @@ function isVisualization(resource: any): resource is Visualization {
     return "layers" in resource;
 }
 
-export const ResourceCards: React.FC<{ resources: Hazard[] | Visualization[] }> = ({ resources }) => {
+function isDataset(resource: any): resource is Dataset {
+    return "dataType" in resource && "format" in resource;
+}
+
+export const ResourceCards: React.FC<{ resources: Hazard[] | Visualization[] | Dataset[]; cardPerRow?: number }> = ({
+    resources,
+    cardPerRow
+}) => {
     return (
         <Grid container spacing={3}>
             {resources.map((resource) => (
-                <Grid key={resource.id} xs={12} sm={12} md={6} lg={6}>
+                <Grid
+                    key={resource.id}
+                    xs={12}
+                    sm={12}
+                    md={Math.ceil(12 / (cardPerRow ?? 2))}
+                    lg={Math.ceil(12 / (cardPerRow ?? 2))}
+                >
                     <Card variant="plain" sx={{ display: "flex", flexDirection: "column", height: "100%", padding: 0 }}>
                         <CardContent>
                             {isHazard(resource) ? (
                                 <MapThumbnail id={resource?.hazardDatasets?.[0]?.datasetId} />
                             ) : isVisualization(resource) ? (
                                 <MapThumbnail id={resource?.layers?.[0]?.layerId} />
+                            ) : isDataset(resource) ? (
+                                <MapThumbnail id={resource?.id} />
                             ) : (
                                 <></>
                             )}
                             <Box sx={{ p: 1, flexGrow: 1, height: 80, overflow: "auto" }}>
                                 <Typography level="body-sm" mb={1} textColor="primary.main">
-                                    {resource.name || "Name not provided"}
+                                    {isDataset(resource) ? resource.title : resource.name || "Name not provided"}
                                 </Typography>
                                 <Typography level="body-sm">
                                     {resource.description || "Description not provided"}

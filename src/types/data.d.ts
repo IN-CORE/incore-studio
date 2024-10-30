@@ -130,6 +130,7 @@ interface Dataset {
     contributors: string[];
     fileDescriptors?: FileDescriptor[];
     dataType: string;
+    type: string;
     storedUrl: string;
     format: string;
     sourceDataset?: string;

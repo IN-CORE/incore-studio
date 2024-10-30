@@ -5,7 +5,6 @@ import { IconButton } from "@mui/material";
 import { formatHeaderName, parseDateTime } from "@app/utils";
 
 interface TableProps {
-    resourceTitle: string;
     columns: string[];
     data: Dataset[] | Hazard[] | Visualization[] | Workflow[] | DFR3Mapping[];
 }
@@ -19,7 +18,7 @@ const hasDate = (item: any): item is Workflow | Dataset => {
     return item.date;
 };
 
-export const ResourceTable = ({ resourceTitle, columns, data }: TableProps): JSX.Element => {
+export const ResourceTable = ({ columns, data }: TableProps): JSX.Element => {
     const renderRow = (item: Dataset | Hazard | Visualization | Workflow | DFR3Mapping) => {
         return (
             <>
@@ -62,7 +61,7 @@ export const ResourceTable = ({ resourceTitle, columns, data }: TableProps): JSX
     };
 
     return (
-        <Table aria-label={resourceTitle.toLowerCase()}>
+        <Table>
             <thead>
                 <tr>
                     {columns.map((column) => (

@@ -12,7 +12,7 @@ import { ResourceTable } from "@app/components/Project/ResourceTable";
 import { Pagination } from "@app/components/Home/Pagination";
 import ResourceFilterBar from "@app/components/Project/ResourceFilterBar";
 import Divider from "@mui/joy/Divider";
-// import { ResourceCards } from "@app/components/Project/ResourceCards";
+import { ResourceCards } from "@app/components/Project/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
@@ -69,44 +69,6 @@ const DatasetPage = (): JSX.Element => {
                                 <Grid sm={2}>
                                     <ProjectSidebar id={project.id} />
                                 </Grid>
-                                {/* /!* Left Column: Hazard and Visualization Cards *!/ */}
-                                {/* <Grid sm={10}> */}
-                                {/*    <Box mb={1}> */}
-                                {/*        <ResourceFilterBar */}
-                                {/*            title="Hazards" */}
-                                {/*            icon={<HazardIcon sx={{ verticalAlign: "middle" }} />} */}
-                                {/*            createLabel="Add from Service" */}
-                                {/*        /> */}
-                                {/*        <ResourceCards resources={projectHazards} /> */}
-                                {/*        <Box mt={4} display="flex" justifyContent="center"> */}
-                                {/*            <Pagination */}
-                                {/*                pageNumber={hazardPageNumber} */}
-                                {/*                data={projectHazards} */}
-                                {/*                dataPerPage={2} */}
-                                {/*                previous={hazardPreviousPage} */}
-                                {/*                next={hazardNextPage} */}
-                                {/*            /> */}
-                                {/*        </Box> */}
-                                {/*    </Box> */}
-                                {/*    <Box> */}
-                                {/*        <ResourceFilterBar */}
-                                {/*            title="Visualization" */}
-                                {/*            icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />} */}
-                                {/*            createLabel="Create Visualization" */}
-                                {/*        /> */}
-                                {/*        <ResourceCards resources={projectVisualizations} /> */}
-                                {/*        <Box mt={4} display="flex" justifyContent="center"> */}
-                                {/*            <Pagination */}
-                                {/*                pageNumber={visPageNumber} */}
-                                {/*                data={projectVisualizations} */}
-                                {/*                dataPerPage={2} */}
-                                {/*                previous={visPreviousPage} */}
-                                {/*                next={visNextPage} */}
-                                {/*            /> */}
-                                {/*        </Box> */}
-                                {/*    </Box> */}
-                                {/* </Grid> */}
-                                {/* Right Column: Workflow, Dataset, and DFR3Mapping Tables */}
                                 <Grid sm={10}>
                                     <ResourceFilterBar
                                         title="Datasets"
@@ -117,11 +79,13 @@ const DatasetPage = (): JSX.Element => {
                                         onSortClick={onSortClick}
                                         createLabel="Add from Service"
                                     />
+                                    {/* Table View */}
                                     <ResourceTable
-                                        resourceTitle="Datasets"
                                         columns={["title", "description", "date", "owner"]}
                                         data={projectDatasets}
                                     />
+                                    {/* Card View */}
+                                    <ResourceCards resources={projectDatasets} cardPerRow={4} />
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination
                                             pageNumber={datasetPageNumber}
