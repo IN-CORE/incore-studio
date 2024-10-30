@@ -1,10 +1,3 @@
-interface Window {
-    API_SERVER: string;
-    AUTHORITY: string;
-    CLIENT_ID: string;
-    REDIRECT_URI: string;
-}
-
 declare module "*.json" {
     const value: any;
     export default value;

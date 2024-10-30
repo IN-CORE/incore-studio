@@ -1,14 +1,14 @@
 import React, { Suspense, lazy } from "react";
-import Loading from "./components/Loading";
+import Loading from "@app/components/Loading";
 
-const LazyHome = lazy(() => import("./components/Home"));
-const LazyExecution = lazy(() => import("./components/Execution"));
-const LazyProjectPage = lazy(() => import("./components/Project/ProjectPage"));
-const LazyProjectDatasetsPage = lazy(() => import("./components/Project/Resource/DatasetPage"));
-const LazyProjectHazardsPage = lazy(() => import("./components/Project/Resource/HazardPage"));
-const LazyProjectVisualizationsPage = lazy(() => import("./components/Project/Resource/VisualizationPage"));
-const LazyProjectWorkflowsPage = lazy(() => import("./components/Project/Resource/WorkflowPage"));
-const LazyProjectDFR3MappingPage = lazy(() => import("./components/Project/Resource/DFR3MappingPage"));
+const LazyHome = lazy(() => import("@app/components/Home"));
+const LazyExecution = lazy(() => import("@app/components/Execution"));
+const LazyProjectPage = lazy(() => import("@app/components/Project/ProjectPage"));
+const LazyProjectDatasetsPage = lazy(() => import("@app/components/Project/Resource/DatasetPage"));
+const LazyProjectHazardsPage = lazy(() => import("@app/components/Project/Resource/HazardPage"));
+const LazyProjectVisualizationsPage = lazy(() => import("@app/components/Project/Resource/VisualizationPage"));
+const LazyProjectWorkflowsPage = lazy(() => import("@app/components/Project/Resource/WorkflowPage"));
+const LazyProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Resource/DFR3MappingPage"));
 
 /**
  A mapping of routes to `RouteProps`.

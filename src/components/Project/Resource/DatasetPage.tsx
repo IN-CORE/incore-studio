@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import { getProject, getProjectDatasets } from "@app/reducer/projectSlice";
-import Topbar from "@app/components/Home/Topbar";
+import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -60,7 +60,7 @@ const DatasetPage = (): JSX.Element => {
 
     return (
         <>
-            <Topbar />
+            <Navbar />
             <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
                 <Box sx={{ flexShrink: 0 }} mt={5}>
                     {!project ? (

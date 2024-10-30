@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { getHeaders } from "@app/utils";
+import config from "@app/app.config";
 
-const PROJECT_API_URL = `${window.API_SERVER}/project/api/projects`;
+const PROJECT_API_URL = config.projectApi;
 
 const initialState: ProjectState = {
     projects: <Project[]>[],

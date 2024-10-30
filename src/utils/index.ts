@@ -1,9 +1,12 @@
 import { User } from "oidc-client";
+import config from "@app/app.config";
 
 import axios from "axios";
 
 export function getOidcUser() {
-    const oidcStorage = sessionStorage.getItem(`oidc.user:${window.AUTHORITY}:${window.CLIENT_ID}`);
+    const oidcStorage = sessionStorage.getItem(
+        `oidc.user:${config.keycloakConfig.authority}:${config.keycloakConfig.client_id}`
+    );
     if (!oidcStorage) {
         return null;
     }
@@ -14,7 +17,7 @@ export function getOidcUser() {
 export const getHeaders = () => {
     const user = getOidcUser(); // Assuming this function retrieves the user object with the access token
     const token = user?.access_token;
-    const isLocalhost = window.API_SERVER.includes("localhost");
+    const isLocalhost = config.hostname.includes("localhost");
 
     if (!isLocalhost) {
         return {
@@ -83,14 +86,14 @@ export function formatHeaderName(header: string) {
 }
 
 export function getGeoServerImageUrl(id: string, width: number, height: number) {
-    const geoserverBaseUrl = `${window.API_SERVER}/geoserver/incore/wms`;
+    const geoserverBaseUrl = `${config.hostname}/geoserver/incore/wms`;
     const layerName = `incore:${id}`;
     const srs = "EPSG:4326"; // Projection
     return `${geoserverBaseUrl}?service=WMS&version=1.1.0&request=GetMap&layers=${layerName}&width=${width}&height=${height}&srs=${srs}&format=image/png&datasetId=${id}`;
 }
 
 export async function getGeoServerImageUrlAsDataUrl(id: string, width: number, height: number) {
-    const geoserverBaseUrl = `${window.API_SERVER}/geoserver/incore/wms`;
+    const geoserverBaseUrl = `${config.hostname}/geoserver/incore/wms`;
     const layerName = `incore:${id}`;
     const srs = "EPSG:4326"; // Projection
 
@@ -148,7 +151,7 @@ function toWebMercator(lon: number, lat: number) {
 }
 
 export async function getBoundingBoxFromDataset(layerId: string) {
-    const apiUrl = `${window.API_SERVER}/data/api/datasets/${layerId}`;
+    const apiUrl = `${config.hostname}/data/api/datasets/${layerId}`;
 
     try {
         const response = await axios.get(apiUrl, { headers: getHeaders() });
