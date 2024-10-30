@@ -15,11 +15,11 @@ import {
 import Topbar from "@app/components/Home/Topbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
-import { ResourceTable } from "@app/components/Project/ResourceTable";
+import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
 import { Pagination } from "@app/components/Home/Pagination";
-import ResourceFilterBar from "@app/components/Project/ResourceFilterBar";
+import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBar";
 import Divider from "@mui/joy/Divider";
-import { ResourceCards } from "@app/components/Project/ResourceCards";
+import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";

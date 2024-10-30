@@ -90,7 +90,7 @@ interface Project {
     owner?: string;
     region: string;
     hazards: Hazard[];
-    dfr3Mappings: Mapping[];
+    dfr3Mappings: DFR3Mapping[];
     datasets: Dataset[];
     workflows: Workflow[];
     visualizations: Visualization[];

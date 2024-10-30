@@ -4,20 +4,20 @@ import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { getProject, getProjectDatasets } from "@app/reducer/projectSlice";
+import { getProject, getProjectVisualizations } from "@app/reducer/projectSlice";
 import Topbar from "@app/components/Home/Topbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
-import { ResourceTable } from "@app/components/Project/ResourceTable";
+import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
 import { Pagination } from "@app/components/Home/Pagination";
-import ResourceFilterBar from "@app/components/Project/ResourceFilterBar";
+import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBar";
 import Divider from "@mui/joy/Divider";
-import { ResourceCards } from "@app/components/Project/ResourceCards";
+import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 
-import DatasetIcon from "@mui/icons-material/FormatListBulleted";
+import VisualizationIcon from "@mui/icons-material/Map";
 
-const DatasetPage = (): JSX.Element => {
+const VisualizationPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
     const dispatch = useDispatch();
 
@@ -25,12 +25,12 @@ const DatasetPage = (): JSX.Element => {
     const project = useSelector((state: RootState) => state.project.project);
 
     // Pagination states
-    const [datasetPageNumber, setDatasetPageNumber] = useState(1);
-    const datasetNextPage = () => {
-        setDatasetPageNumber((prevPage) => prevPage + 1);
+    const [visualizationPageNumber, setVisualizationPageNumber] = useState(1);
+    const visualizationNextPage = () => {
+        setVisualizationPageNumber((prevPage) => prevPage + 1);
     };
-    const datasetPreviousPage = () => {
-        setDatasetPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
+    const visualizationPreviousPage = () => {
+        setVisualizationPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
     };
 
     useEffect(() => {
@@ -42,8 +42,8 @@ const DatasetPage = (): JSX.Element => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
-    }, [id, datasetPageNumber]);
+        dispatch(getProjectVisualizations({ projectId: id, skip: (visualizationPageNumber - 1) * 10, limit: 10 }));
+    }, [id, visualizationPageNumber]);
 
     const onSearchClick = () => {};
     const onFilterClick = () => {};
@@ -56,7 +56,7 @@ const DatasetPage = (): JSX.Element => {
         setIsTableView((prev) => !prev); // Toggle between table and card view
     };
 
-    const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
+    const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
 
     return (
         <>
@@ -77,8 +77,8 @@ const DatasetPage = (): JSX.Element => {
                                 </Grid>
                                 <Grid sm={10}>
                                     <ResourceFilterBar
-                                        title="Datasets"
-                                        icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
+                                        title="Visualizations"
+                                        icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
                                         onSearchClick={onSearchClick}
                                         onFilterClick={onFilterClick}
                                         onCreateClick={onCreateClick}
@@ -89,19 +89,19 @@ const DatasetPage = (): JSX.Element => {
                                     />
                                     {isTableView ? (
                                         <ResourceTable
-                                            columns={["title", "description", "date", "owner"]}
-                                            data={projectDatasets}
+                                            columns={["name", "description", "date"]}
+                                            data={projectVisualizations}
                                         />
                                     ) : (
-                                        <ResourceCards resources={projectDatasets} cardPerRow={4} />
+                                        <ResourceCards resources={projectVisualizations} cardPerRow={4} />
                                     )}
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination
-                                            pageNumber={datasetPageNumber}
-                                            data={projectDatasets}
+                                            pageNumber={visualizationPageNumber}
+                                            data={projectVisualizations}
                                             dataPerPage={10}
-                                            previous={datasetPreviousPage}
-                                            next={datasetNextPage}
+                                            previous={visualizationPreviousPage}
+                                            next={visualizationNextPage}
                                         />
                                     </Box>
                                 </Grid>
@@ -114,4 +114,4 @@ const DatasetPage = (): JSX.Element => {
     );
 };
 
-export default DatasetPage;
+export default VisualizationPage;
