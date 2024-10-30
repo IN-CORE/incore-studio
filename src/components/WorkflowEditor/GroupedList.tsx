@@ -64,7 +64,6 @@ const GroupedList = ({
         });
         return grouped;
     };
-    console.log(groupByAnalysisName());
 
     return (
         <Stack spacing={1} direction="column" sx={{ mb: "10px" }}>
@@ -76,7 +75,7 @@ const GroupedList = ({
                         fontSize: "15px"
                     }}
                 />
-                <Typography level="body-md" sx={{ color: "#172B4D" }}>
+                <Typography level="body-lg" sx={{ color: "#172B4D" }}>
                     {propertyName}
                 </Typography>
             </Stack>

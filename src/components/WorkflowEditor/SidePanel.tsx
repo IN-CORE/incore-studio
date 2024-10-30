@@ -401,74 +401,38 @@ const SidePanel = () => {
                         >
                             {`Connect ${sidePanelData.type === "previous" ? "From" : "To"} existing analysis`}
                         </Typography>
-                        {/* previous */}
-                        {sidePanelData.type === "previous" &&
-                            Array.from(
-                                getGroupedEntries(
-                                    true,
-                                    nodes.map((node) => node as NewAnalysisNode)
-                                ).entries()
-                            ).map(
-                                ([key, value]: [
-                                    string,
-                                    {
-                                        analysisName: string;
-                                        analysisProperty: string;
-                                        analysisNode: NewAnalysisNode;
-                                        link: { from: string; to: string };
-                                    }[]
-                                ]) => {
-                                    return (
-                                        <GroupedList
-                                            key={`${key}-previous`}
-                                            existing={true}
-                                            previous={true}
-                                            propertyName={key}
-                                            optionsList={value}
-                                            selectedAnalysis={selectedAnalysis}
-                                            nodeLink={nodeLink}
-                                            setSelectedAnalysis={setSelectedAnalysis}
-                                            setNodeLink={setNodeLink}
-                                            checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
-                                            checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
-                                        />
-                                    );
-                                }
-                            )}
-                        {/* next */}
-                        {sidePanelData.type !== "previous" &&
-                            Array.from(
-                                getGroupedEntries(
-                                    false,
-                                    nodes.map((node) => node as NewAnalysisNode)
-                                ).entries()
-                            ).map(
-                                ([key, value]: [
-                                    string,
-                                    {
-                                        analysisName: string;
-                                        analysisProperty: string;
-                                        analysisNode: NewAnalysisNode;
-                                        link: { from: string; to: string };
-                                    }[]
-                                ]) => {
-                                    return (
-                                        <GroupedList
-                                            key={`${key}-previous`}
-                                            existing={true}
-                                            previous={false}
-                                            propertyName={key}
-                                            optionsList={value}
-                                            selectedAnalysis={selectedAnalysis}
-                                            nodeLink={nodeLink}
-                                            setSelectedAnalysis={setSelectedAnalysis}
-                                            setNodeLink={setNodeLink}
-                                            checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
-                                            checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
-                                        />
-                                    );
-                                }
-                            )}
+                        {Array.from(
+                            getGroupedEntries(
+                                sidePanelData.type === "previous",
+                                nodes.map((node) => node as NewAnalysisNode)
+                            ).entries()
+                        ).map(
+                            ([key, value]: [
+                                string,
+                                {
+                                    analysisName: string;
+                                    analysisProperty: string;
+                                    analysisNode: NewAnalysisNode;
+                                    link: { from: string; to: string };
+                                }[]
+                            ]) => {
+                                return (
+                                    <GroupedList
+                                        key={`${key}`}
+                                        existing={true}
+                                        previous={sidePanelData.type === "previous"}
+                                        propertyName={key}
+                                        optionsList={value}
+                                        selectedAnalysis={selectedAnalysis}
+                                        nodeLink={nodeLink}
+                                        setSelectedAnalysis={setSelectedAnalysis}
+                                        setNodeLink={setNodeLink}
+                                        checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
+                                        checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
+                                    />
+                                );
+                            }
+                        )}
                     </Box>
                 )}
                 {dependencyGraph !== null && (
@@ -505,62 +469,34 @@ const SidePanel = () => {
                                 }}
                             />
                         </Box>
-                        {/* previous */}
-                        {sidePanelData.type === "previous" &&
-                            Array.from(getGroupedEntriesForNew(true, availableAnalyses).entries()).map(
-                                ([key, value]: [
-                                    string,
-                                    {
-                                        analysisName: string;
-                                        analysisProperty: string;
-                                        link: { from: string; to: string };
-                                    }[]
-                                ]) => {
-                                    return (
-                                        <GroupedList
-                                            key={`${key}-previous`}
-                                            existing={false}
-                                            previous={true}
-                                            propertyName={key}
-                                            optionsList={value}
-                                            selectedAnalysis={selectedAnalysis}
-                                            nodeLink={nodeLink}
-                                            setSelectedAnalysis={setSelectedAnalysis}
-                                            setNodeLink={setNodeLink}
-                                            checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
-                                            checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
-                                        />
-                                    );
-                                }
-                            )}
-                        {/* next */}
-                        {sidePanelData.type !== "previous" &&
-                            Array.from(getGroupedEntriesForNew(false, availableAnalyses).entries()).map(
-                                ([key, value]: [
-                                    string,
-                                    {
-                                        analysisName: string;
-                                        analysisProperty: string;
-                                        link: { from: string; to: string };
-                                    }[]
-                                ]) => {
-                                    return (
-                                        <GroupedList
-                                            key={`${key}-previous`}
-                                            existing={false}
-                                            previous={false}
-                                            propertyName={key}
-                                            optionsList={value}
-                                            selectedAnalysis={selectedAnalysis}
-                                            nodeLink={nodeLink}
-                                            setSelectedAnalysis={setSelectedAnalysis}
-                                            setNodeLink={setNodeLink}
-                                            checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
-                                            checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
-                                        />
-                                    );
-                                }
-                            )}
+                        {Array.from(
+                            getGroupedEntriesForNew(sidePanelData.type === "previous", availableAnalyses).entries()
+                        ).map(
+                            ([key, value]: [
+                                string,
+                                {
+                                    analysisName: string;
+                                    analysisProperty: string;
+                                    link: { from: string; to: string };
+                                }[]
+                            ]) => {
+                                return (
+                                    <GroupedList
+                                        key={`${key}`}
+                                        existing={false}
+                                        previous={sidePanelData.type === "previous"}
+                                        propertyName={key}
+                                        optionsList={value}
+                                        selectedAnalysis={selectedAnalysis}
+                                        nodeLink={nodeLink}
+                                        setSelectedAnalysis={setSelectedAnalysis}
+                                        setNodeLink={setNodeLink}
+                                        checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
+                                        checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
+                                    />
+                                );
+                            }
+                        )}
                     </Box>
                 )}
                 <Button
