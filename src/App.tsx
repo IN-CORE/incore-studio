@@ -24,7 +24,7 @@ const basename = process.env.NODE_ENV === "production" ? "/studio" : "";
 const oidcConfig = {
     authority: config.keycloakConfig.authority,
     client_id: config.keycloakConfig.client_id,
-    redirect_uri: `${location.origin}${basename}`
+    redirect_uri: `${location.origin}${basename}/`
 };
 
 const App: FC = () => {
