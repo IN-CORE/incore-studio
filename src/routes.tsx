@@ -1,14 +1,15 @@
 import React, { Suspense, lazy } from "react";
 import Loading from "@app/components/Loading";
 
+import ProjectDatasetPage from "@app/components/Project/Resource/DatasetPage";
+import ProjectPage from "@app/components/Project/ProjectPage";
+import ProjectHazardsPage from "@app/components/Project/Resource/HazardPage";
+import ProjectVisualizationsPage from "@app/components/Project/Resource/VisualizationPage";
+import ProjectWorkflowsPage from "@app/components/Project/Resource/WorkflowPage";
+import ProjectDFR3MappingPage from "@app/components/Project/Resource/DFR3MappingPage";
+
 const LazyHome = lazy(() => import("@app/components/Home"));
 const LazyExecution = lazy(() => import("@app/components/Execution"));
-const LazyProjectPage = lazy(() => import("@app/components/Project/ProjectPage"));
-const LazyProjectDatasetsPage = lazy(() => import("@app/components/Project/Resource/DatasetPage"));
-const LazyProjectHazardsPage = lazy(() => import("@app/components/Project/Resource/HazardPage"));
-const LazyProjectVisualizationsPage = lazy(() => import("@app/components/Project/Resource/VisualizationPage"));
-const LazyProjectWorkflowsPage = lazy(() => import("@app/components/Project/Resource/WorkflowPage"));
-const LazyProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Resource/DFR3MappingPage"));
 
 /**
  A mapping of routes to `RouteProps`.
@@ -34,42 +35,42 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
     "/project/:id": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyProjectPage />
+                <ProjectPage />
             </Suspense>
         )
     },
     "/project/:id/datasets": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyProjectDatasetsPage />
+                <ProjectDatasetPage />
             </Suspense>
         )
     },
     "/project/:id/hazards": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyProjectHazardsPage />
+                <ProjectHazardsPage />
             </Suspense>
         )
     },
     "/project/:id/visualizations": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyProjectVisualizationsPage />
+                <ProjectVisualizationsPage />
             </Suspense>
         )
     },
     "/project/:id/workflows": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyProjectWorkflowsPage />
+                <ProjectWorkflowsPage />
             </Suspense>
         )
     },
     "/project/:id/dfr3mappings": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyProjectDFR3MappingPage />
+                <ProjectDFR3MappingPage />
             </Suspense>
         )
     }
