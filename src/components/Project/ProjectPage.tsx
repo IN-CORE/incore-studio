@@ -128,8 +128,25 @@ const ProjectPage = (): JSX.Element => {
                                 <Grid sm={2}>
                                     <ProjectSidebar id={project.id} />
                                 </Grid>
-                                {/* Left Column: Hazard and Visualization Cards */}
+                                {/* Left Column: Workflow, Hazard and Visualization Cards */}
                                 <Grid sm={5}>
+                                    <Box mb={1}>
+                                        <ResourceFilterBar
+                                            title="Workflows"
+                                            icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
+                                            createLabel="Create New Workflow"
+                                        />
+                                        <ResourceCards resources={projectWorkflows} />
+                                        <Box mt={4} display="flex" justifyContent="center">
+                                            <Pagination
+                                                pageNumber={wfPageNumber}
+                                                data={projectWorkflows}
+                                                dataPerPage={2}
+                                                previous={wfPreviousPage}
+                                                next={wfNextPage}
+                                            />
+                                        </Box>
+                                    </Box>
                                     <Box mb={1}>
                                         <ResourceFilterBar
                                             title="Hazards"
@@ -165,29 +182,8 @@ const ProjectPage = (): JSX.Element => {
                                         </Box>
                                     </Box>
                                 </Grid>
-                                {/* Right Column: Workflow, Dataset, and DFR3Mapping Tables */}
+                                {/* Right Column: Dataset, and DFR3Mapping Tables */}
                                 <Grid sm={5}>
-                                    <Box mb={1}>
-                                        <ResourceFilterBar
-                                            title="Workflows"
-                                            icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
-                                            createLabel="Create Workflow"
-                                        />
-                                        <ResourceTable
-                                            columns={["title", "description", "date", "creator", "isFinalized"]}
-                                            data={projectWorkflows}
-                                        />
-                                        <Box mt={4} display="flex" justifyContent="center">
-                                            <Pagination
-                                                pageNumber={wfPageNumber}
-                                                data={projectWorkflows}
-                                                dataPerPage={5}
-                                                previous={wfPreviousPage}
-                                                next={wfNextPage}
-                                            />
-                                        </Box>
-                                    </Box>
-
                                     <Box mb={1}>
                                         <ResourceFilterBar
                                             title="Datasets"
