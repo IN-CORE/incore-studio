@@ -1,11 +1,12 @@
 import { Card, Typography, Box, CardContent, Chip } from "@mui/joy";
-import { Grid } from "@mui/material";
-import React from "react";
+import { Dropdown, Grid, IconButton, Menu, MenuButton, MenuItem } from "@mui/material";
+import React, { useState } from "react";
 import { parseDateTime } from "@app/utils";
 import { MapThumbnail } from "@app/components/Project/Thumbnails/MapThumbnail";
 import { TableThumbnail } from "@app/components/Project/Thumbnails/TableThumbnail";
 import { WorkflowThumbnail } from "@app/components/Project/Thumbnails/WorkflowThumbnail";
 import { DefaultThumbnail } from "@app/components/Project/Thumbnails/DefaultThumbnail";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 function isHazard(resource: any): resource is Hazard {
     return "hazardDatasets" in resource;
@@ -37,6 +38,23 @@ export const ResourceCards: React.FC<{
     resources: Hazard[] | Visualization[] | Dataset[] | Workflow[];
     cardPerRow?: number;
 }> = ({ resources, cardPerRow }) => {
+    const [selectedItem, setSelectedItem] = useState<string | null>(null);
+
+    const handleOpenMenu = (id: string) => {
+        setSelectedItem(id);
+    };
+
+    const handleCloseMenu = () => {
+        setSelectedItem(null);
+    };
+
+    const handleDelete = () => {
+        if (selectedItem) {
+            // onDelete(selectedItem);
+            handleCloseMenu();
+        }
+    };
+
     return (
         <Grid container spacing={3}>
             {resources.map((resource) => (
@@ -47,7 +65,35 @@ export const ResourceCards: React.FC<{
                     md={Math.ceil(12 / (cardPerRow ?? 2))}
                     lg={Math.ceil(12 / (cardPerRow ?? 2))}
                 >
-                    <Card variant="plain" sx={{ display: "flex", flexDirection: "column", height: "100%", padding: 0 }}>
+                    <Card
+                        variant="plain"
+                        sx={{
+                            position: "relative",
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
+                            padding: 0
+                        }}
+                    >
+                        {/* Menu Icon on Top-Right */}
+                        <Dropdown>
+                            <MenuButton
+                                slots={{ root: IconButton }}
+                                slotProps={{
+                                    root: {
+                                        sx: { position: "absolute", top: 8, right: -10, zIndex: 1000 },
+                                        variant: "plain",
+                                        color: "neutral"
+                                    }
+                                }}
+                                onClick={() => handleOpenMenu(resource.id)}
+                            >
+                                <MoreVertIcon />
+                            </MenuButton>
+                            <Menu onClose={handleCloseMenu} placement="bottom-start">
+                                <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                            </Menu>
+                        </Dropdown>
                         <CardContent>
                             {isHazard(resource) ? (
                                 <MapThumbnail />

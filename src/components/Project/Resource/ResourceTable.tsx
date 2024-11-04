@@ -1,7 +1,6 @@
-import React from "react";
-import Table from "@mui/joy/Table";
+import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { IconButton } from "@mui/material";
+import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown } from "@mui/joy";
 import { formatHeaderName, parseDateTime } from "@app/utils";
 
 interface TableProps {
@@ -19,6 +18,23 @@ const hasDate = (item: any): item is Workflow | Dataset => {
 };
 
 export const ResourceTable = ({ columns, data }: TableProps): JSX.Element => {
+    const [selectedItem, setSelectedItem] = useState<string | null>(null);
+
+    const handleOpenMenu = (id: string) => {
+        setSelectedItem(id);
+    };
+
+    const handleCloseMenu = () => {
+        setSelectedItem(null);
+    };
+
+    const handleDelete = () => {
+        if (selectedItem) {
+            // onDelete(selectedItem);
+            handleCloseMenu();
+        }
+    };
+
     const renderRow = (item: Dataset | Hazard | Visualization | Workflow | DFR3Mapping) => {
         return (
             <>
@@ -52,9 +68,19 @@ export const ResourceTable = ({ columns, data }: TableProps): JSX.Element => {
                     );
                 })}
                 <td>
-                    <IconButton variant="plain">
-                        <MoreVertIcon />
-                    </IconButton>
+                    <Dropdown>
+                        <MenuButton
+                            slots={{ root: IconButton }}
+                            slotProps={{ root: { variant: "plain", color: "neutral" } }}
+                            onClick={() => handleOpenMenu(item.id)}
+                        >
+                            <MoreVertIcon />
+                        </MenuButton>
+
+                        <Menu onClose={handleCloseMenu} placement="bottom-start">
+                            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                        </Menu>
+                    </Dropdown>
                 </td>
             </>
         );
