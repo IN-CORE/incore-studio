@@ -12,6 +12,7 @@ import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
 import { Pagination } from "@app/components/Home/Pagination";
 import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBar";
 import Divider from "@mui/joy/Divider";
+import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 
 import WorkflowIcon from "@mui/icons-material/AccountTree";
@@ -49,6 +50,12 @@ const WorkflowPage = (): JSX.Element => {
     const onCreateClick = () => {};
     const onSortClick = () => {};
 
+    // Table view vs Card view
+    const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
+    const onViewChangeClick = () => {
+        setIsTableView((prev) => !prev); // Toggle between table and card view
+    };
+
     const projectWorkflows = useSelector((state: RootState) => state.project.projectWorkflows);
 
     return (
@@ -76,13 +83,18 @@ const WorkflowPage = (): JSX.Element => {
                                         onFilterClick={onFilterClick}
                                         onCreateClick={onCreateClick}
                                         onSortClick={onSortClick}
-                                        isTableView
-                                        createLabel="Create New Workflow"
+                                        onViewChangeClick={onViewChangeClick}
+                                        isTableView={isTableView}
+                                        createLabel="Add from Service"
                                     />
-                                    <ResourceTable
-                                        columns={["title", "description", "date", "creator"]}
-                                        data={projectWorkflows}
-                                    />
+                                    {isTableView ? (
+                                        <ResourceTable
+                                            columns={["title", "description", "date", "creator", "isFinalized"]}
+                                            data={projectWorkflows}
+                                        />
+                                    ) : (
+                                        <ResourceCards resources={projectWorkflows} cardPerRow={4} />
+                                    )}
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination
                                             pageNumber={workflowPageNumber}

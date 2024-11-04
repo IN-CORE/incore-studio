@@ -2,7 +2,10 @@ import { Card, Typography, Box, CardContent, Chip } from "@mui/joy";
 import { Grid } from "@mui/material";
 import React from "react";
 import { parseDateTime } from "@app/utils";
-import { MapThumbnail } from "@app/components/Project/MapThumbnail";
+import { MapThumbnail } from "@app/components/Project/Thumbnails/MapThumbnail";
+import { TableThumbnail } from "@app/components/Project/Thumbnails/TableThumbnail";
+import { WorkflowThumbnail } from "@app/components/Project/Thumbnails/WorkflowThumbnail";
+import { DefaultThumbnail } from "@app/components/Project/Thumbnails/DefaultThumbnail";
 
 function isHazard(resource: any): resource is Hazard {
     return "hazardDatasets" in resource;
@@ -13,13 +16,27 @@ function isVisualization(resource: any): resource is Visualization {
 }
 
 function isDataset(resource: any): resource is Dataset {
-    return "dataType" in resource && "format" in resource;
+    return "dataType" in resource;
 }
 
-export const ResourceCards: React.FC<{ resources: Hazard[] | Visualization[] | Dataset[]; cardPerRow?: number }> = ({
-    resources,
-    cardPerRow
-}) => {
+function isDatasetTable(resource: any): resource is Dataset {
+    return "dataType" in resource && "format" in resource && (resource.format === "table" || resource.format === "csv");
+}
+
+function isDatasetMap(resource: any): resource is Dataset {
+    return (
+        "dataType" in resource && "format" in resource && (resource.format === "shapefile" || resource.format === "tif")
+    );
+}
+
+function isWorkflow(resource: any): resource is Workflow {
+    return "type" in resource && (resource.type === "workflow" || resource.type === "execution");
+}
+
+export const ResourceCards: React.FC<{
+    resources: Hazard[] | Visualization[] | Dataset[] | Workflow[];
+    cardPerRow?: number;
+}> = ({ resources, cardPerRow }) => {
     return (
         <Grid container spacing={3}>
             {resources.map((resource) => (
@@ -33,17 +50,23 @@ export const ResourceCards: React.FC<{ resources: Hazard[] | Visualization[] | D
                     <Card variant="plain" sx={{ display: "flex", flexDirection: "column", height: "100%", padding: 0 }}>
                         <CardContent>
                             {isHazard(resource) ? (
-                                <MapThumbnail id={resource?.hazardDatasets?.[0]?.datasetId} />
+                                <MapThumbnail />
                             ) : isVisualization(resource) ? (
-                                <MapThumbnail id={resource?.layers?.[0]?.layerId} />
-                            ) : isDataset(resource) ? (
-                                <MapThumbnail id={resource?.id} />
+                                <MapThumbnail />
+                            ) : isDatasetTable(resource) ? (
+                                <TableThumbnail />
+                            ) : isDatasetMap(resource) ? (
+                                <MapThumbnail />
+                            ) : isWorkflow(resource) ? (
+                                <WorkflowThumbnail />
                             ) : (
-                                <></>
+                                <DefaultThumbnail />
                             )}
                             <Box sx={{ p: 1, flexGrow: 1, height: 80, overflow: "auto" }}>
                                 <Typography level="body-sm" mb={1} textColor="primary.main">
-                                    {isDataset(resource) ? resource.title : resource.name || "Name not provided"}
+                                    {isDataset(resource) || isWorkflow(resource)
+                                        ? resource.title
+                                        : resource.name || "Name not" + " provided"}
                                 </Typography>
                                 <Typography level="body-sm">
                                     {resource.description || "Description not provided"}
