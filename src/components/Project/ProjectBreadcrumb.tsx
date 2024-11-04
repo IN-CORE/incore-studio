@@ -21,15 +21,15 @@ interface ProjectBreadcrumbProps {
 const getResourceIcon = (resource: string | undefined) => {
     switch (resource?.toLowerCase()) {
         case "datasets":
-            return <DatasetIcon sx={{ mr: 0.5 }} />;
+            return <DatasetIcon sx={{ mr: 0.5, verticalAlign: "middle" }} />;
         case "workflows":
-            return <WorkflowIcon sx={{ mr: 0.5 }} />;
-        case "dfr3Mappings":
-            return <DFR3Icon sx={{ mr: 0.5 }} />;
+            return <WorkflowIcon sx={{ mr: 0.5, verticalAlign: "middle" }} />;
+        case "dfr3 mappings":
+            return <DFR3Icon sx={{ mr: 0.5, verticalAlign: "middle" }} />;
         case "hazards":
-            return <HazardIcon sx={{ mr: 0.5 }} />;
+            return <HazardIcon sx={{ mr: 0.5, verticalAlign: "middle" }} />;
         case "visualizations":
-            return <VisualizationIcon sx={{ mr: 0.5 }} />;
+            return <VisualizationIcon sx={{ mr: 0.5, verticalAlign: "middle" }} />;
         default:
             return null;
     }

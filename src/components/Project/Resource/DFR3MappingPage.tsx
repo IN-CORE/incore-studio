@@ -61,7 +61,10 @@ const DFR3MappingPage = (): JSX.Element => {
                     ) : (
                         <>
                             {/* Header Section */}
-                            <ProjectBreadcrumb project={{ href: `/project/${project.id}`, label: project.name }} />
+                            <ProjectBreadcrumb
+                                project={{ href: `/project/${project.id}`, label: project.name }}
+                                resource="DFR3 Mappings"
+                            />
                             <ProjectHeader project={project} />
                             <Divider />
                             <Grid container spacing={5} mt={3} ml={0}>

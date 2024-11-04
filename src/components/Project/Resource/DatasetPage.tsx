@@ -68,7 +68,10 @@ const DatasetPage = (): JSX.Element => {
                     ) : (
                         <>
                             {/* Header Section */}
-                            <ProjectBreadcrumb project={{ href: `/project/${project.id}`, label: project.name }} />
+                            <ProjectBreadcrumb
+                                project={{ href: `/project/${project.id}`, label: project.name }}
+                                resource="Datasets"
+                            />
                             <ProjectHeader project={project} />
                             <Divider />
                             <Grid container spacing={5} mt={3} ml={0}>
