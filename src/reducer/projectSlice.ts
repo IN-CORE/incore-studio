@@ -9,6 +9,7 @@ const initialState: ProjectState = {
     projects: <Project[]>[],
     project: null,
     projectDatasets: <Dataset[]>[],
+    deletedDatasets: <string[]>[],
     projectHazards: <Hazard[]>[],
     projectDFR3Mappings: <DFR3Mapping[]>[],
     projectWorkflows: <Workflow[]>[],
@@ -246,6 +247,29 @@ export const getProjectVisualizations = createAsyncThunk(
     }
 );
 
+export const deleteProjectDatasets = createAsyncThunk(
+    "projects/deleteProjectDatasets",
+    async ({ projectId, datasetIds }: { projectId: string; datasetIds: string[] }) => {
+        // Prepare request payload with datasetIds
+        const data = JSON.stringify(datasetIds);
+
+        // Configure request options
+        const config = {
+            method: "delete",
+            url: `${PROJECT_API_URL}/${projectId}/datasets`,
+            headers: {
+                ...getHeaders(),
+                "Content-Type": "application/json"
+            },
+            data
+        };
+
+        // Make the delete request
+        await axios(config);
+        return datasetIds;
+    }
+);
+
 const projectSlice = createSlice({
     name: "projects",
     initialState,
@@ -318,6 +342,18 @@ const projectSlice = createSlice({
             .addCase(searchProjectDatasets.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to search the project datasets";
+            })
+            .addCase(deleteProjectDatasets.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteProjectDatasets.fulfilled, (state, action) => {
+                state.loading = false;
+                state.deletedDatasets = action.payload;
+            })
+            .addCase(deleteProjectDatasets.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to delete the project datasets";
             })
             // Handle GET_PROJECT_WORKFLOWS
             .addCase(getProjectWorkflows.pending, (state) => {

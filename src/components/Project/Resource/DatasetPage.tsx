@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { getProject, getProjectDatasets } from "@app/reducer/projectSlice";
+import { getProject, getProjectDatasets, deleteProjectDatasets } from "@app/reducer/projectSlice";
 import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -23,6 +23,7 @@ const DatasetPage = (): JSX.Element => {
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
+    const deletedDatasets = useSelector((state: RootState) => state.project.deletedDatasets);
 
     // Pagination states
     const [datasetPageNumber, setDatasetPageNumber] = useState(1);
@@ -43,7 +44,7 @@ const DatasetPage = (): JSX.Element => {
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
-    }, [id, datasetPageNumber]);
+    }, [id, datasetPageNumber, deletedDatasets]);
 
     const onSearchClick = () => {};
     const onFilterClick = () => {};
@@ -57,6 +58,12 @@ const DatasetPage = (): JSX.Element => {
     };
 
     const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
+
+    // delete datasets
+    const deleteDatasetFunc = (projectId: string, datasetIds: string[]) => {
+        // @ts-ignore
+        dispatch(deleteProjectDatasets({ projectId, datasetIds }));
+    };
 
     return (
         <>
@@ -94,9 +101,16 @@ const DatasetPage = (): JSX.Element => {
                                         <ResourceTable
                                             columns={["title", "description", "date", "owner"]}
                                             data={projectDatasets}
+                                            projectId={project.id}
+                                            deleteFunc={deleteDatasetFunc}
                                         />
                                     ) : (
-                                        <ResourceCards resources={projectDatasets} cardPerRow={4} />
+                                        <ResourceCards
+                                            resources={projectDatasets}
+                                            cardPerRow={4}
+                                            projectId={project.id}
+                                            deleteFunc={deleteDatasetFunc}
+                                        />
                                     )}
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination

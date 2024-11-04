@@ -100,6 +100,7 @@ interface ProjectState {
     projects: Project[];
     project: Project | null;
     projectDatasets: Dataset[];
+    deletedDatasets: string[];
     projectHazards: Hazard[];
     projectDFR3Mappings: DFR3Mapping[];
     projectWorkflows: Workflow[];

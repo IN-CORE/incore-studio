@@ -4,8 +4,10 @@ import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown } from "@mui/jo
 import { formatHeaderName, parseDateTime } from "@app/utils";
 
 interface TableProps {
+    projectId?: string;
     columns: string[];
     data: Dataset[] | Hazard[] | Visualization[] | Workflow[] | DFR3Mapping[];
+    deleteFunc?: any;
 }
 
 // Type narrowing function
@@ -17,21 +19,21 @@ const hasDate = (item: any): item is Workflow | Dataset => {
     return item.date;
 };
 
-export const ResourceTable = ({ columns, data }: TableProps): JSX.Element => {
-    const [selectedItem, setSelectedItem] = useState<string | null>(null);
+export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TableProps): JSX.Element => {
+    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
     const handleOpenMenu = (id: string) => {
-        setSelectedItem(id);
+        setSelectedItemId(id);
     };
 
     const handleCloseMenu = () => {
-        setSelectedItem(null);
+        setSelectedItemId(null);
     };
 
     const handleDelete = () => {
-        if (selectedItem) {
-            // onDelete(selectedItem);
-            handleCloseMenu();
+        if (selectedItemId && projectId) {
+            deleteFunc(projectId, [selectedItemId]); // Passes the selected ID to delete
+            setSelectedItemId(null); // Clear selection after deletion
         }
     };
 

@@ -37,21 +37,23 @@ function isWorkflow(resource: any): resource is Workflow {
 export const ResourceCards: React.FC<{
     resources: Hazard[] | Visualization[] | Dataset[] | Workflow[];
     cardPerRow?: number;
-}> = ({ resources, cardPerRow }) => {
-    const [selectedItem, setSelectedItem] = useState<string | null>(null);
+    deleteFunc?: any;
+    projectId?: string;
+}> = ({ resources, cardPerRow, deleteFunc, projectId }) => {
+    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
     const handleOpenMenu = (id: string) => {
-        setSelectedItem(id);
+        setSelectedItemId(id);
     };
 
     const handleCloseMenu = () => {
-        setSelectedItem(null);
+        setSelectedItemId(null);
     };
 
     const handleDelete = () => {
-        if (selectedItem) {
-            // onDelete(selectedItem);
-            handleCloseMenu();
+        if (selectedItemId && projectId) {
+            deleteFunc(projectId, [selectedItemId]); // Passes the selected ID to delete
+            setSelectedItemId(null); // Clear selection after deletion
         }
     };
 

@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import {
+    deleteProjectDatasets,
     getProject,
     getProjectDatasets,
     getProjectDRF3Mappings,
@@ -111,6 +112,12 @@ const ProjectPage = (): JSX.Element => {
     const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
     const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
 
+    // Delete
+    const deleteDatasetFunc = (projectId: string, datasetIds: string[]) => {
+        // @ts-ignore
+        dispatch(deleteProjectDatasets({ projectId, datasetIds }));
+    };
+
     return (
         <>
             <Navbar />
@@ -193,6 +200,8 @@ const ProjectPage = (): JSX.Element => {
                                         <ResourceTable
                                             columns={["title", "description", "date", "owner"]}
                                             data={projectDatasets}
+                                            projectId={project.id}
+                                            deleteFunc={deleteDatasetFunc}
                                         />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination
