@@ -20,7 +20,7 @@ module.exports = {
     context: __dirname,
     output: {
         path: path.resolve(__dirname, "build"),
-        publicPath: "",
+        publicPath: "/",
         filename: "[name].[chunkhash].js",
         crossOriginLoading: "anonymous"
     },

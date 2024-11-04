@@ -1,15 +1,14 @@
 import React, { Suspense, lazy } from "react";
 import Loading from "@app/components/Loading";
 
-import ProjectDatasetPage from "@app/components/Project/Resource/DatasetPage";
-import ProjectPage from "@app/components/Project/ProjectPage";
-import ProjectHazardsPage from "@app/components/Project/Resource/HazardPage";
-import ProjectVisualizationsPage from "@app/components/Project/Resource/VisualizationPage";
-import ProjectWorkflowsPage from "@app/components/Project/Resource/WorkflowPage";
-import ProjectDFR3MappingPage from "@app/components/Project/Resource/DFR3MappingPage";
-
 const LazyHome = lazy(() => import("@app/components/Home"));
 const LazyExecution = lazy(() => import("@app/components/Execution"));
+const ProjectDatasetPage = lazy(() => import("@app/components/Project/Resource/DatasetPage"));
+const ProjectPage = lazy(() => import("@app/components/Project/ProjectPage"));
+const ProjectHazardsPage = lazy(() => import("@app/components/Project/Resource/HazardPage"));
+const ProjectVisualizationsPage = lazy(() => import("@app/components/Project/Resource/VisualizationPage"));
+const ProjectWorkflowsPage = lazy(() => import("@app/components/Project/Resource/WorkflowPage"));
+const ProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Resource/DFR3MappingPage"));
 
 /**
  A mapping of routes to `RouteProps`.
