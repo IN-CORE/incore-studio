@@ -67,7 +67,7 @@ export const ResourceTable = ({ columns, data }: TableProps): JSX.Element => {
                         </td>
                     );
                 })}
-                <td>
+                <td style={{ textAlign: "right" }}>
                     <Dropdown>
                         <MenuButton
                             slots={{ root: IconButton }}
@@ -95,7 +95,7 @@ export const ResourceTable = ({ columns, data }: TableProps): JSX.Element => {
                             {formatHeaderName(column)}
                         </th>
                     ))}
-                    <th style={{ backgroundColor: "white" }}>Action</th>
+                    <th style={{ backgroundColor: "white", textAlign: "right" }}>Action</th>
                 </tr>
             </thead>
             <tbody>
