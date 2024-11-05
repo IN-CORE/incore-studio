@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import {
     deleteProjectDatasets,
+    deleteProjectVisualizations,
+    deleteProjectWorkflows,
     getProject,
     getProjectDatasets,
     getProjectDRF3Mappings,
@@ -117,6 +119,22 @@ const ProjectPage = (): JSX.Element => {
         // @ts-ignore
         dispatch(deleteProjectDatasets({ projectId, datasetIds }));
     };
+    const deleteHazardFunc = (projectId: string, hazardIds: string[]) => {
+        // @ts-ignore
+        dispatch(deleteProjectHazards({ projectId, hazardIds }));
+    };
+    const deleteDFR3MappingFunc = (projectId: string, dfr3mappingIds: string[]) => {
+        // @ts-ignore
+        dispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds }));
+    };
+    const deleteVisualizationFunc = (projectId: string, visualizationIds: string[]) => {
+        // @ts-ignore
+        dispatch(deleteProjectVisualizations({ projectId, visualizationIds }));
+    };
+    const deleteWorkflowFunc = (projectId: string, workflowIds: string[]) => {
+        // @ts-ignore
+        dispatch(deleteProjectWorkflows({ projectId, workflowIds }));
+    };
 
     return (
         <>
@@ -143,7 +161,11 @@ const ProjectPage = (): JSX.Element => {
                                             icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
                                             createLabel="Create New Workflow"
                                         />
-                                        <ResourceCards resources={projectWorkflows} />
+                                        <ResourceCards
+                                            resources={projectWorkflows}
+                                            projectId={project.id}
+                                            deleteFunc={deleteWorkflowFunc}
+                                        />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination
                                                 pageNumber={wfPageNumber}
@@ -160,7 +182,11 @@ const ProjectPage = (): JSX.Element => {
                                             icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
                                             createLabel="Add from Service"
                                         />
-                                        <ResourceCards resources={projectHazards} />
+                                        <ResourceCards
+                                            resources={projectHazards}
+                                            projectId={project.id}
+                                            deleteFunc={deleteHazardFunc}
+                                        />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination
                                                 pageNumber={hazardPageNumber}
@@ -177,7 +203,11 @@ const ProjectPage = (): JSX.Element => {
                                             icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
                                             createLabel="Create Visualization"
                                         />
-                                        <ResourceCards resources={projectVisualizations} />
+                                        <ResourceCards
+                                            resources={projectVisualizations}
+                                            projectId={project.id}
+                                            deleteFunc={deleteVisualizationFunc}
+                                        />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination
                                                 pageNumber={visPageNumber}
@@ -223,6 +253,8 @@ const ProjectPage = (): JSX.Element => {
                                         <ResourceTable
                                             columns={["name", "hazardType", "inventoryType", "mappingType", "owner"]}
                                             data={projectDFR3Mappings}
+                                            projectId={project.id}
+                                            deleteFunc={deleteDFR3MappingFunc}
                                         />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination

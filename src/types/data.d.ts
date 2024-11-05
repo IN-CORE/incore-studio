@@ -102,9 +102,13 @@ interface ProjectState {
     projectDatasets: Dataset[];
     deletedDatasets: string[];
     projectHazards: Hazard[];
+    deletedHazards: string[];
     projectDFR3Mappings: DFR3Mapping[];
+    deletedDFR3Mappings: string[];
     projectWorkflows: Workflow[];
+    deletedWorkflows: string[];
     projectVisualizations: Visualization[];
+    deletedVisualizations: string[];
     loading: boolean;
     error: string | null;
 }

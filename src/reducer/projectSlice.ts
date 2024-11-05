@@ -11,9 +11,13 @@ const initialState: ProjectState = {
     projectDatasets: <Dataset[]>[],
     deletedDatasets: <string[]>[],
     projectHazards: <Hazard[]>[],
+    deletedHazards: <string[]>[],
     projectDFR3Mappings: <DFR3Mapping[]>[],
+    deletedDFR3Mappings: <string[]>[],
     projectWorkflows: <Workflow[]>[],
+    deletedWorkflows: <string[]>[],
     projectVisualizations: <Visualization[]>[],
+    deletedVisualizations: <string[]>[],
     loading: false,
     error: null
 };
@@ -250,23 +254,65 @@ export const getProjectVisualizations = createAsyncThunk(
 export const deleteProjectDatasets = createAsyncThunk(
     "projects/deleteProjectDatasets",
     async ({ projectId, datasetIds }: { projectId: string; datasetIds: string[] }) => {
-        // Prepare request payload with datasetIds
-        const data = JSON.stringify(datasetIds);
+        // Make the delete request with headers and data
+        await axios.get(`${PROJECT_API_URL}/${projectId}/datasets`, {
+            headers: getHeaders(),
+            data: datasetIds
+        });
 
-        // Configure request options
-        const config = {
-            method: "delete",
-            url: `${PROJECT_API_URL}/${projectId}/datasets`,
-            headers: {
-                ...getHeaders(),
-                "Content-Type": "application/json"
-            },
-            data
-        };
-
-        // Make the delete request
-        await axios(config);
         return datasetIds;
+    }
+);
+
+export const deleteProjectHazards = createAsyncThunk(
+    "projects/deleteProjectDatasets",
+    async ({ projectId, hazardIds }: { projectId: string; hazardIds: string[] }) => {
+        // Make the delete request with headers and data
+        await axios.get(`${PROJECT_API_URL}/${projectId}/hazards`, {
+            headers: getHeaders(),
+            data: hazardIds
+        });
+
+        return hazardIds;
+    }
+);
+
+export const deleteProjectWorkflows = createAsyncThunk(
+    "projects/deleteProjectWorkflows",
+    async ({ projectId, workflowIds }: { projectId: string; workflowIds: string[] }) => {
+        // Make the delete request with headers and data
+        await axios.get(`${PROJECT_API_URL}/${projectId}/workflows`, {
+            headers: getHeaders(),
+            data: workflowIds
+        });
+
+        return workflowIds;
+    }
+);
+
+export const deleteProjectDFR3Mappings = createAsyncThunk(
+    "projects/deleteDFR3Mappings",
+    async ({ projectId, dfr3mappingIds }: { projectId: string; dfr3mappingIds: string[] }) => {
+        // Make the delete request with headers and data
+        await axios.get(`${PROJECT_API_URL}/${projectId}/dfr3mappings`, {
+            headers: getHeaders(),
+            data: dfr3mappingIds
+        });
+
+        return dfr3mappingIds;
+    }
+);
+
+export const deleteProjectVisualizations = createAsyncThunk(
+    "projects/deleteVisualizations",
+    async ({ projectId, visualizationIds }: { projectId: string; visualizationIds: string[] }) => {
+        // Make the delete request with headers and data
+        await axios.get(`${PROJECT_API_URL}/${projectId}/visualizations`, {
+            headers: getHeaders(),
+            data: visualizationIds
+        });
+
+        return visualizationIds;
     }
 );
 
@@ -368,6 +414,18 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project workflows";
             })
+            .addCase(deleteProjectWorkflows.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteProjectWorkflows.fulfilled, (state, action) => {
+                state.loading = false;
+                state.deletedWorkflows = action.payload;
+            })
+            .addCase(deleteProjectWorkflows.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to delete the project workflows";
+            })
             // Handle SEARCH_PROJECT_WORKFLOWS
             .addCase(searchProjectWorkflows.pending, (state) => {
                 state.loading = true;
@@ -393,6 +451,18 @@ const projectSlice = createSlice({
             .addCase(getProjectHazards.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project hazards";
+            })
+            .addCase(deleteProjectHazards.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteProjectHazards.fulfilled, (state, action) => {
+                state.loading = false;
+                state.deletedHazards = action.payload;
+            })
+            .addCase(deleteProjectHazards.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to delete the project hazards";
             })
             // Handle SEARCH_PROJECT_HAZARDS
             .addCase(searchProjectHazards.pending, (state) => {
@@ -420,6 +490,18 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project dfr3mappings";
             })
+            .addCase(deleteProjectDFR3Mappings.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteProjectDFR3Mappings.fulfilled, (state, action) => {
+                state.loading = false;
+                state.deletedDFR3Mappings = action.payload;
+            })
+            .addCase(deleteProjectDFR3Mappings.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to delete the project DFR3 Mappings";
+            })
             // Handle SEARCH_PROJECT_DFR3_MAPPINGS
             .addCase(searchProjectDFR3Mappings.pending, (state) => {
                 state.loading = true;
@@ -445,6 +527,18 @@ const projectSlice = createSlice({
             .addCase(getProjectVisualizations.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project visualizations";
+            })
+            .addCase(deleteProjectVisualizations.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteProjectVisualizations.fulfilled, (state, action) => {
+                state.loading = false;
+                state.deletedVisualizations = action.payload;
+            })
+            .addCase(deleteProjectVisualizations.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to delete the project visualizations";
             })
             // Handle SEARCH_PROJECT_VISUALIZATIONS
             .addCase(searchProjectVisualizations.pending, (state) => {

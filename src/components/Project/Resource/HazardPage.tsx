@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { getProject, getProjectHazards } from "@app/reducer/projectSlice";
+import { deleteProjectHazards, getProject, getProjectHazards } from "@app/reducer/projectSlice";
 import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -58,6 +58,12 @@ const HazardPage = (): JSX.Element => {
 
     const projectHazards = useSelector((state: RootState) => state.project.projectHazards);
 
+    // delete function
+    const deleteHazardFunc = (projectId: string, hazardIds: string[]) => {
+        // @ts-ignore
+        dispatch(deleteProjectHazards({ projectId, hazardIds }));
+    };
+
     return (
         <>
             <Navbar />
@@ -94,9 +100,16 @@ const HazardPage = (): JSX.Element => {
                                         <ResourceTable
                                             columns={["name", "description", "date", "creator"]}
                                             data={projectHazards}
+                                            projectId={project.id}
+                                            deleteFunc={deleteHazardFunc}
                                         />
                                     ) : (
-                                        <ResourceCards resources={projectHazards} cardPerRow={4} />
+                                        <ResourceCards
+                                            resources={projectHazards}
+                                            cardPerRow={4}
+                                            projectId={project.id}
+                                            deleteFunc={deleteHazardFunc}
+                                        />
                                     )}
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination

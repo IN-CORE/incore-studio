@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { getProject, getProjectDRF3Mappings } from "@app/reducer/projectSlice";
+import { deleteProjectDFR3Mappings, getProject, getProjectDRF3Mappings } from "@app/reducer/projectSlice";
 import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -51,6 +51,12 @@ const DFR3MappingPage = (): JSX.Element => {
 
     const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
 
+    // delete function
+    const deleteDFR3MappingFunc = (projectId: string, dfr3mappingIds: string[]) => {
+        // @ts-ignore
+        dispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds }));
+    };
+
     return (
         <>
             <Navbar />
@@ -92,6 +98,8 @@ const DFR3MappingPage = (): JSX.Element => {
                                             "creator"
                                         ]}
                                         data={projectDFR3Mappings}
+                                        projectId={project.id}
+                                        deleteFunc={deleteDFR3MappingFunc}
                                     />
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination
