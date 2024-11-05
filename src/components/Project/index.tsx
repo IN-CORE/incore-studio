@@ -126,7 +126,12 @@ const Project = (): JSX.Element => {
 
                     {/* Filter Dropdowns aligned to the right */}
                     <Box display="flex" gap={2}>
-                        <Button variant="soft" onClick={toggleFilters} startDecorator={<FilterAltOutlinedIcon />}>
+                        <Button
+                            variant="soft"
+                            onClick={toggleFilters}
+                            startDecorator={<FilterAltOutlinedIcon />}
+                            color="neutral"
+                        >
                             Filter
                         </Button>
                         {showFilters && (
