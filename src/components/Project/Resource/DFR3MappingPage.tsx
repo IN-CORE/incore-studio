@@ -91,7 +91,7 @@ const DFR3MappingPage = (): JSX.Element => {
                                     />
                                     <ResourceTable
                                         columns={[
-                                            "title",
+                                            "name",
                                             "hazardType",
                                             "inventoryType",
                                             "mappingType",
