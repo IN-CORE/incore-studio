@@ -6,8 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import {
     deleteProjectDatasets,
+    deleteProjectHazards,
     deleteProjectVisualizations,
     deleteProjectWorkflows,
+    deleteProjectDFR3Mappings,
     getProject,
     getProjectDatasets,
     getProjectDRF3Mappings,

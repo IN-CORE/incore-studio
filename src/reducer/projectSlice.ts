@@ -265,7 +265,7 @@ export const deleteProjectDatasets = createAsyncThunk(
 );
 
 export const deleteProjectHazards = createAsyncThunk(
-    "projects/deleteProjectDatasets",
+    "projects/deleteProjectHazards",
     async ({ projectId, hazardIds }: { projectId: string; hazardIds: string[] }) => {
         // Make the delete request with headers and data
         await axios.get(`${PROJECT_API_URL}/${projectId}/hazards`, {
@@ -291,7 +291,7 @@ export const deleteProjectWorkflows = createAsyncThunk(
 );
 
 export const deleteProjectDFR3Mappings = createAsyncThunk(
-    "projects/deleteDFR3Mappings",
+    "projects/deleteProjectDFR3Mappings",
     async ({ projectId, dfr3mappingIds }: { projectId: string; dfr3mappingIds: string[] }) => {
         // Make the delete request with headers and data
         await axios.get(`${PROJECT_API_URL}/${projectId}/dfr3mappings`, {
@@ -304,7 +304,7 @@ export const deleteProjectDFR3Mappings = createAsyncThunk(
 );
 
 export const deleteProjectVisualizations = createAsyncThunk(
-    "projects/deleteVisualizations",
+    "projects/deleteProjectVisualizations",
     async ({ projectId, visualizationIds }: { projectId: string; visualizationIds: string[] }) => {
         // Make the delete request with headers and data
         await axios.get(`${PROJECT_API_URL}/${projectId}/visualizations`, {
