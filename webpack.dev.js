@@ -20,7 +20,7 @@ module.exports = {
     context: __dirname,
     output: {
         path: path.resolve(__dirname, "build"),
-        publicPath: "",
+        publicPath: "/",
         filename: "[name].[chunkhash].js",
         crossOriginLoading: "anonymous"
     },
@@ -51,7 +51,6 @@ module.exports = {
             },
             inject: true
         }),
-        new Webpack.HotModuleReplacementPlugin(),
         new Webpack.LoaderOptionsPlugin({
             debug: true,
             options: {

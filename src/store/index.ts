@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { combineReducers } from "redux";
-import projectSlice from "../reducer/projectSlice";
+import projectSlice from "@app/reducer/projectSlice";
+import workflowSlice from "@app/reducer/workflowSlice";
 
 // Combine multiple reducers
 const rootReducer = combineReducers({
-    project: projectSlice
+    project: projectSlice,
+    workflow: workflowSlice
 });
 
 // Create and export the store
