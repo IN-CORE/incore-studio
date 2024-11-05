@@ -8,16 +8,20 @@ import { type AnalysisOutputNode } from "@app/components/Workflow/nodes";
 export function AnalysisOutputNode({
     data,
     sourcePosition,
-    targetPosition
+    targetPosition,
+    selected
 }: NodeProps<AnalysisOutputNode>): JSX.Element {
     return (
         <Box
             sx={{
-                border: "1px solid #E0E0E0",
+                border: selected ? "3px solid #EF6C00" : "2px solid #E0E0E0",
                 borderRadius: "3px",
-                padding: "16px 24px 16px 24px",
-                gap: "16px",
-                backgroundColor: "#FFFFFF"
+                padding: "6px 14px 6px 14px",
+                backgroundColor: "white",
+                height: "auto",
+                width: "130px",
+                wordWrap: "break-word",
+                hyphens: "auto"
             }}
         >
             <Handle type="target" position={targetPosition || Position.Top} />
@@ -25,7 +29,7 @@ export function AnalysisOutputNode({
                 <StorageIcon sx={{ color: "#AB47BC", marginRight: "5px" }} />
                 <Typography level="h4" sx={{ fontWeight: 400, fontSize: "16px", lineHeight: "24px" }}>
                     {" "}
-                    Output {data.label}
+                    {data.label}
                 </Typography>
             </Box>
             <Handle type="source" position={sourcePosition || Position.Bottom} />

@@ -2,13 +2,13 @@ import React, { Suspense, lazy } from "react";
 import Loading from "@app/components/Loading";
 
 const LazyHome = lazy(() => import("@app/components/Home"));
-const LazyExecution = lazy(() => import("@app/components/Execution"));
 const ProjectDatasetPage = lazy(() => import("@app/components/Project/Resource/DatasetPage"));
 const ProjectPage = lazy(() => import("@app/components/Project/ProjectPage"));
 const ProjectHazardsPage = lazy(() => import("@app/components/Project/Resource/HazardPage"));
 const ProjectVisualizationsPage = lazy(() => import("@app/components/Project/Resource/VisualizationPage"));
 const ProjectWorkflowsPage = lazy(() => import("@app/components/Project/Resource/WorkflowPage"));
 const ProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Resource/DFR3MappingPage"));
+const LazyWorkflowEditor = lazy(() => import("@app/components/WorkflowEditor"));
 
 /**
  A mapping of routes to `RouteProps`.
@@ -24,10 +24,10 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
             </Suspense>
         )
     },
-    "/execution": {
+    "/workflow-editor/:wfID": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyExecution />
+                <LazyWorkflowEditor />
             </Suspense>
         )
     },

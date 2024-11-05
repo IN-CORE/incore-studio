@@ -51,7 +51,6 @@ module.exports = {
             },
             inject: true
         }),
-        new Webpack.HotModuleReplacementPlugin(),
         new Webpack.LoaderOptionsPlugin({
             debug: true,
             options: {

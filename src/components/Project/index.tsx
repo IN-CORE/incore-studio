@@ -3,21 +3,21 @@ import { Box, Tab, TabList, TabPanel, Tabs, Typography, Link, Button, Autocomple
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@app/store";
+import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getProjects, searchProjects } from "@app/reducer/projectSlice";
 import { useAuth } from "react-oidc-context";
+import { RootState } from "@app/store";
 import { ProjectCard } from "./ProjectCard";
 import { Pagination } from "../Home/Pagination";
 
 const Project = (): JSX.Element => {
     const auth = useAuth();
-    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
     // Redux state
-    const projects = useSelector((state: RootState) => state.project.projects);
-    const loading = useSelector((state: RootState) => state.project.loading);
-    const deletedProjectId = useSelector((state: RootState) => state.project.deletedProjectId);
+    const projects = useAppSelector((state: RootState) => state.project.projects);
+    const loading = useAppSelector((state: RootState) => state.project.loading);
+    const deletedProjectId = useAppSelector((state: RootState) => state.project.deletedProjectId);
 
     // Filter states
     const [filters, setFilters] = useState({ name: "", creator: "", region: "" });
@@ -86,14 +86,11 @@ const Project = (): JSX.Element => {
 
     // Fetch projects when filters or pagination change (but not during search)
     useEffect(() => {
+        const skip = (pageNumber - 1) * dataPerPage;
         if (!isSearching) {
-            const skip = (pageNumber - 1) * dataPerPage;
-            // @ts-ignore
-            dispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
+            appDispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
         } else {
-            const skip = (pageNumber - 1) * dataPerPage;
-            // @ts-ignore
-            dispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
+            appDispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
         }
     }, [pageNumber, filters, isSearching, deletedProjectId]);
 

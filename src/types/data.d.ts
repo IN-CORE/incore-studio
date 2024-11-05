@@ -50,7 +50,7 @@ interface DatawolfWorkflowFileStep {
     id: string;
     deleted: boolean;
     title: string;
-    creator: DatawolfCreator;
+    creator: DatawolfCreator | null;
     createDate: string;
     inputs: {
         [key: string]: string;
@@ -71,14 +71,19 @@ interface DatawolfWorkflowFileStep {
 }
 
 interface DatawolfWorkflowFile {
-    id: string;
+    id: string | null;
     deleted: boolean;
     title: string;
     description: string;
     created: string;
-    creator: DatawolfCreator;
+    creator: DatawolfCreator | null;
     contributors: DatawolfCreator[];
     steps: DatawolfWorkflowFileStep[];
+}
+
+interface ReactFlowWorkflow {
+    nodes: AppNode[];
+    edges: Edge[];
 }
 
 interface Project {
@@ -218,4 +223,23 @@ interface Workflow {
     date: string;
     creator: WorkflowCreator;
     contributors: string[];
+}
+
+interface WorkflowState {
+    reactFlowWorkflow: ReactFlowWorkflow;
+    datawolfUser: DatawolfCreator | null;
+    datawolfUserLoading: boolean;
+    datawolfUserError: string | null;
+    datawolfWorkflowID: string | null;
+    currentWorkflow: DatawolfWorkflowFile | null;
+    createdWorkflowLoading: boolean;
+    createdWorkflowError: string | null;
+    workflowLoading: boolean;
+    workflowError: string | null;
+    saveWorkflowLoading: boolean;
+    saveWorkflowError: string | null;
+    saveWorkflowSuccess: boolean;
+    datawolfTools: DatawolfWorkflowTool[];
+    datawolfToolLoading: boolean;
+    datawolfToolError: string | null;
 }
