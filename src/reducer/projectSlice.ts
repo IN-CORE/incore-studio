@@ -255,7 +255,7 @@ export const deleteProjectDatasets = createAsyncThunk(
     "projects/deleteProjectDatasets",
     async ({ projectId, datasetIds }: { projectId: string; datasetIds: string[] }) => {
         // Make the delete request with headers and data
-        await axios.get(`${PROJECT_API_URL}/${projectId}/datasets`, {
+        await axios.delete(`${PROJECT_API_URL}/${projectId}/datasets`, {
             headers: getHeaders(),
             data: datasetIds
         });
@@ -268,7 +268,7 @@ export const deleteProjectHazards = createAsyncThunk(
     "projects/deleteProjectHazards",
     async ({ projectId, hazardIds }: { projectId: string; hazardIds: string[] }) => {
         // Make the delete request with headers and data
-        await axios.get(`${PROJECT_API_URL}/${projectId}/hazards`, {
+        await axios.delete(`${PROJECT_API_URL}/${projectId}/hazards`, {
             headers: getHeaders(),
             data: hazardIds
         });
@@ -281,7 +281,7 @@ export const deleteProjectWorkflows = createAsyncThunk(
     "projects/deleteProjectWorkflows",
     async ({ projectId, workflowIds }: { projectId: string; workflowIds: string[] }) => {
         // Make the delete request with headers and data
-        await axios.get(`${PROJECT_API_URL}/${projectId}/workflows`, {
+        await axios.delete(`${PROJECT_API_URL}/${projectId}/workflows`, {
             headers: getHeaders(),
             data: workflowIds
         });
@@ -294,7 +294,7 @@ export const deleteProjectDFR3Mappings = createAsyncThunk(
     "projects/deleteProjectDFR3Mappings",
     async ({ projectId, dfr3mappingIds }: { projectId: string; dfr3mappingIds: string[] }) => {
         // Make the delete request with headers and data
-        await axios.get(`${PROJECT_API_URL}/${projectId}/dfr3mappings`, {
+        await axios.delete(`${PROJECT_API_URL}/${projectId}/dfr3mappings`, {
             headers: getHeaders(),
             data: dfr3mappingIds
         });
@@ -307,7 +307,7 @@ export const deleteProjectVisualizations = createAsyncThunk(
     "projects/deleteProjectVisualizations",
     async ({ projectId, visualizationIds }: { projectId: string; visualizationIds: string[] }) => {
         // Make the delete request with headers and data
-        await axios.get(`${PROJECT_API_URL}/${projectId}/visualizations`, {
+        await axios.delete(`${PROJECT_API_URL}/${projectId}/visualizations`, {
             headers: getHeaders(),
             data: visualizationIds
         });

@@ -7,6 +7,7 @@ import { TableThumbnail } from "@app/components/Project/Thumbnails/TableThumbnai
 import { WorkflowThumbnail } from "@app/components/Project/Thumbnails/WorkflowThumbnail";
 import { DefaultThumbnail } from "@app/components/Project/Thumbnails/DefaultThumbnail";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { IncoreDialog } from "@app/components/IncoreDialog";
 
 function isHazard(resource: any): resource is Hazard {
     return "hazardDatasets" in resource;
@@ -50,11 +51,17 @@ export const ResourceCards: React.FC<{
         setSelectedItemId(null);
     };
 
+    // delete
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const handleCloseDialog = () => {
+        setOpenDeleteDialog(false);
+    };
     const handleDelete = () => {
         if (selectedItemId && projectId) {
-            deleteFunc(projectId, [selectedItemId]); // Passes the selected ID to delete
-            setSelectedItemId(null); // Clear selection after deletion
+            deleteFunc(projectId, [selectedItemId]);
+            setSelectedItemId(null);
         }
+        setOpenDeleteDialog(false);
     };
 
     return (
@@ -93,9 +100,23 @@ export const ResourceCards: React.FC<{
                                 <MoreVertIcon />
                             </MenuButton>
                             <Menu onClose={handleCloseMenu} placement="bottom-start">
-                                <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        setOpenDeleteDialog(true);
+                                    }}
+                                >
+                                    Delete
+                                </MenuItem>
                             </Menu>
                         </Dropdown>
+                        <IncoreDialog
+                            open={openDeleteDialog}
+                            onClose={handleCloseDialog}
+                            onAction={handleDelete}
+                            message="Are you sure you want to delete this item? This action cannot be undone."
+                            dialogTitle="Confirm Deletion"
+                            actionButtonName="Delete"
+                        />
                         <CardContent>
                             {isHazard(resource) ? (
                                 <MapThumbnail />

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown } from "@mui/joy";
 import { formatHeaderName, parseDateTime } from "@app/utils";
+import { IncoreDialog } from "@app/components/IncoreDialog";
 
 interface TableProps {
     projectId?: string;
@@ -30,11 +31,17 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TablePro
         setSelectedItemId(null);
     };
 
+    // delete
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const handleCloseDialog = () => {
+        setOpenDeleteDialog(false);
+    };
     const handleDelete = () => {
         if (selectedItemId && projectId) {
-            deleteFunc(projectId, [selectedItemId]); // Passes the selected ID to delete
-            setSelectedItemId(null); // Clear selection after deletion
+            deleteFunc(projectId, [selectedItemId]);
+            setSelectedItemId(null);
         }
+        setOpenDeleteDialog(false);
     };
 
     const renderRow = (item: Dataset | Hazard | Visualization | Workflow | DFR3Mapping) => {
@@ -78,11 +85,24 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TablePro
                         >
                             <MoreVertIcon />
                         </MenuButton>
-
                         <Menu onClose={handleCloseMenu} placement="bottom-start">
-                            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    setOpenDeleteDialog(true);
+                                }}
+                            >
+                                Delete
+                            </MenuItem>
                         </Menu>
                     </Dropdown>
+                    <IncoreDialog
+                        open={openDeleteDialog}
+                        onClose={handleCloseDialog}
+                        onAction={handleDelete}
+                        message="Are you sure you want to delete this item? This action cannot be undone."
+                        dialogTitle="Confirm Deletion"
+                        actionButtonName="Delete"
+                    />
                 </td>
             </>
         );
