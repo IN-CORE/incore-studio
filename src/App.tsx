@@ -29,7 +29,6 @@ const oidcConfig = {
 
 const App: FC = () => {
     const auth = useAuth();
-    console.log(process.env.PUBLIC_URL);
 
     useEffect(() => {
         if (auth.isLoading) return; // Do nothing while loading
