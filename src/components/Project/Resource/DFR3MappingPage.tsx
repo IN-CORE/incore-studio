@@ -22,6 +22,7 @@ const DFR3MappingPage = (): JSX.Element => {
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
+    const deletedDFR3MappingIds = useSelector((state: RootState) => state.project.deletedDFR3MappingIds);
 
     // Pagination states
     const [DFR3MappingPageNumber, setDFR3MappingPageNumber] = useState(1);
@@ -42,7 +43,7 @@ const DFR3MappingPage = (): JSX.Element => {
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectDRF3Mappings({ projectId: id, skip: (DFR3MappingPageNumber - 1) * 10, limit: 10 }));
-    }, [id, DFR3MappingPageNumber]);
+    }, [id, DFR3MappingPageNumber, deletedDFR3MappingIds]);
 
     const onSearchClick = () => {};
     const onFilterClick = () => {};

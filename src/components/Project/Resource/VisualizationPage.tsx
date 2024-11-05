@@ -23,6 +23,7 @@ const VisualizationPage = (): JSX.Element => {
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
+    const deletedVisualizationIds = useSelector((state: RootState) => state.project.deletedVisualizationIds);
 
     // Pagination states
     const [visualizationPageNumber, setVisualizationPageNumber] = useState(1);
@@ -43,7 +44,7 @@ const VisualizationPage = (): JSX.Element => {
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectVisualizations({ projectId: id, skip: (visualizationPageNumber - 1) * 10, limit: 10 }));
-    }, [id, visualizationPageNumber]);
+    }, [id, visualizationPageNumber, deletedVisualizationIds]);
 
     const onSearchClick = () => {};
     const onFilterClick = () => {};

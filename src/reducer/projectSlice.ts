@@ -8,16 +8,17 @@ const PROJECT_API_URL = config.projectApi;
 const initialState: ProjectState = {
     projects: <Project[]>[],
     project: null,
+    deletedProjectId: <string>"",
     projectDatasets: <Dataset[]>[],
-    deletedDatasets: <string[]>[],
+    deletedDatasetIds: <string[]>[],
     projectHazards: <Hazard[]>[],
-    deletedHazards: <string[]>[],
+    deletedHazardIds: <string[]>[],
     projectDFR3Mappings: <DFR3Mapping[]>[],
-    deletedDFR3Mappings: <string[]>[],
+    deletedDFR3MappingIds: <string[]>[],
     projectWorkflows: <Workflow[]>[],
-    deletedWorkflows: <string[]>[],
+    deletedWorkflowIds: <string[]>[],
     projectVisualizations: <Visualization[]>[],
-    deletedVisualizations: <string[]>[],
+    deletedVisualizationIds: <string[]>[],
     loading: false,
     error: null
 };
@@ -395,7 +396,7 @@ const projectSlice = createSlice({
             })
             .addCase(deleteProjectDatasets.fulfilled, (state, action) => {
                 state.loading = false;
-                state.deletedDatasets = action.payload;
+                state.deletedDatasetIds = action.payload;
             })
             .addCase(deleteProjectDatasets.rejected, (state, action) => {
                 state.loading = false;
@@ -420,7 +421,7 @@ const projectSlice = createSlice({
             })
             .addCase(deleteProjectWorkflows.fulfilled, (state, action) => {
                 state.loading = false;
-                state.deletedWorkflows = action.payload;
+                state.deletedWorkflowIds = action.payload;
             })
             .addCase(deleteProjectWorkflows.rejected, (state, action) => {
                 state.loading = false;
@@ -458,7 +459,7 @@ const projectSlice = createSlice({
             })
             .addCase(deleteProjectHazards.fulfilled, (state, action) => {
                 state.loading = false;
-                state.deletedHazards = action.payload;
+                state.deletedHazardIds = action.payload;
             })
             .addCase(deleteProjectHazards.rejected, (state, action) => {
                 state.loading = false;
@@ -496,7 +497,7 @@ const projectSlice = createSlice({
             })
             .addCase(deleteProjectDFR3Mappings.fulfilled, (state, action) => {
                 state.loading = false;
-                state.deletedDFR3Mappings = action.payload;
+                state.deletedDFR3MappingIds = action.payload;
             })
             .addCase(deleteProjectDFR3Mappings.rejected, (state, action) => {
                 state.loading = false;
@@ -534,7 +535,7 @@ const projectSlice = createSlice({
             })
             .addCase(deleteProjectVisualizations.fulfilled, (state, action) => {
                 state.loading = false;
-                state.deletedVisualizations = action.payload;
+                state.deletedVisualizationIds = action.payload;
             })
             .addCase(deleteProjectVisualizations.rejected, (state, action) => {
                 state.loading = false;
@@ -560,8 +561,7 @@ const projectSlice = createSlice({
             })
             .addCase(deleteProject.fulfilled, (state, action) => {
                 state.loading = false;
-                state.projects = state.projects.filter((project) => project.id !== action.payload); // Remove
-                // project from list
+                state.deletedProjectId = action.payload;
             })
             .addCase(deleteProject.rejected, (state, action) => {
                 state.loading = false;

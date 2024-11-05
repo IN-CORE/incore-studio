@@ -99,16 +99,17 @@ interface Project {
 interface ProjectState {
     projects: Project[];
     project: Project | null;
+    deletedProjectId: string | null;
     projectDatasets: Dataset[];
-    deletedDatasets: string[];
+    deletedDatasetIds: string[];
     projectHazards: Hazard[];
-    deletedHazards: string[];
+    deletedHazardIds: string[];
     projectDFR3Mappings: DFR3Mapping[];
-    deletedDFR3Mappings: string[];
+    deletedDFR3MappingIds: string[];
     projectWorkflows: Workflow[];
-    deletedWorkflows: string[];
+    deletedWorkflowIds: string[];
     projectVisualizations: Visualization[];
-    deletedVisualizations: string[];
+    deletedVisualizationIds: string[];
     loading: boolean;
     error: string | null;
 }

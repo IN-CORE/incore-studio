@@ -39,6 +39,16 @@ const ProjectPage = (): JSX.Element => {
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
+    const deletedWorkflowIds = useSelector((state: RootState) => state.project.deletedWorkflowIds);
+    const deletedHazardIds = useSelector((state: RootState) => state.project.deletedHazardIds);
+    const deletedDatasetIds = useSelector((state: RootState) => state.project.deletedDatasetIds);
+    const deletedDFR3MappingIds = useSelector((state: RootState) => state.project.deletedDFR3MappingIds);
+    const deletedVisualizationIds = useSelector((state: RootState) => state.project.deletedVisualizationIds);
+    const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
+    const projectHazards = useSelector((state: RootState) => state.project.projectHazards);
+    const projectWorkflows = useSelector((state: RootState) => state.project.projectWorkflows);
+    const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
+    const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
 
     // Pagination states
     const [visPageNumber, setVisPageNumber] = useState(1);
@@ -88,33 +98,27 @@ const ProjectPage = (): JSX.Element => {
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectVisualizations({ projectId: id, skip: (visPageNumber - 1) * 2, limit: 2 }));
-    }, [id, visPageNumber]);
+    }, [id, visPageNumber, deletedVisualizationIds]);
 
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 2, limit: 2 }));
-    }, [id, hazardPageNumber]);
+    }, [id, hazardPageNumber, deletedHazardIds]);
 
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectDRF3Mappings({ projectId: id, skip: (dfr3mappingPageNumber - 1) * 5, limit: 5 }));
-    }, [id, dfr3mappingPageNumber]);
+    }, [id, dfr3mappingPageNumber, deletedDFR3MappingIds]);
 
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectWorkflows({ projectId: id, skip: (wfPageNumber - 1) * 5, limit: 5 }));
-    }, [id, wfPageNumber]);
+    }, [id, wfPageNumber, deletedWorkflowIds]);
 
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 5, limit: 5 }));
-    }, [id, datasetPageNumber]);
-
-    const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
-    const projectHazards = useSelector((state: RootState) => state.project.projectHazards);
-    const projectWorkflows = useSelector((state: RootState) => state.project.projectWorkflows);
-    const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
-    const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
+    }, [id, datasetPageNumber, deletedDatasetIds]);
 
     // Delete
     const deleteDatasetFunc = (projectId: string, datasetIds: string[]) => {

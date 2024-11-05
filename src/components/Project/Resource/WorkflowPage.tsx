@@ -23,6 +23,7 @@ const WorkflowPage = (): JSX.Element => {
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
+    const deletedWorkflowIds = useSelector((state: RootState) => state.project.deletedWorkflowIds);
 
     // Pagination states
     const [workflowPageNumber, setWorkflowPageNumber] = useState(1);
@@ -43,7 +44,7 @@ const WorkflowPage = (): JSX.Element => {
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectWorkflows({ projectId: id, skip: (workflowPageNumber - 1) * 10, limit: 10 }));
-    }, [id, workflowPageNumber]);
+    }, [id, workflowPageNumber, deletedWorkflowIds]);
 
     const onSearchClick = () => {};
     const onFilterClick = () => {};

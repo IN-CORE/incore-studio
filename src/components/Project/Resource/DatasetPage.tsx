@@ -23,7 +23,7 @@ const DatasetPage = (): JSX.Element => {
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
-    const deletedDatasets = useSelector((state: RootState) => state.project.deletedDatasets);
+    const deletedDatasetIds = useSelector((state: RootState) => state.project.deletedDatasetIds);
 
     // Pagination states
     const [datasetPageNumber, setDatasetPageNumber] = useState(1);
@@ -44,7 +44,7 @@ const DatasetPage = (): JSX.Element => {
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
-    }, [id, datasetPageNumber, deletedDatasets]);
+    }, [id, datasetPageNumber, deletedDatasetIds]);
 
     const onSearchClick = () => {};
     const onFilterClick = () => {};

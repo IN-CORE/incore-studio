@@ -17,6 +17,7 @@ const Project = (): JSX.Element => {
     // Redux state
     const projects = useSelector((state: RootState) => state.project.projects);
     const loading = useSelector((state: RootState) => state.project.loading);
+    const deletedProjectId = useSelector((state: RootState) => state.project.deletedProjectId);
 
     // Filter states
     const [filters, setFilters] = useState({ name: "", creator: "", region: "" });
@@ -94,7 +95,7 @@ const Project = (): JSX.Element => {
             // @ts-ignore
             dispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
         }
-    }, [pageNumber, filters, isSearching]);
+    }, [pageNumber, filters, isSearching, deletedProjectId]);
 
     return (
         <Box sx={{ flexShrink: 0 }} mt={5}>

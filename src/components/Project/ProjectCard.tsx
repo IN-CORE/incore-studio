@@ -1,5 +1,17 @@
-import * as React from "react";
-import { Button, Card, CardContent, Typography, Box, Chip } from "@mui/joy";
+import React, { useState } from "react";
+import {
+    Button,
+    Card,
+    CardContent,
+    Typography,
+    Box,
+    Chip,
+    Dropdown,
+    IconButton,
+    Menu,
+    MenuButton,
+    MenuItem
+} from "@mui/joy";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 import DFR3Icon from "@mui/icons-material/ShowChart";
@@ -7,6 +19,10 @@ import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import { parseDateTime } from "@app/utils";
 import { useNavigate } from "react-router-dom";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { deleteProject } from "@app/reducer/projectSlice";
+import { IncoreDialog } from "@app/components/IncoreDialog";
+import { useDispatch } from "react-redux";
 
 interface ProjectCardProps {
     project: Project;
@@ -24,11 +40,57 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 
     const navigate = useNavigate();
 
+    // delete
+    const dispatch = useDispatch();
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const handleCloseDialog = () => {
+        setOpenDeleteDialog(false);
+    };
+    const handleDelete = () => {
+        if (project.id) {
+            // @ts-ignore
+            dispatch(deleteProject(project.id));
+        }
+        setOpenDeleteDialog(false);
+    };
+
     return (
         <Card sx={{ width: 440, position: "relative" }}>
+            {/* Menu Icon on Top-Right */}
+            <Dropdown>
+                <MenuButton
+                    slots={{ root: IconButton }}
+                    slotProps={{
+                        root: {
+                            sx: { position: "absolute", top: 8, right: 0, zIndex: 1000 },
+                            variant: "plain",
+                            color: "neutral"
+                        }
+                    }}
+                >
+                    <MoreVertIcon />
+                </MenuButton>
+                <Menu placement="bottom-start">
+                    <MenuItem
+                        onClick={() => {
+                            setOpenDeleteDialog(true);
+                        }}
+                    >
+                        Delete
+                    </MenuItem>
+                </Menu>
+            </Dropdown>
+            <IncoreDialog
+                open={openDeleteDialog}
+                onClose={handleCloseDialog}
+                onAction={handleDelete}
+                message="Are you sure you want to delete this project? This action cannot be undone."
+                dialogTitle="Confirm Deletion"
+                actionButtonName="Delete"
+            />
             <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {/* Project Name and Description */}
-                <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", width: "95%" }}>
                     <Typography level="title-lg" textColor="primary.main">
                         {project.name.toUpperCase()}
                     </Typography>

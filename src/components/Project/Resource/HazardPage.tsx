@@ -23,6 +23,7 @@ const HazardPage = (): JSX.Element => {
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
+    const deletedHazardIds = useSelector((state: RootState) => state.project.deletedHazardIds);
 
     // Pagination states
     const [hazardPageNumber, setHazardPageNumber] = useState(1);
@@ -43,7 +44,7 @@ const HazardPage = (): JSX.Element => {
     useEffect(() => {
         // @ts-ignore
         dispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
-    }, [id, hazardPageNumber]);
+    }, [id, hazardPageNumber, deletedHazardIds]);
 
     const onSearchClick = () => {};
     const onFilterClick = () => {};
