@@ -95,7 +95,7 @@ const VisualizationPage = (): JSX.Element => {
                                         onSortClick={onSortClick}
                                         onViewChangeClick={onViewChangeClick}
                                         isTableView={isTableView}
-                                        createLabel="Add from Service"
+                                        createLabel="Create New Visualization"
                                     />
                                     {isTableView ? (
                                         <ResourceTable

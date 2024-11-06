@@ -207,7 +207,7 @@ const ProjectPage = (): JSX.Element => {
                                         <ResourceFilterBar
                                             title="Visualization"
                                             icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
-                                            createLabel="Create Visualization"
+                                            createLabel="Create New Visualization"
                                         />
                                         <ResourceCards
                                             resources={projectVisualizations}
