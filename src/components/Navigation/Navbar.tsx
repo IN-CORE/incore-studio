@@ -6,7 +6,7 @@ import { Divider, IconButton, Menu, MenuItem } from "@mui/material";
 import { FaBell, FaCog, FaQuestionCircle, FaUser } from "react-icons/fa";
 // eslint-disable-next-line import/no-unresolved
 import config from "@app/app.config";
-import logo from "../../public/resilience-logo.png";
+import logo from "/public/resilience-logo.png";
 
 const Navbar: React.FC = () => {
     const auth = useAuth();
