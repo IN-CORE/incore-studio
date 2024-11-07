@@ -6,6 +6,7 @@ import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getProjects, searchProjects } from "@app/reducer/projectSlice";
 import { useAuth } from "react-oidc-context";
+import { RootState } from "@app/store";
 import { ProjectCard } from "./ProjectCard";
 import { Pagination } from "../Home/Pagination";
 
@@ -14,8 +15,9 @@ const Project = (): JSX.Element => {
     const appDispatch = useAppDispatch();
 
     // Redux state
-    const projects = useAppSelector((state) => state.project.projects);
-    const loading = useAppSelector((state) => state.project.loading);
+    const projects = useAppSelector((state: RootState) => state.project.projects);
+    const loading = useAppSelector((state: RootState) => state.project.loading);
+    const deletedProjectId = useAppSelector((state: RootState) => state.project.deletedProjectId);
 
     // Filter states
     const [filters, setFilters] = useState({ name: "", creator: "", region: "" });
@@ -84,21 +86,13 @@ const Project = (): JSX.Element => {
 
     // Fetch projects when filters or pagination change (but not during search)
     useEffect(() => {
+        const skip = (pageNumber - 1) * dataPerPage;
         if (!isSearching) {
-            const skip = (pageNumber - 1) * dataPerPage;
-
             appDispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
-        }
-    }, [pageNumber, filters, isSearching]);
-
-    // Refetch projects when search mode is active
-    useEffect(() => {
-        if (isSearching) {
-            const skip = (pageNumber - 1) * dataPerPage;
-
+        } else {
             appDispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
         }
-    }, [pageNumber, searchTerm, isSearching]);
+    }, [pageNumber, filters, isSearching, deletedProjectId]);
 
     return (
         <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -130,7 +124,12 @@ const Project = (): JSX.Element => {
 
                     {/* Filter Dropdowns aligned to the right */}
                     <Box display="flex" gap={2}>
-                        <Button variant="soft" onClick={toggleFilters}>
+                        <Button
+                            variant="soft"
+                            onClick={toggleFilters}
+                            startDecorator={<FilterAltOutlinedIcon />}
+                            color="neutral"
+                        >
                             Filter
                         </Button>
                         {showFilters && (
