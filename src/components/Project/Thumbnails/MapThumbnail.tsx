@@ -1,5 +1,5 @@
 import React from "react";
-import MapIcon from "@app/public/map.png";
+import MapIcon from "/public/map.png";
 
 export const MapThumbnail = () => {
     return (

@@ -1,5 +1,5 @@
 import React from "react";
-import WorkflowIcon from "@app/public/workflow.png";
+import WorkflowIcon from "/public/workflow.png";
 
 export const WorkflowThumbnail = () => {
     return (

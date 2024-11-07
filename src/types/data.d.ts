@@ -86,7 +86,6 @@ interface ReactFlowWorkflow {
     edges: Edge[];
 }
 
-<<<<<<< HEAD
 interface Hazard {
     id: string;
     type: string;
@@ -126,8 +125,6 @@ interface DependencyGraph {
     };
 }
 
-=======
->>>>>>> develop
 interface Project {
     id: string;
     name: string;
@@ -137,7 +134,7 @@ interface Project {
     owner?: string;
     region: string;
     hazards: Hazard[];
-    dfr3Mappings: DFR3Mapping[];
+    dfr3Mappings: Mapping[];
     datasets: Dataset[];
     workflows: Workflow[];
     visualizations: Visualization[];
