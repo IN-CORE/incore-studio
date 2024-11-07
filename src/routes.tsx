@@ -1,8 +1,14 @@
 import React, { Suspense, lazy } from "react";
 import Loading from "@app/components/Loading";
 
-const LazyHome = lazy(() => import("./components/Home"));
+const LazyHome = lazy(() => import("@app/components/Home"));
 const LazyWorkflowEditor = lazy(() => import("./components/WorkflowEditor"));
+const ProjectDatasetPage = lazy(() => import("@app/components/Project/Resource/DatasetPage"));
+const ProjectPage = lazy(() => import("@app/components/Project/ProjectPage"));
+const ProjectHazardsPage = lazy(() => import("@app/components/Project/Resource/HazardPage"));
+const ProjectVisualizationsPage = lazy(() => import("@app/components/Project/Resource/VisualizationPage"));
+const ProjectWorkflowsPage = lazy(() => import("@app/components/Project/Resource/WorkflowPage"));
+const ProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Resource/DFR3MappingPage"));
 
 /**
  A mapping of routes to `RouteProps`.
@@ -22,6 +28,48 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
         element: (
             <Suspense fallback={<Loading />}>
                 <LazyWorkflowEditor />
+            </Suspense>
+        )
+    },
+    "/project/:id": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <ProjectPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/datasets": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <ProjectDatasetPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/hazards": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <ProjectHazardsPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/visualizations": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <ProjectVisualizationsPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/workflows": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <ProjectWorkflowsPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/dfr3mappings": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <ProjectDFR3MappingPage />
             </Suspense>
         )
     }
