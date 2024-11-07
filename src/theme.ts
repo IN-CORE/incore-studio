@@ -14,7 +14,7 @@ export const themeOptions = {
         light: {
             palette: {
                 primary: {
-                    light: "#0052CC",
+                    light: "#0C66E4",
                     main: "#344563",
                     subtle: "#44546F"
                 },
