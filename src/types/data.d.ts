@@ -86,26 +86,6 @@ interface ReactFlowWorkflow {
     edges: Edge[];
 }
 
-interface Hazard {
-    id: string;
-    type: string;
-}
-
-interface Mapping {
-    id: string;
-    type: string;
-}
-
-interface Dataset {
-    id: string;
-    type: string;
-}
-
-interface Workflow {
-    id: string;
-    type: string;
-}
-
 interface DependencyGraph {
     [key: string]: {
         before: {
@@ -134,7 +114,7 @@ interface Project {
     owner?: string;
     region: string;
     hazards: Hazard[];
-    dfr3Mappings: Mapping[];
+    dfr3Mappings: DFR3Mapping[];
     datasets: Dataset[];
     workflows: Workflow[];
     visualizations: Visualization[];
