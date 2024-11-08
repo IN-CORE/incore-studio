@@ -86,27 +86,6 @@ interface ReactFlowWorkflow {
     edges: Edge[];
 }
 
-<<<<<<< HEAD
-interface Hazard {
-    id: string;
-    type: string;
-}
-
-interface Mapping {
-    id: string;
-    type: string;
-}
-
-interface Dataset {
-    id: string;
-    type: string;
-}
-
-interface Workflow {
-    id: string;
-    type: string;
-}
-
 interface DependencyGraph {
     [key: string]: {
         before: {
@@ -126,8 +105,6 @@ interface DependencyGraph {
     };
 }
 
-=======
->>>>>>> develop
 interface Project {
     id: string;
     name: string;
@@ -287,4 +264,13 @@ interface WorkflowState {
     dependencyGraph: DependencyGraph | null;
     dependencyGraphLoading: boolean;
     dependencyGraphError: string | null;
+    sidePanelData: {
+        open: boolean;
+        type: "previous" | "next" | "";
+        currentAnalysis: {
+            name: string;
+            id: string;
+        };
+    };
+    hoveredAnalysis: string | null;
 }

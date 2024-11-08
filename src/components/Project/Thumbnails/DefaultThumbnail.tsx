@@ -1,5 +1,5 @@
 import React from "react";
-import DefaultIcon from "@app/public/unknown.png";
+import DefaultIcon from "/public/unknown.png";
 
 export const DefaultThumbnail = () => {
     return (

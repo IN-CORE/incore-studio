@@ -30,7 +30,16 @@ const initialState: WorkflowState = {
     datawolfToolError: null,
     dependencyGraph: null,
     dependencyGraphLoading: false,
-    dependencyGraphError: null
+    dependencyGraphError: null,
+    sidePanelData: {
+        open: false,
+        type: "",
+        currentAnalysis: {
+            name: "",
+            id: ""
+        }
+    },
+    hoveredAnalysis: null
 };
 
 export const getDatawolfUser = createAsyncThunk(
@@ -97,7 +106,7 @@ export const getWorkflowTools = createAsyncThunk("workflow/getWorkflowTools", as
 });
 
 export const getDependencyGraph = createAsyncThunk("workflow/getDependencyGraph", async () => {
-    const response = await axios.get("/config/dependencyGraph.json");
+    const response = await axios.get("/dependencyGraph.json");
 
     return response.data;
 });
@@ -113,6 +122,25 @@ const workflowSlice = createSlice({
             state.reactFlowWorkflow = initialReactFlowWorkflow;
             state.datawolfWorkflowID = null;
             state.currentWorkflow = null;
+        },
+        setSidePanelData: (state, action) => {
+            state.sidePanelData = action.payload;
+        },
+        clearSidePanelData: (state) => {
+            state.sidePanelData = {
+                open: false,
+                type: "",
+                currentAnalysis: {
+                    name: "",
+                    id: ""
+                }
+            };
+        },
+        setHoveredAnalysis: (state, action) => {
+            state.hoveredAnalysis = action.payload;
+        },
+        clearHoveredAnalysis: (state) => {
+            state.hoveredAnalysis = null;
         }
     },
     extraReducers: (builder) => {
@@ -198,6 +226,13 @@ const workflowSlice = createSlice({
     }
 });
 
-export const { setWorkflow, clearWorkflowState } = workflowSlice.actions;
+export const {
+    setWorkflow,
+    clearWorkflowState,
+    setSidePanelData,
+    clearSidePanelData,
+    setHoveredAnalysis,
+    clearHoveredAnalysis
+} = workflowSlice.actions;
 
 export default workflowSlice.reducer;

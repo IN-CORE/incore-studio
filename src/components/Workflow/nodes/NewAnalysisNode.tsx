@@ -3,8 +3,6 @@ import {
     Handle,
     Position,
     type NodeProps,
-    // getIncomers,
-    // getOutgoers,
     getConnectedEdges,
     useViewport,
     useUpdateNodeInternals
@@ -18,7 +16,8 @@ import StorageIcon from "@mui/icons-material/Storage";
 import { useShallow } from "zustand/react/shallow";
 
 import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
-import AddAnalysisModal from "@app/components/AddAnalysisModal";
+import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { setSidePanelData } from "@app/reducer/workflowSlice";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
 
 const selector = (state: ReactFlowAppState) => ({
@@ -32,13 +31,12 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const { nodes, edges, setNodes, setEdges } = useStore(useShallow(selector));
     const { zoom } = useViewport();
     const updateNodeInternals = useUpdateNodeInternals();
+    const appDispatch = useAppDispatch();
+    const hoveredAnalysisID = useAppSelector((state) => state.workflow.hoveredAnalysis);
 
     React.useEffect(() => {
         updateNodeInternals(id);
     }, [zoom]);
-
-    const [selectPreviousAnalysisModalOpen, setSelectPreviousAnalysisModalOpen] = React.useState<boolean>(false);
-    const [selectAfterAnalysisModalOpen, setSelectAfterAnalysisModalOpen] = React.useState<boolean>(false);
 
     const handleDelete = () => {
         const node = nodes.find((n) => n.id === id);
@@ -56,16 +54,15 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const calculateHandlePosition = (index: number, total: number) => {
         return (index + 1) * (100 / (total + 1));
     };
-
     const MIN_HEIGHT = data.inputHandles.length * 20 + 60;
 
     return (
         <Box
             sx={{
-                border: selected ? "3px solid #EF6C00" : "2px solid black",
+                border: selected || hoveredAnalysisID === id ? "4px solid #EF6C00" : "2px solid black",
                 borderRadius: "3px",
                 padding: "6px 14px 6px 14px",
-                backgroundColor: "white",
+                backgroundColor: selected ? "#FFE3CC" : "white",
                 height: "auto",
                 minHeight: `${MIN_HEIGHT}px`,
                 width: "400px",
@@ -83,7 +80,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     position={Position.Left}
                     style={{
                         height: "20px",
-                        width: zoom > 1.5 ? "auto" : "20px",
+                        width: zoom > 1.2 ? "auto" : "20px",
                         borderRadius: "3px",
                         backgroundColor: "#E3F2FD",
                         borderColor: "#007DFF",
@@ -110,11 +107,11 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                             color: "#007DFF"
                         }}
                     >
-                        {zoom > 1.5 ? inpt.label : ""}
+                        {zoom > 1.2 ? inpt.label : ""}
                         <StorageIcon
                             sx={{
                                 color: "#007DFF",
-                                marginLeft: zoom > 1.5 ? "5px" : 0,
+                                marginLeft: zoom > 1.2 ? "5px" : 0,
                                 pointerEvents: "none",
                                 fontSize: "15px"
                             }}
@@ -124,10 +121,17 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
             ))}
             {zoom > 1 && (
                 <Box sx={{ display: "flex", alignItems: "center", my: "4px", width: "100%" }}>
-                    <TrendingUpIcon sx={{ color: "#EF6C00", marginRight: "5px" }} />
+                    <TrendingUpIcon
+                        sx={{ color: hoveredAnalysisID === id || selected ? "white" : "#EF6C00", marginRight: "5px" }}
+                    />
                     <Typography
                         level="h4"
-                        sx={{ fontWeight: 400, fontSize: "16px", lineHeight: "24px", color: "#EF6C00" }}
+                        sx={{
+                            fontWeight: 400,
+                            fontSize: "16px",
+                            lineHeight: "24px",
+                            color: hoveredAnalysisID === id || selected ? "white" : "#EF6C00"
+                        }}
                     >
                         Analysis Type
                     </Typography>
@@ -148,7 +152,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                             {data.label}
                         </Typography>
                     </Box>
-                    <Box>
+                    <Box sx={{ position: "absolute", right: "5px", top: "5px" }}>
                         <Tooltip
                             title="Delete"
                             variant="plain"
@@ -165,45 +169,52 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                 <Stack direction="row" spacing={2} justifyContent="space-between">
                     <Button
                         variant="solid"
-                        sx={{ backgroundColor: "#EF6C00", color: "white", fontWeight: 600, borderRadius: "2px" }}
+                        sx={{
+                            "backgroundColor": "#EF6C00",
+                            "color": "white",
+                            "fontWeight": 600,
+                            "borderRadius": "2px",
+                            ":hover": { backgroundColor: "#DF6500" }
+                        }}
                         startDecorator={<AddRoundedIcon />}
                         fullWidth
                         onClick={() => {
-                            setSelectPreviousAnalysisModalOpen(true);
+                            appDispatch(
+                                setSidePanelData({
+                                    open: true,
+                                    type: "previous",
+                                    currentAnalysis: { name: data.name, id: id }
+                                })
+                            );
                         }}
                     >
                         Add previous
                     </Button>
                     <Button
                         variant="solid"
-                        sx={{ backgroundColor: "#EF6C00", color: "white", fontWeight: 600, borderRadius: "2px" }}
+                        sx={{
+                            "backgroundColor": "#EF6C00",
+                            "color": "white",
+                            "fontWeight": 600,
+                            "borderRadius": "2px",
+                            ":hover": { backgroundColor: "#DF6500" }
+                        }}
                         startDecorator={<AddRoundedIcon />}
                         fullWidth
                         onClick={() => {
-                            setSelectAfterAnalysisModalOpen(true);
+                            appDispatch(
+                                setSidePanelData({
+                                    open: true,
+                                    type: "next",
+                                    currentAnalysis: { name: data.name, id: id }
+                                })
+                            );
                         }}
                     >
                         Add Next
                     </Button>
                 </Stack>
             </Stack>
-            <AddAnalysisModal
-                selectAnalysisModalOpen={selectPreviousAnalysisModalOpen}
-                setSelectAnalysisModalOpen={setSelectPreviousAnalysisModalOpen}
-                previousAnalysis={true}
-                currentAnalysis={{
-                    name: data.name,
-                    id: id
-                }}
-            />
-            <AddAnalysisModal
-                selectAnalysisModalOpen={selectAfterAnalysisModalOpen}
-                setSelectAnalysisModalOpen={setSelectAfterAnalysisModalOpen}
-                currentAnalysis={{
-                    name: data.name,
-                    id: id
-                }}
-            />
 
             {data.outputHandles.map((outpt, index) => (
                 <Handle
@@ -211,7 +222,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     position={Position.Right}
                     style={{
                         height: "20px",
-                        width: zoom > 1.5 ? "auto" : "20px",
+                        width: zoom > 1.2 ? "auto" : "20px",
                         borderRadius: "3px",
                         backgroundColor: "#F3E5F5",
                         borderColor: "#AB47BC",
@@ -241,12 +252,12 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         <StorageIcon
                             sx={{
                                 color: "#AB47BC",
-                                marginRight: zoom > 1.5 ? "5px" : 0,
+                                marginRight: zoom > 1.2 ? "5px" : 0,
                                 pointerEvents: "none",
                                 fontSize: "15px"
                             }}
                         />
-                        {zoom > 1.5 ? outpt.label : ""}
+                        {zoom > 1.2 ? outpt.label : ""}
                     </Box>
                 </Handle>
             ))}

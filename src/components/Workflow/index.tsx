@@ -68,7 +68,7 @@ const selector = (state: ReactFlowAppState) => ({
     setEdges: state.setEdges
 });
 
-const LayoutedWorkflow = () => {
+const LayoutedWorkflow = ({ sidePanelOpen }: { sidePanelOpen: boolean }) => {
     const { fitView } = useReactFlow();
     const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
     const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges } = useStore(useShallow(selector));
@@ -211,7 +211,7 @@ const LayoutedWorkflow = () => {
     React.useEffect(() => {
         setLayoutApplied(false);
         setNodesReady(false);
-    }, [nodes.length]);
+    }, [nodes.length, sidePanelOpen]);
 
     // Automatically layout when all nodes have their dimensions ready
     React.useEffect(() => {
@@ -235,7 +235,7 @@ const LayoutedWorkflow = () => {
     }, [nodes, layoutApplied]);
 
     return (
-        <div style={{ width: "100vw", height: "100%" }}>
+        <div style={{ flex: 1 }}>
             <ReactFlow
                 nodes={nodes}
                 nodeTypes={nodeTypes}
@@ -268,10 +268,10 @@ const LayoutedWorkflow = () => {
     );
 };
 
-export default function Workflow() {
+export default function Workflow({ sidePanelOpen }: { sidePanelOpen: boolean }) {
     return (
         <ReactFlowProvider>
-            <LayoutedWorkflow />
+            <LayoutedWorkflow sidePanelOpen={sidePanelOpen} />
         </ReactFlowProvider>
     );
 }
