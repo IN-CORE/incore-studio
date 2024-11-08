@@ -15,4 +15,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Create home page that lists all the projects [#4](https://github.com/IN-CORE/incore-studio/issues/4)
 - Add Workflow Editor component. [#15](https://github.com/IN-CORE/incore-studio/issues/15)
 - Add "Add Next" and "Add Previous" analysis in analysis node. [#6](https://github.com/IN-CORE/incore-studio/issues/6)
-- Create navbar components [#12](https://github.com/IN-CORE/incore-studio/issues/12)
+- Move dependency_graph.json to public and fetch it so it can be overwritten by helm. [#33](https://github.com/IN-CORE/incore-studio/issues/33)
+- Add analysis configuration panel. [#31](https://github.com/IN-CORE/incore-studio/issues/31)

@@ -27,7 +27,19 @@ const initialState: WorkflowState = {
     saveWorkflowSuccess: false,
     datawolfTools: [],
     datawolfToolLoading: false,
-    datawolfToolError: null
+    datawolfToolError: null,
+    dependencyGraph: null,
+    dependencyGraphLoading: false,
+    dependencyGraphError: null,
+    sidePanelData: {
+        open: false,
+        type: "",
+        currentAnalysis: {
+            name: "",
+            id: ""
+        }
+    },
+    hoveredAnalysis: null
 };
 
 export const getDatawolfUser = createAsyncThunk(
@@ -93,6 +105,12 @@ export const getWorkflowTools = createAsyncThunk("workflow/getWorkflowTools", as
     return response.data;
 });
 
+export const getDependencyGraph = createAsyncThunk("workflow/getDependencyGraph", async () => {
+    const response = await axios.get("/dependencyGraph.json");
+
+    return response.data;
+});
+
 const workflowSlice = createSlice({
     name: "workflow",
     initialState,
@@ -104,6 +122,25 @@ const workflowSlice = createSlice({
             state.reactFlowWorkflow = initialReactFlowWorkflow;
             state.datawolfWorkflowID = null;
             state.currentWorkflow = null;
+        },
+        setSidePanelData: (state, action) => {
+            state.sidePanelData = action.payload;
+        },
+        clearSidePanelData: (state) => {
+            state.sidePanelData = {
+                open: false,
+                type: "",
+                currentAnalysis: {
+                    name: "",
+                    id: ""
+                }
+            };
+        },
+        setHoveredAnalysis: (state, action) => {
+            state.hoveredAnalysis = action.payload;
+        },
+        clearHoveredAnalysis: (state) => {
+            state.hoveredAnalysis = null;
         }
     },
     extraReducers: (builder) => {
@@ -127,7 +164,7 @@ const workflowSlice = createSlice({
             .addCase(createNewWorkflow.fulfilled, (state, action) => {
                 state.createdWorkflowLoading = false;
                 state.currentWorkflow = action.payload;
-                state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload);
+                state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
                 state.datawolfWorkflowID = action.payload.id;
             })
             .addCase(createNewWorkflow.rejected, (state, action) => {
@@ -141,7 +178,7 @@ const workflowSlice = createSlice({
             .addCase(getWorkflow.fulfilled, (state, action) => {
                 state.workflowLoading = false;
                 state.currentWorkflow = action.payload;
-                state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload);
+                state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
                 state.datawolfWorkflowID = action.payload.id;
             })
             .addCase(getWorkflow.rejected, (state, action) => {
@@ -173,10 +210,29 @@ const workflowSlice = createSlice({
             .addCase(getWorkflowTools.rejected, (state, action) => {
                 state.datawolfToolLoading = false;
                 state.datawolfToolError = action.error.message || "Failed to fetch workflow tools";
+            })
+            .addCase(getDependencyGraph.pending, (state) => {
+                state.dependencyGraphLoading = true;
+                state.dependencyGraphError = null;
+            })
+            .addCase(getDependencyGraph.fulfilled, (state, action) => {
+                state.dependencyGraphLoading = false;
+                state.dependencyGraph = action.payload;
+            })
+            .addCase(getDependencyGraph.rejected, (state, action) => {
+                state.dependencyGraphLoading = false;
+                state.dependencyGraphError = action.error.message || "Failed to fetch dependency graph";
             });
     }
 });
 
-export const { setWorkflow, clearWorkflowState } = workflowSlice.actions;
+export const {
+    setWorkflow,
+    clearWorkflowState,
+    setSidePanelData,
+    clearSidePanelData,
+    setHoveredAnalysis,
+    clearHoveredAnalysis
+} = workflowSlice.actions;
 
 export default workflowSlice.reducer;

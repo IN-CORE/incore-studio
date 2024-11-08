@@ -11,6 +11,7 @@ import Snackbar from "@mui/joy/Snackbar";
 import { useShallow } from "zustand/react/shallow";
 
 import AddAnalysisModal from "@app/components/AddAnalysisModal";
+import SidePanel from "./SidePanel";
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import Workflow from "@app/components/Workflow";
 import Loading from "@app/components/Loading";
@@ -23,7 +24,6 @@ import {
     getDatawolfUser
 } from "@app/reducer/workflowSlice";
 import { createWorkflowFileFromNodesAndEdgesV2 } from "@app/components/Workflow/workflowUtils";
-import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -52,6 +52,7 @@ const WorkflowEditor = (): JSX.Element => {
     const saveWorkflowLoading = useAppSelector((state) => state.workflow.saveWorkflowLoading);
     const saveWorkflowError = useAppSelector((state) => state.workflow.saveWorkflowError);
     const saveWorkflowSuccess = useAppSelector((state) => state.workflow.saveWorkflowSuccess);
+    const sidePanelData = useAppSelector((state) => state.workflow.sidePanelData);
 
     const [selectAnalysisModalOpen, setSelectAnalysisModalOpen] = React.useState<boolean>(false);
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
@@ -157,7 +158,7 @@ const WorkflowEditor = (): JSX.Element => {
                 </Typography>
             ) : (
                 <>
-                    <Box sx={{ padding: "24px" }}>
+                    <Box sx={{ padding: "20px", height: "8vh", borderBottom: "solid 1px black" }}>
                         <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                             <Box sx={{ alignContent: "center" }}>
                                 <Stack direction="row" spacing={2}>
@@ -313,23 +314,29 @@ const WorkflowEditor = (): JSX.Element => {
                                     </Button>
                                 </CardActions>
                             </Card>
-                            {/* {AddAnalysisModal} */}
                             <AddAnalysisModal
                                 selectAnalysisModalOpen={selectAnalysisModalOpen}
                                 setSelectAnalysisModalOpen={setSelectAnalysisModalOpen}
-                                dependencyGraph={dependencyGraph}
-                                isEmpty
                             />
                         </Box>
                     ) : (
-                        <Box sx={{ flexGrow: 1, overflow: "auto" }}>
-                            <Workflow />
-                            {/* {AddAnalysisModal} */}
+                        <Box sx={{ display: "flex", flexGrow: 1, position: "relative" }}>
+                            <Workflow sidePanelOpen={sidePanelData.open} />
+                            {sidePanelData.open && (
+                                <Box
+                                    sx={{
+                                        width: "25vw",
+                                        borderLeft: "1px solid black",
+                                        backgroundColor: "white",
+                                        padding: 0
+                                    }}
+                                >
+                                    <SidePanel />
+                                </Box>
+                            )}
                             <AddAnalysisModal
                                 selectAnalysisModalOpen={selectAnalysisModalOpen}
                                 setSelectAnalysisModalOpen={setSelectAnalysisModalOpen}
-                                dependencyGraph={dependencyGraph}
-                                isEmpty
                             />
                         </Box>
                     )}

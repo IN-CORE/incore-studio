@@ -86,6 +86,25 @@ interface ReactFlowWorkflow {
     edges: Edge[];
 }
 
+interface DependencyGraph {
+    [key: string]: {
+        before: {
+            [key: string]: {
+                from: string;
+                to: string;
+            }[];
+        };
+        after: {
+            [key: string]: {
+                from: string;
+                to: string;
+            }[];
+        };
+        pretty_name: string;
+        tags: string[];
+    };
+}
+
 interface Project {
     id: string;
     name: string;
@@ -242,4 +261,16 @@ interface WorkflowState {
     datawolfTools: DatawolfWorkflowTool[];
     datawolfToolLoading: boolean;
     datawolfToolError: string | null;
+    dependencyGraph: DependencyGraph | null;
+    dependencyGraphLoading: boolean;
+    dependencyGraphError: string | null;
+    sidePanelData: {
+        open: boolean;
+        type: "previous" | "next" | "";
+        currentAnalysis: {
+            name: string;
+            id: string;
+        };
+    };
+    hoveredAnalysis: string | null;
 }

@@ -8,9 +8,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { useShallow } from "zustand/react/shallow";
 
 import { type AnalysisNode } from "@app/components/Workflow/nodes";
-import AddAnalysisModal from "@app/components/AddAnalysisModal";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
-import dependencyGraph from "@app/components/WorkflowEditor/dependency_graph.json";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -27,9 +25,6 @@ export function AnalysisNode({
     selected
 }: NodeProps<AnalysisNode>): JSX.Element {
     const { nodes, edges, setNodes, setEdges } = useStore(useShallow(selector));
-
-    const [selectPreviousAnalysisModalOpen, setSelectPreviousAnalysisModalOpen] = React.useState<boolean>(false);
-    const [selectAfterAnalysisModalOpen, setSelectAfterAnalysisModalOpen] = React.useState<boolean>(false);
 
     const handleDelete = () => {
         const node = nodes.find((n) => n.id === id);
@@ -114,9 +109,6 @@ export function AnalysisNode({
                     variant="solid"
                     sx={{ backgroundColor: "#EF6C00", color: "white", fontWeight: 600 }}
                     startDecorator={<AddRoundedIcon />}
-                    onClick={() => {
-                        setSelectPreviousAnalysisModalOpen(true);
-                    }}
                 >
                     Add previous
                 </Button>
@@ -124,32 +116,10 @@ export function AnalysisNode({
                     variant="solid"
                     sx={{ backgroundColor: "#EF6C00", color: "white", fontWeight: 600 }}
                     startDecorator={<AddRoundedIcon />}
-                    onClick={() => {
-                        setSelectAfterAnalysisModalOpen(true);
-                    }}
                 >
                     Add Next
                 </Button>
             </Stack>
-            <AddAnalysisModal
-                selectAnalysisModalOpen={selectPreviousAnalysisModalOpen}
-                setSelectAnalysisModalOpen={setSelectPreviousAnalysisModalOpen}
-                dependencyGraph={dependencyGraph}
-                previousAnalysis={true}
-                currentAnalysis={{
-                    name: data.name,
-                    id: id
-                }}
-            />
-            <AddAnalysisModal
-                selectAnalysisModalOpen={selectAfterAnalysisModalOpen}
-                setSelectAnalysisModalOpen={setSelectAfterAnalysisModalOpen}
-                dependencyGraph={dependencyGraph}
-                currentAnalysis={{
-                    name: data.name,
-                    id: id
-                }}
-            />
             <Handle
                 type="source"
                 position={sourcePosition || Position.Bottom}

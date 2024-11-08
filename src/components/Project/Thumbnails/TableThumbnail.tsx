@@ -1,5 +1,5 @@
 import React from "react";
-import TableIcon from "@app/public/table.png";
+import TableIcon from "/public/table.png";
 
 export const TableThumbnail = () => {
     return (
