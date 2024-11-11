@@ -23,7 +23,7 @@ interface VisualizationDialogProps {
     projectId: string;
     open: boolean;
     onClose: () => void;
-    onAddVisualization: (data: { name: string; type: string; description: string }) => void;
+    onAddVisualization: () => void;
 }
 
 export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
@@ -53,16 +53,6 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
             }
         ];
         appDispatch(createProjectVisualization({ projectId, visualizations }));
-    };
-
-    const handleAddToVisualization = () => {
-        onAddVisualization({
-            name: visualizationName,
-            type: visualizationType,
-            description
-        });
-        console.log(visualizationId);
-        onClose();
     };
 
     useEffect(() => {
@@ -180,7 +170,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                         </Button>
                         <Button
                             variant="solid"
-                            onClick={handleAddToVisualization}
+                            onClick={onAddVisualization}
                             disabled={isCreatingNew || !visualizationId}
                         >
                             Add to Visualization

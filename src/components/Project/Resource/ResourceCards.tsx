@@ -40,16 +40,16 @@ export const ResourceCards: React.FC<{
     resources: Hazard[] | Visualization[] | Dataset[] | Workflow[];
     cardPerRow?: number;
     deleteFunc?: any;
+    addVisualizationFunc?: any;
     projectId: string;
-}> = ({ resources, cardPerRow, deleteFunc, projectId }) => {
-    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-
-    const handleOpenMenu = (id: string) => {
-        setSelectedItemId(id);
+}> = ({ resources, cardPerRow, deleteFunc, addVisualizationFunc, projectId }) => {
+    const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | null>(null);
+    const handleOpenMenu = (item: Hazard | Visualization | Dataset | Workflow) => {
+        setSelectedItem(item);
     };
 
     const handleCloseMenu = () => {
-        setSelectedItemId(null);
+        setSelectedItem(null);
     };
 
     // delete
@@ -58,16 +58,23 @@ export const ResourceCards: React.FC<{
         setOpenDeleteDialog(false);
     };
     const handleDelete = () => {
-        if (selectedItemId && projectId) {
-            deleteFunc(projectId, [selectedItemId]);
-            setSelectedItemId(null);
+        if (setSelectedItem && projectId) {
+            deleteFunc(projectId, selectedItem);
+            setSelectedItem(null);
         }
         setOpenDeleteDialog(false);
     };
 
     // add to visualization
-    const [openVisDialog, setOpenVisDialog] = useState(true);
+    const [openVisDialog, setOpenVisDialog] = useState(false);
     const handleCloseVisDialog = () => {
+        setOpenVisDialog(false);
+    };
+    const handleAddVisualization = () => {
+        if (selectedItem && projectId) {
+            addVisualizationFunc(projectId, selectedItem);
+            setSelectedItem(null);
+        }
         setOpenVisDialog(false);
     };
 
@@ -102,7 +109,7 @@ export const ResourceCards: React.FC<{
                                         color: "neutral"
                                     }
                                 }}
-                                onClick={() => handleOpenMenu(resource.id)}
+                                onClick={() => handleOpenMenu(resource)}
                             >
                                 <MoreVertIcon />
                             </MenuButton>
@@ -114,22 +121,22 @@ export const ResourceCards: React.FC<{
                                 >
                                     Delete
                                 </MenuItem>
-                            </Menu>
-                            <Menu onClose={handleCloseMenu} placement="bottom-start">
-                                <MenuItem
-                                    onClick={() => {
-                                        setOpenVisDialog(true);
-                                    }}
-                                >
-                                    Add to Visualization
-                                </MenuItem>
+                                {addVisualizationFunc && (
+                                    <MenuItem
+                                        onClick={() => {
+                                            setOpenVisDialog(true);
+                                        }}
+                                    >
+                                        Add to Visualization
+                                    </MenuItem>
+                                )}
                             </Menu>
                         </Dropdown>
                         <VisualizationDialog
                             projectId={projectId}
                             open={openVisDialog}
                             onClose={handleCloseVisDialog}
-                            onAddVisualization={() => {}}
+                            onAddVisualization={handleAddVisualization}
                         />
                         <IncoreDialog
                             open={openDeleteDialog}

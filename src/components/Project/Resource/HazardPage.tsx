@@ -2,9 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Container } from "@mui/joy";
 import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { deleteProjectHazards, getProject, getProjectHazards } from "@app/reducer/projectSlice";
+import {
+    addLayerToVisualization,
+    deleteProjectHazards,
+    getProject,
+    getProjectHazards
+} from "@app/reducer/projectSlice";
 import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -14,12 +19,13 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
+import { useAppDispatch } from "@app/store/hooks";
 
 import HazardIcon from "@mui/icons-material/Storm";
 
 const HazardPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
-    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
@@ -36,14 +42,12 @@ const HazardPage = (): JSX.Element => {
 
     useEffect(() => {
         if (id) {
-            // @ts-ignore
-            dispatch(getProject(id));
+            appDispatch(getProject(id));
         }
     }, [id]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
+        if (id) appDispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
     }, [id, hazardPageNumber, deletedHazardIds]);
 
     const onSearchClick = () => {};
@@ -60,9 +64,20 @@ const HazardPage = (): JSX.Element => {
     const projectHazards = useSelector((state: RootState) => state.project.projectHazards);
 
     // delete function
-    const deleteHazardFunc = (projectId: string, hazardIds: string[]) => {
-        // @ts-ignore
-        dispatch(deleteProjectHazards({ projectId, hazardIds }));
+    const deleteHazardFunc = (projectId: string, hazard: Hazard) => {
+        appDispatch(deleteProjectHazards({ projectId, hazardIds: [hazard.id] }));
+    };
+
+    // add to visualization function
+    const addHazardVisualizationFunc = (projectId: string, visualizationId: string, hazard: Hazard) => {
+        // Create layers array by mapping over each datasetId in hazard.HazardDatasets
+        const layers = hazard.hazardDatasets.map((hazardDataset: HazardDataset) => ({
+            workspace: "incore",
+            layerId: hazardDataset.datasetId
+        }));
+
+        // Dispatch the action with the new layers array
+        appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
     };
 
     return (
@@ -110,6 +125,7 @@ const HazardPage = (): JSX.Element => {
                                             cardPerRow={4}
                                             projectId={project.id}
                                             deleteFunc={deleteHazardFunc}
+                                            addVisualizationFunc={addHazardVisualizationFunc}
                                         />
                                     )}
                                     <Box mt={4} display="flex" justifyContent="center">

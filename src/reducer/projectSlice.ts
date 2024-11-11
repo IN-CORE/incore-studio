@@ -327,6 +327,20 @@ export const createProjectVisualization = createAsyncThunk(
     }
 );
 
+export const addLayerToVisualization = createAsyncThunk(
+    "projects/addLayerToVisualization",
+    async ({ projectId, visualizationId, layers }: { projectId: string; visualizationId: string; layers: Layer[] }) => {
+        const response = await axios.post(
+            `${PROJECT_API_URL}/${projectId}/visualizations/${visualizationId}/layers`,
+            layers,
+            {
+                headers: getHeaders()
+            }
+        );
+        return response.data;
+    }
+);
+
 const projectSlice = createSlice({
     name: "projects",
     initialState,
@@ -537,7 +551,7 @@ const projectSlice = createSlice({
             })
             .addCase(getProjectVisualizations.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || "Failed to load the project visualizations";
+                state.error = action.error.message || "Failed to add layers the project visualizations";
             })
             .addCase(deleteProjectVisualizations.pending, (state) => {
                 state.loading = true;
@@ -560,6 +574,18 @@ const projectSlice = createSlice({
                 state.projectVisualizations = action.payload?.visualizations;
             })
             .addCase(createProjectVisualization.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to create the project visualizations";
+            })
+            .addCase(addLayerToVisualization.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addLayerToVisualization.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectVisualizations = action.payload?.visualizations;
+            })
+            .addCase(addLayerToVisualization.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to create the project visualizations";
             })

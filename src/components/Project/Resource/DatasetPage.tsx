@@ -60,9 +60,9 @@ const DatasetPage = (): JSX.Element => {
     const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
 
     // delete datasets
-    const deleteDatasetFunc = (projectId: string, datasetIds: string[]) => {
+    const deleteDatasetFunc = (projectId: string, dataset: Dataset) => {
         // @ts-ignore
-        dispatch(deleteProjectDatasets({ projectId, datasetIds }));
+        dispatch(deleteProjectDatasets({ projectId, datasetIds: [dataset.id] }));
     };
 
     return (

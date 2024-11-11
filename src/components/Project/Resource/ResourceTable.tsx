@@ -21,14 +21,16 @@ const hasDate = (item: any): item is Workflow | Dataset => {
 };
 
 export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TableProps): JSX.Element => {
-    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+    const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | DFR3Mapping | null>(
+        null
+    );
 
-    const handleOpenMenu = (id: string) => {
-        setSelectedItemId(id);
+    const handleOpenMenu = (item: Hazard | Visualization | Dataset | Workflow | DFR3Mapping) => {
+        setSelectedItem(item);
     };
 
     const handleCloseMenu = () => {
-        setSelectedItemId(null);
+        setSelectedItem(null);
     };
 
     // delete
@@ -37,9 +39,9 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TablePro
         setOpenDeleteDialog(false);
     };
     const handleDelete = () => {
-        if (selectedItemId && projectId) {
-            deleteFunc(projectId, [selectedItemId]);
-            setSelectedItemId(null);
+        if (selectedItem && projectId) {
+            deleteFunc(projectId, selectedItem);
+            setSelectedItem(null);
         }
         setOpenDeleteDialog(false);
     };
@@ -81,7 +83,7 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TablePro
                         <MenuButton
                             slots={{ root: IconButton }}
                             slotProps={{ root: { variant: "plain", color: "neutral" } }}
-                            onClick={() => handleOpenMenu(item.id)}
+                            onClick={() => handleOpenMenu(item)}
                         >
                             <MoreVertIcon />
                         </MenuButton>

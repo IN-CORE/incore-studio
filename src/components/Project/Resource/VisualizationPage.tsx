@@ -60,9 +60,9 @@ const VisualizationPage = (): JSX.Element => {
     const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
 
     // delete function
-    const deleteVisualizationFunc = (projectId: string, visualizationIds: string[]) => {
+    const deleteVisualizationFunc = (projectId: string, visualization: Visualization) => {
         // @ts-ignore
-        dispatch(deleteProjectVisualizations({ projectId, visualizationIds }));
+        dispatch(deleteProjectVisualizations({ projectId, visualizationIds: [visualization.id] }));
     };
 
     return (

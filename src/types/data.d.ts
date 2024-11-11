@@ -212,6 +212,12 @@ interface HazardDataset {
     threshold: number | null;
 }
 
+interface Layer {
+    workspace: string;
+    layerId: string;
+    styleName?: string;
+}
+
 interface Visualization {
     id: string;
     type: string;
