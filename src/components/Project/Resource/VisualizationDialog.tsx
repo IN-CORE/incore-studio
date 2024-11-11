@@ -122,7 +122,12 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                         ) : (
                             <>
                                 <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
-                                    <Button variant="soft" onClick={handleCreateNew} sx={{ width: "auto" }}>
+                                    <Button
+                                        variant="solid"
+                                        onClick={handleCreateNew}
+                                        sx={{ width: "auto" }}
+                                        disabled={!visualizationType && !visualizationName}
+                                    >
                                         Create New Visualization
                                     </Button>
                                     <Button
@@ -176,10 +181,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                         <Button
                             variant="solid"
                             onClick={handleAddToVisualization}
-                            disabled={
-                                (!isCreatingNew && !visualizationId) || // Must have visualizationId if not creating new
-                                (isCreatingNew && (!visualizationName || !visualizationType)) // Must have both name and type if creating new
-                            }
+                            disabled={isCreatingNew || !visualizationId}
                         >
                             Add to Visualization
                         </Button>
