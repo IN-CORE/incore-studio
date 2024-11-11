@@ -557,7 +557,7 @@ const projectSlice = createSlice({
             })
             .addCase(createProjectVisualization.fulfilled, (state, action) => {
                 state.loading = false;
-                state.projectVisualizations = action.payload;
+                state.projectVisualizations = action.payload?.visualizations;
             })
             .addCase(createProjectVisualization.rejected, (state, action) => {
                 state.loading = false;
