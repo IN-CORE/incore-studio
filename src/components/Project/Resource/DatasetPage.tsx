@@ -123,6 +123,7 @@ const DatasetPage = (): JSX.Element => {
                                             data={projectDatasets}
                                             projectId={project.id}
                                             deleteFunc={deleteDatasetFunc}
+                                            addVisualizationFunc={addDatasetVisualizationFunc}
                                         />
                                     ) : (
                                         <ResourceCards

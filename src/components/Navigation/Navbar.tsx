@@ -45,7 +45,8 @@ const Navbar: React.FC = () => {
                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
                 position: "sticky",
                 top: 0,
-                width: "100%"
+                width: "100%",
+                zIndex: "10000"
             }}
         >
             <Link

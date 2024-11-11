@@ -118,6 +118,7 @@ const HazardPage = (): JSX.Element => {
                                             data={projectHazards}
                                             projectId={project.id}
                                             deleteFunc={deleteHazardFunc}
+                                            addVisualizationFunc={addHazardVisualizationFunc}
                                         />
                                     ) : (
                                         <ResourceCards

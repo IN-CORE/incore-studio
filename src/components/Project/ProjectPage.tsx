@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Container } from "@mui/joy";
 import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import {
     deleteProjectDatasets,
@@ -15,7 +15,8 @@ import {
     getProjectDRF3Mappings,
     getProjectHazards,
     getProjectVisualizations,
-    getProjectWorkflows
+    getProjectWorkflows,
+    addLayerToVisualization
 } from "@app/reducer/projectSlice";
 import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
@@ -26,6 +27,7 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
+import { useAppDispatch } from "@app/store/hooks";
 
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import WorkflowIcon from "@mui/icons-material/AccountTree";
@@ -35,7 +37,7 @@ import VisualizationIcon from "@mui/icons-material/Map";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
-    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
@@ -90,56 +92,74 @@ const ProjectPage = (): JSX.Element => {
     // Fetch projects when filters or pagination change (but not during search)
     useEffect(() => {
         if (id) {
-            // @ts-ignore
-            dispatch(getProject(id));
+            appDispatch(getProject(id));
         }
     }, [id]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectVisualizations({ projectId: id, skip: (visPageNumber - 1) * 2, limit: 2 }));
+        if (id) appDispatch(getProjectVisualizations({ projectId: id, skip: (visPageNumber - 1) * 2, limit: 2 }));
     }, [id, visPageNumber, deletedVisualizationIds]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 2, limit: 2 }));
+        if (id) appDispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 2, limit: 2 }));
     }, [id, hazardPageNumber, deletedHazardIds]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectDRF3Mappings({ projectId: id, skip: (dfr3mappingPageNumber - 1) * 5, limit: 5 }));
+        if (id) appDispatch(getProjectDRF3Mappings({ projectId: id, skip: (dfr3mappingPageNumber - 1) * 5, limit: 5 }));
     }, [id, dfr3mappingPageNumber, deletedDFR3MappingIds]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectWorkflows({ projectId: id, skip: (wfPageNumber - 1) * 5, limit: 5 }));
+        if (id) appDispatch(getProjectWorkflows({ projectId: id, skip: (wfPageNumber - 1) * 5, limit: 5 }));
     }, [id, wfPageNumber, deletedWorkflowIds]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 5, limit: 5 }));
+        if (id) appDispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 5, limit: 5 }));
     }, [id, datasetPageNumber, deletedDatasetIds]);
 
     // Delete
     const deleteDatasetFunc = (projectId: string, datasetIds: string[]) => {
-        // @ts-ignore
-        dispatch(deleteProjectDatasets({ projectId, datasetIds }));
+        if (id) appDispatch(deleteProjectDatasets({ projectId, datasetIds }));
     };
     const deleteHazardFunc = (projectId: string, hazardIds: string[]) => {
-        // @ts-ignore
-        dispatch(deleteProjectHazards({ projectId, hazardIds }));
+        if (id) appDispatch(deleteProjectHazards({ projectId, hazardIds }));
     };
     const deleteDFR3MappingFunc = (projectId: string, dfr3mappingIds: string[]) => {
-        // @ts-ignore
-        dispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds }));
+        if (id) appDispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds }));
     };
     const deleteVisualizationFunc = (projectId: string, visualizationIds: string[]) => {
-        // @ts-ignore
-        dispatch(deleteProjectVisualizations({ projectId, visualizationIds }));
+        if (id) appDispatch(deleteProjectVisualizations({ projectId, visualizationIds }));
     };
     const deleteWorkflowFunc = (projectId: string, workflowIds: string[]) => {
-        // @ts-ignore
-        dispatch(deleteProjectWorkflows({ projectId, workflowIds }));
+        if (id) appDispatch(deleteProjectWorkflows({ projectId, workflowIds }));
+    };
+
+    // add to visualization function
+    const addHazardVisualizationFunc = (projectId: string, visualizationId: string, hazard: Hazard) => {
+        // Create layers array by mapping over each datasetId in hazard.HazardDatasets
+        const layers = hazard.hazardDatasets.map((hazardDataset: HazardDataset) => ({
+            workspace: "incore",
+            layerId: hazardDataset.datasetId
+        }));
+
+        // Dispatch the action with the new layers array
+        appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
+    };
+
+    // add to visualization function
+    const addDatasetVisualizationFunc = (projectId: string, visualizationId: string, dataset: Dataset) => {
+        if (dataset.format == "shapefile") {
+            const layers = [
+                {
+                    workspace: "incore",
+                    layerId: dataset.id
+                }
+            ];
+
+            // Dispatch the action with the new layers array
+            appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
+        } else {
+            alert("Only shapefiles can be added to a visualization for now!");
+        }
     };
 
     return (
@@ -192,6 +212,7 @@ const ProjectPage = (): JSX.Element => {
                                             resources={projectHazards}
                                             projectId={project.id}
                                             deleteFunc={deleteHazardFunc}
+                                            addVisualizationFunc={addHazardVisualizationFunc}
                                         />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination
@@ -238,6 +259,7 @@ const ProjectPage = (): JSX.Element => {
                                             data={projectDatasets}
                                             projectId={project.id}
                                             deleteFunc={deleteDatasetFunc}
+                                            addVisualizationFunc={addDatasetVisualizationFunc}
                                         />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination

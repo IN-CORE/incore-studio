@@ -3,12 +3,14 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown } from "@mui/joy";
 import { formatHeaderName, parseDateTime } from "@app/utils";
 import { IncoreDialog } from "@app/components/IncoreDialog";
+import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 
 interface TableProps {
-    projectId?: string;
+    projectId: string;
     columns: string[];
     data: Dataset[] | Hazard[] | Visualization[] | Workflow[] | DFR3Mapping[];
     deleteFunc?: any;
+    addVisualizationFunc?: any;
 }
 
 // Type narrowing function
@@ -20,7 +22,13 @@ const hasDate = (item: any): item is Workflow | Dataset => {
     return item.date;
 };
 
-export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TableProps): JSX.Element => {
+export const ResourceTable = ({
+    projectId,
+    columns,
+    data,
+    deleteFunc,
+    addVisualizationFunc
+}: TableProps): JSX.Element => {
     const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | DFR3Mapping | null>(
         null
     );
@@ -44,6 +52,19 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TablePro
             setSelectedItem(null);
         }
         setOpenDeleteDialog(false);
+    };
+
+    // add to visualization
+    const [openVisDialog, setOpenVisDialog] = useState(false);
+    const handleCloseVisDialog = () => {
+        setOpenVisDialog(false);
+    };
+    const handleAddVisualization = (visualizationId: string) => {
+        if (selectedItem && projectId) {
+            addVisualizationFunc(projectId, visualizationId, selectedItem);
+            setSelectedItem(null);
+        }
+        setOpenVisDialog(false);
     };
 
     const renderRow = (item: Dataset | Hazard | Visualization | Workflow | DFR3Mapping) => {
@@ -95,8 +116,23 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TablePro
                             >
                                 Delete
                             </MenuItem>
+                            {addVisualizationFunc && (
+                                <MenuItem
+                                    onClick={() => {
+                                        setOpenVisDialog(true);
+                                    }}
+                                >
+                                    Add to Visualization
+                                </MenuItem>
+                            )}
                         </Menu>
                     </Dropdown>
+                    <VisualizationDialog
+                        projectId={projectId}
+                        open={openVisDialog}
+                        onClose={handleCloseVisDialog}
+                        onAddVisualization={handleAddVisualization}
+                    />
                     <IncoreDialog
                         open={openDeleteDialog}
                         onClose={handleCloseDialog}
