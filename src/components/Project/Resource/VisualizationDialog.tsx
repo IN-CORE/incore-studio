@@ -16,27 +16,43 @@ import {
 } from "@mui/joy";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
+import { useAppDispatch } from "@app/store/hooks";
+import { createProjectVisualization } from "@app/reducer/projectSlice";
 
 interface VisualizationDialogProps {
+    projectId: string;
     open: boolean;
     onClose: () => void;
     onAddVisualization: (data: { name: string; type: string; description: string }) => void;
 }
 
-export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({ open, onClose, onAddVisualization }) => {
+export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
+    projectId,
+    open,
+    onClose,
+    onAddVisualization
+}) => {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [visualizationName, setVisualizationName] = useState("");
     const [visualizationId, setVisualizationId] = useState("");
     const [visualizationType, setVisualizationType] = useState("");
     const [description, setDescription] = useState("");
 
+    const appDispatch = useAppDispatch();
     const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
 
     const openCreateNew = () => {
         setIsCreatingNew(true);
     };
     const handleCreateNew = () => {
-        // logic to talk to backend to create new visualization
+        const visualizations = [
+            {
+                name: visualizationName,
+                type: visualizationType,
+                description
+            }
+        ];
+        appDispatch(createProjectVisualization({ projectId, visualizations }));
     };
 
     const handleAddToVisualization = () => {
@@ -128,9 +144,9 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({ open, 
                                         value={visualizationType}
                                         onChange={(_, newValue) => setVisualizationType(newValue || "")}
                                     >
-                                        <Option value="Map">Map</Option>
-                                        <Option value="Table">Table</Option>
-                                        <Option value="Chart" disabled>
+                                        <Option value="MAP">Map</Option>
+                                        <Option value="TABLE">Table</Option>
+                                        <Option value="CHART" disabled>
                                             Chart
                                         </Option>
                                     </Select>

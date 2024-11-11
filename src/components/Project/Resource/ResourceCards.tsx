@@ -40,7 +40,7 @@ export const ResourceCards: React.FC<{
     resources: Hazard[] | Visualization[] | Dataset[] | Workflow[];
     cardPerRow?: number;
     deleteFunc?: any;
-    projectId?: string;
+    projectId: string;
 }> = ({ resources, cardPerRow, deleteFunc, projectId }) => {
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
@@ -126,6 +126,7 @@ export const ResourceCards: React.FC<{
                             </Menu>
                         </Dropdown>
                         <VisualizationDialog
+                            projectId={projectId}
                             open={openVisDialog}
                             onClose={handleCloseVisDialog}
                             onAddVisualization={() => {}}

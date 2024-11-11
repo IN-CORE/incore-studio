@@ -216,8 +216,18 @@ interface Visualization {
     id: string;
     type: string;
     name: string;
-    description: string;
-    date: string;
+    description?: string;
+    date?: string;
+    boundingBox?: number[];
+    layers?: Layer[];
+    vegaJson?: string;
+    sourceDatasetIds?: string[];
+}
+
+interface VisualizationInput {
+    type: string;
+    name: string;
+    description?: string;
     boundingBox?: number[];
     layers?: Layer[];
     vegaJson?: string;

@@ -317,6 +317,16 @@ export const deleteProjectVisualizations = createAsyncThunk(
     }
 );
 
+export const createProjectVisualization = createAsyncThunk(
+    "projects/createProjectVisualization",
+    async ({ projectId, visualizations }: { projectId: string; visualizations: VisualizationInput[] }) => {
+        const response = await axios.post(`${PROJECT_API_URL}/${projectId}/visualizations`, visualizations, {
+            headers: getHeaders()
+        });
+        return response.data;
+    }
+);
+
 const projectSlice = createSlice({
     name: "projects",
     initialState,
@@ -540,6 +550,18 @@ const projectSlice = createSlice({
             .addCase(deleteProjectVisualizations.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to delete the project visualizations";
+            })
+            .addCase(createProjectVisualization.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(createProjectVisualization.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectVisualizations = action.payload;
+            })
+            .addCase(createProjectVisualization.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to create the project visualizations";
             })
             // Handle SEARCH_PROJECT_VISUALIZATIONS
             .addCase(searchProjectVisualizations.pending, (state) => {
