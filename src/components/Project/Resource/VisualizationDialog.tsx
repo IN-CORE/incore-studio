@@ -146,7 +146,9 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                                         onChange={(_, newValue) => setVisualizationType(newValue || "")}
                                     >
                                         <Option value="MAP">Map</Option>
-                                        <Option value="TABLE">Table</Option>
+                                        <Option value="TABLE" disabled>
+                                            Table
+                                        </Option>
                                         <Option value="CHART" disabled>
                                             Chart
                                         </Option>
@@ -175,6 +177,102 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                             disabled={isCreatingNew || !visualizationId}
                         >
                             Add to Visualization
+                        </Button>
+                    </Stack>
+                </Box>
+            </ModalDialog>
+        </Modal>
+    );
+};
+
+interface CreateVisualizationDialogProps {
+    projectId: string;
+    open: boolean;
+    onClose: () => void;
+}
+
+export const CreateVisualizationDialog: React.FC<CreateVisualizationDialogProps> = ({ projectId, open, onClose }) => {
+    const [visualizationName, setVisualizationName] = useState("");
+    const [visualizationType, setVisualizationType] = useState("");
+    const [description, setDescription] = useState("");
+
+    const appDispatch = useAppDispatch();
+
+    const handleCreateNew = () => {
+        const visualizations = [
+            {
+                name: visualizationName,
+                type: visualizationType,
+                description,
+                ...(visualizationType === "MAP" && { layers: [] }) // Add empty layers array if type is "MAP"
+            }
+        ];
+        appDispatch(createProjectVisualization({ projectId, visualizations }));
+        onClose(); // Close the dialog after dispatching
+    };
+
+    return (
+        <Modal open={open} onClose={onClose}>
+            <ModalDialog size="lg">
+                <ModalClose />
+                <Box
+                    sx={{
+                        width: 600,
+                        maxWidth: "100%",
+                        padding: 2,
+                        borderRadius: "md",
+                        backgroundColor: "background.surface"
+                    }}
+                >
+                    <Typography level="h4" sx={{ mb: 1 }}>
+                        Create New Visualization
+                    </Typography>
+                    <Stack spacing={2} sx={{ mt: 2 }}>
+                        <FormControl required>
+                            <FormLabel>Name your visualization</FormLabel>
+                            <Input
+                                placeholder="Name"
+                                value={visualizationName}
+                                onChange={(e) => setVisualizationName(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl required>
+                            <FormLabel>Select Visualization Type</FormLabel>
+                            <Select
+                                placeholder="Type"
+                                value={visualizationType}
+                                onChange={(_, newValue) => setVisualizationType(newValue || "")}
+                            >
+                                <Option value="MAP">Map</Option>
+                                <Option value="TABLE" disabled>
+                                    Table
+                                </Option>
+                                <Option value="CHART" disabled>
+                                    Chart
+                                </Option>
+                            </Select>
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Add description</FormLabel>
+                            <Textarea
+                                placeholder="Add description"
+                                minRows={3}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
+                        </FormControl>
+                    </Stack>
+
+                    <Stack direction="row" spacing={1} sx={{ mt: 3, justifyContent: "flex-end" }}>
+                        <Button variant="plain" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="solid"
+                            onClick={handleCreateNew}
+                            disabled={!visualizationName || !visualizationType} // Ensure required fields are filled
+                        >
+                            Create Visualization
                         </Button>
                     </Stack>
                 </Box>

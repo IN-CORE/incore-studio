@@ -34,6 +34,7 @@ import WorkflowIcon from "@mui/icons-material/AccountTree";
 import DFR3Icon from "@mui/icons-material/ShowChart";
 import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
+import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -162,6 +163,15 @@ const ProjectPage = (): JSX.Element => {
         }
     };
 
+    // create visualization
+    const [openCreateVisDialog, setOpenCreateVisDialog] = useState(false);
+    const handleCloseCreateVisDialog = () => {
+        setOpenCreateVisDialog(false);
+    };
+    const onCreateVisClick = () => {
+        setOpenCreateVisDialog(true);
+    };
+
     return (
         <>
             <Navbar />
@@ -229,6 +239,12 @@ const ProjectPage = (): JSX.Element => {
                                             title="Visualization"
                                             icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
                                             createLabel="Create New Visualization"
+                                            onCreateClick={onCreateVisClick}
+                                        />
+                                        <CreateVisualizationDialog
+                                            projectId={project.id}
+                                            open={openCreateVisDialog}
+                                            onClose={handleCloseCreateVisDialog}
                                         />
                                         <ResourceCards
                                             resources={projectVisualizations}

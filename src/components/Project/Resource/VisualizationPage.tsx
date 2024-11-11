@@ -14,6 +14,7 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
+import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 
 import VisualizationIcon from "@mui/icons-material/Map";
 
@@ -48,7 +49,6 @@ const VisualizationPage = (): JSX.Element => {
 
     const onSearchClick = () => {};
     const onFilterClick = () => {};
-    const onCreateClick = () => {};
     const onSortClick = () => {};
 
     // Table view vs Card view
@@ -63,6 +63,15 @@ const VisualizationPage = (): JSX.Element => {
     const deleteVisualizationFunc = (projectId: string, visualization: Visualization) => {
         // @ts-ignore
         dispatch(deleteProjectVisualizations({ projectId, visualizationIds: [visualization.id] }));
+    };
+
+    // create visualization
+    const [openCreateVisDialog, setOpenCreateVisDialog] = useState(false);
+    const handleCloseCreateVisDialog = () => {
+        setOpenCreateVisDialog(false);
+    };
+    const onCreateClick = () => {
+        setOpenCreateVisDialog(true);
     };
 
     return (
@@ -97,6 +106,12 @@ const VisualizationPage = (): JSX.Element => {
                                         isTableView={isTableView}
                                         createLabel="Create New Visualization"
                                     />
+                                    <CreateVisualizationDialog
+                                        projectId={project.id}
+                                        open={openCreateVisDialog}
+                                        onClose={handleCloseCreateVisDialog}
+                                    />
+                                    ;
                                     {isTableView ? (
                                         <ResourceTable
                                             columns={["name", "description", "date"]}
