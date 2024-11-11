@@ -2,9 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Container } from "@mui/joy";
 import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { getProject, getProjectDatasets, deleteProjectDatasets } from "@app/reducer/projectSlice";
+import {
+    getProject,
+    getProjectDatasets,
+    deleteProjectDatasets,
+    addLayerToVisualization
+} from "@app/reducer/projectSlice";
 import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -14,12 +19,13 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
+import { useAppDispatch } from "@app/store/hooks";
 
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 
 const DatasetPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
-    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
@@ -36,14 +42,12 @@ const DatasetPage = (): JSX.Element => {
 
     useEffect(() => {
         if (id) {
-            // @ts-ignore
-            dispatch(getProject(id));
+            appDispatch(getProject(id));
         }
     }, [id]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
+        if (id) appDispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
     }, [id, datasetPageNumber, deletedDatasetIds]);
 
     const onSearchClick = () => {};
@@ -61,8 +65,24 @@ const DatasetPage = (): JSX.Element => {
 
     // delete datasets
     const deleteDatasetFunc = (projectId: string, dataset: Dataset) => {
-        // @ts-ignore
-        dispatch(deleteProjectDatasets({ projectId, datasetIds: [dataset.id] }));
+        appDispatch(deleteProjectDatasets({ projectId, datasetIds: [dataset.id] }));
+    };
+
+    // add to visualization function
+    const addDatasetVisualizationFunc = (projectId: string, visualizationId: string, dataset: Dataset) => {
+        if (dataset.format == "shapefile") {
+            const layers = [
+                {
+                    workspace: "incore",
+                    layerId: dataset.id
+                }
+            ];
+
+            // Dispatch the action with the new layers array
+            appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
+        } else {
+            alert("Only shapefiles can be added to a visualization for now!");
+        }
     };
 
     return (
@@ -110,6 +130,7 @@ const DatasetPage = (): JSX.Element => {
                                             cardPerRow={4}
                                             projectId={project.id}
                                             deleteFunc={deleteDatasetFunc}
+                                            addVisualizationFunc={addDatasetVisualizationFunc}
                                         />
                                     )}
                                     <Box mt={4} display="flex" justifyContent="center">
