@@ -8,6 +8,7 @@ import { WorkflowThumbnail } from "@app/components/Project/Thumbnails/WorkflowTh
 import { DefaultThumbnail } from "@app/components/Project/Thumbnails/DefaultThumbnail";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IncoreDialog } from "@app/components/IncoreDialog";
+import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 
 function isHazard(resource: any): resource is Hazard {
     return "hazardDatasets" in resource;
@@ -64,6 +65,12 @@ export const ResourceCards: React.FC<{
         setOpenDeleteDialog(false);
     };
 
+    // add to visualization
+    const [openVisDialog, setOpenVisDialog] = useState(true);
+    const handleCloseVisDialog = () => {
+        setOpenVisDialog(false);
+    };
+
     return (
         <Grid container spacing={3}>
             {resources.map((resource) => (
@@ -108,7 +115,21 @@ export const ResourceCards: React.FC<{
                                     Delete
                                 </MenuItem>
                             </Menu>
+                            <Menu onClose={handleCloseMenu} placement="bottom-start">
+                                <MenuItem
+                                    onClick={() => {
+                                        setOpenVisDialog(true);
+                                    }}
+                                >
+                                    Add to Visualization
+                                </MenuItem>
+                            </Menu>
                         </Dropdown>
+                        <VisualizationDialog
+                            open={openVisDialog}
+                            onClose={handleCloseVisDialog}
+                            onAddVisualization={() => {}}
+                        />
                         <IncoreDialog
                             open={openDeleteDialog}
                             onClose={handleCloseDialog}
