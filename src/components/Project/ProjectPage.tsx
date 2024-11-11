@@ -110,7 +110,7 @@ const ProjectPage = (): JSX.Element => {
     }, [id, dfr3mappingPageNumber, deletedDFR3MappingIds]);
 
     useEffect(() => {
-        if (id) appDispatch(getProjectWorkflows({ projectId: id, skip: (wfPageNumber - 1) * 5, limit: 5 }));
+        if (id) appDispatch(getProjectWorkflows({ projectId: id, skip: (wfPageNumber - 1) * 2, limit: 2 }));
     }, [id, wfPageNumber, deletedWorkflowIds]);
 
     useEffect(() => {
