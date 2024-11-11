@@ -23,7 +23,7 @@ interface VisualizationDialogProps {
     projectId: string;
     open: boolean;
     onClose: () => void;
-    onAddVisualization: () => void;
+    onAddVisualization: (visualizationId: string) => void;
 }
 
 export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
@@ -49,7 +49,8 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
             {
                 name: visualizationName,
                 type: visualizationType,
-                description
+                description,
+                ...(visualizationType === "MAP" && { layers: [] }) // Add empty layers array if type is "MAP"
             }
         ];
         appDispatch(createProjectVisualization({ projectId, visualizations }));
@@ -170,7 +171,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                         </Button>
                         <Button
                             variant="solid"
-                            onClick={onAddVisualization}
+                            onClick={() => onAddVisualization(visualizationId)}
                             disabled={isCreatingNew || !visualizationId}
                         >
                             Add to Visualization
