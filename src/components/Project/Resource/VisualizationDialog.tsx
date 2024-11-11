@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     Modal,
     Typography,
@@ -17,7 +17,7 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import { useAppDispatch } from "@app/store/hooks";
-import { createProjectVisualization, getProjectVisualizations } from "@app/reducer/projectSlice";
+import { createProjectVisualization } from "@app/reducer/projectSlice";
 
 interface VisualizationDialogProps {
     projectId: string;
@@ -56,10 +56,11 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
         appDispatch(createProjectVisualization({ projectId, visualizations }));
     };
 
-    useEffect(() => {
-        // temporary fix to get all visualizations
-        appDispatch(getProjectVisualizations({ projectId, skip: 0, limit: 100000 }));
-    }, [projectId]);
+    // TODO think of better way to get all visualizations
+    // useEffect(() => {
+    //     // temporary fix to get all visualizations
+    //     appDispatch(getProjectVisualizations({ projectId, skip: 0, limit: 100000 }));
+    // }, [projectId]);
 
     return (
         <Modal open={open} onClose={onClose}>

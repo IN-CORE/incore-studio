@@ -118,20 +118,20 @@ const ProjectPage = (): JSX.Element => {
     }, [id, datasetPageNumber, deletedDatasetIds]);
 
     // Delete
-    const deleteDatasetFunc = (projectId: string, datasetIds: string[]) => {
-        if (id) appDispatch(deleteProjectDatasets({ projectId, datasetIds }));
+    const deleteDatasetFunc = (projectId: string, dataset: Dataset) => {
+        if (id) appDispatch(deleteProjectDatasets({ projectId, datasetIds: [dataset.id] }));
     };
-    const deleteHazardFunc = (projectId: string, hazardIds: string[]) => {
-        if (id) appDispatch(deleteProjectHazards({ projectId, hazardIds }));
+    const deleteHazardFunc = (projectId: string, hazard: Hazard) => {
+        if (id) appDispatch(deleteProjectHazards({ projectId, hazardIds: [hazard.id] }));
     };
-    const deleteDFR3MappingFunc = (projectId: string, dfr3mappingIds: string[]) => {
-        if (id) appDispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds }));
+    const deleteDFR3MappingFunc = (projectId: string, dfr3mapping: DFR3Mapping) => {
+        if (id) appDispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds: [dfr3mapping.id] }));
     };
-    const deleteVisualizationFunc = (projectId: string, visualizationIds: string[]) => {
-        if (id) appDispatch(deleteProjectVisualizations({ projectId, visualizationIds }));
+    const deleteVisualizationFunc = (projectId: string, visualization: Visualization) => {
+        if (id) appDispatch(deleteProjectVisualizations({ projectId, visualizationIds: [visualization.id] }));
     };
-    const deleteWorkflowFunc = (projectId: string, workflowIds: string[]) => {
-        if (id) appDispatch(deleteProjectWorkflows({ projectId, workflowIds }));
+    const deleteWorkflowFunc = (projectId: string, workflow: Workflow) => {
+        if (id) appDispatch(deleteProjectWorkflows({ projectId, workflowIds: [workflow.id] }));
     };
 
     // add to visualization function
