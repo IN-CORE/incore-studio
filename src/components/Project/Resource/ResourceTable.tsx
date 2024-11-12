@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown } from "@mui/joy";
+import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown, Link } from "@mui/joy";
 import { formatHeaderName, parseDateTime } from "@app/utils";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 
@@ -9,6 +9,7 @@ interface TableProps {
     columns: string[];
     data: Dataset[] | Hazard[] | Visualization[] | Workflow[] | DFR3Mapping[];
     deleteFunc?: any;
+    resourceType?: string;
 }
 
 // Type narrowing function
@@ -20,7 +21,7 @@ const hasDate = (item: any): item is Workflow | Dataset => {
     return item.date;
 };
 
-export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TableProps): JSX.Element => {
+export const ResourceTable = ({ projectId, columns, data, deleteFunc, resourceType }: TableProps): JSX.Element => {
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
     const handleOpenMenu = (id: string) => {
@@ -86,6 +87,17 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc }: TablePro
                             <MoreVertIcon />
                         </MenuButton>
                         <Menu onClose={handleCloseMenu} placement="bottom-start">
+                            {resourceType?.toLowerCase() === "workflow" && (
+                                <MenuItem>
+                                    <Link
+                                        textColor="primary.main"
+                                        underline="none"
+                                        href={`/project/${projectId}/workflows/${item.id}`}
+                                    >
+                                        Open
+                                    </Link>
+                                </MenuItem>
+                            )}
                             <MenuItem
                                 onClick={() => {
                                     setOpenDeleteDialog(true);

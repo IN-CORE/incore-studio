@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-// import { getHeaders } from "@app/utils";
+import { getHeaders } from "@app/utils";
+import config from "@app/app.config";
 import { addNewAnalysisNodesAndEdgesWorkflow } from "@app/components/Workflow/workflowUtils";
 
-// const DATAWOLF_API_URL = `${window.API_SERVER}/datawolf`;
-const DATAWOLF_API_URL = `http://localhost:8888/datawolf`;
+const DATAWOLF_API_URL = config.datawolfApi;
+// const DATAWOLF_API_URL = `http://localhost:8888/datawolf`;
 
 const initialReactFlowWorkflow = {
     nodes: [],
@@ -55,7 +56,7 @@ export const getDatawolfUser = createAsyncThunk(
         }
 
         const response = await axios.get(`${DATAWOLF_API_URL}/persons`, {
-            // headers: getHeaders(), // only needed when datawolf is behind incore-auth
+            headers: getHeaders(), // only needed when datawolf is behind incore-auth
             params
         });
 
@@ -66,13 +67,17 @@ export const getDatawolfUser = createAsyncThunk(
 export const createNewWorkflow = createAsyncThunk(
     "workflow/createNewWorkflow",
     async ({ title, description, creator }: { title: string; description: string; creator: DatawolfCreator }) => {
-        const response = await axios.post(`${DATAWOLF_API_URL}/workflows`, {
-            title: title,
-            description: description,
-            creator: creator,
-            contributors: [],
-            steps: []
-        });
+        const response = await axios.post(
+            `${DATAWOLF_API_URL}/workflows`,
+            {
+                title: title,
+                description: description,
+                creator: creator,
+                contributors: [],
+                steps: []
+            },
+            { headers: getHeaders() }
+        );
 
         return response.data;
     }
@@ -84,7 +89,7 @@ export const getWorkflow = createAsyncThunk(
         if (!workflowID) {
             throw new Error("No workflow ID provided");
         }
-        const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}`);
+        const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}`, { headers: getHeaders() });
 
         return response.data;
     }
@@ -93,14 +98,16 @@ export const getWorkflow = createAsyncThunk(
 export const saveWorkflow = createAsyncThunk(
     "workflow/saveWorkflow",
     async ({ workflowID, workflow }: { workflowID: string; workflow: DatawolfWorkflowFile }) => {
-        const response = await axios.put(`${DATAWOLF_API_URL}/workflows/${workflowID}`, workflow);
+        const response = await axios.put(`${DATAWOLF_API_URL}/workflows/${workflowID}`, workflow, {
+            headers: getHeaders()
+        });
 
         return response.data;
     }
 );
 
 export const getWorkflowTools = createAsyncThunk("workflow/getWorkflowTools", async () => {
-    const response = await axios.get(`${DATAWOLF_API_URL}/workflowtools`);
+    const response = await axios.get(`${DATAWOLF_API_URL}/workflowtools`, { headers: getHeaders() });
 
     return response.data;
 });
@@ -178,7 +185,7 @@ const workflowSlice = createSlice({
             .addCase(getWorkflow.fulfilled, (state, action) => {
                 state.workflowLoading = false;
                 state.currentWorkflow = action.payload;
-                state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
+                // state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
                 state.datawolfWorkflowID = action.payload.id;
             })
             .addCase(getWorkflow.rejected, (state, action) => {

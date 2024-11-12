@@ -3,12 +3,15 @@ import Loading from "@app/components/Loading";
 
 const LazyHome = lazy(() => import("@app/components/Home"));
 const LazyWorkflowEditor = lazy(() => import("./components/WorkflowEditor"));
-const ProjectDatasetPage = lazy(() => import("@app/components/Project/Resource/DatasetPage"));
-const ProjectPage = lazy(() => import("@app/components/Project/ProjectPage"));
-const ProjectHazardsPage = lazy(() => import("@app/components/Project/Resource/HazardPage"));
-const ProjectVisualizationsPage = lazy(() => import("@app/components/Project/Resource/VisualizationPage"));
-const ProjectWorkflowsPage = lazy(() => import("@app/components/Project/Resource/WorkflowPage"));
-const ProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Resource/DFR3MappingPage"));
+const LazyProjectDatasetPage = lazy(() => import("@app/components/Project/Resource/DatasetPage"));
+const LazyProjectPage = lazy(() => import("@app/components/Project/ProjectPage"));
+const LazyProjectHazardsPage = lazy(() => import("@app/components/Project/Resource/HazardPage"));
+const LazyProjectVisualizationsPage = lazy(() => import("@app/components/Project/Resource/VisualizationPage"));
+const LazyProjectWorkflowsPage = lazy(() => import("@app/components/Project/Resource/WorkflowPage"));
+const LazyProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Resource/DFR3MappingPage"));
+const LazyProjectWorkflowExecutionSummaryPage = lazy(
+    () => import("@app/components/Project/Resource/WorkflowExecutionSummaryPage")
+);
 
 /**
  A mapping of routes to `RouteProps`.
@@ -34,42 +37,49 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
     "/project/:id": {
         element: (
             <Suspense fallback={<Loading />}>
-                <ProjectPage />
+                <LazyProjectPage />
             </Suspense>
         )
     },
     "/project/:id/datasets": {
         element: (
             <Suspense fallback={<Loading />}>
-                <ProjectDatasetPage />
+                <LazyProjectDatasetPage />
             </Suspense>
         )
     },
     "/project/:id/hazards": {
         element: (
             <Suspense fallback={<Loading />}>
-                <ProjectHazardsPage />
+                <LazyProjectHazardsPage />
             </Suspense>
         )
     },
     "/project/:id/visualizations": {
         element: (
             <Suspense fallback={<Loading />}>
-                <ProjectVisualizationsPage />
+                <LazyProjectVisualizationsPage />
             </Suspense>
         )
     },
     "/project/:id/workflows": {
         element: (
             <Suspense fallback={<Loading />}>
-                <ProjectWorkflowsPage />
+                <LazyProjectWorkflowsPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/workflows/:wfID": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyProjectWorkflowExecutionSummaryPage />
             </Suspense>
         )
     },
     "/project/:id/dfr3mappings": {
         element: (
             <Suspense fallback={<Loading />}>
-                <ProjectDFR3MappingPage />
+                <LazyProjectDFR3MappingPage />
             </Suspense>
         )
     }
