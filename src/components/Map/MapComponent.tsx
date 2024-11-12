@@ -1,12 +1,8 @@
-import React, { useRef, useState } from "react";
-import Map, { Layer, MapRef } from "react-map-gl";
+import React, { useRef, useState, useEffect } from "react";
+import Map, { Source, Layer, MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import config from "@app/app.config";
-
-interface Layer {
-    layerId: string;
-    workspace?: string;
-}
+import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Checkbox } from "@mui/joy";
 
 interface MapComponentProps {
     layers: Layer[];
@@ -14,23 +10,29 @@ interface MapComponentProps {
     height?: number;
 }
 
-const geoserverBaseUrl = `${config.hostname}/geoserver/incore/wms`;
-
 export const MapComponent: React.FC<MapComponentProps> = ({ layers, width = 800, height = 600 }) => {
     const mapRef = useRef<MapRef>(null);
-    const addedLayers = useRef<Set<string>>(new Set());
+    const [uniqueLayers, setUniqueLayers] = useState<Layer[]>([]);
     const [activeLayers, setActiveLayers] = useState<{ [key: string]: boolean }>({});
 
     // Define bounding box for the entire contiguous U.S. in EPSG:4326
     const boundingBox: [number, number, number, number] = [-125.0, 24.396308, -66.93457, 49.384358];
 
-    // Generate WMS URL based on layer name and bounding box
-    const getWmsUrl = (layerName: string, width = 256, height = 256) => {
-        const srs = "EPSG:4326";
-        return `${geoserverBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&tiled=true&LAYERS=${layerName}&WIDTH=${width}&HEIGHT=${height}&SRS=${srs}&BBOX=${boundingBox.join(
-            ","
-        )}`;
-    };
+    // Deduplicate layers
+    useEffect(() => {
+        const uniqueLayers = Array.from(
+            new Set(layers.map((layer) => JSON.stringify({ workspace: layer.workspace, layerId: layer.layerId })))
+        ).map((layerString) => JSON.parse(layerString));
+        setUniqueLayers(uniqueLayers);
+
+        // Initialize the activeLayers state to set each layer's visibility to false (hidden)
+        const initialActiveLayers = uniqueLayers.reduce((acc, layer) => {
+            const layerId = layer.layerId;
+            return { ...acc, [layerId]: false };
+        }, {});
+        initialActiveLayers[uniqueLayers[0].layerId] = true; // Set the first layer to visible by default
+        setActiveLayers(initialActiveLayers);
+    }, [layers]);
 
     // Toggle visibility of a layer
     const toggleLayer = (layerId: string) => {
@@ -53,55 +55,67 @@ export const MapComponent: React.FC<MapComponentProps> = ({ layers, width = 800,
                 }}
                 style={{ width: "100%", height: "100%" }}
                 mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-                onLoad={() => {
-                    layers.forEach((layer) => {
-                        const layerId = `${layer.workspace ?? "incore"}:${layer.layerId}`;
-
-                        if (addedLayers.current.has(layerId)) {
-                            console.warn(`Layer with ID ${layerId} already added. Skipping duplicate.`);
-                            return;
-                        }
-
-                        mapRef.current?.getMap().addSource(layerId, {
-                            type: "raster",
-                            tiles: [getWmsUrl(layerId)],
-                            tileSize: 256
-                        });
-
-                        mapRef.current?.getMap().addLayer({
-                            id: layerId,
-                            type: "raster",
-                            source: layerId,
-                            layout: { visibility: "none" } // Initially hidden
-                        });
-
-                        setActiveLayers((prev) => ({ ...prev, [layerId]: false }));
-                        addedLayers.current.add(layerId);
-                    });
-                }}
-            />
+            >
+                {/* Add unique WMS layers */}
+                {uniqueLayers.map((layer) => {
+                    const layerName = `${layer.workspace}:${layer.layerId}`;
+                    return (
+                        <Source
+                            key={layer.layerId}
+                            id={layer.layerId}
+                            type="raster"
+                            tiles={[
+                                `${
+                                    config.hostname
+                                }/geoserver/incore/wms/?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&width=256&height=256&layers=${layerName}&transparent=true${
+                                    layer.styleName ? `&styles=${layer.styleName}` : ""
+                                }`
+                            ]}
+                            tileSize={256}
+                        >
+                            <Layer
+                                id={layer.layerId}
+                                type="raster"
+                                source={layer.layerId}
+                                layout={{ visibility: activeLayers[layer.layerId] ? "visible" : "none" }}
+                            />
+                        </Source>
+                    );
+                })}
+            </Map>
 
             {/* Layer Switcher Control */}
-            <div
-                style={{
+            <Box
+                sx={{
                     position: "absolute",
                     top: 10,
                     left: 10,
-                    backgroundColor: "white",
-                    padding: "10px",
-                    borderRadius: "4px",
-                    boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
-                    zIndex: 1
+                    width: "fit-content",
+                    zIndex: 1,
+                    padding: 2,
+                    backgroundColor: "#fff",
+                    border: "0.5px solid #999"
                 }}
             >
-                <h4>Layers</h4>
-                {Object.entries(activeLayers).map(([layerId, isActive]) => (
-                    <div key={layerId}>
-                        <input type="checkbox" checked={isActive} onChange={() => toggleLayer(layerId)} />
-                        <label style={{ marginLeft: 4 }}>{layerId}</label>
-                    </div>
-                ))}
-            </div>
+                <Accordion variant="plain" defaultExpanded>
+                    <AccordionSummary>
+                        <Typography level="body-md">Layers</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails sx={{ marginTop: "0.5em" }}>
+                        {uniqueLayers.map((layer) => (
+                            <Box key={layer.layerId} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                                <Checkbox
+                                    checked={activeLayers[layer.layerId]}
+                                    onChange={() => toggleLayer(layer.layerId)}
+                                    size="sm"
+                                    sx={{ mr: 1 }}
+                                />
+                                <Typography>{`${layer.workspace}:${layer.layerId}`}</Typography>
+                            </Box>
+                        ))}
+                    </AccordionDetails>
+                </Accordion>
+            </Box>
         </div>
     );
 };
