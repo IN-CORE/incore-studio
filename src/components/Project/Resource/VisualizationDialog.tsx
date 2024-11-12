@@ -76,10 +76,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                     }}
                 >
                     <Typography level="h4" sx={{ mb: 1 }}>
-                        Add Data to Visualization
-                    </Typography>
-                    <Typography level="body-md" color="neutral">
-                        Dataset:
+                        Add to Visualization
                     </Typography>
 
                     <Stack spacing={2} sx={{ mt: 2 }}>

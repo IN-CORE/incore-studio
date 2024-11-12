@@ -15,6 +15,7 @@ import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
+import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
 
 import VisualizationIcon from "@mui/icons-material/Map";
 
@@ -74,6 +75,13 @@ const VisualizationPage = (): JSX.Element => {
         setOpenCreateVisDialog(true);
     };
 
+    // View visualization
+    // const [selectedVisualization, setSelectedVisualization] = useState<Visualization>();
+    const [openVisualziationView, setOpenVisualziationView] = useState(true);
+    const handleCloseVisualziationView = () => {
+        setOpenVisualziationView(false);
+    };
+
     return (
         <>
             <Navbar />
@@ -111,7 +119,11 @@ const VisualizationPage = (): JSX.Element => {
                                         open={openCreateVisDialog}
                                         onClose={handleCloseCreateVisDialog}
                                     />
-                                    ;
+                                    <VisualizationView
+                                        layers={projectVisualizations[0]?.layers} // TODO
+                                        open={openVisualziationView}
+                                        onClose={handleCloseVisualziationView}
+                                    />
                                     {isTableView ? (
                                         <ResourceTable
                                             columns={["name", "description", "date"]}
