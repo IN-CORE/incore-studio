@@ -10,6 +10,7 @@ interface TableProps {
     columns: string[];
     data: Dataset[] | Hazard[] | Visualization[] | Workflow[] | DFR3Mapping[];
     deleteFunc?: any;
+    viewFunc?: any;
     addVisualizationFunc?: any;
 }
 
@@ -27,6 +28,7 @@ export const ResourceTable = ({
     columns,
     data,
     deleteFunc,
+    viewFunc,
     addVisualizationFunc
 }: TableProps): JSX.Element => {
     const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | DFR3Mapping | null>(
@@ -67,35 +69,35 @@ export const ResourceTable = ({
         setOpenVisDialog(false);
     };
 
-    const renderRow = (item: Dataset | Hazard | Visualization | Workflow | DFR3Mapping) => {
+    const renderRow = (resource: Dataset | Hazard | Visualization | Workflow | DFR3Mapping) => {
         return (
             <>
                 {columns.map((column) => {
-                    if (column === "date" && hasDate(item)) {
+                    if (column === "date" && hasDate(resource)) {
                         return (
-                            <td key={`${item.id.toString()}-${column}`}>
-                                {item.date ? parseDateTime(item.date) : "No date provided"}
+                            <td key={`${resource.id.toString()}-${column}`}>
+                                {resource.date ? parseDateTime(resource.date) : "No date provided"}
                             </td>
                         );
                     }
-                    if (column === "isFinalized" && "isFinalized" in item) {
+                    if (column === "isFinalized" && "isFinalized" in resource) {
                         return (
-                            <td key={`${item.id.toString()}-${column}`}>
-                                {item.isFinalized ? "Finalized" : "Pending"}
+                            <td key={`${resource.id.toString()}-${column}`}>
+                                {resource.isFinalized ? "Finalized" : "Pending"}
                             </td>
                         );
                     }
-                    if (column === "creator" && hasCreator(item)) {
+                    if (column === "creator" && hasCreator(resource)) {
                         return (
-                            <td key={`${item.id.toString()}-${column}`}>
-                                {`${item.creator.firstName} ${item.creator.lastName}`}
+                            <td key={`${resource.id.toString()}-${column}`}>
+                                {`${resource.creator.firstName} ${resource.creator.lastName}`}
                             </td>
                         );
                     }
 
                     return (
-                        <td key={`${item.id.toString()}-${column}`}>
-                            {(item as any)[column] || `No ${column} provided`}
+                        <td key={`${resource.id.toString()}-${column}`}>
+                            {(resource as any)[column] || `No ${column} provided`}
                         </td>
                     );
                 })}
@@ -104,18 +106,11 @@ export const ResourceTable = ({
                         <MenuButton
                             slots={{ root: IconButton }}
                             slotProps={{ root: { variant: "plain", color: "neutral" } }}
-                            onClick={() => handleOpenMenu(item)}
+                            onClick={() => handleOpenMenu(resource)}
                         >
                             <MoreVertIcon />
                         </MenuButton>
                         <Menu onClose={handleCloseMenu} placement="bottom-start">
-                            <MenuItem
-                                onClick={() => {
-                                    setOpenDeleteDialog(true);
-                                }}
-                            >
-                                Delete
-                            </MenuItem>
                             {addVisualizationFunc && (
                                 <MenuItem
                                     onClick={() => {
@@ -125,6 +120,22 @@ export const ResourceTable = ({
                                     Add to Visualization
                                 </MenuItem>
                             )}
+                            {viewFunc && (
+                                <MenuItem
+                                    onClick={() => {
+                                        viewFunc(resource);
+                                    }}
+                                >
+                                    View
+                                </MenuItem>
+                            )}
+                            <MenuItem
+                                onClick={() => {
+                                    setOpenDeleteDialog(true);
+                                }}
+                            >
+                                Delete
+                            </MenuItem>
                         </Menu>
                     </Dropdown>
                     <VisualizationDialog
@@ -159,8 +170,8 @@ export const ResourceTable = ({
                 </tr>
             </thead>
             <tbody>
-                {data.map((item) => (
-                    <tr key={item.id}>{renderRow(item)}</tr>
+                {data.map((resource) => (
+                    <tr key={resource.id}>{renderRow(resource)}</tr>
                 ))}
             </tbody>
         </Table>

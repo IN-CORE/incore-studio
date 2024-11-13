@@ -76,7 +76,7 @@ const VisualizationPage = (): JSX.Element => {
     };
 
     // View visualization
-    // const [selectedVisualization, setSelectedVisualization] = useState<Visualization>();
+    const [selectedVisualization, setSelectedVisualization] = useState<Visualization>();
     const [openVisualziationView, setOpenVisualziationView] = useState(true);
     const handleCloseVisualziationView = () => {
         setOpenVisualziationView(false);
@@ -119,17 +119,23 @@ const VisualizationPage = (): JSX.Element => {
                                         open={openCreateVisDialog}
                                         onClose={handleCloseCreateVisDialog}
                                     />
-                                    <VisualizationView
-                                        layers={projectVisualizations[0]?.layers} // TODO
-                                        open={openVisualziationView}
-                                        onClose={handleCloseVisualziationView}
-                                    />
+                                    {selectedVisualization && (
+                                        <VisualizationView
+                                            visualization={selectedVisualization}
+                                            open={openVisualziationView}
+                                            onClose={handleCloseVisualziationView}
+                                        />
+                                    )}
                                     {isTableView ? (
                                         <ResourceTable
                                             columns={["name", "description", "date"]}
                                             data={projectVisualizations}
                                             projectId={project.id}
                                             deleteFunc={deleteVisualizationFunc}
+                                            viewFunc={(visualization: Visualization) => {
+                                                setSelectedVisualization(visualization);
+                                                setOpenVisualziationView(true);
+                                            }}
                                         />
                                     ) : (
                                         <ResourceCards
@@ -137,6 +143,10 @@ const VisualizationPage = (): JSX.Element => {
                                             cardPerRow={4}
                                             projectId={project.id}
                                             deleteFunc={deleteVisualizationFunc}
+                                            viewFunc={(visualization: Visualization) => {
+                                                setSelectedVisualization(visualization);
+                                                setOpenVisualziationView(true);
+                                            }}
                                         />
                                     )}
                                     <Box mt={4} display="flex" justifyContent="center">

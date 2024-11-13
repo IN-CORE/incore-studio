@@ -41,8 +41,9 @@ export const ResourceCards: React.FC<{
     cardPerRow?: number;
     deleteFunc?: any;
     addVisualizationFunc?: any;
+    viewFunc?: any;
     projectId: string;
-}> = ({ resources, cardPerRow, deleteFunc, addVisualizationFunc, projectId }) => {
+}> = ({ resources, cardPerRow, deleteFunc, addVisualizationFunc, projectId, viewFunc }) => {
     const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | null>(null);
     const handleOpenMenu = (item: Hazard | Visualization | Dataset | Workflow) => {
         setSelectedItem(item);
@@ -114,13 +115,6 @@ export const ResourceCards: React.FC<{
                                 <MoreVertIcon />
                             </MenuButton>
                             <Menu onClose={handleCloseMenu} placement="bottom-start">
-                                <MenuItem
-                                    onClick={() => {
-                                        setOpenDeleteDialog(true);
-                                    }}
-                                >
-                                    Delete
-                                </MenuItem>
                                 {addVisualizationFunc && (
                                     <MenuItem
                                         onClick={() => {
@@ -130,6 +124,22 @@ export const ResourceCards: React.FC<{
                                         Add to Visualization
                                     </MenuItem>
                                 )}
+                                {viewFunc && (
+                                    <MenuItem
+                                        onClick={() => {
+                                            viewFunc(resource);
+                                        }}
+                                    >
+                                        View
+                                    </MenuItem>
+                                )}
+                                <MenuItem
+                                    onClick={() => {
+                                        setOpenDeleteDialog(true);
+                                    }}
+                                >
+                                    Delete
+                                </MenuItem>
                             </Menu>
                         </Dropdown>
                         <VisualizationDialog
