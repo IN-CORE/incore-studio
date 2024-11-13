@@ -321,10 +321,12 @@ const SidePanel = () => {
     React.useEffect(() => {
         if (dependencyGraph !== null) {
             let toolNames = datawolfTools.map((tool) => tool.title).sort();
-            toolNames = toolNames.filter(
-                (tool) =>
-                    dependencyGraph[tool].pretty_name.toLowerCase().search(searchAnalysisTerm.toLowerCase()) !== -1
-            );
+            toolNames = toolNames
+                .filter((tool) => dependencyGraph[tool] !== undefined)
+                .filter(
+                    (tool) =>
+                        dependencyGraph[tool].pretty_name.toLowerCase().search(searchAnalysisTerm.toLowerCase()) !== -1
+                );
             setAvailableAnalyses(toolNames);
         }
     }, [datawolfTools, searchAnalysisTerm]);
