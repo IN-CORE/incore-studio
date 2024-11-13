@@ -329,7 +329,15 @@ export const createProjectVisualization = createAsyncThunk(
 
 export const addLayerToVisualization = createAsyncThunk(
     "projects/addLayerToVisualization",
-    async ({ projectId, visualizationId, layers }: { projectId: string; visualizationId: string; layers: Layer[] }) => {
+    async ({
+        projectId,
+        visualizationId,
+        layers
+    }: {
+        projectId: string;
+        visualizationId: string;
+        layers: IncoreLayer[];
+    }) => {
         const response = await axios.post(
             `${PROJECT_API_URL}/${projectId}/visualizations/${visualizationId}/layers`,
             layers,

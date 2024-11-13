@@ -5,14 +5,14 @@ import config from "@app/app.config";
 import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Checkbox } from "@mui/joy";
 
 interface MapComponentProps {
-    layers: Layer[];
+    layers: IncoreLayer[];
     width?: number;
     height?: number;
 }
 
 export const MapComponent: React.FC<MapComponentProps> = ({ layers, width = 800, height = 600 }) => {
     const mapRef = useRef<MapRef>(null);
-    const [uniqueLayers, setUniqueLayers] = useState<Layer[]>([]);
+    const [uniqueLayers, setUniqueLayers] = useState<IncoreLayer[]>([]);
     const [activeLayers, setActiveLayers] = useState<{ [key: string]: boolean }>({});
 
     // Define bounding box for the entire contiguous U.S. in EPSG:4326
@@ -21,7 +21,11 @@ export const MapComponent: React.FC<MapComponentProps> = ({ layers, width = 800,
     // Deduplicate layers
     useEffect(() => {
         const uniqueLayers = Array.from(
-            new Set(layers.map((layer) => JSON.stringify({ workspace: layer.workspace, layerId: layer.layerId })))
+            new Set(
+                layers.map((layer) =>
+                    JSON.stringify({ workspace: layer.workspace, layerId: layer.layerId, styleName: layer.styleName })
+                )
+            )
         ).map((layerString) => JSON.parse(layerString));
         setUniqueLayers(uniqueLayers);
 
