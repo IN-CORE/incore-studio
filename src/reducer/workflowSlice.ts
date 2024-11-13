@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { getHeaders } from "@app/utils";
 import { addNewAnalysisNodesAndEdgesWorkflow } from "@app/components/Workflow/workflowUtils";
-import config from "@app/app.config";
+// import config from "@app/app.config";
 
 // const DATAWOLF_API_URL = `http://localhost:8888/datawolf`;
 const DATAWOLF_API_URL = config.datawolfApi;
@@ -114,7 +114,7 @@ export const getWorkflowTools = createAsyncThunk("workflow/getWorkflowTools", as
 });
 
 export const getDependencyGraph = createAsyncThunk("workflow/getDependencyGraph", async () => {
-    const response = await axios.get("/dependencyGraph.json");
+    const response = await axios.get("/config/dependencyGraph.json");
 
     return response.data;
 });
