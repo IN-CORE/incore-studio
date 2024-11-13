@@ -185,7 +185,7 @@ const workflowSlice = createSlice({
             .addCase(getWorkflow.fulfilled, (state, action) => {
                 state.workflowLoading = false;
                 state.currentWorkflow = action.payload;
-                // state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
+                state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
                 state.datawolfWorkflowID = action.payload.id;
             })
             .addCase(getWorkflow.rejected, (state, action) => {
