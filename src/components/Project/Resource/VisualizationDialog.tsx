@@ -41,6 +41,13 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
     const appDispatch = useAppDispatch();
     const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
 
+    const resetCreation = () => {
+        setIsCreatingNew(false);
+        setVisualizationName("");
+        setVisualizationId("");
+        setVisualizationType("");
+        setDescription("");
+    };
     const openCreateNew = () => {
         setIsCreatingNew(true);
     };
@@ -54,6 +61,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
             }
         ];
         appDispatch(createProjectVisualization({ projectId, visualizations }));
+        resetCreation();
     };
 
     // TODO think of better way to get all visualizations

@@ -35,6 +35,7 @@ import DFR3Icon from "@mui/icons-material/ShowChart";
 import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
+import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -172,6 +173,13 @@ const ProjectPage = (): JSX.Element => {
         setOpenCreateVisDialog(true);
     };
 
+    // View visualization
+    const [selectedVisualization, setSelectedVisualization] = useState<Visualization>();
+    const [openVisualziationView, setOpenVisualziationView] = useState(true);
+    const handleCloseVisualziationView = () => {
+        setOpenVisualziationView(false);
+    };
+
     return (
         <>
             <Navbar />
@@ -246,10 +254,21 @@ const ProjectPage = (): JSX.Element => {
                                             open={openCreateVisDialog}
                                             onClose={handleCloseCreateVisDialog}
                                         />
+                                        {selectedVisualization && (
+                                            <VisualizationView
+                                                visualization={selectedVisualization}
+                                                open={openVisualziationView}
+                                                onClose={handleCloseVisualziationView}
+                                            />
+                                        )}
                                         <ResourceCards
                                             resources={projectVisualizations}
                                             projectId={project.id}
                                             deleteFunc={deleteVisualizationFunc}
+                                            viewFunc={(visualization: Visualization) => {
+                                                setSelectedVisualization(visualization);
+                                                setOpenVisualziationView(true);
+                                            }}
                                         />
                                         <Box mt={4} display="flex" justifyContent="center">
                                             <Pagination
