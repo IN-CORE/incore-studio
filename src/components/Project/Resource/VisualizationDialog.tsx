@@ -76,15 +76,14 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
 
     return (
         <Modal open={open} onClose={onClose}>
-            <ModalDialog size="lg">
+            <ModalDialog size="lg" sx={{ backgroundColor: "#fff" }}>
                 <ModalClose />
                 <Box
                     sx={{
                         width: 600,
                         maxWidth: "100%",
                         padding: 2,
-                        borderRadius: "md",
-                        backgroundColor: "background.surface"
+                        borderRadius: "md"
                     }}
                 >
                     <Typography level="h4" sx={{ mb: 1 }}>
@@ -248,15 +247,14 @@ export const CreateVisualizationDialog: React.FC<CreateVisualizationDialogProps>
 
     return (
         <Modal open={open} onClose={onClose}>
-            <ModalDialog size="lg">
+            <ModalDialog size="lg" sx={{ backgroundColor: "#fff" }}>
                 <ModalClose />
                 <Box
                     sx={{
                         width: 600,
                         maxWidth: "100%",
                         padding: 2,
-                        borderRadius: "md",
-                        backgroundColor: "background.surface"
+                        borderRadius: "md"
                     }}
                 >
                     <Typography level="h4" sx={{ mb: 1 }}>
