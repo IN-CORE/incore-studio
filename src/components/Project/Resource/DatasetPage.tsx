@@ -8,7 +8,8 @@ import {
     getProject,
     getProjectDatasets,
     deleteProjectDatasets,
-    addLayerToVisualization
+    addLayerToVisualization,
+    getProjectVisualizations
 } from "@app/reducer/projectSlice";
 import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
@@ -47,7 +48,11 @@ const DatasetPage = (): JSX.Element => {
     }, [id]);
 
     useEffect(() => {
-        if (id) appDispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
+        if (id) {
+            appDispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
+            // TODO figure out how to get all visualizations
+            appDispatch(getProjectVisualizations({ projectId: id, skip: 0, limit: 10 }));
+        }
     }, [id, datasetPageNumber, deletedDatasetIds]);
 
     const onSearchClick = () => {};

@@ -8,7 +8,8 @@ import {
     addLayerToVisualization,
     deleteProjectHazards,
     getProject,
-    getProjectHazards
+    getProjectHazards,
+    getProjectVisualizations
 } from "@app/reducer/projectSlice";
 import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
@@ -47,7 +48,11 @@ const HazardPage = (): JSX.Element => {
     }, [id]);
 
     useEffect(() => {
-        if (id) appDispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
+        if (id) {
+            appDispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
+            // TODO figure out how to get all visualizations
+            appDispatch(getProjectVisualizations({ projectId: id, skip: 0, limit: 10 }));
+        }
     }, [id, hazardPageNumber, deletedHazardIds]);
 
     const onSearchClick = () => {};
