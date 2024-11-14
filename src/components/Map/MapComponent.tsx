@@ -25,13 +25,21 @@ export const MapComponent: React.FC<MapComponentProps> = ({
 
     // Deduplicate layers
     useEffect(() => {
-        const uniqueLayers = Array.from(
-            new Set(
-                layers.map((layer) =>
-                    JSON.stringify({ workspace: layer.workspace, layerId: layer.layerId, styleName: layer.styleName })
-                )
-            )
-        ).map((layerString) => JSON.parse(layerString));
+        const uniqueLayers =
+            layers.length > 0
+                ? Array.from(
+                      new Set(
+                          layers.map((layer) =>
+                              JSON.stringify({
+                                  workspace: layer.workspace,
+                                  layerId: layer.layerId,
+                                  styleName: layer.styleName
+                              })
+                          )
+                      )
+                  ).map((layerString) => JSON.parse(layerString))
+                : [];
+
         setUniqueLayers(uniqueLayers);
 
         // Initialize the activeLayers state to set each layer's visibility to false (hidden)

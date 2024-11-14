@@ -60,7 +60,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                 name: visualizationName,
                 type: visualizationType,
                 description,
-                boundingBox: boundingBox.split(",").map(Number),
+                ...(boundingBox !== "" && { boundingBox: boundingBox.split(",").map(Number) }),
                 ...(visualizationType === "MAP" && { layers: [] }) // Add empty layers array if type is "MAP"
             }
         ];
@@ -238,7 +238,7 @@ export const CreateVisualizationDialog: React.FC<CreateVisualizationDialogProps>
                 name: visualizationName,
                 type: visualizationType,
                 description,
-                boundingBox: boundingBox.split(",").map(Number),
+                ...(boundingBox !== "" && { boundingBox: boundingBox.split(",").map(Number) }),
                 ...(visualizationType === "MAP" && { layers: [] }) // Add empty layers array if type is "MAP"
             }
         ];
