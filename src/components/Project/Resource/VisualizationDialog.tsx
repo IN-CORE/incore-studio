@@ -18,12 +18,13 @@ import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import { useAppDispatch } from "@app/store/hooks";
 import { createProjectVisualization } from "@app/reducer/projectSlice";
+import config from "@app/app.config";
 
 interface VisualizationDialogProps {
     projectId: string;
     open: boolean;
     onClose: () => void;
-    onAddVisualization: (visualizationId: string) => void;
+    onAddVisualization: (visualizationId: string, styleName?: string) => void;
 }
 
 export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
@@ -37,6 +38,8 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
     const [visualizationId, setVisualizationId] = useState("");
     const [visualizationType, setVisualizationType] = useState("");
     const [description, setDescription] = useState("");
+    const [boundingBox, setBoundingBox] = useState("");
+    const [styleName, setStyleName] = useState("");
 
     const appDispatch = useAppDispatch();
     const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
@@ -57,6 +60,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                 name: visualizationName,
                 type: visualizationType,
                 description,
+                boundingBox: boundingBox.split(",").map(Number),
                 ...(visualizationType === "MAP" && { layers: [] }) // Add empty layers array if type is "MAP"
             }
         ];
@@ -103,6 +107,21 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                                         {projectVisualizations.map((visualization) => (
                                             <Option key={visualization.id} value={visualization.id}>
                                                 {visualization.name}
+                                            </Option>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel>Select a style</FormLabel>
+                                    <Select
+                                        placeholder="Select a style"
+                                        onChange={(_: React.SyntheticEvent | null, newValue: string | null) => {
+                                            setStyleName(newValue || "");
+                                        }}
+                                    >
+                                        {config.sytles.map((style: string) => (
+                                            <Option key={style} value={style}>
+                                                {style}
                                             </Option>
                                         ))}
                                     </Select>
@@ -169,6 +188,14 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                                         onChange={(e) => setDescription(e.target.value)}
                                     />
                                 </FormControl>
+                                <FormControl>
+                                    <FormLabel>Set Bounding Box</FormLabel>
+                                    <Input
+                                        placeholder="minLon, minLat, maxLon, maxLat"
+                                        value={boundingBox}
+                                        onChange={(e) => setBoundingBox(e.target.value)}
+                                    />
+                                </FormControl>
                             </>
                         )}
                     </Stack>
@@ -179,7 +206,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                         </Button>
                         <Button
                             variant="solid"
-                            onClick={() => onAddVisualization(visualizationId)}
+                            onClick={() => onAddVisualization(visualizationId, styleName)}
                             disabled={isCreatingNew || !visualizationId}
                         >
                             Add to Visualization
@@ -200,6 +227,7 @@ interface CreateVisualizationDialogProps {
 export const CreateVisualizationDialog: React.FC<CreateVisualizationDialogProps> = ({ projectId, open, onClose }) => {
     const [visualizationName, setVisualizationName] = useState("");
     const [visualizationType, setVisualizationType] = useState("");
+    const [boundingBox, setBoundingBox] = useState("");
     const [description, setDescription] = useState("");
 
     const appDispatch = useAppDispatch();
@@ -210,6 +238,7 @@ export const CreateVisualizationDialog: React.FC<CreateVisualizationDialogProps>
                 name: visualizationName,
                 type: visualizationType,
                 description,
+                boundingBox: boundingBox.split(",").map(Number),
                 ...(visualizationType === "MAP" && { layers: [] }) // Add empty layers array if type is "MAP"
             }
         ];
@@ -265,6 +294,14 @@ export const CreateVisualizationDialog: React.FC<CreateVisualizationDialogProps>
                                 minRows={3}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Set Bounding Box</FormLabel>
+                            <Input
+                                placeholder="minLon, minLat, maxLon, maxLat"
+                                value={boundingBox}
+                                onChange={(e) => setBoundingBox(e.target.value)}
                             />
                         </FormControl>
                     </Stack>

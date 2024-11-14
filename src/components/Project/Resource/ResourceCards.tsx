@@ -71,9 +71,9 @@ export const ResourceCards: React.FC<{
     const handleCloseVisDialog = () => {
         setOpenVisDialog(false);
     };
-    const handleAddVisualization = (visualizationId: string) => {
+    const handleAddVisualization = (visualizationId: string, styleName?: string) => {
         if (selectedItem && projectId) {
-            addVisualizationFunc(projectId, visualizationId, selectedItem);
+            addVisualizationFunc(projectId, visualizationId, selectedItem, styleName);
             setSelectedItem(null);
         }
         setOpenVisDialog(false);

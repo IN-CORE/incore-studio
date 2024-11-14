@@ -28,7 +28,15 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                     )}
                 </Box>
                 <Box>
-                    {visualization.layers && <MapComponent layers={visualization.layers} width={800} height={500} />}
+                    {visualization.layers && (
+                        <MapComponent
+                            layers={visualization.layers}
+                            width={800}
+                            height={500}
+                            {...(visualization.boundingBox &&
+                                visualization.boundingBox.length > 0 && { boundingBox: visualization.boundingBox })}
+                        />
+                    )}
                 </Box>
             </ModalDialog>
         </Modal>

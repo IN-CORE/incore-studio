@@ -69,12 +69,18 @@ const DatasetPage = (): JSX.Element => {
     };
 
     // add to visualization function
-    const addDatasetVisualizationFunc = (projectId: string, visualizationId: string, dataset: Dataset) => {
+    const addDatasetVisualizationFunc = (
+        projectId: string,
+        visualizationId: string,
+        dataset: Dataset,
+        styleName?: string
+    ) => {
         if (dataset.format == "shapefile") {
             const layers = [
                 {
                     workspace: "incore",
-                    layerId: dataset.id
+                    layerId: dataset.id,
+                    ...(styleName && { styleName }) // Only include styleName if it's provided
                 }
             ];
 

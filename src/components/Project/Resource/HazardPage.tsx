@@ -69,11 +69,17 @@ const HazardPage = (): JSX.Element => {
     };
 
     // add to visualization function
-    const addHazardVisualizationFunc = (projectId: string, visualizationId: string, hazard: Hazard) => {
+    const addHazardVisualizationFunc = (
+        projectId: string,
+        visualizationId: string,
+        hazard: Hazard,
+        styleName?: string
+    ) => {
         // Create layers array by mapping over each datasetId in hazard.HazardDatasets
         const layers = hazard.hazardDatasets.map((hazardDataset: HazardDataset) => ({
             workspace: "incore",
-            layerId: hazardDataset.datasetId
+            layerId: hazardDataset.datasetId,
+            ...(styleName && { styleName }) // Only include styleName if it's provided
         }));
 
         // Dispatch the action with the new layers array

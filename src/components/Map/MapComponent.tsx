@@ -6,17 +6,22 @@ import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Checkbo
 
 interface MapComponentProps {
     layers: IncoreLayer[];
+    zoom?: number;
+    boundingBox?: [number, number, number, number];
     width?: number;
     height?: number;
 }
 
-export const MapComponent: React.FC<MapComponentProps> = ({ layers, width = 800, height = 600 }) => {
+export const MapComponent: React.FC<MapComponentProps> = ({
+    layers,
+    zoom = 4,
+    width = 800,
+    height = 600,
+    boundingBox = [-125.0, 24.396308, -66.93457, 49.384358]
+}) => {
     const mapRef = useRef<MapRef>(null);
     const [uniqueLayers, setUniqueLayers] = useState<IncoreLayer[]>([]);
     const [activeLayers, setActiveLayers] = useState<{ [key: string]: boolean }>({});
-
-    // Define bounding box for the entire contiguous U.S. in EPSG:4326
-    const boundingBox: [number, number, number, number] = [-125.0, 24.396308, -66.93457, 49.384358];
 
     // Deduplicate layers
     useEffect(() => {
@@ -55,10 +60,11 @@ export const MapComponent: React.FC<MapComponentProps> = ({ layers, width = 800,
                 initialViewState={{
                     longitude: (boundingBox[0] + boundingBox[2]) / 2,
                     latitude: (boundingBox[1] + boundingBox[3]) / 2,
-                    zoom: 3
+                    zoom
                 }}
                 style={{ width: "100%", height: "100%" }}
                 mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+                maxBounds={boundingBox}
             >
                 {/* Add unique WMS layers */}
                 {uniqueLayers.map((layer) => {

@@ -224,7 +224,7 @@ interface Visualization {
     name: string;
     description?: string;
     date?: string;
-    boundingBox?: number[];
+    boundingBox?: [number, number, number, number];
     layers?: IncoreLayer[];
     vegaJson?: string;
     sourceDatasetIds?: string[];
