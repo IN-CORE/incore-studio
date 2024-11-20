@@ -19,6 +19,7 @@ const initialState: WorkflowState = {
     currentWorkflow: null,
     createdWorkflowLoading: false,
     createdWorkflowError: null,
+    workflowInvalid: false,
     workflowLoading: false,
     workflowError: null,
     saveWorkflowError: null,
@@ -128,7 +129,7 @@ export const getExecutionsByWorkflowID = createAsyncThunk(
 );
 
 export const getDependencyGraph = createAsyncThunk("workflow/getDependencyGraph", async () => {
-    const response = await axios.get("/dependencyGraph.json");
+    const response = await axios.get("/config/dependencyGraph.json");
 
     return response.data;
 });
@@ -188,9 +189,17 @@ const workflowSlice = createSlice({
             })
             .addCase(createNewWorkflow.fulfilled, (state, action) => {
                 state.createdWorkflowLoading = false;
-                state.currentWorkflow = action.payload;
-                state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
-                state.datawolfWorkflowID = action.payload.id;
+                let parsedWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
+                if (parsedWorkflow.valid) {
+                    state.currentWorkflow = action.payload;
+                    state.reactFlowWorkflow = parsedWorkflow.workflow;
+                    state.datawolfWorkflowID = action.payload.id;
+                    state.workflowInvalid = false;
+                } else {
+                    state.workflowInvalid = true;
+                    state.currentWorkflow = action.payload;
+                    state.createdWorkflowError = parsedWorkflow.reason;
+                }
             })
             .addCase(createNewWorkflow.rejected, (state, action) => {
                 state.createdWorkflowLoading = false;
@@ -202,9 +211,22 @@ const workflowSlice = createSlice({
             })
             .addCase(getWorkflow.fulfilled, (state, action) => {
                 state.workflowLoading = false;
-                state.currentWorkflow = action.payload;
-                state.reactFlowWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
-                state.datawolfWorkflowID = action.payload.id;
+                if (action.payload !== "") {
+                    let parsedWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
+                    if (parsedWorkflow.valid) {
+                        state.currentWorkflow = action.payload;
+                        state.reactFlowWorkflow = parsedWorkflow.workflow;
+                        state.datawolfWorkflowID = action.payload.id;
+                        state.workflowInvalid = false;
+                    } else {
+                        state.workflowInvalid = true;
+                        state.currentWorkflow = action.payload;
+                        state.workflowError = parsedWorkflow.reason;
+                    }
+                } else {
+                    state.workflowInvalid = true;
+                    state.workflowError = "Workflow not found with the provided ID";
+                }
             })
             .addCase(getWorkflow.rejected, (state, action) => {
                 state.workflowLoading = false;
