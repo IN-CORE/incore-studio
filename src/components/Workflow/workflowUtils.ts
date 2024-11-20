@@ -3,6 +3,8 @@ import { MarkerType } from "@xyflow/react";
 import type { AnalysisNode, AppNode, AnalysisOutputNode, AnalysisInputNode, NewAnalysisNode } from "./nodes";
 import { v4 as uuidv4 } from "uuid";
 
+// Outdated Code. Will remove in code cleanup.
+
 export const readNodesAndEdgesFromWorkflowFile = (
     workflowFile: DatawolfWorkflowFile,
     dependencyGraph: DependencyGraph | null
@@ -164,6 +166,8 @@ export const readNodesAndEdgesFromWorkflowFile = (
     return { nodes, edges };
 };
 
+// Outdated Code. Will remove in code cleanup.
+
 export const createWorkflowFileFromNodesAndEdges = ({
     nodes,
     edges,
@@ -229,8 +233,8 @@ export const createWorkflowFileFromNodesAndEdges = ({
                 analysisNode.data.stepData !== undefined
                     ? analysisNode.data.stepData.tool.id
                     : analysisNode.data.toolID !== undefined
-                    ? analysisNode.data.toolID
-                    : ""
+                      ? analysisNode.data.toolID
+                      : ""
             ];
         let stepId = analysisNode.id;
         let title = tool.title;
@@ -303,6 +307,8 @@ export const createWorkflowFileFromNodesAndEdges = ({
 
     return file;
 };
+
+// Outdated Code. Will remove in code cleanup.
 
 export const getNodesAndEdgesFromTool = (
     tool: DatawolfWorkflowTool | undefined,
@@ -434,17 +440,37 @@ export const getNodesAndEdgesFromTool = (
     return { nodes, edges };
 };
 
+const validateWorkflowFile = (
+    workflowFile: DatawolfWorkflowFile,
+    dependencyGraph: DependencyGraph | null
+): { validity: boolean; reason: string } => {
+    if (dependencyGraph !== null) {
+        for (const step of workflowFile.steps) {
+            if (dependencyGraph[step.title] === undefined) {
+                return {
+                    validity: false,
+                    reason: `Analysis: ${step.title} not found in Dependency Graph. This analaysis tool is invalid for IN-CORE Studio.`
+                };
+            }
+        }
+        return { validity: true, reason: "" };
+    }
+    return { validity: false, reason: "Dependency Graph Not Found" };
+};
+
 export const addNewAnalysisNodesAndEdgesWorkflow = (
     workflowFile: DatawolfWorkflowFile,
     dependencyGraph: DependencyGraph | null
-): ReactFlowWorkflow => {
+): { workflow: ReactFlowWorkflow; valid: boolean; reason: string } => {
     let nodes: AppNode[] = [];
     let edges: Edge[] = [];
 
     let sourceNodeLookup: { [key: string]: { analysisId: string; handleId: string } } = {};
     let targetNodeLookup: { [key: string]: { analysisId: string; handleId: string }[] } = {};
     let mappingUUIDSet: Set<string> = new Set();
-    if (workflowFile.steps.length > 0) {
+
+    const { validity, reason } = validateWorkflowFile(workflowFile, dependencyGraph);
+    if (validity) {
         workflowFile.steps.forEach((step) => {
             let inputHandles = step.tool.inputs.map((input) => {
                 const newId = uuidv4();
@@ -511,10 +537,10 @@ export const addNewAnalysisNodesAndEdgesWorkflow = (
             }
         });
 
-        return { nodes, edges };
+        return { workflow: { nodes, edges }, valid: true, reason: "" };
     }
 
-    return { nodes, edges };
+    return { workflow: { nodes, edges }, valid: false, reason: reason };
 };
 
 export const createWorkflowFileFromNodesAndEdgesV2 = ({

@@ -55,10 +55,12 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
     React.useEffect(() => {
         if (datawolfTools.length !== 0 && dependencyGraph !== null) {
             let toolNames = datawolfTools.map((tool) => tool.title).sort();
-            toolNames = toolNames.filter(
-                (tool) =>
-                    dependencyGraph[tool].pretty_name.toLowerCase().search(searchAnalysisTerm.toLowerCase()) !== -1
-            );
+            toolNames = toolNames
+                .filter((tool) => dependencyGraph[tool] !== undefined)
+                .filter(
+                    (tool) =>
+                        dependencyGraph[tool].pretty_name.toLowerCase().search(searchAnalysisTerm.toLowerCase()) !== -1
+                );
             setAvailableAnalyses(toolNames);
         }
     }, [datawolfTools, searchAnalysisTerm]);
@@ -139,11 +141,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                                 size="sm"
                                                 disableIcon
                                                 overlay
-                                                label={
-                                                    dependencyGraph[analysis] !== undefined
-                                                        ? dependencyGraph[analysis].pretty_name
-                                                        : analysis
-                                                }
+                                                label={dependencyGraph[analysis].pretty_name}
                                                 checked={selectedAnalysis === analysis}
                                                 variant={selectedAnalysis === analysis ? "soft" : "outlined"}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
