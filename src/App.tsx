@@ -15,6 +15,7 @@ import routes from "@app/routes";
 import { theme } from "@app/theme";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getDependencyGraph } from "@app/reducer/workflowSlice";
+import Navbar from "@app/components/Navbar";
 
 import Loading from "@app/components/Loading";
 import "@app/styles/main.scss";
@@ -63,6 +64,7 @@ const App: FC = () => {
             <Router basename={basename}>
                 <CssVarsProvider theme={theme}>
                     <CssBaseline />
+                    <Navbar />
                     <Suspense fallback={<Loading />}>
                         <Routes>
                             {Object.entries(routes).map(([path, props]) => (

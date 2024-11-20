@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import { deleteProjectHazards, getProject, getProjectHazards } from "@app/reducer/projectSlice";
-import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -66,68 +65,65 @@ const HazardPage = (): JSX.Element => {
     };
 
     return (
-        <>
-            <Navbar />
-            <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
-                <Box sx={{ flexShrink: 0 }} mt={5}>
-                    {!project ? (
-                        <Typography>Loading...</Typography>
-                    ) : (
-                        <>
-                            {/* Header Section */}
-                            <ProjectBreadcrumb
-                                project={{ href: `/project/${project.id}`, label: project.name }}
-                                resource="Hazards"
-                            />
-                            <ProjectHeader project={project} />
-                            <Divider />
-                            <Grid container spacing={5} mt={3} ml={0}>
-                                <Grid sm={2}>
-                                    <ProjectSidebar id={project.id} />
-                                </Grid>
-                                <Grid sm={10}>
-                                    <ResourceFilterBar
-                                        title="Hazards"
-                                        icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
-                                        onSearchClick={onSearchClick}
-                                        onFilterClick={onFilterClick}
-                                        onCreateClick={onCreateClick}
-                                        onSortClick={onSortClick}
-                                        onViewChangeClick={onViewChangeClick}
-                                        isTableView={isTableView}
-                                        createLabel="Add from Service"
-                                    />
-                                    {isTableView ? (
-                                        <ResourceTable
-                                            columns={["name", "description", "date", "creator"]}
-                                            data={projectHazards}
-                                            projectId={project.id}
-                                            deleteFunc={deleteHazardFunc}
-                                        />
-                                    ) : (
-                                        <ResourceCards
-                                            resources={projectHazards}
-                                            cardPerRow={4}
-                                            projectId={project.id}
-                                            deleteFunc={deleteHazardFunc}
-                                        />
-                                    )}
-                                    <Box mt={4} display="flex" justifyContent="center">
-                                        <Pagination
-                                            pageNumber={hazardPageNumber}
-                                            data={projectHazards}
-                                            dataPerPage={10}
-                                            previous={hazardPreviousPage}
-                                            next={hazardNextPage}
-                                        />
-                                    </Box>
-                                </Grid>
+        <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+            <Box sx={{ flexShrink: 0 }} mt={5}>
+                {!project ? (
+                    <Typography>Loading...</Typography>
+                ) : (
+                    <>
+                        {/* Header Section */}
+                        <ProjectBreadcrumb
+                            project={{ href: `/project/${project.id}`, label: project.name }}
+                            resource="Hazards"
+                        />
+                        <ProjectHeader project={project} />
+                        <Divider />
+                        <Grid container spacing={5} mt={3} ml={0}>
+                            <Grid sm={2}>
+                                <ProjectSidebar id={project.id} />
                             </Grid>
-                        </>
-                    )}
-                </Box>
-            </Container>
-        </>
+                            <Grid sm={10}>
+                                <ResourceFilterBar
+                                    title="Hazards"
+                                    icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
+                                    onSearchClick={onSearchClick}
+                                    onFilterClick={onFilterClick}
+                                    onCreateClick={onCreateClick}
+                                    onSortClick={onSortClick}
+                                    onViewChangeClick={onViewChangeClick}
+                                    isTableView={isTableView}
+                                    createLabel="Add from Service"
+                                />
+                                {isTableView ? (
+                                    <ResourceTable
+                                        columns={["name", "description", "date", "creator"]}
+                                        data={projectHazards}
+                                        projectId={project.id}
+                                        deleteFunc={deleteHazardFunc}
+                                    />
+                                ) : (
+                                    <ResourceCards
+                                        resources={projectHazards}
+                                        cardPerRow={4}
+                                        projectId={project.id}
+                                        deleteFunc={deleteHazardFunc}
+                                    />
+                                )}
+                                <Box mt={4} display="flex" justifyContent="center">
+                                    <Pagination
+                                        pageNumber={hazardPageNumber}
+                                        data={projectHazards}
+                                        dataPerPage={10}
+                                        previous={hazardPreviousPage}
+                                        next={hazardNextPage}
+                                    />
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </>
+                )}
+            </Box>
+        </Container>
     );
 };
 
