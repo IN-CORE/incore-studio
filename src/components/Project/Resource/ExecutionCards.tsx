@@ -1,0 +1,134 @@
+import React from "react";
+
+import { Alert, Grid, Box, Stack, Card, CardContent, Chip, Typography, Button, useTheme } from "@mui/joy";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+
+import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { parseDateTime } from "@app/utils";
+import { getExecutionsByWorkflowID } from "@app/reducer/workflowSlice";
+import withErrorHandling from "@app/components/hocs/withErrorHandling";
+import withLoading from "@app/components/hocs/withLoading";
+import { extractStatus } from "@app/utils";
+
+const ExecutionCardsComponent: React.FC<{ executions: DatawolfExecutionFile[] }> = ({ executions }) => {
+    // TODO: implement polling of datawolf to get current status
+    const theme = useTheme();
+
+    return (
+        <Grid container spacing={3}>
+            {executions.length === 0 && (
+                <Grid xs={12}>
+                    <Stack direction="column" spacing={3}>
+                        <Alert startDecorator={<ErrorOutlineRoundedIcon />} color="primary">
+                            No executions found.
+                        </Alert>
+                        {/* TODO: create new execution modal open and redirect */}
+                        <Button
+                            variant="solid"
+                            sx={{ backgroundColor: "primary.main" }}
+                            startDecorator={<AddRoundedIcon />}
+                        >
+                            Create New Execution
+                        </Button>
+                    </Stack>
+                </Grid>
+            )}
+            {executions.length !== 0 &&
+                executions.map((execution) => {
+                    let status = extractStatus(execution);
+                    let chipColors: Array<"danger" | "warning" | "success" | "primary"> = [
+                        "danger",
+                        "warning",
+                        "success",
+                        "primary"
+                    ];
+                    let checkColors = [
+                        theme.palette.danger[400],
+                        theme.palette.warning[400],
+                        theme.palette.success[400],
+                        theme.palette.primary[400]
+                    ];
+                    let chipColor =
+                        ["FAILED", "ABORTED"].indexOf(status) >= 0
+                            ? 0
+                            : ["RUNNING", "QUEUED", "WAITING"].indexOf(status) >= 0
+                              ? 1
+                              : ["UNKNOWN", "UNDEFINED"].indexOf(status) >= 0
+                                ? 3
+                                : 2;
+                    return (
+                        <Grid key={execution.id} xs={12} sm={12} md={6} lg={4}>
+                            {/* TODO: add link to execution page to see results and parameters. */}
+                            <Card
+                                variant="outlined"
+                                sx={{
+                                    position: "relative",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    height: "100%",
+                                    padding: 2
+                                }}
+                            >
+                                <CardContent>
+                                    <Box sx={{ p: 1, flexGrow: 1, height: 80, overflow: "auto" }}>
+                                        <Stack direction="row" spacing={1} alignItems="center">
+                                            <Typography level="h3" textColor="primary.main">
+                                                {execution.title}
+                                            </Typography>
+                                            <CheckCircleRoundedIcon sx={{ color: checkColors[chipColor] }} />
+                                        </Stack>
+                                        <Typography level="body-sm">
+                                            {execution.description || "Description not provided"}
+                                        </Typography>
+                                    </Box>
+                                </CardContent>
+                                <Box
+                                    sx={{
+                                        mt: "auto",
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    {/* Pill for resource type */}
+                                    <Chip size="sm" color={chipColors[chipColor]} sx={{ borderRadius: 0 }}>
+                                        {status}
+                                    </Chip>
+
+                                    {/* Date on the right */}
+                                    <Typography level="body-sm">
+                                        {execution.date ? parseDateTime(execution.date) : "Date not provided"}
+                                    </Typography>
+                                </Box>
+                            </Card>
+                        </Grid>
+                    );
+                })}
+        </Grid>
+    );
+};
+
+const ExecutionCardsWithErrorHandlingAndLoading = withErrorHandling(withLoading(ExecutionCardsComponent));
+
+const ExecutionCards: React.FC<{ wfId: string | null | undefined }> = ({ wfId }) => {
+    const dispatch = useAppDispatch();
+    const executions = useAppSelector((state) => state.workflow.executions);
+    const loading = useAppSelector((state) => state.workflow.loading);
+    const error = useAppSelector((state) => state.workflow.error);
+
+    React.useEffect(() => {
+        if (wfId && executions.length === 0) {
+            dispatch(getExecutionsByWorkflowID({ workflowID: wfId }));
+        }
+    }, [wfId]);
+
+    return (
+        <Box mt={2}>
+            <ExecutionCardsWithErrorHandlingAndLoading isLoading={loading} error={error} executions={executions} />
+        </Box>
+    );
+};
+
+export default ExecutionCards;

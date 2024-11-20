@@ -166,3 +166,25 @@ export async function getBoundingBoxFromDataset(layerId: string) {
         return null;
     }
 }
+
+export const extractStatus = (executionItem: DatawolfExecutionFile | null): string => {
+    if (executionItem !== null && executionItem.stepState !== undefined) {
+        let statusArr = Object.values(executionItem.stepState);
+        // WAITING, QUEUED, RUNNING, FINISHED, ABORTED, FAILED, UNKNOWN
+        // if failed or aborted, return failed | aborted
+        // else if atleast one running, return running
+        // else if atleast one queued, return queued
+        // else if atleast one waiting, return waiting
+        // else if any unknown, return unknown
+        // last case where we need to check all values are finished then return finished
+        // else return undefined
+        if (statusArr.indexOf("FAILED") >= 0) return "FAILED";
+        if (statusArr.indexOf("ABORTED") >= 0) return "ABORTED";
+        else if (statusArr.indexOf("RUNNING") >= 0) return "RUNNING";
+        else if (statusArr.indexOf("QUEUED") >= 0) return "QUEUED";
+        else if (statusArr.indexOf("WAITING") >= 0) return "WAITING";
+        else if (statusArr.indexOf("UNKNOWN") >= 0) return "UNKNOWN";
+        else if (statusArr.every((status) => status === "FINISHED")) return "FINISHED";
+    }
+    return "UNDEFINED";
+};

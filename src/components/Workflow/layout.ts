@@ -1,9 +1,11 @@
 import { Position } from "@xyflow/react";
 import type { Edge } from "@xyflow/react";
 import Dagre from "@dagrejs/dagre";
-import { type AppNode } from "./nodes";
 
-export const getLayoutedElements = (nodes: AppNode[], edges: Edge[]): { nodes: AppNode[]; edges: Edge[] } => {
+export const getLayoutedElements = <T extends { id: string; measured?: { width?: number; height?: number } }>(
+    nodes: T[],
+    edges: Edge[]
+): { nodes: T[]; edges: Edge[] } => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
     let direction = "LR";
     let isHorizontal = direction === "LR";

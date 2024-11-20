@@ -1,20 +1,20 @@
 import React, { useEffect } from "react";
-import { Box, Container } from "@mui/joy";
+import { Box, Container, Typography, Divider } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getProject } from "@app/reducer/projectSlice";
-import { getWorkflow } from "@app/reducer/workflowSlice";
+import { getWorkflow, raiseWorkflowError } from "@app/reducer/workflowSlice";
 import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import withLoading from "@app/components/hocs/withLoading";
 import WorkflowSummary from "@app/components/Workflow/WorkflowSummary";
-import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
+import { useSummaryStore, type SummaryReactFlowStoreState } from "@app/components/Workflow/reactFlowStore";
+import { getWorkflowSummary } from "@app/components/Workflow/workflowUtils";
+import ExecutionCards from "./ExecutionCards";
 
-const selector = (state: ReactFlowAppState) => ({
-    nodes: state.nodes,
-    edges: state.edges,
+const selector = (state: SummaryReactFlowStoreState) => ({
     setNodes: state.setNodes,
     setEdges: state.setEdges
 });
@@ -22,16 +22,18 @@ const selector = (state: ReactFlowAppState) => ({
 const WorkflowExecutionSummaryComponent: React.FC<{
     projectId: string | undefined;
     projectName: string | undefined;
+    isFinalized: boolean | undefined;
     currentWorkflow: DatawolfWorkflowFile | null;
     reactFlowWorkflow: ReactFlowWorkflow;
-}> = ({ projectId, projectName, currentWorkflow, reactFlowWorkflow }): JSX.Element => {
+}> = ({ projectId, projectName, currentWorkflow, reactFlowWorkflow, isFinalized }): JSX.Element => {
     // const appDispatch = useAppDispatch();
-    const { setNodes, setEdges } = useStore(useShallow(selector));
+    const { setNodes, setEdges } = useSummaryStore(useShallow(selector));
 
     React.useEffect(() => {
         if (reactFlowWorkflow.nodes.length !== 0) {
-            setNodes(reactFlowWorkflow.nodes);
-            setEdges(reactFlowWorkflow.edges);
+            let { nodes, edges } = getWorkflowSummary(reactFlowWorkflow);
+            setNodes(nodes);
+            setEdges(edges);
         }
     }, [reactFlowWorkflow]);
 
@@ -46,9 +48,16 @@ const WorkflowExecutionSummaryComponent: React.FC<{
                         resource="Workflows"
                         resourceName={currentWorkflow?.title}
                     />
-                    <Box sx={{ height: "500px", width: "auto" }}>
-                        <WorkflowSummary />
+                    <Box sx={{ display: "flex", flexGrow: 1, height: "500px", width: "100%" }}>
+                        <WorkflowSummary isFinalized={isFinalized} wfId={currentWorkflow?.id} />
                     </Box>
+                </Box>
+                <Box mt={5}>
+                    <Typography level="h3" textColor="primary.main" fontWeight="lg" mb={2}>
+                        Executions
+                    </Typography>
+                    <Divider />
+                    <ExecutionCards wfId={currentWorkflow?.id} />
                 </Box>
             </Container>
         </>
@@ -74,10 +83,15 @@ const WorkflowExecutionSummaryPage = (): JSX.Element => {
     const reactFlowWorkflow = useAppSelector((state) => state.workflow.reactFlowWorkflow);
 
     useEffect(() => {
-        if (wfID) {
-            appDispatch(getWorkflow({ workflowID: wfID }));
+        if (project !== null && wfID) {
+            const projWorkflowID: Workflow | undefined = project.workflows.find((wf: Workflow) => wf.id === wfID);
+            if (projWorkflowID) {
+                appDispatch(getWorkflow({ workflowID: wfID }));
+            } else {
+                raiseWorkflowError(`Failed to find workflow with id: ${wfID} in project with id: ${id}`);
+            }
         }
-    }, [wfID]);
+    }, [project, wfID]);
 
     useEffect(() => {
         if (id) {
@@ -91,6 +105,7 @@ const WorkflowExecutionSummaryPage = (): JSX.Element => {
             isLoading={loading && workflowLoading}
             projectId={id}
             projectName={project?.name}
+            isFinalized={project?.workflows.find((wf: Workflow) => wf.id === wfID)?.isFinalized}
             currentWorkflow={currentWorkflow}
             reactFlowWorkflow={reactFlowWorkflow}
         />

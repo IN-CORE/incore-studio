@@ -118,9 +118,7 @@
         },
         "after": {},
         "pretty_name": "Infrastructure Network Disruption Planning",
-        "tags": [
-            "Decision Support"
-        ]
+        "tags": ["Decision Support"]
     },
     "PipelineRestoration": {
         "after": {
@@ -140,9 +138,7 @@
             ]
         },
         "pretty_name": "Pipeline Restoration",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "EpfRestoration": {
         "before": {
@@ -176,9 +172,7 @@
             ]
         },
         "pretty_name": "Electric Power Facility Restoration",
-        "tags": [
-            "LifeLine"
-        ]
+        "tags": ["LifeLine"]
     },
     "MonteCarloLimitStateProbability": {
         "before": {
@@ -332,9 +326,7 @@
             ]
         },
         "pretty_name": "Monte Carlo Limit State Probability",
-        "tags": [
-            "Decision Support"
-        ]
+        "tags": ["Decision Support"]
     },
     "NciFunctionality": {
         "before": {
@@ -405,9 +397,7 @@
         },
         "after": {},
         "pretty_name": "Network Cascading Interdependency Functionality",
-        "tags": [
-            "Decision Support"
-        ]
+        "tags": ["Decision Support"]
     },
     "EpfDamage": {
         "after": {
@@ -432,9 +422,7 @@
         },
         "before": {},
         "pretty_name": "Electric Power Facility Damage",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "MeanDamage": {
         "before": {
@@ -503,9 +491,7 @@
         },
         "before": {},
         "pretty_name": "Road Damage",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "BuildingFunctionality": {
         "before": {
@@ -568,9 +554,7 @@
         },
         "after": {},
         "pretty_name": "Building Functionality",
-        "tags": [
-            "Building"
-        ]
+        "tags": ["Building"]
     },
     "EpnFunctionality": {
         "before": {
@@ -664,9 +648,7 @@
             ]
         },
         "pretty_name": "Electric Power Network Functionality",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "WfnFunctionality": {
         "before": {
@@ -776,9 +758,7 @@
             ]
         },
         "pretty_name": "Water Facility Network Functionality",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "PipelineFunctionality": {
         "after": {
@@ -854,9 +834,7 @@
             ]
         },
         "pretty_name": "Pipeline Functionality",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "BuyoutDecision": {
         "before": {
@@ -895,9 +873,7 @@
         },
         "after": {},
         "pretty_name": "Buyout Decision",
-        "tags": [
-            "Decision Support"
-        ]
+        "tags": ["Decision Support"]
     },
     "HousingRecoverySequential": {
         "before": {
@@ -916,10 +892,7 @@
         },
         "after": {},
         "pretty_name": "Housing Recovery Sequential",
-        "tags": [
-            "Socioeconomic",
-            "Decision Support"
-        ]
+        "tags": ["Socioeconomic", "Decision Support"]
     },
     "HousingValuationRecovery": {
         "before": {
@@ -932,9 +905,7 @@
         },
         "after": {},
         "pretty_name": "Housing Valuation Recovery",
-        "tags": [
-            "Socioeconomic"
-        ]
+        "tags": ["Socioeconomic"]
     },
     "PopulationDislocation": {
         "after": {
@@ -990,9 +961,7 @@
             ]
         },
         "pretty_name": "Population Dislocation",
-        "tags": [
-            "Socioeconomic"
-        ]
+        "tags": ["Socioeconomic"]
     },
     "WaterFacilityRestoration": {
         "after": {
@@ -1026,9 +995,7 @@
             ]
         },
         "pretty_name": "Water Facility Restoration",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "CombinedWindWaveSurgeBuildingDamage": {
         "before": {
@@ -1132,9 +1099,7 @@
             ]
         },
         "pretty_name": "Combined Wind Wave Surge Building Damage",
-        "tags": [
-            "Building"
-        ]
+        "tags": ["Building"]
     },
     "CombinedWindWaveSurgeBuildingLoss": {
         "before": {
@@ -1167,9 +1132,7 @@
         },
         "after": {},
         "pretty_name": "Combined Wind Wave Surge Building Loss",
-        "tags": [
-            "Building"
-        ]
+        "tags": ["Building"]
     },
     "JoplinEmpiricalBuildingRestoration": {
         "before": {
@@ -1200,9 +1163,7 @@
         },
         "after": {},
         "pretty_name": "Joplin Empirical Building Restoration",
-        "tags": [
-            "Building"
-        ]
+        "tags": ["Building"]
     },
     "BuildingNonStructDamage": {
         "after": {
@@ -1239,9 +1200,7 @@
         },
         "before": {},
         "pretty_name": "Building Non-Structural Damage",
-        "tags": [
-            "Building"
-        ]
+        "tags": ["Building"]
     },
     "SocialVulnerabilityScore": {
         "after": {
@@ -1254,9 +1213,7 @@
         },
         "before": {},
         "pretty_name": "Social Vulnerability Score",
-        "tags": [
-            "Socioeconomic"
-        ]
+        "tags": ["Socioeconomic"]
     },
     "CapitalShocks": {
         "before": {
@@ -1318,9 +1275,7 @@
             ]
         },
         "pretty_name": "Capital Shocks",
-        "tags": [
-            "Economic"
-        ]
+        "tags": ["Economic"]
     },
     "CommercialBuildingRecovery": {
         "before": {
@@ -1367,9 +1322,7 @@
         },
         "after": {},
         "pretty_name": "Commercial Building Recovery",
-        "tags": [
-            "Socioeconomic"
-        ]
+        "tags": ["Socioeconomic"]
     },
     "PipelineRepairCost": {
         "before": {
@@ -1389,9 +1342,7 @@
             ]
         },
         "pretty_name": "Pipeline Repair Cost",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "PipelineDamageRepairRate": {
         "after": {
@@ -1416,9 +1367,7 @@
         },
         "before": {},
         "pretty_name": "Pipeline Damage Repair Rate",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "GalvestonCGEModel": {
         "before": {
@@ -1431,9 +1380,7 @@
         },
         "after": {},
         "pretty_name": "Galveston CGE Model",
-        "tags": [
-            "Economic"
-        ]
+        "tags": ["Economic"]
     },
     "JoplinCGEModel": {
         "before": {
@@ -1446,9 +1393,7 @@
         },
         "after": {},
         "pretty_name": "Joplin CGE Model",
-        "tags": [
-            "Economic"
-        ]
+        "tags": ["Economic"]
     },
     "MlEnabledCgeSlc": {
         "before": {
@@ -1461,9 +1406,7 @@
         },
         "after": {},
         "pretty_name": "Machine Learning Enabled CGE SLC",
-        "tags": [
-            "Economic"
-        ]
+        "tags": ["Economic"]
     },
     "SaltLakeCGEModel": {
         "before": {
@@ -1476,9 +1419,7 @@
         },
         "after": {},
         "pretty_name": "Salt Lake CGE Model",
-        "tags": [
-            "Economic"
-        ]
+        "tags": ["Economic"]
     },
     "SeasideCGEModel": {
         "before": {
@@ -1491,9 +1432,7 @@
         },
         "after": {},
         "pretty_name": "Seaside CGE Model",
-        "tags": [
-            "Economic"
-        ]
+        "tags": ["Economic"]
     },
     "BuildingEconLoss": {
         "before": {
@@ -1506,9 +1445,7 @@
         },
         "after": {},
         "pretty_name": "Building Economic Loss",
-        "tags": [
-            "Building"
-        ]
+        "tags": ["Building"]
     },
     "BridgeDamage": {
         "after": {
@@ -1527,9 +1464,7 @@
         },
         "before": {},
         "pretty_name": "Bridge Damage",
-        "tags": [
-            "Bridge"
-        ]
+        "tags": ["Bridge"]
     },
     "EpfRepairCost": {
         "before": {
@@ -1553,9 +1488,7 @@
             ]
         },
         "pretty_name": "Electric Power Facility Repair Cost",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "ResidentialBuildingRecovery": {
         "before": {
@@ -1568,10 +1501,7 @@
         },
         "after": {},
         "pretty_name": "Residential Building Recovery",
-        "tags": [
-            "Socioeconomic",
-            "Decision Support"
-        ]
+        "tags": ["Socioeconomic", "Decision Support"]
     },
     "WaterFacilityRepairCost": {
         "before": {
@@ -1595,9 +1525,7 @@
             ]
         },
         "pretty_name": "Water Facility Repair Cost",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "WaterFacilityDamage": {
         "after": {
@@ -1622,9 +1550,7 @@
         },
         "before": {},
         "pretty_name": "Water Facility Damage",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "PipelineDamage": {
         "after": {
@@ -1637,9 +1563,7 @@
         },
         "before": {},
         "pretty_name": "Pipeline Damage",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "HousingUnitAllocation": {
         "after": {
@@ -1658,9 +1582,7 @@
         },
         "before": {},
         "pretty_name": "Housing Unit Allocation",
-        "tags": [
-            "Socioeconomic"
-        ]
+        "tags": ["Socioeconomic"]
     },
     "CumulativeBuildingDamage": {
         "before": {
@@ -1732,9 +1654,7 @@
             ]
         },
         "pretty_name": "Cumulative Building Damage",
-        "tags": [
-            "Building"
-        ]
+        "tags": ["Building"]
     },
     "BuildingStructuralDamage": {
         "after": {
@@ -1811,49 +1731,36 @@
         },
         "before": {},
         "pretty_name": "Building Structural Damage",
-        "tags": [
-            "Building"
-        ]
+        "tags": ["Building"]
     },
     "BuildingClusterRecovery": {
         "before": {},
         "after": {},
         "pretty_name": "Building Cluster Recovery",
-        "tags": [
-            "Building"
-        ]
+        "tags": ["Building"]
     },
     "GasFacilityDamage": {
         "before": {},
         "after": {},
         "pretty_name": "Gas Facility Damage",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "MultiObjectiveRetrofitOptimization": {
         "before": {},
         "after": {},
         "pretty_name": "Multi-Objective Retrofit Optimization",
-        "tags": [
-            "Decision Support"
-        ]
+        "tags": ["Decision Support"]
     },
     "TornadoEpnDamage": {
         "before": {},
         "after": {},
         "pretty_name": "Tornado Electric Power Network Damage",
-        "tags": [
-            "Lifeline"
-        ]
+        "tags": ["Lifeline"]
     },
     "TrafficFlowRecovery": {
         "before": {},
         "after": {},
         "pretty_name": "Traffic Flow Recovery",
-        "tags": [
-            "Decision Support",
-            "Lifeline"
-        ]
+        "tags": ["Decision Support", "Lifeline"]
     }
 }

@@ -2,21 +2,24 @@ import React, { useCallback } from "react";
 import {
     Background,
     Controls,
-    MiniMap,
     ReactFlow,
     BackgroundVariant,
     useReactFlow,
-    ReactFlowProvider
+    ReactFlowProvider,
+    Panel
 } from "@xyflow/react";
-
+import { useNavigate } from "react-router-dom";
+import { Stack, Button } from "@mui/joy";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import { useShallow } from "zustand/react/shallow";
-import useStore, { type ReactFlowAppState } from "./reactFlowStore";
+import { useSummaryStore, type SummaryReactFlowStoreState } from "./reactFlowStore";
 
-import { nodeTypes, type AppNode } from "./nodes";
+import { summaryNodeTypes, type SummaryNode } from "./nodes";
 import { edgeTypes } from "./edges";
 import { getLayoutedElements } from "./layout";
 
-const selector = (state: ReactFlowAppState) => ({
+const selector = (state: SummaryReactFlowStoreState) => ({
     nodes: state.nodes,
     edges: state.edges,
     onNodesChange: state.onNodesChange,
@@ -25,14 +28,21 @@ const selector = (state: ReactFlowAppState) => ({
     setEdges: state.setEdges
 });
 
-const LayoutedWorkflow = () => {
+const LayoutedWorkflow = ({
+    isFinalized,
+    wfId
+}: {
+    isFinalized: boolean | undefined;
+    wfId: string | undefined | null;
+}) => {
     const { fitView } = useReactFlow();
-    const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges } = useStore(useShallow(selector));
+    const navigate = useNavigate();
+    const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges } = useSummaryStore(useShallow(selector));
     const [layoutApplied, setLayoutApplied] = React.useState(false); // State to check if layout has been applied
     const [nodesReady, setNodesReady] = React.useState(false);
 
     // Function to check if all nodes have non-zero dimensions
-    const checkNodesReady = (nodes: AppNode[]) => {
+    const checkNodesReady = (nodes: SummaryNode[]) => {
         return nodes.every(
             (node) =>
                 node.measured?.width !== undefined &&
@@ -91,11 +101,22 @@ const LayoutedWorkflow = () => {
         return () => clearTimeout(timer);
     }, [nodes, layoutApplied]);
 
+    const handleClick = () => {
+        if (isFinalized !== undefined && wfId !== undefined && wfId !== null) {
+            if (isFinalized) {
+                // TODO: Create new execution modal popup and redirect.
+                navigate(`/execution/${wfId}`);
+            } else {
+                navigate(`/workflow-editor/${wfId}`);
+            }
+        }
+    };
+
     return (
         <div style={{ flex: 1 }}>
             <ReactFlow
                 nodes={nodes}
-                nodeTypes={nodeTypes}
+                nodeTypes={summaryNodeTypes}
                 edges={edges}
                 edgeTypes={edgeTypes}
                 onNodesChange={onNodesChange}
@@ -103,19 +124,46 @@ const LayoutedWorkflow = () => {
                 nodesDraggable={false}
                 deleteKeyCode={null}
                 fitView
+                attributionPosition="bottom-left"
             >
-                <Background variant={BackgroundVariant.Dots} />
-                <MiniMap />
-                <Controls />
+                <Background variant={BackgroundVariant.Dots} style={{ backgroundColor: "#F8FAFC" }} />
+                <Controls position="top-right" />
+                <Panel position="bottom-right">
+                    <Stack direction="row" spacing={2}>
+                        <Button
+                            variant="outlined"
+                            sx={{ borderColor: "primary.subtle", color: "primary.subtle", backgroundColor: "white" }}
+                            size="md"
+                            endDecorator={<ContentCopyRoundedIcon />}
+                        >
+                            Duplicate the workflow
+                        </Button>
+                        <Button
+                            variant="solid"
+                            sx={{ backgroundColor: "primary.main" }}
+                            size="md"
+                            onClick={handleClick}
+                            endDecorator={<ArrowForwardRoundedIcon />}
+                        >
+                            {isFinalized ? "Create New Execution" : "Edit Workflow"}
+                        </Button>
+                    </Stack>
+                </Panel>
             </ReactFlow>
         </div>
     );
 };
 
-export default function WorkflowSummary() {
+export default function WorkflowSummary({
+    isFinalized,
+    wfId
+}: {
+    isFinalized: boolean | undefined;
+    wfId: string | undefined | null;
+}) {
     return (
         <ReactFlowProvider>
-            <LayoutedWorkflow />
+            <LayoutedWorkflow isFinalized={isFinalized} wfId={wfId} />
         </ReactFlowProvider>
     );
 }
