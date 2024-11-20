@@ -6,6 +6,7 @@ config.slackInvitationLink = "https://bit.ly/in-core";
 config.tosURL = `${hostname}/doc/incore/termsofservice.html`;
 config.hostname = hostname;
 config.projectApi = `${hostname}/project/api/projects`;
+config.datawolfApi = `${hostname}/datawolf`;
 config.keycloakConfig = {
     authority: `${hostname}/auth/realms/In-core`,
     client_id: "react-auth"

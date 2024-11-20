@@ -24,6 +24,7 @@ import {
     getDatawolfUser
 } from "@app/reducer/workflowSlice";
 import { createWorkflowFileFromNodesAndEdgesV2 } from "@app/components/Workflow/workflowUtils";
+import InvalidWorkflowFilePage from "@app/components/InvalidWorkflowFilePage";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -45,6 +46,7 @@ const WorkflowEditor = (): JSX.Element => {
     const workflowLoading = useAppSelector((state) => state.workflow.workflowLoading);
     const workflowError = useAppSelector((state) => state.workflow.workflowError);
     const createdWorkflowLoading = useAppSelector((state) => state.workflow.createdWorkflowLoading);
+    const workflowInvalid = useAppSelector((state) => state.workflow.workflowInvalid);
     const createdWorkflowError = useAppSelector((state) => state.workflow.createdWorkflowError);
     const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
     const datawolfTools = useAppSelector((state) => state.workflow.datawolfTools);
@@ -147,15 +149,23 @@ const WorkflowEditor = (): JSX.Element => {
             appDispatch(saveWorkflow({ workflowID: workflowID, workflow: newWorkflowFile }));
         } // else dispatch save workflow error
     };
-
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "94vh" }}>
             {workflowLoading || createdWorkflowLoading ? (
                 <Loading />
             ) : workflowError || createdWorkflowError ? (
-                <Typography level="h4" color="danger">
-                    {workflowError || createdWorkflowError}
-                </Typography>
+                workflowInvalid ? (
+                    <InvalidWorkflowFilePage
+                        workflowError={workflowError}
+                        createdWorkflowError={createdWorkflowError}
+                        currentWorkflowTitle={currentWorkflow?.title}
+                        handleBackClick={handleBackClick}
+                    />
+                ) : (
+                    <Typography level="h4" color="danger">
+                        {workflowError || createdWorkflowError}
+                    </Typography>
+                )
             ) : (
                 <>
                     <Box sx={{ padding: "20px", height: "8vh", borderBottom: "solid 1px black" }}>

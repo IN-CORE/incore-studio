@@ -253,6 +253,7 @@ interface WorkflowState {
     currentWorkflow: DatawolfWorkflowFile | null;
     createdWorkflowLoading: boolean;
     createdWorkflowError: string | null;
+    workflowInvalid: boolean;
     workflowLoading: boolean;
     workflowError: string | null;
     saveWorkflowLoading: boolean;
