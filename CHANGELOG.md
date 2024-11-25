@@ -18,3 +18,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Move dependency_graph.json to public and fetch it so it can be overwritten by helm. [#33](https://github.com/IN-CORE/incore-studio/issues/33)
 - Add analysis configuration panel. [#31](https://github.com/IN-CORE/incore-studio/issues/31)
 - Error Handling for missing dependency graph or Valid tools in workflow. [#50](https://github.com/IN-CORE/incore-studio/issues/50)
+- Create visualization components [#18](https://github.com/IN-CORE/incore-studio/issues/18)
