@@ -12,4 +12,20 @@ config.keycloakConfig = {
     client_id: "react-auth"
 };
 
+// TODO replace this with dynamically pulling from GeoServer
+config.sytles = [
+    "incore:earthquake-pga-g",
+    "incore:tornado",
+    "incore:hurricane-wave-direction",
+    "incore:hurricane-wave-height",
+    "incore:hurricane-wave-period",
+    "incore:hurricane-wind",
+    "incore:hurricane-inundation-depth",
+    "incore:hurricane-inundation-duration",
+    "incore:hurricane-surge-level",
+    "incore:hurricane-water-velocity",
+    "incore:heatmap",
+    "incore:failure_probability"
+];
+
 export default config;

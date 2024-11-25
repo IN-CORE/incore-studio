@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Container } from "@mui/joy";
 import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import { deleteProjectVisualizations, getProject, getProjectVisualizations } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
@@ -13,12 +13,15 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
+import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
+import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
+import { useAppDispatch } from "@app/store/hooks";
 
 import VisualizationIcon from "@mui/icons-material/Map";
 
 const VisualizationPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
-    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
@@ -35,19 +38,23 @@ const VisualizationPage = (): JSX.Element => {
 
     useEffect(() => {
         if (id) {
-            // @ts-ignore
-            dispatch(getProject(id));
+            appDispatch(getProject(id));
         }
     }, [id]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectVisualizations({ projectId: id, skip: (visualizationPageNumber - 1) * 10, limit: 10 }));
+        if (id) {
+            appDispatch(
+                getProjectVisualizations({ projectId: id, skip: (visualizationPageNumber - 1) * 10, limit: 10 })
+            );
+        }
     }, [id, visualizationPageNumber, deletedVisualizationIds]);
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSearchClick = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterClick = () => {};
-    const onCreateClick = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSortClick = () => {};
 
     // Table view vs Card view
@@ -59,9 +66,24 @@ const VisualizationPage = (): JSX.Element => {
     const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
 
     // delete function
-    const deleteVisualizationFunc = (projectId: string, visualizationIds: string[]) => {
-        // @ts-ignore
-        dispatch(deleteProjectVisualizations({ projectId, visualizationIds }));
+    const deleteVisualizationFunc = (projectId: string, visualization: Visualization) => {
+        appDispatch(deleteProjectVisualizations({ projectId, visualizationIds: [visualization.id] }));
+    };
+
+    // create visualization
+    const [openCreateVisDialog, setOpenCreateVisDialog] = useState(false);
+    const handleCloseCreateVisDialog = () => {
+        setOpenCreateVisDialog(false);
+    };
+    const onCreateClick = () => {
+        setOpenCreateVisDialog(true);
+    };
+
+    // View visualization
+    const [selectedVisualization, setSelectedVisualization] = useState<Visualization>();
+    const [openVisualziationView, setOpenVisualziationView] = useState(true);
+    const handleCloseVisualziationView = () => {
+        setOpenVisualziationView(false);
     };
 
     return (
@@ -94,12 +116,28 @@ const VisualizationPage = (): JSX.Element => {
                                     isTableView={isTableView}
                                     createLabel="Create New Visualization"
                                 />
+                                <CreateVisualizationDialog
+                                    projectId={project.id}
+                                    open={openCreateVisDialog}
+                                    onClose={handleCloseCreateVisDialog}
+                                />
+                                {selectedVisualization && (
+                                    <VisualizationView
+                                        visualization={selectedVisualization}
+                                        open={openVisualziationView}
+                                        onClose={handleCloseVisualziationView}
+                                    />
+                                )}
                                 {isTableView ? (
                                     <ResourceTable
                                         columns={["name", "description", "date"]}
                                         data={projectVisualizations}
                                         projectId={project.id}
                                         deleteFunc={deleteVisualizationFunc}
+                                        viewFunc={(visualization: Visualization) => {
+                                            setSelectedVisualization(visualization);
+                                            setOpenVisualziationView(true);
+                                        }}
                                     />
                                 ) : (
                                     <ResourceCards
@@ -107,6 +145,10 @@ const VisualizationPage = (): JSX.Element => {
                                         cardPerRow={4}
                                         projectId={project.id}
                                         deleteFunc={deleteVisualizationFunc}
+                                        viewFunc={(visualization: Visualization) => {
+                                            setSelectedVisualization(visualization);
+                                            setOpenVisualziationView(true);
+                                        }}
                                     />
                                 )}
                                 <Box mt={4} display="flex" justifyContent="center">

@@ -59,9 +59,9 @@ const WorkflowPage = (): JSX.Element => {
     const projectWorkflows = useSelector((state: RootState) => state.project.projectWorkflows);
 
     // delete function
-    const deleteWorkflowFunc = (projectId: string, workflowIds: string[]) => {
+    const deleteWorkflowFunc = (projectId: string, workflow: Workflow) => {
         // @ts-ignore
-        dispatch(deleteProjectWorkflows({ projectId, workflowIds }));
+        dispatch(deleteProjectWorkflows({ projectId, workflowIds: [workflow.id] }));
     };
 
     return (

@@ -52,9 +52,9 @@ const DFR3MappingPage = (): JSX.Element => {
     const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
 
     // delete function
-    const deleteDFR3MappingFunc = (projectId: string, dfr3mappingIds: string[]) => {
+    const deleteDFR3MappingFunc = (projectId: string, dfr3mapping: DFR3Mapping) => {
         // @ts-ignore
-        dispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds }));
+        dispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds: [dfr3mapping.id] }));
     };
 
     return (
