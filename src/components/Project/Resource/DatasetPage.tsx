@@ -11,7 +11,6 @@ import {
     addLayerToVisualization,
     getProjectVisualizations
 } from "@app/reducer/projectSlice";
-import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -55,9 +54,13 @@ const DatasetPage = (): JSX.Element => {
         }
     }, [id, datasetPageNumber, deletedDatasetIds]);
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSearchClick = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterClick = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onCreateClick = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSortClick = () => {};
 
     // Table view vs Card view
@@ -80,7 +83,7 @@ const DatasetPage = (): JSX.Element => {
         dataset: Dataset,
         styleName?: string
     ) => {
-        if (dataset.format == "shapefile") {
+        if (dataset.format === "shapefile") {
             const layers = [
                 {
                     workspace: "incore",
@@ -97,70 +100,67 @@ const DatasetPage = (): JSX.Element => {
     };
 
     return (
-        <>
-            <Navbar />
-            <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
-                <Box sx={{ flexShrink: 0 }} mt={5}>
-                    {!project ? (
-                        <Typography>Loading...</Typography>
-                    ) : (
-                        <>
-                            {/* Header Section */}
-                            <ProjectBreadcrumb
-                                project={{ href: `/project/${project.id}`, label: project.name }}
-                                resource="Datasets"
-                            />
-                            <ProjectHeader project={project} />
-                            <Divider />
-                            <Grid container spacing={5} mt={3} ml={0}>
-                                <Grid sm={2}>
-                                    <ProjectSidebar id={project.id} />
-                                </Grid>
-                                <Grid sm={10}>
-                                    <ResourceFilterBar
-                                        title="Datasets"
-                                        icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
-                                        onSearchClick={onSearchClick}
-                                        onFilterClick={onFilterClick}
-                                        onCreateClick={onCreateClick}
-                                        onSortClick={onSortClick}
-                                        onViewChangeClick={onViewChangeClick}
-                                        isTableView={isTableView}
-                                        createLabel="Add from Service"
-                                    />
-                                    {isTableView ? (
-                                        <ResourceTable
-                                            columns={["title", "description", "date", "owner"]}
-                                            data={projectDatasets}
-                                            projectId={project.id}
-                                            deleteFunc={deleteDatasetFunc}
-                                            addVisualizationFunc={addDatasetVisualizationFunc}
-                                        />
-                                    ) : (
-                                        <ResourceCards
-                                            resources={projectDatasets}
-                                            cardPerRow={4}
-                                            projectId={project.id}
-                                            deleteFunc={deleteDatasetFunc}
-                                            addVisualizationFunc={addDatasetVisualizationFunc}
-                                        />
-                                    )}
-                                    <Box mt={4} display="flex" justifyContent="center">
-                                        <Pagination
-                                            pageNumber={datasetPageNumber}
-                                            data={projectDatasets}
-                                            dataPerPage={10}
-                                            previous={datasetPreviousPage}
-                                            next={datasetNextPage}
-                                        />
-                                    </Box>
-                                </Grid>
+        <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+            <Box sx={{ flexShrink: 0 }} mt={5}>
+                {!project ? (
+                    <Typography>Loading...</Typography>
+                ) : (
+                    <>
+                        {/* Header Section */}
+                        <ProjectBreadcrumb
+                            project={{ href: `/project/${project.id}`, label: project.name }}
+                            resource="Datasets"
+                        />
+                        <ProjectHeader project={project} />
+                        <Divider />
+                        <Grid container spacing={5} mt={3} ml={0}>
+                            <Grid sm={2}>
+                                <ProjectSidebar id={project.id} />
                             </Grid>
-                        </>
-                    )}
-                </Box>
-            </Container>
-        </>
+                            <Grid sm={10}>
+                                <ResourceFilterBar
+                                    title="Datasets"
+                                    icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
+                                    onSearchClick={onSearchClick}
+                                    onFilterClick={onFilterClick}
+                                    onCreateClick={onCreateClick}
+                                    onSortClick={onSortClick}
+                                    onViewChangeClick={onViewChangeClick}
+                                    isTableView={isTableView}
+                                    createLabel="Add from Service"
+                                />
+                                {isTableView ? (
+                                    <ResourceTable
+                                        columns={["title", "description", "date", "owner"]}
+                                        data={projectDatasets}
+                                        projectId={project.id}
+                                        deleteFunc={deleteDatasetFunc}
+                                        addVisualizationFunc={addDatasetVisualizationFunc}
+                                    />
+                                ) : (
+                                    <ResourceCards
+                                        resources={projectDatasets}
+                                        cardPerRow={4}
+                                        projectId={project.id}
+                                        deleteFunc={deleteDatasetFunc}
+                                        addVisualizationFunc={addDatasetVisualizationFunc}
+                                    />
+                                )}
+                                <Box mt={4} display="flex" justifyContent="center">
+                                    <Pagination
+                                        pageNumber={datasetPageNumber}
+                                        data={projectDatasets}
+                                        dataPerPage={10}
+                                        previous={datasetPreviousPage}
+                                        next={datasetNextPage}
+                                    />
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </>
+                )}
+            </Box>
+        </Container>
     );
 };
 
