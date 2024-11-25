@@ -17,7 +17,6 @@ import {
     getProjectVisualizations,
     getProjectWorkflows
 } from "@app/reducer/projectSlice";
-import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -143,142 +142,139 @@ const ProjectPage = (): JSX.Element => {
     };
 
     return (
-        <>
-            <Navbar />
-            <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
-                <Box sx={{ flexShrink: 0 }} mt={5}>
-                    {!project ? (
-                        <Typography>Loading...</Typography>
-                    ) : (
-                        <>
-                            {/* Header Section */}
-                            <ProjectBreadcrumb project={{ href: `/project/${project.id}`, label: project.name }} />
-                            <ProjectHeader project={project} />
-                            <Divider />
-                            <Grid container spacing={5} mt={3} ml={0}>
-                                <Grid sm={2}>
-                                    <ProjectSidebar id={project.id} />
-                                </Grid>
-                                {/* Left Column: Workflow, Hazard and Visualization Cards */}
-                                <Grid sm={5}>
-                                    <Box mb={1}>
-                                        <ResourceFilterBar
-                                            title="Workflows"
-                                            icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
-                                            createLabel="Create New Workflow"
-                                        />
-                                        <ResourceCards
-                                            resources={projectWorkflows}
-                                            projectId={project.id}
-                                            deleteFunc={deleteWorkflowFunc}
-                                        />
-                                        <Box mt={4} display="flex" justifyContent="center">
-                                            <Pagination
-                                                pageNumber={wfPageNumber}
-                                                data={projectWorkflows}
-                                                dataPerPage={2}
-                                                previous={wfPreviousPage}
-                                                next={wfNextPage}
-                                            />
-                                        </Box>
-                                    </Box>
-                                    <Box mb={1}>
-                                        <ResourceFilterBar
-                                            title="Hazards"
-                                            icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
-                                            createLabel="Add from Service"
-                                        />
-                                        <ResourceCards
-                                            resources={projectHazards}
-                                            projectId={project.id}
-                                            deleteFunc={deleteHazardFunc}
-                                        />
-                                        <Box mt={4} display="flex" justifyContent="center">
-                                            <Pagination
-                                                pageNumber={hazardPageNumber}
-                                                data={projectHazards}
-                                                dataPerPage={2}
-                                                previous={hazardPreviousPage}
-                                                next={hazardNextPage}
-                                            />
-                                        </Box>
-                                    </Box>
-                                    <Box>
-                                        <ResourceFilterBar
-                                            title="Visualization"
-                                            icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
-                                            createLabel="Create New Visualization"
-                                        />
-                                        <ResourceCards
-                                            resources={projectVisualizations}
-                                            projectId={project.id}
-                                            deleteFunc={deleteVisualizationFunc}
-                                        />
-                                        <Box mt={4} display="flex" justifyContent="center">
-                                            <Pagination
-                                                pageNumber={visPageNumber}
-                                                data={projectVisualizations}
-                                                dataPerPage={2}
-                                                previous={visPreviousPage}
-                                                next={visNextPage}
-                                            />
-                                        </Box>
-                                    </Box>
-                                </Grid>
-                                {/* Right Column: Dataset, and DFR3Mapping Tables */}
-                                <Grid sm={5}>
-                                    <Box mb={1}>
-                                        <ResourceFilterBar
-                                            title="Datasets"
-                                            icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
-                                            createLabel="Add from Service"
-                                        />
-                                        <ResourceTable
-                                            columns={["title", "description", "date", "owner"]}
-                                            data={projectDatasets}
-                                            projectId={project.id}
-                                            deleteFunc={deleteDatasetFunc}
-                                        />
-                                        <Box mt={4} display="flex" justifyContent="center">
-                                            <Pagination
-                                                pageNumber={datasetPageNumber}
-                                                data={projectDatasets}
-                                                dataPerPage={5}
-                                                previous={datasetPreviousPage}
-                                                next={datasetNextPage}
-                                            />
-                                        </Box>
-                                    </Box>
-
-                                    <Box>
-                                        <ResourceFilterBar
-                                            title="DFR3 Mappings"
-                                            icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
-                                            createLabel="Add from Service"
-                                        />
-                                        <ResourceTable
-                                            columns={["name", "hazardType", "inventoryType", "mappingType", "owner"]}
-                                            data={projectDFR3Mappings}
-                                            projectId={project.id}
-                                            deleteFunc={deleteDFR3MappingFunc}
-                                        />
-                                        <Box mt={4} display="flex" justifyContent="center">
-                                            <Pagination
-                                                pageNumber={dfr3mappingPageNumber}
-                                                data={projectDFR3Mappings}
-                                                dataPerPage={5}
-                                                previous={dfr3mappingPreviousPage}
-                                                next={dfr3mappingNextPage}
-                                            />
-                                        </Box>
-                                    </Box>
-                                </Grid>
+        <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+            <Box sx={{ flexShrink: 0 }} mt={5}>
+                {!project ? (
+                    <Typography>Loading...</Typography>
+                ) : (
+                    <>
+                        {/* Header Section */}
+                        <ProjectBreadcrumb project={{ href: `/project/${project.id}`, label: project.name }} />
+                        <ProjectHeader project={project} />
+                        <Divider />
+                        <Grid container spacing={5} mt={3} ml={0}>
+                            <Grid sm={2}>
+                                <ProjectSidebar id={project.id} />
                             </Grid>
-                        </>
-                    )}
-                </Box>
-            </Container>
-        </>
+                            {/* Left Column: Workflow, Hazard and Visualization Cards */}
+                            <Grid sm={5}>
+                                <Box mb={1}>
+                                    <ResourceFilterBar
+                                        title="Workflows"
+                                        icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
+                                        createLabel="Create New Workflow"
+                                    />
+                                    <ResourceCards
+                                        resources={projectWorkflows}
+                                        projectId={project.id}
+                                        deleteFunc={deleteWorkflowFunc}
+                                    />
+                                    <Box mt={4} display="flex" justifyContent="center">
+                                        <Pagination
+                                            pageNumber={wfPageNumber}
+                                            data={projectWorkflows}
+                                            dataPerPage={2}
+                                            previous={wfPreviousPage}
+                                            next={wfNextPage}
+                                        />
+                                    </Box>
+                                </Box>
+                                <Box mb={1}>
+                                    <ResourceFilterBar
+                                        title="Hazards"
+                                        icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
+                                        createLabel="Add from Service"
+                                    />
+                                    <ResourceCards
+                                        resources={projectHazards}
+                                        projectId={project.id}
+                                        deleteFunc={deleteHazardFunc}
+                                    />
+                                    <Box mt={4} display="flex" justifyContent="center">
+                                        <Pagination
+                                            pageNumber={hazardPageNumber}
+                                            data={projectHazards}
+                                            dataPerPage={2}
+                                            previous={hazardPreviousPage}
+                                            next={hazardNextPage}
+                                        />
+                                    </Box>
+                                </Box>
+                                <Box>
+                                    <ResourceFilterBar
+                                        title="Visualization"
+                                        icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
+                                        createLabel="Create New Visualization"
+                                    />
+                                    <ResourceCards
+                                        resources={projectVisualizations}
+                                        projectId={project.id}
+                                        deleteFunc={deleteVisualizationFunc}
+                                    />
+                                    <Box mt={4} display="flex" justifyContent="center">
+                                        <Pagination
+                                            pageNumber={visPageNumber}
+                                            data={projectVisualizations}
+                                            dataPerPage={2}
+                                            previous={visPreviousPage}
+                                            next={visNextPage}
+                                        />
+                                    </Box>
+                                </Box>
+                            </Grid>
+                            {/* Right Column: Dataset, and DFR3Mapping Tables */}
+                            <Grid sm={5}>
+                                <Box mb={1}>
+                                    <ResourceFilterBar
+                                        title="Datasets"
+                                        icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
+                                        createLabel="Add from Service"
+                                    />
+                                    <ResourceTable
+                                        columns={["title", "description", "date", "owner"]}
+                                        data={projectDatasets}
+                                        projectId={project.id}
+                                        deleteFunc={deleteDatasetFunc}
+                                    />
+                                    <Box mt={4} display="flex" justifyContent="center">
+                                        <Pagination
+                                            pageNumber={datasetPageNumber}
+                                            data={projectDatasets}
+                                            dataPerPage={5}
+                                            previous={datasetPreviousPage}
+                                            next={datasetNextPage}
+                                        />
+                                    </Box>
+                                </Box>
+
+                                <Box>
+                                    <ResourceFilterBar
+                                        title="DFR3 Mappings"
+                                        icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
+                                        createLabel="Add from Service"
+                                    />
+                                    <ResourceTable
+                                        columns={["name", "hazardType", "inventoryType", "mappingType", "owner"]}
+                                        data={projectDFR3Mappings}
+                                        projectId={project.id}
+                                        deleteFunc={deleteDFR3MappingFunc}
+                                    />
+                                    <Box mt={4} display="flex" justifyContent="center">
+                                        <Pagination
+                                            pageNumber={dfr3mappingPageNumber}
+                                            data={projectDFR3Mappings}
+                                            dataPerPage={5}
+                                            previous={dfr3mappingPreviousPage}
+                                            next={dfr3mappingNextPage}
+                                        />
+                                    </Box>
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </>
+                )}
+            </Box>
+        </Container>
     );
 };
 
