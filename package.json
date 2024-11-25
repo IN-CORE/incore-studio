@@ -94,7 +94,7 @@
     },
     "scripts": {
         "start": "webpack serve --config webpack.dev.js",
-        "start:tst": "export INCORE_REMOTE_HOSTNAME=https://incore-tst.ncsa.illinois.edu && webpack serve --config webpack.dev.js",
+        "start:tst": "export INCORE_REMOTE_HOSTNAME=https://test.in-core.org && webpack serve --config webpack.dev.js",
         "start:dev": "export INCORE_REMOTE_HOSTNAME=https://incore-dev.ncsa.illinois.edu && webpack serve --config webpack.dev.js",
         "build": "webpack --config ./webpack.prod.js",
         "eject": "react-scripts eject",
