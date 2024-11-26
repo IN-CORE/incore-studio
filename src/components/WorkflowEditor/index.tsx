@@ -150,7 +150,7 @@ const WorkflowEditor = (): JSX.Element => {
         } // else dispatch save workflow error
     };
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", height: "94vh" }}>
             {workflowLoading || createdWorkflowLoading ? (
                 <Loading />
             ) : workflowError || createdWorkflowError ? (

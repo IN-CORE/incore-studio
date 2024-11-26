@@ -3,13 +3,16 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown, Link } from "@mui/joy";
 import { formatHeaderName, parseDateTime } from "@app/utils";
 import { IncoreDialog } from "@app/components/IncoreDialog";
+import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 
 interface TableProps {
-    projectId?: string;
+    projectId: string;
     columns: string[];
     data: Dataset[] | Hazard[] | Visualization[] | Workflow[] | DFR3Mapping[];
     deleteFunc?: any;
     resourceType?: string;
+    viewFunc?: any;
+    addVisualizationFunc?: any;
 }
 
 // Type narrowing function
@@ -21,15 +24,25 @@ const hasDate = (item: any): item is Workflow | Dataset => {
     return item.date;
 };
 
-export const ResourceTable = ({ projectId, columns, data, deleteFunc, resourceType }: TableProps): JSX.Element => {
-    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+export const ResourceTable = ({
+    projectId,
+    columns,
+    data,
+    deleteFunc,
+    viewFunc,
+    addVisualizationFunc,
+    resourceType
+}: TableProps): JSX.Element => {
+    const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | DFR3Mapping | null>(
+        null
+    );
 
-    const handleOpenMenu = (id: string) => {
-        setSelectedItemId(id);
+    const handleOpenMenu = (item: Hazard | Visualization | Dataset | Workflow | DFR3Mapping) => {
+        setSelectedItem(item);
     };
 
     const handleCloseMenu = () => {
-        setSelectedItemId(null);
+        setSelectedItem(null);
     };
 
     // delete
@@ -38,42 +51,55 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc, resourceTy
         setOpenDeleteDialog(false);
     };
     const handleDelete = () => {
-        if (selectedItemId && projectId) {
-            deleteFunc(projectId, [selectedItemId]);
-            setSelectedItemId(null);
+        if (selectedItem && projectId) {
+            deleteFunc(projectId, selectedItem);
+            setSelectedItem(null);
         }
         setOpenDeleteDialog(false);
     };
 
-    const renderRow = (item: Dataset | Hazard | Visualization | Workflow | DFR3Mapping) => {
+    // add to visualization
+    const [openVisDialog, setOpenVisDialog] = useState(false);
+    const handleCloseVisDialog = () => {
+        setOpenVisDialog(false);
+    };
+    const handleAddVisualization = (visualizationId: string, styleName?: string) => {
+        if (selectedItem && projectId) {
+            addVisualizationFunc(projectId, visualizationId, selectedItem, styleName);
+            setSelectedItem(null);
+        }
+        setOpenVisDialog(false);
+    };
+
+    const renderRow = (resource: Dataset | Hazard | Visualization | Workflow | DFR3Mapping) => {
         return (
             <>
                 {columns.map((column) => {
-                    if (column === "date" && hasDate(item)) {
+                    if (column === "date" && hasDate(resource)) {
                         return (
-                            <td key={`${item.id.toString()}-${column}`}>
-                                {item.date ? parseDateTime(item.date) : "No date provided"}
+                            <td key={`${resource.id.toString()}-${column}`}>
+                                {resource.date ? parseDateTime(resource.date) : "No date provided"}
                             </td>
                         );
                     }
-                    if (column === "isFinalized" && "isFinalized" in item) {
+                    if (column === "isFinalized" && "isFinalized" in resource) {
                         return (
-                            <td key={`${item.id.toString()}-${column}`}>
-                                {item.isFinalized ? "Finalized" : "Pending"}
+                            <td key={`${resource.id.toString()}-${column}`}>
+                                {resource.isFinalized ? "Finalized" : "Pending"}
                             </td>
                         );
                     }
-                    if (column === "creator" && hasCreator(item)) {
+                    if (column === "creator" && hasCreator(resource)) {
                         return (
-                            <td key={`${item.id.toString()}-${column}`}>
-                                {`${item.creator.firstName} ${item.creator.lastName}`}
+                            <td key={`${resource.id.toString()}-${column}`}>
+                                {`${resource.creator.firstName} ${resource.creator.lastName}`}
                             </td>
                         );
                     }
 
                     return (
-                        <td key={`${item.id.toString()}-${column}`}>
-                            {(item as any)[column] || `No ${column} provided`}
+                        <td key={`${resource.id.toString()}-${column}`}>
+                            {(resource as any)[column] || `No ${column} provided`}
                         </td>
                     );
                 })}
@@ -82,7 +108,7 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc, resourceTy
                         <MenuButton
                             slots={{ root: IconButton }}
                             slotProps={{ root: { variant: "plain", color: "neutral" } }}
-                            onClick={() => handleOpenMenu(item.id)}
+                            onClick={() => handleOpenMenu(resource)}
                         >
                             <MoreVertIcon />
                         </MenuButton>
@@ -92,10 +118,28 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc, resourceTy
                                     <Link
                                         textColor="primary.main"
                                         underline="none"
-                                        href={`/project/${projectId}/workflows/${item.id}`}
+                                        href={`/project/${projectId}/workflows/${resource.id}`}
                                     >
                                         Open
                                     </Link>
+                                </MenuItem>
+                            )}
+                            {addVisualizationFunc && (
+                                <MenuItem
+                                    onClick={() => {
+                                        setOpenVisDialog(true);
+                                    }}
+                                >
+                                    Add to Visualization
+                                </MenuItem>
+                            )}
+                            {viewFunc && (
+                                <MenuItem
+                                    onClick={() => {
+                                        viewFunc(resource);
+                                    }}
+                                >
+                                    View
                                 </MenuItem>
                             )}
                             <MenuItem
@@ -107,6 +151,12 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc, resourceTy
                             </MenuItem>
                         </Menu>
                     </Dropdown>
+                    <VisualizationDialog
+                        projectId={projectId}
+                        open={openVisDialog}
+                        onClose={handleCloseVisDialog}
+                        onAddVisualization={handleAddVisualization}
+                    />
                     <IncoreDialog
                         open={openDeleteDialog}
                         onClose={handleCloseDialog}
@@ -133,8 +183,8 @@ export const ResourceTable = ({ projectId, columns, data, deleteFunc, resourceTy
                 </tr>
             </thead>
             <tbody>
-                {data.map((item) => (
-                    <tr key={item.id}>{renderRow(item)}</tr>
+                {data.map((resource) => (
+                    <tr key={resource.id}>{renderRow(resource)}</tr>
                 ))}
             </tbody>
         </Table>

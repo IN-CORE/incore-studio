@@ -20,6 +20,7 @@ import { WorkflowThumbnail } from "@app/components/Project/Thumbnails/WorkflowTh
 import { DefaultThumbnail } from "@app/components/Project/Thumbnails/DefaultThumbnail";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IncoreDialog } from "@app/components/IncoreDialog";
+import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 
 function isHazard(resource: any): resource is Hazard {
     return "hazardDatasets" in resource;
@@ -51,16 +52,17 @@ export const ResourceCards: React.FC<{
     resources: Hazard[] | Visualization[] | Dataset[] | Workflow[];
     cardPerRow?: number;
     deleteFunc?: any;
-    projectId?: string;
-}> = ({ resources, cardPerRow, deleteFunc, projectId }) => {
-    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-
-    const handleOpenMenu = (id: string) => {
-        setSelectedItemId(id);
+    addVisualizationFunc?: any;
+    viewFunc?: any;
+    projectId: string;
+}> = ({ resources, cardPerRow, deleteFunc, addVisualizationFunc, projectId, viewFunc }) => {
+    const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | null>(null);
+    const handleOpenMenu = (item: Hazard | Visualization | Dataset | Workflow) => {
+        setSelectedItem(item);
     };
 
     const handleCloseMenu = () => {
-        setSelectedItemId(null);
+        setSelectedItem(null);
     };
 
     // delete
@@ -69,11 +71,24 @@ export const ResourceCards: React.FC<{
         setOpenDeleteDialog(false);
     };
     const handleDelete = () => {
-        if (selectedItemId && projectId) {
-            deleteFunc(projectId, [selectedItemId]);
-            setSelectedItemId(null);
+        if (setSelectedItem && projectId) {
+            deleteFunc(projectId, selectedItem);
+            setSelectedItem(null);
         }
         setOpenDeleteDialog(false);
+    };
+
+    // add to visualization
+    const [openVisDialog, setOpenVisDialog] = useState(false);
+    const handleCloseVisDialog = () => {
+        setOpenVisDialog(false);
+    };
+    const handleAddVisualization = (visualizationId: string, styleName?: string) => {
+        if (selectedItem && projectId) {
+            addVisualizationFunc(projectId, visualizationId, selectedItem, styleName);
+            setSelectedItem(null);
+        }
+        setOpenVisDialog(false);
     };
 
     return (
@@ -107,7 +122,7 @@ export const ResourceCards: React.FC<{
                                         color: "neutral"
                                     }
                                 }}
-                                onClick={() => handleOpenMenu(resource.id)}
+                                onClick={() => handleOpenMenu(resource)}
                             >
                                 <MoreVertIcon />
                             </MenuButton>
@@ -123,6 +138,24 @@ export const ResourceCards: React.FC<{
                                         </Link>
                                     </MenuItem>
                                 )}
+                                {addVisualizationFunc && (
+                                    <MenuItem
+                                        onClick={() => {
+                                            setOpenVisDialog(true);
+                                        }}
+                                    >
+                                        Add to Visualization
+                                    </MenuItem>
+                                )}
+                                {viewFunc && (
+                                    <MenuItem
+                                        onClick={() => {
+                                            viewFunc(resource);
+                                        }}
+                                    >
+                                        View
+                                    </MenuItem>
+                                )}
                                 <MenuItem
                                     onClick={() => {
                                         setOpenDeleteDialog(true);
@@ -132,6 +165,12 @@ export const ResourceCards: React.FC<{
                                 </MenuItem>
                             </Menu>
                         </Dropdown>
+                        <VisualizationDialog
+                            projectId={projectId}
+                            open={openVisDialog}
+                            onClose={handleCloseVisDialog}
+                            onAddVisualization={handleAddVisualization}
+                        />
                         <IncoreDialog
                             open={openDeleteDialog}
                             onClose={handleCloseDialog}

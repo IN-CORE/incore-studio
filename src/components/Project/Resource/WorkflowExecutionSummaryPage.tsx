@@ -5,7 +5,6 @@ import { useShallow } from "zustand/react/shallow";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getProject } from "@app/reducer/projectSlice";
 import { getWorkflow, raiseWorkflowError } from "@app/reducer/workflowSlice";
-import Navbar from "@app/components/Navigation/Navbar";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import withLoading from "@app/components/hocs/withLoading";
@@ -38,29 +37,26 @@ const WorkflowExecutionSummaryComponent: React.FC<{
     }, [reactFlowWorkflow]);
 
     return (
-        <>
-            <Navbar />
-            <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
-                <Box sx={{ flexShrink: 0 }} mt={5}>
-                    {/* Header Section */}
-                    <ProjectBreadcrumb
-                        project={{ href: `/project/${projectId}`, label: projectName }}
-                        resource="Workflows"
-                        resourceName={currentWorkflow?.title}
-                    />
-                    <Box sx={{ display: "flex", flexGrow: 1, height: "500px", width: "100%" }}>
-                        <WorkflowSummary isFinalized={isFinalized} wfId={currentWorkflow?.id} />
-                    </Box>
+        <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+            <Box sx={{ flexShrink: 0 }} mt={5}>
+                {/* Header Section */}
+                <ProjectBreadcrumb
+                    project={{ href: `/project/${projectId}`, label: projectName }}
+                    resource="Workflows"
+                    resourceName={currentWorkflow?.title}
+                />
+                <Box sx={{ display: "flex", flexGrow: 1, height: "500px", width: "100%" }}>
+                    <WorkflowSummary isFinalized={isFinalized} wfId={currentWorkflow?.id} />
                 </Box>
-                <Box mt={5}>
-                    <Typography level="h3" textColor="primary.main" fontWeight="lg" mb={2}>
-                        Executions
-                    </Typography>
-                    <Divider />
-                    <ExecutionCards wfId={currentWorkflow?.id} />
-                </Box>
-            </Container>
-        </>
+            </Box>
+            <Box mt={5}>
+                <Typography level="h3" textColor="primary.main" fontWeight="lg" mb={2}>
+                    Executions
+                </Typography>
+                <Divider />
+                <ExecutionCards wfId={currentWorkflow?.id} />
+            </Box>
+        </Container>
     );
 };
 

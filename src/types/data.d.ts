@@ -241,14 +241,30 @@ interface HazardDataset {
     threshold: number | null;
 }
 
+interface IncoreLayer {
+    workspace: string;
+    layerId: string;
+    styleName?: string;
+}
+
 interface Visualization {
     id: string;
     type: string;
     name: string;
-    description: string;
-    date: string;
+    description?: string;
+    date?: string;
+    boundingBox?: [number, number, number, number];
+    layers?: IncoreLayer[];
+    vegaJson?: string;
+    sourceDatasetIds?: string[];
+}
+
+interface VisualizationInput {
+    type: string;
+    name: string;
+    description?: string;
     boundingBox?: number[];
-    layers?: Layer[];
+    layers?: IncoreLayer[];
     vegaJson?: string;
     sourceDatasetIds?: string[];
 }

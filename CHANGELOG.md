@@ -19,3 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add analysis configuration panel. [#31](https://github.com/IN-CORE/incore-studio/issues/31)
 - Workflow Execution Summary page. [#16](https://github.com/IN-CORE/incore-studio/issues/16)
 - Error Handling for missing dependency graph or Valid tools in workflow. [#50](https://github.com/IN-CORE/incore-studio/issues/50)
+- Create visualization components [#18](https://github.com/IN-CORE/incore-studio/issues/18)
+
+### Changed
+
+- Navbar file structure. [#37](https://github.com/IN-CORE/incore-studio/issues/37)

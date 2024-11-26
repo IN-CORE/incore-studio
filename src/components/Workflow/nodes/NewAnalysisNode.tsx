@@ -121,16 +121,14 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
             ))}
             {zoom > 1 && (
                 <Box sx={{ display: "flex", alignItems: "center", my: "4px", width: "100%" }}>
-                    <TrendingUpIcon
-                        sx={{ color: hoveredAnalysisID === id || selected ? "white" : "#EF6C00", marginRight: "5px" }}
-                    />
+                    <TrendingUpIcon sx={{ color: "#EF6C00", marginRight: "5px" }} />
                     <Typography
                         level="h4"
                         sx={{
                             fontWeight: 400,
                             fontSize: "16px",
                             lineHeight: "24px",
-                            color: hoveredAnalysisID === id || selected ? "white" : "#EF6C00"
+                            color: "#EF6C00"
                         }}
                     >
                         Analysis Type

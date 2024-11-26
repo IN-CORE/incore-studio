@@ -2,10 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Container } from "@mui/joy";
 import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { deleteProjectHazards, getProject, getProjectHazards } from "@app/reducer/projectSlice";
-import Navbar from "@app/components/Navigation/Navbar";
+import {
+    addLayerToVisualization,
+    deleteProjectHazards,
+    getProject,
+    getProjectHazards,
+    getProjectVisualizations
+} from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -14,12 +19,13 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
+import { useAppDispatch } from "@app/store/hooks";
 
 import HazardIcon from "@mui/icons-material/Storm";
 
 const HazardPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
-    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
@@ -36,19 +42,25 @@ const HazardPage = (): JSX.Element => {
 
     useEffect(() => {
         if (id) {
-            // @ts-ignore
-            dispatch(getProject(id));
+            appDispatch(getProject(id));
         }
     }, [id]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
+        if (id) {
+            appDispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
+            // TODO figure out how to get all visualizations
+            appDispatch(getProjectVisualizations({ projectId: id, skip: 0, limit: 10 }));
+        }
     }, [id, hazardPageNumber, deletedHazardIds]);
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSearchClick = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterClick = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onCreateClick = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSortClick = () => {};
 
     // Table view vs Card view
@@ -60,74 +72,90 @@ const HazardPage = (): JSX.Element => {
     const projectHazards = useSelector((state: RootState) => state.project.projectHazards);
 
     // delete function
-    const deleteHazardFunc = (projectId: string, hazardIds: string[]) => {
-        // @ts-ignore
-        dispatch(deleteProjectHazards({ projectId, hazardIds }));
+    const deleteHazardFunc = (projectId: string, hazard: Hazard) => {
+        appDispatch(deleteProjectHazards({ projectId, hazardIds: [hazard.id] }));
+    };
+
+    // add to visualization function
+    const addHazardVisualizationFunc = (
+        projectId: string,
+        visualizationId: string,
+        hazard: Hazard,
+        styleName?: string
+    ) => {
+        // Create layers array by mapping over each datasetId in hazard.HazardDatasets
+        const layers = hazard.hazardDatasets.map((hazardDataset: HazardDataset) => ({
+            workspace: "incore",
+            layerId: hazardDataset.datasetId,
+            ...(styleName && { styleName }) // Only include styleName if it's provided
+        }));
+
+        // Dispatch the action with the new layers array
+        appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
     };
 
     return (
-        <>
-            <Navbar />
-            <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
-                <Box sx={{ flexShrink: 0 }} mt={5}>
-                    {!project ? (
-                        <Typography>Loading...</Typography>
-                    ) : (
-                        <>
-                            {/* Header Section */}
-                            <ProjectBreadcrumb
-                                project={{ href: `/project/${project.id}`, label: project.name }}
-                                resource="Hazards"
-                            />
-                            <ProjectHeader project={project} />
-                            <Divider />
-                            <Grid container spacing={5} mt={3} ml={0}>
-                                <Grid sm={2}>
-                                    <ProjectSidebar id={project.id} />
-                                </Grid>
-                                <Grid sm={10}>
-                                    <ResourceFilterBar
-                                        title="Hazards"
-                                        icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
-                                        onSearchClick={onSearchClick}
-                                        onFilterClick={onFilterClick}
-                                        onCreateClick={onCreateClick}
-                                        onSortClick={onSortClick}
-                                        onViewChangeClick={onViewChangeClick}
-                                        isTableView={isTableView}
-                                        createLabel="Add from Service"
-                                    />
-                                    {isTableView ? (
-                                        <ResourceTable
-                                            columns={["name", "description", "date", "creator"]}
-                                            data={projectHazards}
-                                            projectId={project.id}
-                                            deleteFunc={deleteHazardFunc}
-                                        />
-                                    ) : (
-                                        <ResourceCards
-                                            resources={projectHazards}
-                                            cardPerRow={4}
-                                            projectId={project.id}
-                                            deleteFunc={deleteHazardFunc}
-                                        />
-                                    )}
-                                    <Box mt={4} display="flex" justifyContent="center">
-                                        <Pagination
-                                            pageNumber={hazardPageNumber}
-                                            data={projectHazards}
-                                            dataPerPage={10}
-                                            previous={hazardPreviousPage}
-                                            next={hazardNextPage}
-                                        />
-                                    </Box>
-                                </Grid>
+        <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+            <Box sx={{ flexShrink: 0 }} mt={5}>
+                {!project ? (
+                    <Typography>Loading...</Typography>
+                ) : (
+                    <>
+                        {/* Header Section */}
+                        <ProjectBreadcrumb
+                            project={{ href: `/project/${project.id}`, label: project.name }}
+                            resource="Hazards"
+                        />
+                        <ProjectHeader project={project} />
+                        <Divider />
+                        <Grid container spacing={5} mt={3} ml={0}>
+                            <Grid sm={2}>
+                                <ProjectSidebar id={project.id} />
                             </Grid>
-                        </>
-                    )}
-                </Box>
-            </Container>
-        </>
+                            <Grid sm={10}>
+                                <ResourceFilterBar
+                                    title="Hazards"
+                                    icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
+                                    onSearchClick={onSearchClick}
+                                    onFilterClick={onFilterClick}
+                                    onCreateClick={onCreateClick}
+                                    onSortClick={onSortClick}
+                                    onViewChangeClick={onViewChangeClick}
+                                    isTableView={isTableView}
+                                    createLabel="Add from Service"
+                                />
+                                {isTableView ? (
+                                    <ResourceTable
+                                        columns={["name", "description", "date", "creator"]}
+                                        data={projectHazards}
+                                        projectId={project.id}
+                                        deleteFunc={deleteHazardFunc}
+                                        addVisualizationFunc={addHazardVisualizationFunc}
+                                    />
+                                ) : (
+                                    <ResourceCards
+                                        resources={projectHazards}
+                                        cardPerRow={4}
+                                        projectId={project.id}
+                                        deleteFunc={deleteHazardFunc}
+                                        addVisualizationFunc={addHazardVisualizationFunc}
+                                    />
+                                )}
+                                <Box mt={4} display="flex" justifyContent="center">
+                                    <Pagination
+                                        pageNumber={hazardPageNumber}
+                                        data={projectHazards}
+                                        dataPerPage={10}
+                                        previous={hazardPreviousPage}
+                                        next={hazardNextPage}
+                                    />
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </>
+                )}
+            </Box>
+        </Container>
     );
 };
 
