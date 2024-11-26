@@ -241,7 +241,11 @@ const WorkflowEditor = (): JSX.Element => {
                                     </Button>
                                     <Button
                                         variant="outlined"
-                                        sx={{ borderColor: "primary.subtle", color: "primary.subtle" }}
+                                        sx={{
+                                            borderColor: "primary.subtle",
+                                            color: "primary.subtle",
+                                            backgroundColor: "white"
+                                        }}
                                         onClick={handleSaveClick}
                                     >
                                         Save

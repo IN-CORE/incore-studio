@@ -4,6 +4,7 @@ import { AnalysisInputNode } from "./AnalysisInputNode";
 import { AnalysisOutputNode } from "./AnalysisOutputNode";
 import { AnalysisNode } from "./AnalysisNode";
 import { NewAnalysisNode } from "./NewAnalysisNode";
+import { SummaryNode } from "./SummaryNode";
 
 export type AnalysisInputNode = Node<
     {
@@ -47,6 +48,18 @@ export type NewAnalysisNode = Node<
     },
     "new-analysis-node"
 >;
+
+export type SummaryNode = Node<
+    {
+        label: string;
+        name: string;
+    },
+    "workflow-summary"
+>;
+
+export const summaryNodeTypes = {
+    "workflow-summary": SummaryNode
+} satisfies NodeTypes;
 
 export type AppNode = BuiltInNode | AnalysisInputNode | AnalysisOutputNode | AnalysisNode | NewAnalysisNode;
 
