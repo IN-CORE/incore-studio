@@ -35,6 +35,7 @@ import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
+import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -222,6 +223,13 @@ const ProjectPage = (): JSX.Element => {
                                         title="Hazards"
                                         icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Add from Service"
+                                    />
+                                    <AddFromServiceDialog
+                                        projectId={project.id}
+                                        resourceType="hazard"
+                                        open
+                                        onClose={() => {}}
+                                        onAddClick={() => {}}
                                     />
                                     <ResourceCards
                                         resources={projectHazards}

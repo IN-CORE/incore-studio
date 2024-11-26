@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import { useAppDispatch } from "@app/store/hooks";
-import { useSelector } from "react-redux";
-import { RootState } from "@app/store";
-import { createProjectVisualization } from "@app/reducer/projectSlice";
+
 import {
     Box,
     Button,
@@ -12,20 +9,16 @@ import {
     Modal,
     ModalClose,
     ModalDialog,
-    Option,
-    Select,
     Stack,
-    Textarea,
     Typography
 } from "@mui/material";
-import config from "@app/app.config";
 
 interface AddFromServiceDialogProps {
     projectId: string;
     resourceType: string;
     open: boolean;
     onClose: () => void;
-    onAddVisualization: (visualizationId: string, styleName?: string) => void;
+    onAddClick: (projectId: string, resourceId: string) => void;
 }
 
 export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
@@ -33,8 +26,10 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
     resourceType,
     open,
     onClose,
-    onAddVisualization
+    onAddClick
 }) => {
+    const [resourceId, setResourceId] = useState("");
+
     return (
         <Modal open={open} onClose={onClose}>
             <ModalDialog size="lg" sx={{ backgroundColor: "#fff" }}>
@@ -47,34 +42,27 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                         borderRadius: "md"
                     }}
                 >
-                    <Typography level="h4" sx={{ mb: 1 }}>
-                        Add to Project
+                    <Typography level="h4" sx={{ mb: 1, textTransform: "capitalize" }}>
+                        Add {resourceType} to Project
                     </Typography>
                     <Stack spacing={2} sx={{ mt: 2 }}>
                         <FormControl required>
-                            <FormLabel>Select {resourceType} from the dropdown</FormLabel>
-                            <Select
-                                placeholder="Select a Visualization"
-                                onChange={(_: React.SyntheticEvent | null, newValue: string | null) => {
-                                    setVisualizationId(newValue || "");
-                                }}
-                            >
-                                {projectVisualizations.map((visualization) => (
-                                    <Option key={visualization.id} value={visualization.id}>
-                                        {visualization.name}
-                                    </Option>
-                                ))}
-                            </Select>
+                            <FormLabel sx={{ textTransform: "capitalize" }}>{resourceType} ID</FormLabel>
+                            <Input
+                                placeholder="ID"
+                                value={resourceId}
+                                onChange={(e) => setResourceId(e.target.value)}
+                            />
                         </FormControl>
                     </Stack>
-
                     <Stack direction="row" spacing={1} sx={{ mt: 3, justifyContent: "flex-end" }}>
                         <Button variant="plain" onClick={onClose}>
                             Cancel
                         </Button>
                         <Button
                             variant="solid"
-                            // disabled={isCreatingNew || !visualizationId}
+                            disabled={!resourceId}
+                            onClick={() => onAddClick(projectId, resourceId)}
                         >
                             Add to Project
                         </Button>
