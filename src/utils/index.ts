@@ -166,3 +166,37 @@ export async function getBoundingBoxFromDataset(layerId: string) {
         return null;
     }
 }
+
+export async function fetchResource(resourceType: string, resourceId: string, hazardType?: string) {
+    let url = config.hostname;
+    if (resourceType === "dataset") {
+        url = `${url}/data/api/datasets/${resourceId}`;
+    } else if (resourceType === "hazard") {
+        url = `${url}/hazard/api/${hazardType}/${resourceId}`;
+    } else if (resourceType === "mapping") {
+        url = `${url}/dfr3/api/mappings/${resourceId}`;
+    }
+
+    try {
+        const response = await axios.get(url, { headers: getHeaders() });
+
+        // Check if the response has data
+        if (!response.data || Object.keys(response.data).length === 0) {
+            return { error: `No data found for resourceType: ${resourceType}, resourceId: ${resourceId}` };
+        }
+
+        return response.data;
+    } catch (error: any) {
+        // Handle axios-specific errors
+        if (axios.isAxiosError(error)) {
+            return {
+                error: error.response
+                    ? `Error: ${error.response.status} - ${error.response.data}`
+                    : `Network or unknown error: ${error.message}`
+            };
+        }
+
+        // Handle unexpected errors
+        return { error: `Unexpected error: ${error.message}` };
+    }
+}
