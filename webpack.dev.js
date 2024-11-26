@@ -90,10 +90,6 @@ module.exports = {
             },
             { test: /\.ico$/, type: "asset/resource" },
             {
-                test: /\.svg(\?v=\d+.\d+.\d+)?$/,
-                type: "svg-inline-loader"
-            },
-            {
                 test: /\.(jpe?g|png|gif)$/i,
                 type: "asset/resource"
             },

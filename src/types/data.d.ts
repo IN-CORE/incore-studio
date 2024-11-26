@@ -323,3 +323,10 @@ interface WorkflowState {
     loading: boolean;
     error: string | null;
 }
+
+interface ExecutionState {
+    executionReactFlowState: ReactFlowWorkflow;
+    currentExecution: DatawolfExecutionFile | null;
+    loading: boolean;
+    error: string | null;
+}

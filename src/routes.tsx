@@ -12,6 +12,7 @@ const LazyProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Re
 const LazyProjectWorkflowExecutionSummaryPage = lazy(
     () => import("@app/components/Project/Resource/WorkflowExecutionSummaryPage")
 );
+const LazyExecutionPage = lazy(() => import("@app/components/Execution"));
 
 /**
  A mapping of routes to `RouteProps`.
@@ -80,6 +81,13 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
         element: (
             <Suspense fallback={<Loading />}>
                 <LazyProjectDFR3MappingPage />
+            </Suspense>
+        )
+    },
+    "/execution/:exId": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyExecutionPage />
             </Suspense>
         )
     }

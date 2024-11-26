@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Alert, Grid, Box, Stack, Card, CardContent, Chip, Typography, Button, useTheme } from "@mui/joy";
+import { Alert, Grid, Link, Box, Stack, Card, CardContent, Chip, Typography, Button, useTheme } from "@mui/joy";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
@@ -54,28 +54,39 @@ const ExecutionCardsComponent: React.FC<{ executions: DatawolfExecutionFile[] }>
                         ["FAILED", "ABORTED"].indexOf(status) >= 0
                             ? 0
                             : ["RUNNING", "QUEUED", "WAITING"].indexOf(status) >= 0
-                              ? 1
-                              : ["UNKNOWN", "UNDEFINED"].indexOf(status) >= 0
-                                ? 3
-                                : 2;
+                            ? 1
+                            : ["UNKNOWN", "UNDEFINED"].indexOf(status) >= 0
+                            ? 3
+                            : 2;
                     return (
                         <Grid key={execution.id} xs={12} sm={12} md={6} lg={4}>
                             {/* TODO: add link to execution page to see results and parameters. */}
                             <Card
                                 variant="outlined"
                                 sx={{
-                                    position: "relative",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    height: "100%",
-                                    padding: 2
+                                    "position": "relative",
+                                    "display": "flex",
+                                    "flexDirection": "column",
+                                    "height": "100%",
+                                    "padding": 2,
+                                    "&:hover": { boxShadow: "md", borderColor: "neutral.outlinedHoverBorder" }
                                 }}
                             >
                                 <CardContent>
                                     <Box sx={{ p: 1, flexGrow: 1, height: 80, overflow: "auto" }}>
                                         <Stack direction="row" spacing={1} alignItems="center">
-                                            <Typography level="h3" textColor="primary.main">
+                                            {/* <Typography level="h3" textColor="primary.main">
                                                 {execution.title}
+                                            </Typography> */}
+                                            <Typography level="h3" sx={{ mb: 1 }}>
+                                                <Link
+                                                    overlay
+                                                    underline="none"
+                                                    href={`/execution/${execution.id}`}
+                                                    sx={{ color: "text.tertiary" }}
+                                                >
+                                                    {execution.title}
+                                                </Link>
                                             </Typography>
                                             <CheckCircleRoundedIcon sx={{ color: checkColors[chipColor] }} />
                                         </Stack>
