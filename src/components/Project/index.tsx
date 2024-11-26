@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getProjects, searchProjects } from "@app/reducer/projectSlice";
 import { useAuth } from "react-oidc-context";
 import { RootState } from "@app/store";
+import { CreateProjectDialog } from "@app/components/Project/CreateProject";
 import { ProjectCard } from "./ProjectCard";
 import { Pagination } from "../Home/Pagination";
 
@@ -94,6 +95,9 @@ const Project = (): JSX.Element => {
         }
     }, [pageNumber, filters, isSearching, deletedProjectId]);
 
+    // Create project
+    const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
+
     return (
         <Box sx={{ flexShrink: 0 }} mt={5}>
             {/* Header Section */}
@@ -105,12 +109,19 @@ const Project = (): JSX.Element => {
                     <Link href="/tutorials" underline="hover" sx={{ fontWeight: "medium" }}>
                         Tutorials
                     </Link>
-                    <Button variant="solid" sx={{ backgroundColor: "primary.main" }} startDecorator={<AddIcon />}>
+                    <Button
+                        variant="solid"
+                        sx={{ backgroundColor: "primary.main" }}
+                        startDecorator={<AddIcon />}
+                        onClick={() => {
+                            setCreateProjectDialogOpen(true);
+                        }}
+                    >
                         Create a new Project
                     </Button>
                 </Box>
             </Box>
-
+            <CreateProjectDialog open={createProjectDialogOpen} onClose={() => setCreateProjectDialogOpen(false)} />
             {/* Tabs and Filters in the same flexbox */}
             <Tabs aria-label="Project Tabs" defaultValue={0} sx={{ flexGrow: 1 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} sx={{ gap: 2 }}>
