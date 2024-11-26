@@ -36,16 +36,15 @@ export const CreateProjectDialog = (props: CreateProjectDialogProps) => {
 
     const handleCreateNew = async () => {
         try {
-            // Dispatch the create project action and wait for the result
             const result = await appDispatch(createProject({ project: { name, region, description } }));
-            const newProjectId = result?.payload?.id; // Assuming the action returns the new project ID in payload
+            const newProjectId = result?.payload?.id;
 
             if (newProjectId) {
                 // Navigate to the new project page
                 navigate(`/project/${newProjectId}`);
+            } else {
+                console.error("Error creating project");
             }
-
-            // Close the modal or form
             onClose();
         } catch (error) {
             console.error("Error creating project:", error);
