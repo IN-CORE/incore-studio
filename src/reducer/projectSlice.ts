@@ -72,6 +72,13 @@ export const searchProjects = createAsyncThunk(
     }
 );
 
+export const createProject = createAsyncThunk("projects/createProject", async ({ project }: { project: ProjectIn }) => {
+    const response = await axios.post(`${PROJECT_API_URL}`, project, {
+        headers: getHeaders()
+    });
+    return response.data;
+});
+
 export const searchProjectDatasets = createAsyncThunk(
     "projects/searchProjectDatasets",
     async ({
@@ -319,7 +326,7 @@ export const deleteProjectVisualizations = createAsyncThunk(
 
 export const createProjectVisualization = createAsyncThunk(
     "projects/createProjectVisualization",
-    async ({ projectId, visualizations }: { projectId: string; visualizations: VisualizationInput[] }) => {
+    async ({ projectId, visualizations }: { projectId: string; visualizations: VisualizationIn[] }) => {
         const response = await axios.post(`${PROJECT_API_URL}/${projectId}/visualizations`, visualizations, {
             headers: getHeaders()
         });
@@ -382,6 +389,19 @@ const projectSlice = createSlice({
             .addCase(searchProjects.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to search projects";
+            })
+            // Handle CREATE_PROJECT
+            .addCase(createProject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(createProject.fulfilled, (state, action) => {
+                state.loading = false;
+                state.project = action.payload;
+            })
+            .addCase(createProject.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to create the project";
             })
             // Handle GET_PROJECT
             .addCase(getProject.pending, (state) => {

@@ -120,6 +120,12 @@ interface Project {
     visualizations: Visualization[];
 }
 
+interface ProjectIn {
+    name: string;
+    description: string;
+    region: string;
+}
+
 interface ProjectState {
     projects: Project[];
     project: Project | null;
@@ -230,7 +236,7 @@ interface Visualization {
     sourceDatasetIds?: string[];
 }
 
-interface VisualizationInput {
+interface VisualizationIn {
     type: string;
     name: string;
     description?: string;
