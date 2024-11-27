@@ -55,8 +55,9 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                 setValidationMessage(null);
                 setIsResourceValid(true);
 
-                // add type to resource
+                // adjust type of the resource
                 if (hazardType) result.type = toSingular(hazardType);
+                if (resourceType.toLowerCase() === "dfr3 mapping") result.type = result.mappingType;
                 setResource(result);
             }
         };

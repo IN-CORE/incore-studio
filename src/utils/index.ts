@@ -169,11 +169,11 @@ export async function getBoundingBoxFromDataset(layerId: string) {
 
 export async function fetchResource(resourceType: string, resourceId: string, hazardType?: string) {
     let url = config.hostname;
-    if (resourceType === "dataset") {
+    if (resourceType.toLowerCase() === "dataset") {
         url = `${url}/data/api/datasets/${resourceId}`;
-    } else if (resourceType === "hazard") {
+    } else if (resourceType.toLowerCase() === "hazard") {
         url = `${url}/hazard/api/${hazardType}/${resourceId}`;
-    } else if (resourceType === "mapping") {
+    } else if (resourceType.toLowerCase().includes("mapping")) {
         url = `${url}/dfr3/api/mappings/${resourceId}`;
     }
 

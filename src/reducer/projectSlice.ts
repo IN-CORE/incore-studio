@@ -311,6 +311,16 @@ export const deleteProjectWorkflows = createAsyncThunk(
     }
 );
 
+export const addDFR3MappingToProject = createAsyncThunk(
+    "projects/addDFR3MappingToProject",
+    async ({ projectId, dfr3Mappings }: { projectId: string; dfr3Mappings: DFR3Mapping[] }) => {
+        const response = await axios.post(`${PROJECT_API_URL}/${projectId}/dfr3mappings`, dfr3Mappings, {
+            headers: getHeaders()
+        });
+        return response.data;
+    }
+);
+
 export const deleteProjectDFR3Mappings = createAsyncThunk(
     "projects/deleteProjectDFR3Mappings",
     async ({ projectId, dfr3mappingIds }: { projectId: string; dfr3mappingIds: string[] }) => {
@@ -571,6 +581,20 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project dfr3mappings";
             })
+            // Handle ADD_DFR3_MAPPING_TO_PROJECT
+            .addCase(addDFR3MappingToProject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addDFR3MappingToProject.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectDFR3Mappings = action.payload?.dfr3Mappings;
+            })
+            .addCase(addDFR3MappingToProject.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to add dfr3mappings to the project";
+            })
+            // Handle DELETE_PROJECT_DFR3_MAPPINGS
             .addCase(deleteProjectDFR3Mappings.pending, (state) => {
                 state.loading = true;
                 state.error = null;

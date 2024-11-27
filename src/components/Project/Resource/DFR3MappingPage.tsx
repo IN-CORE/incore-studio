@@ -2,9 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Container } from "@mui/joy";
 import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { deleteProjectDFR3Mappings, getProject, getProjectDRF3Mappings } from "@app/reducer/projectSlice";
+import {
+    addDFR3MappingToProject,
+    deleteProjectDFR3Mappings,
+    getProject,
+    getProjectDRF3Mappings
+} from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -12,12 +17,14 @@ import { Pagination } from "@app/components/Home/Pagination";
 import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBar";
 import Divider from "@mui/joy/Divider";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
+import { useAppDispatch } from "@app/store/hooks";
 
 import DFR3Icon from "@mui/icons-material/ShowChart";
+import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 
 const DFR3MappingPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
-    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
@@ -34,27 +41,37 @@ const DFR3MappingPage = (): JSX.Element => {
 
     useEffect(() => {
         if (id) {
-            // @ts-ignore
-            dispatch(getProject(id));
+            appDispatch(getProject(id));
         }
     }, [id]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectDRF3Mappings({ projectId: id, skip: (DFR3MappingPageNumber - 1) * 10, limit: 10 }));
+        if (id)
+            appDispatch(getProjectDRF3Mappings({ projectId: id, skip: (DFR3MappingPageNumber - 1) * 10, limit: 10 }));
     }, [id, DFR3MappingPageNumber, deletedDFR3MappingIds]);
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSearchClick = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterClick = () => {};
-    const onCreateClick = () => {};
+    const onCreateClick = () => {
+        setOpenAddDFR3MappingFromServiceDialog(true);
+    };
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSortClick = () => {};
 
     const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
 
     // delete function
     const deleteDFR3MappingFunc = (projectId: string, dfr3mapping: DFR3Mapping) => {
-        // @ts-ignore
-        dispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds: [dfr3mapping.id] }));
+        appDispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds: [dfr3mapping.id] }));
+    };
+
+    // Add hazard to project from service
+    const [openAddDFR3MappingFromServiceDialog, setOpenAddDFR3MappingFromServiceDialog] = useState(false);
+    const addDFR3MappingFunc = (projectId: string, resource: DFR3Mapping) => {
+        appDispatch(addDFR3MappingToProject({ projectId, dfr3Mappings: [resource] }));
+        setOpenAddDFR3MappingFromServiceDialog(false);
     };
 
     return (
@@ -85,6 +102,15 @@ const DFR3MappingPage = (): JSX.Element => {
                                     onSortClick={onSortClick}
                                     isTableView
                                     createLabel="Add from Service"
+                                />
+                                <AddFromServiceDialog
+                                    projectId={project.id}
+                                    resourceType="DFR3 Mapping"
+                                    open={openAddDFR3MappingFromServiceDialog}
+                                    onClose={() => {
+                                        setOpenAddDFR3MappingFromServiceDialog(false);
+                                    }}
+                                    onAddClick={addDFR3MappingFunc}
                                 />
                                 <ResourceTable
                                     columns={["name", "hazardType", "inventoryType", "mappingType", "date", "creator"]}
