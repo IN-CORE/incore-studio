@@ -214,3 +214,25 @@ export function toSingular(disaster: string): string {
     // Convert to singular if it exists in the mapping, otherwise return original
     return singularMapping[disaster.toLowerCase()] || disaster;
 }
+
+export const extractStatus = (executionItem: DatawolfExecutionFile | null): string => {
+    if (executionItem !== null && executionItem.stepState !== undefined) {
+        const statusArr = Object.values(executionItem.stepState);
+        // WAITING, QUEUED, RUNNING, FINISHED, ABORTED, FAILED, UNKNOWN
+        // if failed or aborted, return failed | aborted
+        // else if atleast one running, return running
+        // else if atleast one queued, return queued
+        // else if atleast one waiting, return waiting
+        // else if any unknown, return unknown
+        // last case where we need to check all values are finished then return finished
+        // else return undefined
+        if (statusArr.indexOf("FAILED") >= 0) return "FAILED";
+        if (statusArr.indexOf("ABORTED") >= 0) return "ABORTED";
+        if (statusArr.indexOf("RUNNING") >= 0) return "RUNNING";
+        if (statusArr.indexOf("QUEUED") >= 0) return "QUEUED";
+        if (statusArr.indexOf("WAITING") >= 0) return "WAITING";
+        if (statusArr.indexOf("UNKNOWN") >= 0) return "UNKNOWN";
+        if (statusArr.every((status) => status === "FINISHED")) return "FINISHED";
+    }
+    return "UNDEFINED";
+};

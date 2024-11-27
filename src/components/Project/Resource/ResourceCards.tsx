@@ -1,4 +1,16 @@
-import { Card, Typography, Box, CardContent, Chip, Dropdown, IconButton, Menu, MenuButton, MenuItem } from "@mui/joy";
+import {
+    Card,
+    Link,
+    Typography,
+    Box,
+    CardContent,
+    Chip,
+    Dropdown,
+    IconButton,
+    Menu,
+    MenuButton,
+    MenuItem
+} from "@mui/joy";
 import { Grid } from "@mui/material";
 import React, { useState } from "react";
 import { parseDateTime } from "@app/utils";
@@ -115,6 +127,17 @@ export const ResourceCards: React.FC<{
                                 <MoreVertIcon />
                             </MenuButton>
                             <Menu onClose={handleCloseMenu} placement="bottom-start">
+                                {isWorkflow(resource) && (
+                                    <MenuItem>
+                                        <Link
+                                            textColor="primary.main"
+                                            underline="none"
+                                            href={`/project/${projectId}/workflows/${resource.id}`}
+                                        >
+                                            Open
+                                        </Link>
+                                    </MenuItem>
+                                )}
                                 {addVisualizationFunc && (
                                     <MenuItem
                                         onClick={() => {

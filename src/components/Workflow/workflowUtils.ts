@@ -1,6 +1,13 @@
 import type { Edge } from "@xyflow/react";
 import { MarkerType } from "@xyflow/react";
-import type { AnalysisNode, AppNode, AnalysisOutputNode, AnalysisInputNode, NewAnalysisNode } from "./nodes";
+import type {
+    AnalysisNode,
+    AppNode,
+    AnalysisOutputNode,
+    AnalysisInputNode,
+    NewAnalysisNode,
+    SummaryNode
+} from "./nodes";
 import { v4 as uuidv4 } from "uuid";
 
 // Outdated Code. Will remove in code cleanup.
@@ -754,4 +761,38 @@ export const getNodeFromToolV2 = (
     }
 
     return null;
+};
+
+export const getWorkflowSummary = (reactFlowNodesAndEdges: ReactFlowWorkflow): ReactFlowWorkflow => {
+    let nodes: SummaryNode[] = [];
+    let edges: Edge[] = [];
+
+    reactFlowNodesAndEdges.nodes.forEach((node) => {
+        nodes.push({
+            id: node.id,
+            type: "workflow-summary",
+            position: { x: 0, y: 0 },
+            data: {
+                label: node.data.label,
+                name: node.data.name
+            }
+        });
+    });
+
+    let edgeSet = new Set<string>();
+    reactFlowNodesAndEdges.edges.forEach((edge) => {
+        if (!edgeSet.has(`${edge.source}->${edge.target}`)) {
+            edges.push({
+                id: `${edge.source}->${edge.target}`,
+                source: edge.source,
+                target: edge.target,
+                type: "default",
+                style: { stroke: "#000000" },
+                markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
+            });
+            edgeSet.add(`${edge.source}->${edge.target}`);
+        }
+    });
+
+    return { nodes, edges };
 };

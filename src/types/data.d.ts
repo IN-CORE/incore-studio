@@ -6,6 +6,35 @@ interface DatawolfCreator {
     lastName: string;
 }
 
+interface DatawolfExecutionFile {
+    id: string | null;
+    deleted: boolean;
+    title: string;
+    description: string;
+    date: string;
+    workflowId: string;
+    creator: DatawolfCreator | null;
+    parameters: {
+        [key: string]: string;
+    };
+    datasets: {
+        [key: string]: string;
+    };
+    stepState: {
+        [key: string]: string;
+    };
+    stepsQueued: {
+        [key: string]: number;
+    };
+    stepsStart: {
+        [key: string]: number;
+    };
+    stepsEnd: {
+        [key: string]: number;
+    };
+    properties: {};
+}
+
 interface DatawolfIO {
     id: string;
     title: string;
@@ -263,8 +292,6 @@ interface Workflow {
 interface WorkflowState {
     reactFlowWorkflow: ReactFlowWorkflow;
     datawolfUser: DatawolfCreator | null;
-    datawolfUserLoading: boolean;
-    datawolfUserError: string | null;
     datawolfWorkflowID: string | null;
     currentWorkflow: DatawolfWorkflowFile | null;
     createdWorkflowLoading: boolean;
@@ -276,11 +303,7 @@ interface WorkflowState {
     saveWorkflowError: string | null;
     saveWorkflowSuccess: boolean;
     datawolfTools: DatawolfWorkflowTool[];
-    datawolfToolLoading: boolean;
-    datawolfToolError: string | null;
     dependencyGraph: DependencyGraph | null;
-    dependencyGraphLoading: boolean;
-    dependencyGraphError: string | null;
     sidePanelData: {
         open: boolean;
         type: "previous" | "next" | "";
@@ -290,4 +313,7 @@ interface WorkflowState {
         };
     };
     hoveredAnalysis: string | null;
+    executions: DatawolfExecutionFile[];
+    loading: boolean;
+    error: string | null;
 }

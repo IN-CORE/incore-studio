@@ -100,6 +100,7 @@ const WorkflowPage = (): JSX.Element => {
                                         data={projectWorkflows}
                                         projectId={project.id}
                                         deleteFunc={deleteWorkflowFunc}
+                                        resourceType="workflow"
                                     />
                                 ) : (
                                     <ResourceCards
