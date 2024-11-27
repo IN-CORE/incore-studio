@@ -227,7 +227,7 @@ const ProjectPage = (): JSX.Element => {
                                     <AddFromServiceDialog
                                         projectId={project.id}
                                         resourceType="hazard"
-                                        open
+                                        open={false}
                                         onClose={() => {}}
                                         onAddClick={() => {}}
                                     />

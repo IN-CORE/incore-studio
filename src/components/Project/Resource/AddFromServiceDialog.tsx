@@ -21,7 +21,7 @@ interface AddFromServiceDialogProps {
     resourceType: string;
     open: boolean;
     onClose: () => void;
-    onAddClick: (projectId: string, resource: Hazard | Dataset | DFR3Mapping | null, resourceType: string) => void;
+    onAddClick: any;
 }
 
 export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
@@ -118,7 +118,8 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                                               : "title" in resource && resource.title
                                                 ? resource.title
                                                 : "Resource is valid"
-                                    }
+                                    }{" "}
+                                    - {resource.owner}
                                 </Typography>
                             )}
                         </FormControl>
@@ -134,7 +135,7 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                                     ? !resourceId || !hazardType || !isResourceValid
                                     : !resourceId || !isResourceValid
                             }
-                            onClick={() => onAddClick(projectId, resource, resourceType)}
+                            onClick={() => onAddClick(projectId, resource)}
                         >
                             Add to Project
                         </Button>

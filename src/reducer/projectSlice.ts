@@ -252,6 +252,16 @@ export const getProjectVisualizations = createAsyncThunk(
     }
 );
 
+export const addDatasetToProject = createAsyncThunk(
+    "projects/addDatasetToProject",
+    async ({ projectId, datasets }: { projectId: string; datasets: Dataset[] }) => {
+        const response = await axios.post(`${PROJECT_API_URL}/${projectId}/datasets`, datasets, {
+            headers: getHeaders()
+        });
+        return response.data;
+    }
+);
+
 export const deleteProjectDatasets = createAsyncThunk(
     "projects/deleteProjectDatasets",
     async ({ projectId, datasetIds }: { projectId: string; datasetIds: string[] }) => {
@@ -422,6 +432,20 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to search the project datasets";
             })
+            // Handle ADD_DATASET_TO_PROJECT
+            .addCase(addDatasetToProject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addDatasetToProject.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectDatasets = action.payload?.datasets;
+            })
+            .addCase(addDatasetToProject.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to add datasets to the project";
+            })
+            // Handle DELETE_PROJECT_DATASETS
             .addCase(deleteProjectDatasets.pending, (state) => {
                 state.loading = true;
                 state.error = null;
