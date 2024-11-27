@@ -275,6 +275,16 @@ export const deleteProjectDatasets = createAsyncThunk(
     }
 );
 
+export const addHazardToProject = createAsyncThunk(
+    "projects/addHazardToProject",
+    async ({ projectId, hazards }: { projectId: string; hazards: Hazard[] }) => {
+        const response = await axios.post(`${PROJECT_API_URL}/${projectId}/hazards`, hazards, {
+            headers: getHeaders()
+        });
+        return response.data;
+    }
+);
+
 export const deleteProjectHazards = createAsyncThunk(
     "projects/deleteProjectHazards",
     async ({ projectId, hazardIds }: { projectId: string; hazardIds: string[] }) => {
@@ -509,6 +519,20 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project hazards";
             })
+            // Handle ADD_HAZARD_TO_PROJECT
+            .addCase(addHazardToProject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addHazardToProject.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectHazards = action.payload?.hazards;
+            })
+            .addCase(addHazardToProject.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to add hazards to the project";
+            })
+            // Handle DELETE_PROJECT_HAZARDS
             .addCase(deleteProjectHazards.pending, (state) => {
                 state.loading = true;
                 state.error = null;

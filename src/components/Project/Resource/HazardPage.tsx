@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import {
+    addHazardToProject,
     addLayerToVisualization,
     deleteProjectHazards,
     getProject,
@@ -22,6 +23,7 @@ import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 import { useAppDispatch } from "@app/store/hooks";
 
 import HazardIcon from "@mui/icons-material/Storm";
+import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 
 const HazardPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -58,8 +60,9 @@ const HazardPage = (): JSX.Element => {
     const onSearchClick = () => {};
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterClick = () => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onCreateClick = () => {};
+    const onCreateClick = () => {
+        setOpenAddHazardFromServiceDialog(true);
+    };
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSortClick = () => {};
 
@@ -94,6 +97,13 @@ const HazardPage = (): JSX.Element => {
         appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
     };
 
+    // Add hazard to project from service
+    const [openAddHazardFromServiceDialog, setOpenAddHazardFromServiceDialog] = useState(false);
+    const addHazardFunc = (projectId: string, resource: Hazard) => {
+        appDispatch(addHazardToProject({ projectId, hazards: [resource] }));
+        setOpenAddHazardFromServiceDialog(false);
+    };
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -123,6 +133,15 @@ const HazardPage = (): JSX.Element => {
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"
+                                />
+                                <AddFromServiceDialog
+                                    projectId={project.id}
+                                    resourceType="hazard"
+                                    open={openAddHazardFromServiceDialog}
+                                    onClose={() => {
+                                        setOpenAddHazardFromServiceDialog(false);
+                                    }}
+                                    onAddClick={addHazardFunc}
                                 />
                                 {isTableView ? (
                                     <ResourceTable

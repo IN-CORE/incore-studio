@@ -61,7 +61,7 @@ const DatasetPage = (): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterClick = () => {};
     const onCreateClick = () => {
-        setOpenAddFromServiceDialog(true);
+        setOpenAddDatasetFromServiceDialog(true);
     };
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSortClick = () => {};
@@ -103,10 +103,10 @@ const DatasetPage = (): JSX.Element => {
     };
 
     // Add dataset to project from service
-    const [openAddFromServiceDialog, setOpenAddFromServiceDialog] = useState(false);
+    const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = useState(false);
     const addDatasetFunc = (projectId: string, resource: Dataset) => {
         appDispatch(addDatasetToProject({ projectId, datasets: [resource] }));
-        setOpenAddFromServiceDialog(false);
+        setOpenAddDatasetFromServiceDialog(false);
     };
 
     return (
@@ -142,9 +142,9 @@ const DatasetPage = (): JSX.Element => {
                                 <AddFromServiceDialog
                                     projectId={project.id}
                                     resourceType="dataset"
-                                    open={openAddFromServiceDialog}
+                                    open={openAddDatasetFromServiceDialog}
                                     onClose={() => {
-                                        setOpenAddFromServiceDialog(false);
+                                        setOpenAddDatasetFromServiceDialog(false);
                                     }}
                                     onAddClick={addDatasetFunc}
                                 />

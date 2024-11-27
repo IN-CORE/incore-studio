@@ -200,3 +200,17 @@ export async function fetchResource(resourceType: string, resourceId: string, ha
         return { error: `Unexpected error: ${error.message}` };
     }
 }
+
+export function toSingular(disaster: string): string {
+    // Mapping of plural to singular forms
+    const singularMapping: { [key: string]: string } = {
+        hurricanes: "hurricane",
+        tornadoes: "tornado",
+        tsunamis: "tsunami",
+        floods: "flood",
+        earthquakes: "earthquake"
+    };
+
+    // Convert to singular if it exists in the mapping, otherwise return original
+    return singularMapping[disaster.toLowerCase()] || disaster;
+}

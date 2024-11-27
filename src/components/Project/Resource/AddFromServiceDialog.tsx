@@ -14,7 +14,7 @@ import {
     Stack,
     Typography
 } from "@mui/material";
-import { fetchResource } from "@app/utils";
+import { fetchResource, toSingular } from "@app/utils";
 
 interface AddFromServiceDialogProps {
     projectId: string;
@@ -54,6 +54,9 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
             } else {
                 setValidationMessage(null);
                 setIsResourceValid(true);
+
+                // add type to resource
+                if (hazardType) result.type = toSingular(hazardType);
                 setResource(result);
             }
         };
@@ -135,7 +138,14 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                                     ? !resourceId || !hazardType || !isResourceValid
                                     : !resourceId || !isResourceValid
                             }
-                            onClick={() => onAddClick(projectId, resource)}
+                            onClick={() => {
+                                onAddClick(projectId, resource);
+                                setResource(null);
+                                setResourceId("");
+                                setHazardType("");
+                                setValidationMessage(null);
+                                setIsResourceValid(false);
+                            }}
                         >
                             Add to Project
                         </Button>
