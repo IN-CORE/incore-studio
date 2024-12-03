@@ -20,6 +20,7 @@ import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 import { useAppDispatch } from "@app/store/hooks";
+import Snackbar from "@mui/joy/Snackbar";
 
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 
@@ -99,6 +100,24 @@ const DatasetPage = (): JSX.Element => {
         }
     };
 
+    // snackbar
+    const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
+    const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
+    const success = useSelector((state: RootState) => state.project.success);
+    const error = useSelector((state: RootState) => state.project.error);
+    React.useEffect(() => {
+        if (error) {
+            setSnackbarMessage(`Error: ${error}`);
+            setSnackbarColor("danger");
+            setSnackbarOpen(true);
+        } else if (success) {
+            setSnackbarMessage(success);
+            setSnackbarColor("success");
+            setSnackbarOpen(true);
+        }
+    }, [success, error]);
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -160,6 +179,19 @@ const DatasetPage = (): JSX.Element => {
                     </>
                 )}
             </Box>
+            <Snackbar
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                open={snackbarOpen}
+                onClose={() => {
+                    setSnackbarOpen(false);
+                    setSnackbarMessage("");
+                }}
+                variant="outlined"
+                color={snackbarColor}
+                autoHideDuration={2000}
+            >
+                {snackbarMessage}
+            </Snackbar>
         </Container>
     );
 };

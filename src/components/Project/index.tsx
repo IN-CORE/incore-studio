@@ -7,6 +7,8 @@ import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getProjects, searchProjects } from "@app/reducer/projectSlice";
 import { useAuth } from "react-oidc-context";
 import { RootState } from "@app/store";
+import Snackbar from "@mui/joy/Snackbar";
+import { useSelector } from "react-redux";
 import { ProjectCard } from "./ProjectCard";
 import { Pagination } from "../Home/Pagination";
 
@@ -93,6 +95,24 @@ const Project = (): JSX.Element => {
             appDispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
         }
     }, [pageNumber, filters, isSearching, deletedProjectId]);
+
+    // snackbar
+    const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
+    const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
+    const success = useSelector((state: RootState) => state.project.success);
+    const error = useSelector((state: RootState) => state.project.error);
+    React.useEffect(() => {
+        if (error) {
+            setSnackbarMessage(`Error: ${error}`);
+            setSnackbarColor("danger");
+            setSnackbarOpen(true);
+        } else if (success) {
+            setSnackbarMessage(success);
+            setSnackbarColor("success");
+            setSnackbarOpen(true);
+        }
+    }, [success, error]);
 
     return (
         <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -199,6 +219,19 @@ const Project = (): JSX.Element => {
                 <TabPanel value={2}>In Development</TabPanel>
                 <TabPanel value={3}>In Development</TabPanel>
             </Tabs>
+            <Snackbar
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                open={snackbarOpen}
+                onClose={() => {
+                    setSnackbarOpen(false);
+                    setSnackbarMessage("");
+                }}
+                variant="outlined"
+                color={snackbarColor}
+                autoHideDuration={2000}
+            >
+                {snackbarMessage}
+            </Snackbar>
         </Box>
     );
 };

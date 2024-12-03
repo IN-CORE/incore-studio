@@ -20,7 +20,8 @@ const initialState: ProjectState = {
     projectVisualizations: <Visualization[]>[],
     deletedVisualizationIds: <string[]>[],
     loading: false,
-    error: null
+    error: null,
+    success: null
 };
 
 export const getProjects = createAsyncThunk(
@@ -361,6 +362,7 @@ const projectSlice = createSlice({
             .addCase(getProjects.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(getProjects.fulfilled, (state, action) => {
                 state.loading = false;
@@ -374,6 +376,7 @@ const projectSlice = createSlice({
             .addCase(searchProjects.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(searchProjects.fulfilled, (state, action) => {
                 state.loading = false;
@@ -387,6 +390,7 @@ const projectSlice = createSlice({
             .addCase(getProject.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(getProject.fulfilled, (state, action) => {
                 state.loading = false;
@@ -400,6 +404,7 @@ const projectSlice = createSlice({
             .addCase(getProjectDatasets.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(getProjectDatasets.fulfilled, (state, action) => {
                 state.loading = false;
@@ -413,6 +418,7 @@ const projectSlice = createSlice({
             .addCase(searchProjectDatasets.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(searchProjectDatasets.fulfilled, (state, action) => {
                 state.loading = false;
@@ -425,10 +431,12 @@ const projectSlice = createSlice({
             .addCase(deleteProjectDatasets.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(deleteProjectDatasets.fulfilled, (state, action) => {
                 state.loading = false;
                 state.deletedDatasetIds = action.payload;
+                state.success = "Successfully deleted the project datasets";
             })
             .addCase(deleteProjectDatasets.rejected, (state, action) => {
                 state.loading = false;
@@ -438,6 +446,7 @@ const projectSlice = createSlice({
             .addCase(getProjectWorkflows.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(getProjectWorkflows.fulfilled, (state, action) => {
                 state.loading = false;
@@ -450,10 +459,12 @@ const projectSlice = createSlice({
             .addCase(deleteProjectWorkflows.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(deleteProjectWorkflows.fulfilled, (state, action) => {
                 state.loading = false;
                 state.deletedWorkflowIds = action.payload;
+                state.success = "Successfully deleted the project workflows";
             })
             .addCase(deleteProjectWorkflows.rejected, (state, action) => {
                 state.loading = false;
@@ -463,6 +474,7 @@ const projectSlice = createSlice({
             .addCase(searchProjectWorkflows.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(searchProjectWorkflows.fulfilled, (state, action) => {
                 state.loading = false;
@@ -476,6 +488,7 @@ const projectSlice = createSlice({
             .addCase(getProjectHazards.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(getProjectHazards.fulfilled, (state, action) => {
                 state.loading = false;
@@ -488,10 +501,12 @@ const projectSlice = createSlice({
             .addCase(deleteProjectHazards.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(deleteProjectHazards.fulfilled, (state, action) => {
                 state.loading = false;
                 state.deletedHazardIds = action.payload;
+                state.success = "Successfully deleted the project hazards";
             })
             .addCase(deleteProjectHazards.rejected, (state, action) => {
                 state.loading = false;
@@ -501,6 +516,7 @@ const projectSlice = createSlice({
             .addCase(searchProjectHazards.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(searchProjectHazards.fulfilled, (state, action) => {
                 state.loading = false;
@@ -514,6 +530,7 @@ const projectSlice = createSlice({
             .addCase(getProjectDRF3Mappings.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(getProjectDRF3Mappings.fulfilled, (state, action) => {
                 state.loading = false;
@@ -526,10 +543,12 @@ const projectSlice = createSlice({
             .addCase(deleteProjectDFR3Mappings.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(deleteProjectDFR3Mappings.fulfilled, (state, action) => {
                 state.loading = false;
                 state.deletedDFR3MappingIds = action.payload;
+                state.success = "Successfully deleted the project DFR3 Mappings";
             })
             .addCase(deleteProjectDFR3Mappings.rejected, (state, action) => {
                 state.loading = false;
@@ -539,6 +558,7 @@ const projectSlice = createSlice({
             .addCase(searchProjectDFR3Mappings.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(searchProjectDFR3Mappings.fulfilled, (state, action) => {
                 state.loading = false;
@@ -552,6 +572,7 @@ const projectSlice = createSlice({
             .addCase(getProjectVisualizations.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(getProjectVisualizations.fulfilled, (state, action) => {
                 state.loading = false;
@@ -564,10 +585,12 @@ const projectSlice = createSlice({
             .addCase(deleteProjectVisualizations.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(deleteProjectVisualizations.fulfilled, (state, action) => {
                 state.loading = false;
                 state.deletedVisualizationIds = action.payload;
+                state.success = "Successfully deleted the project visualizations";
             })
             .addCase(deleteProjectVisualizations.rejected, (state, action) => {
                 state.loading = false;
@@ -576,10 +599,12 @@ const projectSlice = createSlice({
             .addCase(createProjectVisualization.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(createProjectVisualization.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projectVisualizations = action.payload?.visualizations;
+                state.success = "Successfully created the project visualizations";
             })
             .addCase(createProjectVisualization.rejected, (state, action) => {
                 state.loading = false;
@@ -588,10 +613,12 @@ const projectSlice = createSlice({
             .addCase(addLayerToVisualization.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(addLayerToVisualization.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projectVisualizations = action.payload?.visualizations;
+                state.success = "Successfully added layers to the project visualizations";
             })
             .addCase(addLayerToVisualization.rejected, (state, action) => {
                 state.loading = false;
@@ -601,6 +628,7 @@ const projectSlice = createSlice({
             .addCase(searchProjectVisualizations.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(searchProjectVisualizations.fulfilled, (state, action) => {
                 state.loading = false;
@@ -614,10 +642,12 @@ const projectSlice = createSlice({
             .addCase(deleteProject.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(deleteProject.fulfilled, (state, action) => {
                 state.loading = false;
                 state.deletedProjectId = action.payload;
+                state.success = "Successfully deleted the project";
             })
             .addCase(deleteProject.rejected, (state, action) => {
                 state.loading = false;

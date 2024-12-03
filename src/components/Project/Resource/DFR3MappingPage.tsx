@@ -14,6 +14,7 @@ import Divider from "@mui/joy/Divider";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 
 import DFR3Icon from "@mui/icons-material/ShowChart";
+import Snackbar from "@mui/joy/Snackbar";
 
 const DFR3MappingPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -56,6 +57,24 @@ const DFR3MappingPage = (): JSX.Element => {
         // @ts-ignore
         dispatch(deleteProjectDFR3Mappings({ projectId, dfr3mappingIds: [dfr3mapping.id] }));
     };
+
+    // snackbar
+    const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
+    const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
+    const success = useSelector((state: RootState) => state.project.success);
+    const error = useSelector((state: RootState) => state.project.error);
+    React.useEffect(() => {
+        if (error) {
+            setSnackbarMessage(`Error: ${error}`);
+            setSnackbarColor("danger");
+            setSnackbarOpen(true);
+        } else if (success) {
+            setSnackbarMessage(success);
+            setSnackbarColor("success");
+            setSnackbarOpen(true);
+        }
+    }, [success, error]);
 
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
@@ -106,6 +125,19 @@ const DFR3MappingPage = (): JSX.Element => {
                     </>
                 )}
             </Box>
+            <Snackbar
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                open={snackbarOpen}
+                onClose={() => {
+                    setSnackbarOpen(false);
+                    setSnackbarMessage("");
+                }}
+                variant="outlined"
+                color={snackbarColor}
+                autoHideDuration={2000}
+            >
+                {snackbarMessage}
+            </Snackbar>
         </Container>
     );
 };
