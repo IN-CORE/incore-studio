@@ -220,7 +220,7 @@ const Project = (): JSX.Element => {
                 <TabPanel value={3}>In Development</TabPanel>
             </Tabs>
             <Snackbar
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 open={snackbarOpen}
                 onClose={() => {
                     setSnackbarOpen(false);

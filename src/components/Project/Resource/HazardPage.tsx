@@ -175,7 +175,7 @@ const HazardPage = (): JSX.Element => {
                 )}
             </Box>
             <Snackbar
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 open={snackbarOpen}
                 onClose={() => {
                     setSnackbarOpen(false);
