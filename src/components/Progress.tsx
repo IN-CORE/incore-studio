@@ -3,7 +3,7 @@ import { getStatusColor } from "@app/utils";
 import { Box, LinearProgress, Typography } from "@mui/joy";
 
 interface ProgressProps {
-    status: string;
+    status?: string;
 }
 
 export const Progress = (props: ProgressProps): JSX.Element => {

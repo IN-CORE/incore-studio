@@ -97,6 +97,7 @@ interface DatawolfWorkflowFileStep {
         [key: string]: string;
     };
     tool: DatawolfWorkflowTool;
+    status?: string;
 }
 
 interface DatawolfWorkflowFile {

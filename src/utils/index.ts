@@ -237,7 +237,7 @@ export const extractStatus = (executionItem: DatawolfExecutionFile | null): stri
     return "UNDEFINED";
 };
 
-export function getStatusColor(status: string) {
+export function getStatusColor(status?: string) {
     switch (status) {
         case "FAILED":
         case "ABORTED":

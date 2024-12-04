@@ -244,7 +244,16 @@ const Execution: React.FC<{ create: boolean }> = ({ create }): JSX.Element => {
 
     React.useEffect(() => {
         if (!create && exId !== undefined && currentExecution === null) {
+            // Dispatch immediately on mount
             appDispatch(getExecutionById(exId));
+
+            // Set up interval to fetch every 10 seconds
+            const intervalId = setInterval(() => {
+                appDispatch(getExecutionById(exId));
+            }, 10000);
+
+            // Clear interval on unmount
+            return () => clearInterval(intervalId);
         }
     }, []);
 
