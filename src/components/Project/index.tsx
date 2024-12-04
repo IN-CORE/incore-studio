@@ -7,6 +7,8 @@ import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getProjects, searchProjects } from "@app/reducer/projectSlice";
 import { useAuth } from "react-oidc-context";
 import { RootState } from "@app/store";
+import Snackbar from "@mui/joy/Snackbar";
+import { useSelector } from "react-redux";
 import { CreateProjectDialog } from "@app/components/Project/CreateProject";
 import { ProjectCard } from "./ProjectCard";
 import { Pagination } from "../Home/Pagination";
@@ -71,8 +73,7 @@ const Project = (): JSX.Element => {
     const [isSearching, setIsSearching] = useState(false); // Track if we are in search mode
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const searchTerm = e.target.value;
-        setSearchTerm(searchTerm); // Update the search term in state
+        setSearchTerm(e.target.value); // Update the search term in state
 
         // Reset to first page and reset filters
         setPageNumber(1); // Reset to first page when a search is performed
@@ -94,6 +95,24 @@ const Project = (): JSX.Element => {
             appDispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
         }
     }, [pageNumber, filters, isSearching, deletedProjectId]);
+
+    // snackbar
+    const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
+    const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
+    const success = useSelector((state: RootState) => state.project.success);
+    const error = useSelector((state: RootState) => state.project.error);
+    React.useEffect(() => {
+        if (error) {
+            setSnackbarMessage(`Error: ${error}`);
+            setSnackbarColor("danger");
+            setSnackbarOpen(true);
+        } else if (success) {
+            setSnackbarMessage(success);
+            setSnackbarColor("success");
+            setSnackbarOpen(true);
+        }
+    }, [success, error]);
 
     // Create project
     const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
@@ -210,6 +229,19 @@ const Project = (): JSX.Element => {
                 <TabPanel value={2}>In Development</TabPanel>
                 <TabPanel value={3}>In Development</TabPanel>
             </Tabs>
+            <Snackbar
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                open={snackbarOpen}
+                onClose={() => {
+                    setSnackbarOpen(false);
+                    setSnackbarMessage("");
+                }}
+                variant="outlined"
+                color={snackbarColor}
+                autoHideDuration={2000}
+            >
+                {snackbarMessage}
+            </Snackbar>
         </Box>
     );
 };

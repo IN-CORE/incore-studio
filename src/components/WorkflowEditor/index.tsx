@@ -11,7 +11,6 @@ import Snackbar from "@mui/joy/Snackbar";
 import { useShallow } from "zustand/react/shallow";
 
 import AddAnalysisModal from "@app/components/AddAnalysisModal";
-import SidePanel from "./SidePanel";
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import Workflow from "@app/components/Workflow";
 import Loading from "@app/components/Loading";
@@ -25,6 +24,7 @@ import {
 } from "@app/reducer/workflowSlice";
 import { createWorkflowFileFromNodesAndEdgesV2 } from "@app/components/Workflow/workflowUtils";
 import InvalidWorkflowFilePage from "@app/components/InvalidWorkflowFilePage";
+import SidePanel from "./SidePanel";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -101,8 +101,8 @@ const WorkflowEditor = (): JSX.Element => {
     const handleExportJSONClick = () => {
         if (currentWorkflow !== null && workflowID !== null) {
             const newWorkflowFile = createWorkflowFileFromNodesAndEdgesV2({
-                nodes: nodes,
-                edges: edges,
+                nodes,
+                edges,
                 creator: datawolfUser,
                 datawolfWorkflowFileID: workflowID,
                 title: currentWorkflow !== null ? currentWorkflow.title : "Untitled Workflow",
@@ -136,8 +136,8 @@ const WorkflowEditor = (): JSX.Element => {
     const handleSaveClick = () => {
         if (currentWorkflow !== null && workflowID !== null) {
             const newWorkflowFile = createWorkflowFileFromNodesAndEdgesV2({
-                nodes: nodes,
-                edges: edges,
+                nodes,
+                edges,
                 creator: datawolfUser,
                 datawolfWorkflowFileID: workflowID,
                 title: currentWorkflow !== null ? currentWorkflow.title : "Untitled Workflow",
@@ -146,7 +146,7 @@ const WorkflowEditor = (): JSX.Element => {
                 tools: datawolfTools
             });
 
-            appDispatch(saveWorkflow({ workflowID: workflowID, workflow: newWorkflowFile }));
+            appDispatch(saveWorkflow({ workflowID, workflow: newWorkflowFile }));
         } // else dispatch save workflow error
     };
     return (
@@ -269,7 +269,7 @@ const WorkflowEditor = (): JSX.Element => {
                                     </Button>
                                 </Stack>
                                 <Snackbar
-                                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                                    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                                     open={snackbarOpen}
                                     onClose={() => {
                                         setSnackbarOpen(false);
