@@ -9,6 +9,7 @@ import { useAuth } from "react-oidc-context";
 import { RootState } from "@app/store";
 import Snackbar from "@mui/joy/Snackbar";
 import { useSelector } from "react-redux";
+import { CreateProjectDialog } from "@app/components/Project/CreateProject";
 import { ProjectCard } from "./ProjectCard";
 import { Pagination } from "../Home/Pagination";
 
@@ -72,8 +73,7 @@ const Project = (): JSX.Element => {
     const [isSearching, setIsSearching] = useState(false); // Track if we are in search mode
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const searchTerm = e.target.value;
-        setSearchTerm(searchTerm); // Update the search term in state
+        setSearchTerm(e.target.value); // Update the search term in state
 
         // Reset to first page and reset filters
         setPageNumber(1); // Reset to first page when a search is performed
@@ -114,6 +114,9 @@ const Project = (): JSX.Element => {
         }
     }, [success, error]);
 
+    // Create project
+    const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
+
     return (
         <Box sx={{ flexShrink: 0 }} mt={5}>
             {/* Header Section */}
@@ -125,12 +128,19 @@ const Project = (): JSX.Element => {
                     <Link href="/tutorials" underline="hover" sx={{ fontWeight: "medium" }}>
                         Tutorials
                     </Link>
-                    <Button variant="solid" sx={{ backgroundColor: "primary.main" }} startDecorator={<AddIcon />}>
+                    <Button
+                        variant="solid"
+                        sx={{ backgroundColor: "primary.main" }}
+                        startDecorator={<AddIcon />}
+                        onClick={() => {
+                            setCreateProjectDialogOpen(true);
+                        }}
+                    >
                         Create a new Project
                     </Button>
                 </Box>
             </Box>
-
+            <CreateProjectDialog open={createProjectDialogOpen} onClose={() => setCreateProjectDialogOpen(false)} />
             {/* Tabs and Filters in the same flexbox */}
             <Tabs aria-label="Project Tabs" defaultValue={0} sx={{ flexGrow: 1 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} sx={{ gap: 2 }}>
