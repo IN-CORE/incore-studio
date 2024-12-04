@@ -26,7 +26,13 @@ export const Progress = (props: ProgressProps): JSX.Element => {
                     "--LinearProgress-thickness": "15px"
                 }}
             >
-                <Typography level="body-xs" textColor="white" sx={{ mixBlendMode: "difference" }}>
+                <Typography
+                    level="body-xs"
+                    sx={{
+                        color: "white",
+                        mixBlendMode: "color-dodge"
+                    }}
+                >
                     {`${status}...` ?? "PENDING..."}
                 </Typography>
             </LinearProgress>
