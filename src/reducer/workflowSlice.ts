@@ -62,13 +62,23 @@ export const getDatawolfUser = createAsyncThunk(
             params
         });
 
-        return response.data[0];
+        return response.data;
     }
 );
 
 export const createNewWorkflow = createAsyncThunk(
     "workflow/createNewWorkflow",
-    async ({ title, description, creator }: { title: string; description: string; creator: DatawolfCreator }) => {
+    async ({
+        title,
+        description,
+        creator
+    }: {
+        title: string;
+        description: string;
+        creator:
+            | DatawolfCreator
+            | { email: string | undefined; firstName: string | undefined; lastName: string | undefined };
+    }) => {
         const response = await axios.post(
             `${DATAWOLF_API_URL}/workflows`,
             {
@@ -177,7 +187,9 @@ const workflowSlice = createSlice({
             })
             .addCase(getDatawolfUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.datawolfUser = action.payload;
+                if (action.payload.length !== 0) {
+                    state.datawolfUser = action.payload[0];
+                }
             })
             .addCase(getDatawolfUser.rejected, (state, action) => {
                 state.loading = false;
