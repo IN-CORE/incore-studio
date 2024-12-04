@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Workflow Execution Summary page. [#16](https://github.com/IN-CORE/incore-studio/issues/16)
 - Error Handling for missing dependency graph or Valid tools in workflow. [#50](https://github.com/IN-CORE/incore-studio/issues/50)
 - Create visualization components [#18](https://github.com/IN-CORE/incore-studio/issues/18)
+- Snackbar for user actions [#51](https://github.com/IN-CORE/incore-studio/issues/51)
 - Create empty project [#42](https://github.com/IN-CORE/incore-studio/issues/42)
 - Modal that adds resources from service to project [#40](https://github.com/IN-CORE/incore-studio/issues/40)
 

@@ -38,6 +38,7 @@ import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
+import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 
 const ProjectPage = (): JSX.Element => {
@@ -182,6 +183,24 @@ const ProjectPage = (): JSX.Element => {
     const handleCloseVisualziationView = () => {
         setOpenVisualziationView(false);
     };
+
+    // snackbar
+    const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
+    const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
+    const success = useSelector((state: RootState) => state.project.success);
+    const error = useSelector((state: RootState) => state.project.error);
+    React.useEffect(() => {
+        if (error) {
+            setSnackbarMessage(`Error: ${error}`);
+            setSnackbarColor("danger");
+            setSnackbarOpen(true);
+        } else if (success) {
+            setSnackbarMessage(success);
+            setSnackbarColor("success");
+            setSnackbarOpen(true);
+        }
+    }, [success, error]);
 
     // Add resources to project
     // Add dataset to project from service
@@ -387,6 +406,19 @@ const ProjectPage = (): JSX.Element => {
                     </>
                 )}
             </Box>
+            <Snackbar
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                open={snackbarOpen}
+                onClose={() => {
+                    setSnackbarOpen(false);
+                    setSnackbarMessage("");
+                }}
+                variant="outlined"
+                color={snackbarColor}
+                autoHideDuration={2000}
+            >
+                {snackbarMessage}
+            </Snackbar>
         </Container>
     );
 };

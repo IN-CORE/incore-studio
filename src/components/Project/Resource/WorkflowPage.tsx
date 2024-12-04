@@ -15,6 +15,7 @@ import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 
 import WorkflowIcon from "@mui/icons-material/AccountTree";
+import Snackbar from "@mui/joy/Snackbar";
 
 const WorkflowPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -63,6 +64,24 @@ const WorkflowPage = (): JSX.Element => {
         // @ts-ignore
         dispatch(deleteProjectWorkflows({ projectId, workflowIds: [workflow.id] }));
     };
+
+    // snackbar
+    const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
+    const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
+    const success = useSelector((state: RootState) => state.project.success);
+    const error = useSelector((state: RootState) => state.project.error);
+    React.useEffect(() => {
+        if (error) {
+            setSnackbarMessage(`Error: ${error}`);
+            setSnackbarColor("danger");
+            setSnackbarOpen(true);
+        } else if (success) {
+            setSnackbarMessage(success);
+            setSnackbarColor("success");
+            setSnackbarOpen(true);
+        }
+    }, [success, error]);
 
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
@@ -124,6 +143,19 @@ const WorkflowPage = (): JSX.Element => {
                     </>
                 )}
             </Box>
+            <Snackbar
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                open={snackbarOpen}
+                onClose={() => {
+                    setSnackbarOpen(false);
+                    setSnackbarMessage("");
+                }}
+                variant="outlined"
+                color={snackbarColor}
+                autoHideDuration={2000}
+            >
+                {snackbarMessage}
+            </Snackbar>
         </Container>
     );
 };

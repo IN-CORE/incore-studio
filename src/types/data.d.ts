@@ -171,6 +171,7 @@ interface ProjectState {
     deletedVisualizationIds: string[];
     loading: boolean;
     error: string | null;
+    success: string | null;
 }
 
 interface FileDescriptor {
