@@ -236,3 +236,22 @@ export const extractStatus = (executionItem: DatawolfExecutionFile | null): stri
     }
     return "UNDEFINED";
 };
+
+export function getStatusColor(status: string) {
+    switch (status) {
+        case "FAILED":
+        case "ABORTED":
+            return "danger";
+        case "RUNNING":
+            return "primary";
+        case "QUEUED":
+            return "neutral";
+        case "WAITING":
+        case "UNKNOWN":
+            return "warning";
+        case "FINISHED":
+            return "success";
+        default:
+            return "neutral";
+    }
+}
