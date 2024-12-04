@@ -16,7 +16,10 @@ import {
     getProjectHazards,
     getProjectVisualizations,
     getProjectWorkflows,
-    addLayerToVisualization
+    addLayerToVisualization,
+    addDatasetToProject,
+    addHazardToProject,
+    addDFR3MappingToProject
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -35,6 +38,7 @@ import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
+import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -179,6 +183,28 @@ const ProjectPage = (): JSX.Element => {
         setOpenVisualziationView(false);
     };
 
+    // Add resources to project
+    // Add dataset to project from service
+    const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = useState(false);
+    const addDatasetFunc = (projectId: string, resource: Dataset) => {
+        appDispatch(addDatasetToProject({ projectId, datasets: [resource] }));
+        setOpenAddDatasetFromServiceDialog(false);
+    };
+
+    // Add hazard to project from service
+    const [openAddHazardFromServiceDialog, setOpenAddHazardFromServiceDialog] = useState(false);
+    const addHazardFunc = (projectId: string, resource: Hazard) => {
+        appDispatch(addHazardToProject({ projectId, hazards: [resource] }));
+        setOpenAddHazardFromServiceDialog(false);
+    };
+
+    // Add hazard to project from service
+    const [openAddDFR3MappingFromServiceDialog, setOpenAddDFR3MappingFromServiceDialog] = useState(false);
+    const addDFR3MappingFunc = (projectId: string, resource: DFR3Mapping) => {
+        appDispatch(addDFR3MappingToProject({ projectId, dfr3Mappings: [resource] }));
+        setOpenAddDFR3MappingFromServiceDialog(false);
+    };
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -222,6 +248,16 @@ const ProjectPage = (): JSX.Element => {
                                         title="Hazards"
                                         icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Add from Service"
+                                        onCreateClick={() => setOpenAddHazardFromServiceDialog(true)}
+                                    />
+                                    <AddFromServiceDialog
+                                        projectId={project.id}
+                                        resourceType="hazard"
+                                        open={openAddHazardFromServiceDialog}
+                                        onClose={() => {
+                                            setOpenAddHazardFromServiceDialog(false);
+                                        }}
+                                        onAddClick={addHazardFunc}
                                     />
                                     <ResourceCards
                                         resources={projectHazards}
@@ -285,6 +321,16 @@ const ProjectPage = (): JSX.Element => {
                                         title="Datasets"
                                         icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Add from Service"
+                                        onCreateClick={() => setOpenAddDatasetFromServiceDialog(true)}
+                                    />
+                                    <AddFromServiceDialog
+                                        projectId={project.id}
+                                        resourceType="dataset"
+                                        open={openAddDatasetFromServiceDialog}
+                                        onClose={() => {
+                                            setOpenAddDatasetFromServiceDialog(false);
+                                        }}
+                                        onAddClick={addDatasetFunc}
                                     />
                                     <ResourceTable
                                         columns={["title", "description", "date", "owner"]}
@@ -309,6 +355,16 @@ const ProjectPage = (): JSX.Element => {
                                         title="DFR3 Mappings"
                                         icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Add from Service"
+                                        onCreateClick={() => setOpenAddDFR3MappingFromServiceDialog(true)}
+                                    />
+                                    <AddFromServiceDialog
+                                        projectId={project.id}
+                                        resourceType="DFR3 Mapping"
+                                        open={openAddDFR3MappingFromServiceDialog}
+                                        onClose={() => {
+                                            setOpenAddDFR3MappingFromServiceDialog(false);
+                                        }}
+                                        onAddClick={addDFR3MappingFunc}
                                     />
                                     <ResourceTable
                                         columns={["name", "hazardType", "inventoryType", "mappingType", "owner"]}

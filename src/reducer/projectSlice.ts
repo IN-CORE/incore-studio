@@ -259,6 +259,16 @@ export const getProjectVisualizations = createAsyncThunk(
     }
 );
 
+export const addDatasetToProject = createAsyncThunk(
+    "projects/addDatasetToProject",
+    async ({ projectId, datasets }: { projectId: string; datasets: Dataset[] }) => {
+        const response = await axios.post(`${PROJECT_API_URL}/${projectId}/datasets`, datasets, {
+            headers: getHeaders()
+        });
+        return response.data;
+    }
+);
+
 export const deleteProjectDatasets = createAsyncThunk(
     "projects/deleteProjectDatasets",
     async ({ projectId, datasetIds }: { projectId: string; datasetIds: string[] }) => {
@@ -269,6 +279,16 @@ export const deleteProjectDatasets = createAsyncThunk(
         });
 
         return datasetIds;
+    }
+);
+
+export const addHazardToProject = createAsyncThunk(
+    "projects/addHazardToProject",
+    async ({ projectId, hazards }: { projectId: string; hazards: Hazard[] }) => {
+        const response = await axios.post(`${PROJECT_API_URL}/${projectId}/hazards`, hazards, {
+            headers: getHeaders()
+        });
+        return response.data;
     }
 );
 
@@ -295,6 +315,16 @@ export const deleteProjectWorkflows = createAsyncThunk(
         });
 
         return workflowIds;
+    }
+);
+
+export const addDFR3MappingToProject = createAsyncThunk(
+    "projects/addDFR3MappingToProject",
+    async ({ projectId, dfr3Mappings }: { projectId: string; dfr3Mappings: DFR3Mapping[] }) => {
+        const response = await axios.post(`${PROJECT_API_URL}/${projectId}/dfr3mappings`, dfr3Mappings, {
+            headers: getHeaders()
+        });
+        return response.data;
     }
 );
 
@@ -442,6 +472,20 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to search the project datasets";
             })
+            // Handle ADD_DATASET_TO_PROJECT
+            .addCase(addDatasetToProject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addDatasetToProject.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectDatasets = action.payload?.datasets;
+            })
+            .addCase(addDatasetToProject.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to add datasets to the project";
+            })
+            // Handle DELETE_PROJECT_DATASETS
             .addCase(deleteProjectDatasets.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -505,6 +549,20 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project hazards";
             })
+            // Handle ADD_HAZARD_TO_PROJECT
+            .addCase(addHazardToProject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addHazardToProject.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectHazards = action.payload?.hazards;
+            })
+            .addCase(addHazardToProject.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to add hazards to the project";
+            })
+            // Handle DELETE_PROJECT_HAZARDS
             .addCase(deleteProjectHazards.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -543,6 +601,20 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project dfr3mappings";
             })
+            // Handle ADD_DFR3_MAPPING_TO_PROJECT
+            .addCase(addDFR3MappingToProject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addDFR3MappingToProject.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectDFR3Mappings = action.payload?.dfr3Mappings;
+            })
+            .addCase(addDFR3MappingToProject.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to add dfr3mappings to the project";
+            })
+            // Handle DELETE_PROJECT_DFR3_MAPPINGS
             .addCase(deleteProjectDFR3Mappings.pending, (state) => {
                 state.loading = true;
                 state.error = null;

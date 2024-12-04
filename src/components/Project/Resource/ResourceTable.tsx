@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown } from "@mui/joy";
+import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown, Link } from "@mui/joy";
 import { formatHeaderName, parseDateTime } from "@app/utils";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
@@ -10,6 +10,7 @@ interface TableProps {
     columns: string[];
     data: Dataset[] | Hazard[] | Visualization[] | Workflow[] | DFR3Mapping[];
     deleteFunc?: any;
+    resourceType?: string;
     viewFunc?: any;
     addVisualizationFunc?: any;
 }
@@ -29,7 +30,8 @@ export const ResourceTable = ({
     data,
     deleteFunc,
     viewFunc,
-    addVisualizationFunc
+    addVisualizationFunc,
+    resourceType
 }: TableProps): JSX.Element => {
     const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | DFR3Mapping | null>(
         null
@@ -111,6 +113,17 @@ export const ResourceTable = ({
                             <MoreVertIcon />
                         </MenuButton>
                         <Menu onClose={handleCloseMenu} placement="bottom-start">
+                            {resourceType?.toLowerCase() === "workflow" && (
+                                <MenuItem>
+                                    <Link
+                                        textColor="primary.main"
+                                        underline="none"
+                                        href={`/project/${projectId}/workflows/${resource.id}`}
+                                    >
+                                        Open
+                                    </Link>
+                                </MenuItem>
+                            )}
                             {addVisualizationFunc && (
                                 <MenuItem
                                     onClick={() => {

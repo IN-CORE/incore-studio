@@ -13,9 +13,10 @@ import VisualizationIcon from "@mui/icons-material/Map";
 interface ProjectBreadcrumbProps {
     project: {
         href: string;
-        label: string;
+        label?: string;
     };
     resource?: string;
+    resourceName?: string;
 }
 
 const getResourceIcon = (resource: string | undefined) => {
@@ -36,7 +37,7 @@ const getResourceIcon = (resource: string | undefined) => {
 };
 
 export const ProjectBreadcrumb = (props: ProjectBreadcrumbProps) => {
-    const { project, resource } = props;
+    const { project, resource, resourceName } = props;
 
     return (
         <Breadcrumbs separator="›" aria-label="breadcrumbs">
@@ -48,10 +49,27 @@ export const ProjectBreadcrumb = (props: ProjectBreadcrumbProps) => {
                 <FolderIcon sx={{ mr: 0.5 }} />
                 {project.label}
             </Link>
-            {resource && (
+            {resource &&
+                (resourceName !== undefined ? (
+                    <Link
+                        textColor="primary.main"
+                        fontWeight="bolder"
+                        underline="none"
+                        href={`${project.href}/${resource}`}
+                    >
+                        {getResourceIcon(resource)}
+                        {resource}
+                    </Link>
+                ) : (
+                    <Typography textColor="primary.main" fontWeight="bolder">
+                        {getResourceIcon(resource)}
+                        {resource}
+                    </Typography>
+                ))}
+            {resourceName && (
                 <Typography textColor="primary.main" fontWeight="bolder">
-                    {getResourceIcon(resource)}
-                    {resource}
+                    {getResourceIcon("workflows")}
+                    {resourceName}
                 </Typography>
             )}
         </Breadcrumbs>

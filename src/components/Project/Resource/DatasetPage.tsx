@@ -9,7 +9,8 @@ import {
     getProjectDatasets,
     deleteProjectDatasets,
     addLayerToVisualization,
-    getProjectVisualizations
+    getProjectVisualizations,
+    addDatasetToProject
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -22,6 +23,7 @@ import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 import { useAppDispatch } from "@app/store/hooks";
 
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
+import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 
 const DatasetPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -58,8 +60,9 @@ const DatasetPage = (): JSX.Element => {
     const onSearchClick = () => {};
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterClick = () => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onCreateClick = () => {};
+    const onCreateClick = () => {
+        setOpenAddDatasetFromServiceDialog(true);
+    };
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSortClick = () => {};
 
@@ -99,6 +102,13 @@ const DatasetPage = (): JSX.Element => {
         }
     };
 
+    // Add dataset to project from service
+    const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = useState(false);
+    const addDatasetFunc = (projectId: string, resource: Dataset) => {
+        appDispatch(addDatasetToProject({ projectId, datasets: [resource] }));
+        setOpenAddDatasetFromServiceDialog(false);
+    };
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -128,6 +138,15 @@ const DatasetPage = (): JSX.Element => {
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"
+                                />
+                                <AddFromServiceDialog
+                                    projectId={project.id}
+                                    resourceType="dataset"
+                                    open={openAddDatasetFromServiceDialog}
+                                    onClose={() => {
+                                        setOpenAddDatasetFromServiceDialog(false);
+                                    }}
+                                    onAddClick={addDatasetFunc}
                                 />
                                 {isTableView ? (
                                     <ResourceTable

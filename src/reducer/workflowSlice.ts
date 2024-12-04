@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { getHeaders } from "@app/utils";
-import { addNewAnalysisNodesAndEdgesWorkflow } from "@app/components/Workflow/workflowUtils";
 import config from "@app/app.config";
+import { addNewAnalysisNodesAndEdgesWorkflow } from "@app/components/Workflow/workflowUtils";
 
-// const DATAWOLF_API_URL = `http://localhost:8888/datawolf`;
 const DATAWOLF_API_URL = config.datawolfApi;
+// const DATAWOLF_API_URL = `http://localhost:8888/datawolf`;
 
 const initialReactFlowWorkflow = {
     nodes: [],
@@ -15,8 +15,6 @@ const initialReactFlowWorkflow = {
 const initialState: WorkflowState = {
     reactFlowWorkflow: initialReactFlowWorkflow,
     datawolfUser: null,
-    datawolfUserLoading: false,
-    datawolfUserError: null,
     datawolfWorkflowID: null,
     currentWorkflow: null,
     createdWorkflowLoading: false,
@@ -28,11 +26,7 @@ const initialState: WorkflowState = {
     saveWorkflowLoading: false,
     saveWorkflowSuccess: false,
     datawolfTools: [],
-    datawolfToolLoading: false,
-    datawolfToolError: null,
     dependencyGraph: null,
-    dependencyGraphLoading: false,
-    dependencyGraphError: null,
     sidePanelData: {
         open: false,
         type: "",
@@ -41,7 +35,10 @@ const initialState: WorkflowState = {
             id: ""
         }
     },
-    hoveredAnalysis: null
+    hoveredAnalysis: null,
+    executions: [],
+    loading: false,
+    error: null
 };
 
 export const getDatawolfUser = createAsyncThunk(
@@ -56,6 +53,10 @@ export const getDatawolfUser = createAsyncThunk(
             params.email = email;
         }
 
+        // const response = await axios.get(`${DATAWOLF_API_URL}/persons`, {
+        //     // headers: getHeaders(), // only needed when datawolf is behind incore-auth
+        //     params
+        // });
         const response = await axios.get(`${DATAWOLF_API_URL}/persons`, {
             headers: getHeaders(), // only needed when datawolf is behind incore-auth
             params
@@ -91,6 +92,7 @@ export const getWorkflow = createAsyncThunk(
             throw new Error("No workflow ID provided");
         }
         const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}`, { headers: getHeaders() });
+        // const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}`);
 
         return response.data;
     }
@@ -99,6 +101,7 @@ export const getWorkflow = createAsyncThunk(
 export const saveWorkflow = createAsyncThunk(
     "workflow/saveWorkflow",
     async ({ workflowID, workflow }: { workflowID: string; workflow: DatawolfWorkflowFile }) => {
+        // const response = await axios.put(`${DATAWOLF_API_URL}/workflows/${workflowID}`, workflow);
         const response = await axios.put(`${DATAWOLF_API_URL}/workflows/${workflowID}`, workflow, {
             headers: getHeaders()
         });
@@ -108,10 +111,22 @@ export const saveWorkflow = createAsyncThunk(
 );
 
 export const getWorkflowTools = createAsyncThunk("workflow/getWorkflowTools", async () => {
+    // const response = await axios.get(`${DATAWOLF_API_URL}/workflowtools`);
     const response = await axios.get(`${DATAWOLF_API_URL}/workflowtools`, { headers: getHeaders() });
 
     return response.data;
 });
+
+export const getExecutionsByWorkflowID = createAsyncThunk(
+    "workflow/getExecutionsByWorkflowID",
+    async ({ workflowID }: { workflowID: string }) => {
+        const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}/executions`, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    }
+);
 
 export const getDependencyGraph = createAsyncThunk("workflow/getDependencyGraph", async () => {
     const response = await axios.get("/config/dependencyGraph.json");
@@ -149,21 +164,24 @@ const workflowSlice = createSlice({
         },
         clearHoveredAnalysis: (state) => {
             state.hoveredAnalysis = null;
+        },
+        raiseWorkflowError: (state, action) => {
+            state.workflowError = action.payload;
         }
     },
     extraReducers: (builder) => {
         builder
             .addCase(getDatawolfUser.pending, (state) => {
-                state.datawolfUserLoading = true;
-                state.datawolfUserError = null;
+                state.loading = true;
+                state.error = null;
             })
             .addCase(getDatawolfUser.fulfilled, (state, action) => {
-                state.datawolfUserLoading = false;
+                state.loading = false;
                 state.datawolfUser = action.payload;
             })
             .addCase(getDatawolfUser.rejected, (state, action) => {
-                state.datawolfUserLoading = false;
-                state.datawolfUserError = action.error.message || "Failed to fetch user from datawolf";
+                state.loading = false;
+                state.error = action.error.message || "Failed to fetch user from datawolf";
             })
             .addCase(createNewWorkflow.pending, (state) => {
                 state.createdWorkflowLoading = true;
@@ -229,28 +247,40 @@ const workflowSlice = createSlice({
                 state.saveWorkflowError = action.error.message || "Failed to save workflow";
             })
             .addCase(getWorkflowTools.pending, (state) => {
-                state.datawolfToolLoading = true;
-                state.datawolfToolError = null;
+                state.loading = true;
+                state.error = null;
             })
             .addCase(getWorkflowTools.fulfilled, (state, action) => {
-                state.datawolfToolLoading = false;
+                state.loading = false;
                 state.datawolfTools = action.payload;
             })
             .addCase(getWorkflowTools.rejected, (state, action) => {
-                state.datawolfToolLoading = false;
-                state.datawolfToolError = action.error.message || "Failed to fetch workflow tools";
+                state.loading = false;
+                state.error = action.error.message || "Failed to fetch workflow tools";
             })
             .addCase(getDependencyGraph.pending, (state) => {
-                state.dependencyGraphLoading = true;
-                state.dependencyGraphError = null;
+                state.loading = true;
+                state.error = null;
             })
             .addCase(getDependencyGraph.fulfilled, (state, action) => {
-                state.dependencyGraphLoading = false;
+                state.loading = false;
                 state.dependencyGraph = action.payload;
             })
             .addCase(getDependencyGraph.rejected, (state, action) => {
-                state.dependencyGraphLoading = false;
-                state.dependencyGraphError = action.error.message || "Failed to fetch dependency graph";
+                state.loading = false;
+                state.error = action.error.message || "Failed to fetch dependency graph";
+            })
+            .addCase(getExecutionsByWorkflowID.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getExecutionsByWorkflowID.fulfilled, (state, action) => {
+                state.loading = false;
+                state.executions = action.payload;
+            })
+            .addCase(getExecutionsByWorkflowID.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to fetch executions";
             });
     }
 });
@@ -261,7 +291,8 @@ export const {
     setSidePanelData,
     clearSidePanelData,
     setHoveredAnalysis,
-    clearHoveredAnalysis
+    clearHoveredAnalysis,
+    raiseWorkflowError
 } = workflowSlice.actions;
 
 export default workflowSlice.reducer;

@@ -166,3 +166,73 @@ export async function getBoundingBoxFromDataset(layerId: string) {
         return null;
     }
 }
+
+export async function fetchResource(resourceType: string, resourceId: string, hazardType?: string) {
+    let url = config.hostname;
+    if (resourceType.toLowerCase() === "dataset") {
+        url = `${url}/data/api/datasets/${resourceId}`;
+    } else if (resourceType.toLowerCase() === "hazard") {
+        url = `${url}/hazard/api/${hazardType}/${resourceId}`;
+    } else if (resourceType.toLowerCase().includes("mapping")) {
+        url = `${url}/dfr3/api/mappings/${resourceId}`;
+    }
+
+    try {
+        const response = await axios.get(url, { headers: getHeaders() });
+
+        // Check if the response has data
+        if (!response.data || Object.keys(response.data).length === 0) {
+            return { error: `No data found for resourceType: ${resourceType}, resourceId: ${resourceId}` };
+        }
+
+        return response.data;
+    } catch (error: any) {
+        // Handle axios-specific errors
+        if (axios.isAxiosError(error)) {
+            return {
+                error: error.response
+                    ? `Error: ${error.response.status} - ${error.response.data}`
+                    : `Network or unknown error: ${error.message}`
+            };
+        }
+
+        // Handle unexpected errors
+        return { error: `Unexpected error: ${error.message}` };
+    }
+}
+
+export function toSingular(disaster: string): string {
+    // Mapping of plural to singular forms
+    const singularMapping: { [key: string]: string } = {
+        hurricanes: "hurricane",
+        tornadoes: "tornado",
+        tsunamis: "tsunami",
+        floods: "flood",
+        earthquakes: "earthquake"
+    };
+
+    // Convert to singular if it exists in the mapping, otherwise return original
+    return singularMapping[disaster.toLowerCase()] || disaster;
+}
+
+export const extractStatus = (executionItem: DatawolfExecutionFile | null): string => {
+    if (executionItem !== null && executionItem.stepState !== undefined) {
+        const statusArr = Object.values(executionItem.stepState);
+        // WAITING, QUEUED, RUNNING, FINISHED, ABORTED, FAILED, UNKNOWN
+        // if failed or aborted, return failed | aborted
+        // else if atleast one running, return running
+        // else if atleast one queued, return queued
+        // else if atleast one waiting, return waiting
+        // else if any unknown, return unknown
+        // last case where we need to check all values are finished then return finished
+        // else return undefined
+        if (statusArr.indexOf("FAILED") >= 0) return "FAILED";
+        if (statusArr.indexOf("ABORTED") >= 0) return "ABORTED";
+        if (statusArr.indexOf("RUNNING") >= 0) return "RUNNING";
+        if (statusArr.indexOf("QUEUED") >= 0) return "QUEUED";
+        if (statusArr.indexOf("WAITING") >= 0) return "WAITING";
+        if (statusArr.indexOf("UNKNOWN") >= 0) return "UNKNOWN";
+        if (statusArr.every((status) => status === "FINISHED")) return "FINISHED";
+    }
+    return "UNDEFINED";
+};
