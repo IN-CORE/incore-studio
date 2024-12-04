@@ -240,8 +240,8 @@ export const createWorkflowFileFromNodesAndEdges = ({
                 analysisNode.data.stepData !== undefined
                     ? analysisNode.data.stepData.tool.id
                     : analysisNode.data.toolID !== undefined
-                      ? analysisNode.data.toolID
-                      : ""
+                    ? analysisNode.data.toolID
+                    : ""
             ];
         let stepId = analysisNode.id;
         let title = tool.title;
@@ -467,11 +467,12 @@ const validateWorkflowFile = (
 
 export const addNewAnalysisNodesAndEdgesWorkflow = (
     workflowFile: DatawolfWorkflowFile,
-    dependencyGraph: DependencyGraph | null
+    dependencyGraph: DependencyGraph | null,
+    isExecution: boolean = false
 ): { workflow: ReactFlowWorkflow; valid: boolean; reason: string } => {
     let nodes: AppNode[] = [];
     let edges: Edge[] = [];
-
+    console.log(isExecution);
     let sourceNodeLookup: { [key: string]: { analysisId: string; handleId: string } } = {};
     let targetNodeLookup: { [key: string]: { analysisId: string; handleId: string }[] } = {};
     let mappingUUIDSet: Set<string> = new Set();
@@ -490,7 +491,7 @@ export const addNewAnalysisNodesAndEdgesWorkflow = (
                 return { id: newId, label: input.title, dataId: input.dataId, type: "input" };
             });
             // add Hazard input handle
-            if (step.tool.parameters.some((param) => param.title === "hazard_type" || param.title === "hazard_id")) {
+            if (step.tool.parameters.some((param) => param.title === "hazard_id")) {
                 inputHandles.push({ id: `${step.id}_hazard`, label: "Hazard", dataId: "hazard", type: "input" });
             }
             // add DFR3 Mapping Set input handle
@@ -522,7 +523,8 @@ export const addNewAnalysisNodesAndEdgesWorkflow = (
                     name: step.title,
                     stepData: step,
                     inputHandles: inputHandles,
-                    outputHandles: outputHandles
+                    outputHandles: outputHandles,
+                    isExecution: isExecution
                 }
             });
         });
@@ -537,7 +539,7 @@ export const addNewAnalysisNodesAndEdgesWorkflow = (
                         target: targetNodeId.analysisId,
                         sourceHandle: sourceNodeLookup[mappingUUID].handleId,
                         targetHandle: targetNodeId.handleId,
-                        type: "deletableEdge",
+                        type: isExecution ? "default" : "deletableEdge",
                         markerEnd: { type: MarkerType.ArrowClosed, color: "#000000" }
                     });
                 });

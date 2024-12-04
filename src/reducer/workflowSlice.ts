@@ -87,14 +87,14 @@ export const createNewWorkflow = createAsyncThunk(
 
 export const getWorkflow = createAsyncThunk(
     "workflow/getWorkflow",
-    async ({ workflowID }: { workflowID: string | undefined }) => {
+    async ({ workflowID, isExecution = false }: { workflowID: string | undefined; isExecution?: boolean }) => {
         if (!workflowID) {
             throw new Error("No workflow ID provided");
         }
         const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}`, { headers: getHeaders() });
         // const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}`);
 
-        return response.data;
+        return { data: response.data, isExecution: isExecution };
     }
 );
 
@@ -211,16 +211,20 @@ const workflowSlice = createSlice({
             })
             .addCase(getWorkflow.fulfilled, (state, action) => {
                 state.workflowLoading = false;
-                if (action.payload !== "") {
-                    let parsedWorkflow = addNewAnalysisNodesAndEdgesWorkflow(action.payload, state.dependencyGraph);
+                if (action.payload.data !== "") {
+                    let parsedWorkflow = addNewAnalysisNodesAndEdgesWorkflow(
+                        action.payload.data,
+                        state.dependencyGraph,
+                        action.payload.isExecution
+                    );
                     if (parsedWorkflow.valid) {
-                        state.currentWorkflow = action.payload;
+                        state.currentWorkflow = action.payload.data;
                         state.reactFlowWorkflow = parsedWorkflow.workflow;
-                        state.datawolfWorkflowID = action.payload.id;
+                        state.datawolfWorkflowID = action.payload.data.id;
                         state.workflowInvalid = false;
                     } else {
                         state.workflowInvalid = true;
-                        state.currentWorkflow = action.payload;
+                        state.currentWorkflow = action.payload.data;
                         state.workflowError = parsedWorkflow.reason;
                     }
                 } else {

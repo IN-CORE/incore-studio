@@ -185,36 +185,50 @@ const WorkflowEditor = (): JSX.Element => {
                                         </Tooltip>
                                     </Box>
                                     <Box>
-                                        <Typography
-                                            level="h3"
-                                            sx={{
-                                                fontWeight: 800,
-                                                fontSize: "18px",
-                                                lineHeight: "24px",
-                                                color: "#172B4D"
-                                            }}
-                                        >
-                                            {currentWorkflow?.title}
-                                        </Typography>
+                                        <Stack direction="row" spacing={2} alignItems="center">
+                                            <Typography
+                                                level="h3"
+                                                sx={{
+                                                    fontWeight: 800,
+                                                    fontSize: "18px",
+                                                    lineHeight: "24px",
+                                                    color: "#172B4D"
+                                                }}
+                                            >
+                                                {currentWorkflow?.title}
+                                            </Typography>
+                                            <Typography
+                                                level="h4"
+                                                sx={{
+                                                    fontWeight: 400,
+                                                    fontSize: "12px",
+                                                    lineHeight: "20px",
+                                                    color: "#42526EB2"
+                                                }}
+                                            >
+                                                {new Date(
+                                                    currentWorkflow ? currentWorkflow.created : ""
+                                                ).toLocaleDateString("en-US", {
+                                                    year: "numeric",
+                                                    month: "long",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit"
+                                                })}
+                                            </Typography>
+                                        </Stack>
                                         <Typography
                                             level="h4"
                                             sx={{
                                                 fontWeight: 400,
-                                                fontSize: "12px",
+                                                fontSize: "14px",
                                                 lineHeight: "20px",
                                                 color: "#42526EB2"
                                             }}
                                         >
-                                            Created on:{" "}
-                                            {new Date(
-                                                currentWorkflow ? currentWorkflow.created : ""
-                                            ).toLocaleDateString("en-US", {
-                                                year: "numeric",
-                                                month: "long",
-                                                day: "numeric",
-                                                hour: "2-digit",
-                                                minute: "2-digit"
-                                            })}
+                                            {currentWorkflow?.description === ""
+                                                ? "Description not provided"
+                                                : currentWorkflow?.description}
                                         </Typography>
                                     </Box>
                                 </Stack>

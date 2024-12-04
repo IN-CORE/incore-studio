@@ -46,7 +46,7 @@ const WorkflowExecutionSummaryComponent: React.FC<{
                     resourceName={currentWorkflow?.title}
                 />
                 <Box sx={{ display: "flex", flexGrow: 1, height: "500px", width: "100%" }}>
-                    <WorkflowSummary isFinalized={isFinalized} wfId={currentWorkflow?.id} />
+                    <WorkflowSummary isFinalized={isFinalized} wfId={currentWorkflow?.id} projectId={projectId} />
                 </Box>
             </Box>
             <Box mt={5}>
@@ -54,7 +54,7 @@ const WorkflowExecutionSummaryComponent: React.FC<{
                     Executions
                 </Typography>
                 <Divider />
-                <ExecutionCards wfId={currentWorkflow?.id} />
+                <ExecutionCards wfId={currentWorkflow?.id} projectId={projectId} />
             </Box>
         </Container>
     );

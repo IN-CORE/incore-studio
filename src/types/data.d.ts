@@ -329,4 +329,46 @@ interface ExecutionState {
     currentExecution: DatawolfExecutionFile | null;
     loading: boolean;
     error: string | null;
+    sidePanelData: {
+        open: boolean;
+        executionParametersAndInputsChecked: {
+            [key: string]: boolean; // key is analysis node id
+        };
+        currentAnalysis: {
+            name: string;
+            id: string;
+            inputDatasets: {
+                execFileEntryId: string;
+                label: string;
+                fromExisting: {
+                    analysisName: string;
+                    outputName: string;
+                } | null;
+                datasetId?: string;
+            }[];
+            inputParameters: {
+                execFileEntryId: string;
+                label: string;
+                value: string;
+            }[];
+            outputDatasets: {
+                execFileEntryId: string;
+                label: string;
+                datasetId: string;
+            }[];
+        };
+    };
+    createExecution: {
+        deleted: boolean;
+        title: string;
+        description: string;
+        workflowId: string;
+        creatorId: string;
+        parameters: {
+            [key: string]: string;
+        };
+        datasets: {
+            [key: string]: string;
+        };
+    };
 }

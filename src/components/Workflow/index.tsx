@@ -232,10 +232,108 @@ const LayoutedWorkflow = ({ sidePanelOpen }: { sidePanelOpen: boolean }) => {
     );
 };
 
-export default function Workflow({ sidePanelOpen }: { sidePanelOpen: boolean }) {
+const LayoutedExecutionWorkflow = ({ sidePanelOpen }: { sidePanelOpen: boolean }) => {
+    const { fitView } = useReactFlow();
+    const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges } = useStore(useShallow(selector));
+    const [layoutApplied, setLayoutApplied] = React.useState(false); // State to check if layout has been applied
+    const [nodesReady, setNodesReady] = React.useState(false);
+
+    // Function to check if all nodes have non-zero dimensions
+    const checkNodesReady = (nodes: AppNode[]) => {
+        return nodes.every(
+            (node) =>
+                node.measured?.width !== undefined &&
+                node.measured?.width > 0 &&
+                node.measured?.height !== undefined &&
+                node.measured?.height > 0
+        );
+    };
+
+    const fitViewOptions = {
+        padding: 0.2,
+        duration: 500, // 0.5-second animation
+        zoom: 0.5 // Minimum zoom level
+    };
+
+    const reformatNodes = () => {
+        const layouted = getLayoutedElements(nodes, edges);
+
+        setNodes([...layouted.nodes]);
+        setEdges([...layouted.edges]);
+
+        // Use requestAnimationFrame to apply the layout after browser is ready to render
+        requestAnimationFrame(() => {
+            fitView(fitViewOptions);
+        });
+    };
+
+    const onLayout = useCallback(() => {
+        reformatNodes();
+        setLayoutApplied(true);
+    }, [nodes, edges, fitView]);
+
+    React.useEffect(() => {
+        setLayoutApplied(false);
+        setNodesReady(false);
+    }, [nodes.length, sidePanelOpen]);
+
+    // Automatically layout when all nodes have their dimensions ready
+    React.useEffect(() => {
+        if (nodesReady && !layoutApplied) {
+            onLayout(); // Apply the vertical layout
+        }
+    }, [nodesReady, layoutApplied]);
+
+    // Use useEffect to apply layout after a delay to ensure nodes have been rendered
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!layoutApplied) {
+                const allNodesReady = checkNodesReady(nodes);
+                if (allNodesReady) {
+                    setNodesReady(true); // Trigger layout after delay
+                }
+            }
+        }, 250); // Adjust the delay as necessary based on render performance
+
+        return () => clearTimeout(timer);
+    }, [nodes, layoutApplied]);
+
+    return (
+        <div style={{ flex: 1 }}>
+            <ReactFlow
+                nodes={nodes}
+                nodeTypes={nodeTypes}
+                edges={edges}
+                edgeTypes={edgeTypes}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                multiSelectionKeyCode={null}
+                nodesDraggable={false}
+                deleteKeyCode={null}
+                fitView
+            >
+                <Background variant={BackgroundVariant.Dots} />
+                <MiniMap />
+                <Controls />
+            </ReactFlow>
+        </div>
+    );
+};
+
+export default function Workflow({
+    sidePanelOpen,
+    isExecution = false
+}: {
+    sidePanelOpen: boolean;
+    isExecution?: boolean;
+}) {
     return (
         <ReactFlowProvider>
-            <LayoutedWorkflow sidePanelOpen={sidePanelOpen} />
+            {isExecution ? (
+                <LayoutedExecutionWorkflow sidePanelOpen={sidePanelOpen} />
+            ) : (
+                <LayoutedWorkflow sidePanelOpen={sidePanelOpen} />
+            )}
         </ReactFlowProvider>
     );
 }

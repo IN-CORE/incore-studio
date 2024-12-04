@@ -30,10 +30,12 @@ const selector = (state: SummaryReactFlowStoreState) => ({
 
 const LayoutedWorkflow = ({
     isFinalized,
-    wfId
+    wfId,
+    projectId
 }: {
     isFinalized: boolean | undefined;
     wfId: string | undefined | null;
+    projectId: string | undefined;
 }) => {
     const { fitView } = useReactFlow();
     const navigate = useNavigate();
@@ -104,10 +106,9 @@ const LayoutedWorkflow = ({
     const handleClick = () => {
         if (isFinalized !== undefined && wfId !== undefined && wfId !== null) {
             if (isFinalized) {
-                // TODO: Create new execution modal popup and redirect.
-                navigate(`/execution/${wfId}`);
+                navigate(`/project/${projectId}/workflows/${wfId}/execution/create`);
             } else {
-                navigate(`/workflow-editor/${wfId}`);
+                navigate(`/project/${projectId}/workflows/${wfId}/workflow-editor`);
             }
         }
     };
@@ -156,14 +157,16 @@ const LayoutedWorkflow = ({
 
 export default function WorkflowSummary({
     isFinalized,
-    wfId
+    wfId,
+    projectId
 }: {
     isFinalized: boolean | undefined;
     wfId: string | undefined | null;
+    projectId: string | undefined;
 }) {
     return (
         <ReactFlowProvider>
-            <LayoutedWorkflow isFinalized={isFinalized} wfId={wfId} />
+            <LayoutedWorkflow isFinalized={isFinalized} wfId={wfId} projectId={projectId} />
         </ReactFlowProvider>
     );
 }

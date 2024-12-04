@@ -45,6 +45,7 @@ export type NewAnalysisNode = Node<
         outputHandles: { id: string; label: string; dataId: string; type: string }[];
         stepData?: DatawolfWorkflowFileStep;
         tool?: DatawolfWorkflowTool;
+        isExecution?: boolean;
     },
     "new-analysis-node"
 >;

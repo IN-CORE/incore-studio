@@ -12,7 +12,10 @@ import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import withLoading from "@app/components/hocs/withLoading";
 import { extractStatus } from "@app/utils";
 
-const ExecutionCardsComponent: React.FC<{ executions: DatawolfExecutionFile[] }> = ({ executions }) => {
+const ExecutionCardsComponent: React.FC<{ executions: DatawolfExecutionFile[]; projectId: string | undefined }> = ({
+    executions,
+    projectId
+}) => {
     // TODO: implement polling of datawolf to get current status
     const theme = useTheme();
 
@@ -82,7 +85,7 @@ const ExecutionCardsComponent: React.FC<{ executions: DatawolfExecutionFile[] }>
                                                 <Link
                                                     overlay
                                                     underline="none"
-                                                    href={`/execution/${execution.id}`}
+                                                    href={`/project/${projectId}/workflows/${execution.workflowId}/execution/${execution.id}`}
                                                     sx={{ color: "text.tertiary" }}
                                                 >
                                                     {execution.title}
@@ -123,7 +126,10 @@ const ExecutionCardsComponent: React.FC<{ executions: DatawolfExecutionFile[] }>
 
 const ExecutionCardsWithErrorHandlingAndLoading = withErrorHandling(withLoading(ExecutionCardsComponent));
 
-const ExecutionCards: React.FC<{ wfId: string | null | undefined }> = ({ wfId }) => {
+const ExecutionCards: React.FC<{ wfId: string | null | undefined; projectId: string | undefined }> = ({
+    wfId,
+    projectId
+}) => {
     const dispatch = useAppDispatch();
     const executions = useAppSelector((state) => state.workflow.executions);
     const loading = useAppSelector((state) => state.workflow.loading);
@@ -137,7 +143,12 @@ const ExecutionCards: React.FC<{ wfId: string | null | undefined }> = ({ wfId })
 
     return (
         <Box mt={2}>
-            <ExecutionCardsWithErrorHandlingAndLoading isLoading={loading} error={error} executions={executions} />
+            <ExecutionCardsWithErrorHandlingAndLoading
+                isLoading={loading}
+                error={error}
+                executions={executions}
+                projectId={projectId}
+            />
         </Box>
     );
 };

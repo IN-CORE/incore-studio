@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Create visualization components [#18](https://github.com/IN-CORE/incore-studio/issues/18)
 - Create empty project [#42](https://github.com/IN-CORE/incore-studio/issues/42)
 - Modal that adds resources from service to project [#40](https://github.com/IN-CORE/incore-studio/issues/40)
+- Create Execution component for displaying configurations and results [#5](https://github.com/IN-CORE/incore-studio/issues/5)
 
 ### Changed
 

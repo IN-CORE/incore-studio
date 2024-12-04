@@ -14,7 +14,27 @@ const initialState: ExecutionState = {
     executionReactFlowState: initialExecutionReactFlowState,
     currentExecution: null,
     loading: false,
-    error: null
+    error: null,
+    sidePanelData: {
+        open: false,
+        executionParametersAndInputsChecked: {},
+        currentAnalysis: {
+            name: "",
+            id: "",
+            inputDatasets: [],
+            inputParameters: [],
+            outputDatasets: []
+        }
+    },
+    createExecution: {
+        deleted: false,
+        title: "",
+        description: "",
+        workflowId: "",
+        creatorId: "",
+        parameters: {},
+        datasets: {}
+    }
 };
 
 export const getExecutionById = createAsyncThunk("execution/getExecutionById", async (executionId: string) => {
@@ -28,8 +48,52 @@ const executionSlice = createSlice({
     reducers: {
         resetExecutionState: (state) => {
             state.currentExecution = null;
+            state.executionReactFlowState = initialExecutionReactFlowState;
+            state.sidePanelData = {
+                open: false,
+                executionParametersAndInputsChecked: {},
+                currentAnalysis: {
+                    name: "",
+                    id: "",
+                    inputDatasets: [],
+                    inputParameters: [],
+                    outputDatasets: []
+                }
+            };
             state.loading = false;
             state.error = null;
+        },
+        toggleSidePanel: (state) => {
+            state.sidePanelData.open = !state.sidePanelData.open;
+        },
+        setExecutionSidePanelCheckStatus: (state, action) => {
+            let checkedData: { [key: string]: boolean } = {};
+            action.payload.forEach((item: string) => {
+                checkedData[item] = false;
+            });
+            state.sidePanelData.executionParametersAndInputsChecked = checkedData;
+        },
+        updateExecutionSidePanelCheckStatus: (state, action) => {
+            state.sidePanelData.executionParametersAndInputsChecked[action.payload] = true;
+        },
+        setExecutionSidePanelData: (state, action) => {
+            state.sidePanelData = {
+                ...state.sidePanelData,
+                ...action.payload
+            };
+        },
+        clearSidePanelData: (state) => {
+            state.sidePanelData = {
+                open: false,
+                executionParametersAndInputsChecked: {},
+                currentAnalysis: {
+                    name: "",
+                    id: "",
+                    inputDatasets: [],
+                    inputParameters: [],
+                    outputDatasets: []
+                }
+            };
         }
     },
     extraReducers: (builder) => {
@@ -56,6 +120,13 @@ const executionSlice = createSlice({
     }
 });
 
-export const { resetExecutionState } = executionSlice.actions;
+export const {
+    resetExecutionState,
+    toggleSidePanel,
+    setExecutionSidePanelCheckStatus,
+    updateExecutionSidePanelCheckStatus,
+    setExecutionSidePanelData,
+    clearSidePanelData
+} = executionSlice.actions;
 
 export default executionSlice.reducer;
