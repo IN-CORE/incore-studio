@@ -255,3 +255,21 @@ export function getStatusColor(status?: string) {
             return "neutral";
     }
 }
+
+// export function attachExecutionStatusToSteps(execution: DatawolfExecutionFile, workflow: Workflow) {
+//     if (!execution || !workflow || !workflow.steps) {
+//         throw new Error("Invalid execution or workflow data.");
+//     }
+//
+//     return workflow.steps.map((step) => {
+//         const stepId = step.id;
+//
+//         return {
+//             ...step,
+//             executionStatus: execution.stepState?.[stepId] || "NOT_STARTED", // Default to "NOT_STARTED"
+//             queuedAt: execution.stepsQueued?.[stepId] || null,
+//             startedAt: execution.stepsStart?.[stepId] || null,
+//             endedAt: execution.stepsEnd?.[stepId] || null,
+//         };
+//     });
+// }

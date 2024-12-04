@@ -468,11 +468,11 @@ const validateWorkflowFile = (
 export const addNewAnalysisNodesAndEdgesWorkflow = (
     workflowFile: DatawolfWorkflowFile,
     dependencyGraph: DependencyGraph | null,
-    isExecution: boolean = false
+    isExecution: boolean = false,
+    execution?: DatawolfExecutionFile | null
 ): { workflow: ReactFlowWorkflow; valid: boolean; reason: string } => {
     let nodes: AppNode[] = [];
     let edges: Edge[] = [];
-    console.log(isExecution);
     let sourceNodeLookup: { [key: string]: { analysisId: string; handleId: string } } = {};
     let targetNodeLookup: { [key: string]: { analysisId: string; handleId: string }[] } = {};
     let mappingUUIDSet: Set<string> = new Set();
@@ -522,6 +522,7 @@ export const addNewAnalysisNodesAndEdgesWorkflow = (
                     label: dependencyGraph !== null ? dependencyGraph[step.title].pretty_name : step.title,
                     name: step.title,
                     stepData: step,
+                    status: execution?.stepState?.[step.id] ?? undefined,
                     inputHandles: inputHandles,
                     outputHandles: outputHandles,
                     isExecution: isExecution
@@ -757,7 +758,8 @@ export const getNodeFromToolV2 = (
                 name: tool.title,
                 tool: tool,
                 inputHandles: inputHandles,
-                outputHandles: outputHandles
+                outputHandles: outputHandles,
+                status: undefined
             }
         };
     }

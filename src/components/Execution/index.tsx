@@ -64,7 +64,9 @@ const ExecutionComponent: React.FC<{
 
     React.useEffect(() => {
         if (!create && currentExecution !== null) {
-            appDispatch(getWorkflow({ workflowID: currentExecution.workflowId, isExecution: true }));
+            appDispatch(
+                getWorkflow({ workflowID: currentExecution.workflowId, isExecution: true, execution: currentExecution })
+            );
         } else if (create && wfId !== undefined) {
             appDispatch(getWorkflow({ workflowID: wfId, isExecution: true }));
         }

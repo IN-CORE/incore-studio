@@ -39,6 +39,7 @@ export type AnalysisNode = Node<
 
 export type NewAnalysisNode = Node<
     {
+        status: string | undefined;
         label: string;
         name: string;
         inputHandles: { id: string; label: string; dataId: string; type: string }[];
