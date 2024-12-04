@@ -427,10 +427,12 @@ const projectSlice = createSlice({
             .addCase(createProject.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(createProject.fulfilled, (state, action) => {
                 state.loading = false;
                 state.project = action.payload;
+                state.success = "Successfully created the project";
             })
             .addCase(createProject.rejected, (state, action) => {
                 state.loading = false;
@@ -482,10 +484,12 @@ const projectSlice = createSlice({
             .addCase(addDatasetToProject.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(addDatasetToProject.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projectDatasets = action.payload?.datasets;
+                state.success = "Successfully added datasets to the project";
             })
             .addCase(addDatasetToProject.rejected, (state, action) => {
                 state.loading = false;
@@ -566,10 +570,12 @@ const projectSlice = createSlice({
             .addCase(addHazardToProject.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(addHazardToProject.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projectHazards = action.payload?.hazards;
+                state.success = "Successfully added hazards to the project";
             })
             .addCase(addHazardToProject.rejected, (state, action) => {
                 state.loading = false;
@@ -622,10 +628,12 @@ const projectSlice = createSlice({
             .addCase(addDFR3MappingToProject.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = null;
             })
             .addCase(addDFR3MappingToProject.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projectDFR3Mappings = action.payload?.dfr3Mappings;
+                state.success = "Successfully added dfr3mappings to the project";
             })
             .addCase(addDFR3MappingToProject.rejected, (state, action) => {
                 state.loading = false;
