@@ -23,7 +23,7 @@ export function AnalysisNode({
     sourcePosition,
     targetPosition,
     selected
-}: NodeProps<AnalysisNode>): JSX.Element{
+}: NodeProps<AnalysisNode>): JSX.Element {
     const { nodes, edges, setNodes, setEdges } = useStore(useShallow(selector));
 
     const handleDelete = () => {
@@ -132,4 +132,4 @@ export function AnalysisNode({
             />
         </Box>
     );
-};
+}

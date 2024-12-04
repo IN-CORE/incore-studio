@@ -466,4 +466,4 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
             {data.isExecution && <Progress status="FINISHED" />}
         </Box>
     );
-};
+}
