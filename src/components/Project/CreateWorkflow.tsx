@@ -15,6 +15,7 @@ import {
     Typography
 } from "@mui/joy";
 import { createNewWorkflow, getDatawolfUser } from "@app/reducer/workflowSlice";
+import { addWorkflowToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { useNavigate } from "react-router-dom";
 
@@ -23,7 +24,7 @@ interface CreateWorkflowDialogProps {
     onClose: () => void;
 }
 
-export const CreateProjectDialog = (props: CreateWorkflowDialogProps) => {
+export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
     const { open, onClose } = props;
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -59,8 +60,31 @@ export const CreateProjectDialog = (props: CreateWorkflowDialogProps) => {
             const newWorkflowId = result?.payload?.id;
 
             if (newWorkflowId && project !== null) {
-                // Navigate to the workflow editor page
-                navigate(`/project/${project.id}/workflows/${newWorkflowId}/workflow-editor`);
+                let created = "";
+                let dateString = result.payload.created;
+                // Check if milliseconds are missing
+                if (!dateString.includes(".")) {
+                    // Insert ".000" before the timezone (+0000 or -0000)
+                    created = dateString.replace(/([+-]\d{4})$/, ".000$1");
+                }
+                let workflowObj = [
+                    {
+                        ...result.payload,
+                        created: created,
+                        type: "workflow"
+                    }
+                ];
+                // Add the new workflow to the project
+                const addWorkflowResult = await appDispatch(
+                    addWorkflowToProject({ projectId: project.id, workflows: workflowObj })
+                );
+
+                if (addWorkflowResult?.payload?.workflows) {
+                    // Navigate to the workflow editor page
+                    navigate(`/project/${project.id}/workflows/${newWorkflowId}/workflow-editor`);
+                } else {
+                    console.error("Error adding Workflow to project");
+                }
             } else {
                 console.error("Error creating Workflow");
             }

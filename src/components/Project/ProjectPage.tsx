@@ -40,7 +40,7 @@ import { CreateVisualizationDialog } from "@app/components/Project/Resource/Visu
 import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
 import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
-// import CreateWorkflow
+import { CreateWorkflowDialog } from "./CreateWorkflow";
 
 const ProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -257,6 +257,10 @@ const ProjectPage = (): JSX.Element => {
                                         icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Create New Workflow"
                                         onCreateClick={onCreateWorkflowClick}
+                                    />
+                                    <CreateWorkflowDialog
+                                        open={openCreateWorkflowDialog}
+                                        onClose={handleCloseCreateWorkflowDialog}
                                     />
                                     <ResourceCards
                                         resources={projectWorkflows}
