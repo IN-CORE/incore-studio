@@ -7,9 +7,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 import { useShallow } from "zustand/react/shallow";
 
-// @ts-ignore
 import { type AnalysisNode } from "@app/components/Workflow/nodes";
-import { Progress } from "@app/components/Progress";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
 
 const selector = (state: ReactFlowAppState) => ({
@@ -19,14 +17,13 @@ const selector = (state: ReactFlowAppState) => ({
     setEdges: state.setEdges
 });
 
-// @ts-ignore
-export const AnalysisNode = ({
+export function AnalysisNode({
     id,
     data,
     sourcePosition,
     targetPosition,
     selected
-}: NodeProps<AnalysisNode>): JSX.Element => {
+}: NodeProps<AnalysisNode>): JSX.Element{
     const { nodes, edges, setNodes, setEdges } = useStore(useShallow(selector));
 
     const handleDelete = () => {
@@ -133,7 +130,6 @@ export const AnalysisNode = ({
                     backgroundColor: "#AB47BC"
                 }}
             />
-            <Progress status="RUNNING" />
         </Box>
     );
 };

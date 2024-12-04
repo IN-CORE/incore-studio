@@ -35,4 +35,4 @@ export function AnalysisOutputNode({
             <Handle type="source" position={sourcePosition || Position.Bottom} />
         </Box>
     );
-}
+};
