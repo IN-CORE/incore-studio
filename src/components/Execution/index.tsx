@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { Box, Button, Typography, Stack, Tooltip, IconButton } from "@mui/joy";
@@ -244,10 +244,13 @@ const Execution: React.FC<{ create: boolean }> = ({ create }): JSX.Element => {
     const loading = useAppSelector((state) => state.execution.loading);
     const error = useAppSelector((state) => state.execution.error);
 
+    const [refreshing, setRefreshing] = useState(false);
+
     React.useEffect(() => {
         if (!create && exId !== undefined && currentExecution === null) {
             // Dispatch immediately on mount
             appDispatch(getExecutionById(exId));
+            setRefreshing(true);
 
             // Set up interval to fetch every 10 seconds
             const intervalId = setInterval(() => {
@@ -265,6 +268,7 @@ const Execution: React.FC<{ create: boolean }> = ({ create }): JSX.Element => {
             create={create}
             currentExecution={currentExecution}
             isLoading={loading}
+            isRefreshing={refreshing}
             error={error}
         />
     );
