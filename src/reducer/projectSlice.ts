@@ -387,6 +387,16 @@ export const addLayerToVisualization = createAsyncThunk(
     }
 );
 
+export const finalizeWorkflow = createAsyncThunk(
+    "projects/finalizeWorkflow",
+    async ({ projectId, workflowId }: { projectId: string; workflowId: string }) => {
+        const response = await axios.post(`${PROJECT_API_URL}/${projectId}/workflows/${workflowId}/finalize`, null, {
+            headers: getHeaders()
+        });
+        return response.data;
+    }
+);
+
 const projectSlice = createSlice({
     name: "projects",
     initialState,
@@ -752,6 +762,20 @@ const projectSlice = createSlice({
             .addCase(deleteProject.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to delete the project";
+            })
+            .addCase(finalizeWorkflow.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = null;
+            })
+            .addCase(finalizeWorkflow.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = "Successfully finalized the workflow";
+                state.projectWorkflows = action.payload.workflows;
+            })
+            .addCase(finalizeWorkflow.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to finalize the workflow";
             });
     }
 });

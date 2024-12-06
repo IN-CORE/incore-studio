@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Create empty project [#42](https://github.com/IN-CORE/incore-studio/issues/42)
 - Modal that adds resources from service to project [#40](https://github.com/IN-CORE/incore-studio/issues/40)
 - Create Execution component for displaying configurations and results [#5](https://github.com/IN-CORE/incore-studio/issues/5)
+- Ability to fill out parameters and input datasets for execution [#61](https://github.com/IN-CORE/incore-studio/issues/61)
 
 ### Changed
 

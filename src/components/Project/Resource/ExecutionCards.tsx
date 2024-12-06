@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Alert, Grid, Link, Box, Stack, Card, CardContent, Chip, Typography, Button, useTheme } from "@mui/joy";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -8,16 +9,31 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { parseDateTime } from "@app/utils";
 import { getExecutionsByWorkflowID } from "@app/reducer/workflowSlice";
+import { finalizeWorkflow } from "@app/reducer/projectSlice";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import withLoading from "@app/components/hocs/withLoading";
 import { extractStatus } from "@app/utils";
+import FinalizeWorkflowDialog from "@app/components/FinalizeWorkflowDialog";
 
-const ExecutionCardsComponent: React.FC<{ executions: DatawolfExecutionFile[]; projectId: string | undefined }> = ({
-    executions,
-    projectId
-}) => {
+const ExecutionCardsComponent: React.FC<{
+    executions: DatawolfExecutionFile[];
+    projectId: string | undefined;
+    wfId: string | undefined | null;
+    isFinalized: boolean | undefined;
+}> = ({ executions, projectId, isFinalized, wfId }) => {
     // TODO: implement polling of datawolf to get current status
     const theme = useTheme();
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const [openFinalize, setOpenFinalize] = React.useState(false);
+    const [confirmFinalize, setConfirmFinalize] = React.useState(false);
+
+    React.useEffect(() => {
+        if (confirmFinalize && wfId && projectId) {
+            dispatch(finalizeWorkflow({ projectId, workflowId: wfId }));
+            navigate(`/project/${projectId}/workflows/${wfId}/execution/create`);
+        }
+    }, [confirmFinalize]);
 
     return (
         <Grid container spacing={3}>
@@ -27,11 +43,22 @@ const ExecutionCardsComponent: React.FC<{ executions: DatawolfExecutionFile[]; p
                         <Alert startDecorator={<ErrorOutlineRoundedIcon />} color="primary">
                             No executions found.
                         </Alert>
-                        {/* TODO: create new execution modal open and redirect */}
+                        <FinalizeWorkflowDialog
+                            open={openFinalize}
+                            onClose={() => setOpenFinalize(false)}
+                            confirmFinalize={() => setConfirmFinalize(true)}
+                        />
                         <Button
                             variant="solid"
                             sx={{ backgroundColor: "primary.main" }}
                             startDecorator={<AddRoundedIcon />}
+                            onClick={() => {
+                                if (isFinalized) {
+                                    navigate(`/project/${projectId}/workflows/${wfId}/execution/create`);
+                                } else {
+                                    setOpenFinalize(true);
+                                }
+                            }}
                         >
                             Create New Execution
                         </Button>
@@ -126,10 +153,11 @@ const ExecutionCardsComponent: React.FC<{ executions: DatawolfExecutionFile[]; p
 
 const ExecutionCardsWithErrorHandlingAndLoading = withErrorHandling(withLoading(ExecutionCardsComponent));
 
-const ExecutionCards: React.FC<{ wfId: string | null | undefined; projectId: string | undefined }> = ({
-    wfId,
-    projectId
-}) => {
+const ExecutionCards: React.FC<{
+    wfId: string | null | undefined;
+    projectId: string | undefined;
+    isFinalized: boolean | undefined;
+}> = ({ wfId, projectId, isFinalized }) => {
     const dispatch = useAppDispatch();
     const executions = useAppSelector((state) => state.workflow.executions);
     const loading = useAppSelector((state) => state.workflow.loading);
@@ -147,7 +175,9 @@ const ExecutionCards: React.FC<{ wfId: string | null | undefined; projectId: str
                 isLoading={loading}
                 error={error}
                 executions={executions}
+                wfId={wfId}
                 projectId={projectId}
+                isFinalized={isFinalized}
             />
         </Box>
     );

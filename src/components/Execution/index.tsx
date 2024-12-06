@@ -11,7 +11,7 @@ import {
     setExecutionSidePanelCheckStatus
     // updateExecutionSidePanelCheckStatus
 } from "@app/reducer/executionSlice";
-import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { useAppDispatch, useAppSelector, useExecutionTemplate } from "@app/store/hooks";
 import withLoading from "@app/components/hocs/withLoading";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
@@ -20,6 +20,7 @@ import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import SidePanel from "./SidePanel";
 import Workflow from "@app/components/Workflow";
 import { getWorkflow } from "@app/reducer/workflowSlice";
+import CreateExecutionDialog from "./CreateExecutionDialog";
 
 import { ReactSVG } from "react-svg";
 
@@ -48,6 +49,12 @@ const ExecutionComponent: React.FC<{
     const reactFlowWorkflow = useAppSelector((state) => state.workflow.reactFlowWorkflow);
     const workflowLoading = useAppSelector((state) => state.workflow.workflowLoading);
     const workflowError = useAppSelector((state) => state.workflow.workflowError);
+    const executionParametersAndInputsChecked = useAppSelector(
+        (state) => state.execution.executionParametersAndInputsChecked
+    );
+    const [openExecutionDialog, setOpenExecutionDialog] = React.useState(false);
+
+    useExecutionTemplate(wfId);
 
     const handleBackClick = (wfId: string | undefined) => {
         appDispatch(resetExecutionState());
@@ -165,6 +172,13 @@ const ExecutionComponent: React.FC<{
                             )}
                             <Button
                                 variant="solid"
+                                disabled={
+                                    create
+                                        ? !Object.values(executionParametersAndInputsChecked).every(
+                                              (value) => value === true
+                                          )
+                                        : false
+                                }
                                 startDecorator={
                                     create ? (
                                         <ReactSVG
@@ -187,6 +201,13 @@ const ExecutionComponent: React.FC<{
                                     alignItems: "center", // Aligns text and icon vertically
                                     gap: "8px"
                                 }}
+                                onClick={() => {
+                                    if (create) {
+                                        setOpenExecutionDialog(true);
+                                    } else {
+                                        navigate(`/project/${id}/workflows/${wfId}/execution/create`);
+                                    }
+                                }}
                             >
                                 {create ? "Execute Workflow" : "Create new"}
                             </Button>
@@ -207,6 +228,12 @@ const ExecutionComponent: React.FC<{
                     </Box>
                 </Stack>
             </Box>
+            <CreateExecutionDialog
+                open={openExecutionDialog}
+                onClose={() => setOpenExecutionDialog(false)}
+                wfId={wfId}
+                id={id}
+            />
 
             <Box sx={{ display: "flex", flexGrow: 1, position: "relative" }}>
                 <WorkflowWithLoadingAndErrorHandling

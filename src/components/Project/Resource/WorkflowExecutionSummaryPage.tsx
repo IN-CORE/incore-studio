@@ -54,7 +54,7 @@ const WorkflowExecutionSummaryComponent: React.FC<{
                     Executions
                 </Typography>
                 <Divider />
-                <ExecutionCards wfId={currentWorkflow?.id} projectId={projectId} />
+                <ExecutionCards wfId={currentWorkflow?.id} projectId={projectId} isFinalized={isFinalized} />
             </Box>
         </Container>
     );

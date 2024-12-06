@@ -1,14 +1,18 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 import config from "@app/app.config";
 import { getHeaders } from "@app/utils";
 import axios from "axios";
 
 import {
     Box,
+    Button,
     Divider,
     Grid,
     IconButton,
     Input,
+    Option,
+    Select,
     Sheet,
     Stack,
     Tab,
@@ -23,17 +27,91 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import StorageIcon from "@mui/icons-material/Storage";
 import BookmarkAddRoundedIcon from "@mui/icons-material/BookmarkAddRounded";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
+import AddIcon from "@mui/icons-material/Add";
 
-import { toggleSidePanel } from "@app/reducer/executionSlice";
+import {
+    updateCreateExecutionTemplateDatasetAndParams,
+    updateExecutionSidePanelCheckStatus,
+    clearSidePanelData
+} from "@app/reducer/executionSlice";
+import { addDatasetToProject, getProject } from "@app/reducer/projectSlice";
+
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 
 const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const appDispatch = useAppDispatch();
 
+    const { id } = useParams<{ id: string }>();
+
     const sidePanelData = useAppSelector((state) => state.execution.sidePanelData);
+    const project = useAppSelector((state) => state.project.project);
+
+    const createExecution = useAppSelector((state) => state.execution.createExecution);
+
+    const getInputDatasetInitialState = (): { [key: string]: string } => {
+        let initialState: { [key: string]: string } = {};
+        sidePanelData.currentAnalysis.inputDatasets.forEach((inputDataset) => {
+            if (inputDataset.fromExisting === null) {
+                if (inputDataset.label.includes("Hazard") || inputDataset.label.includes("DFR3")) {
+                    initialState[inputDataset.execFileEntryId] =
+                        createExecution.parameters[inputDataset.execFileEntryId] ?? "";
+                } else {
+                    initialState[inputDataset.execFileEntryId] =
+                        createExecution.datasets[inputDataset.execFileEntryId] ?? "";
+                }
+            }
+        });
+        return initialState;
+    };
+
+    const getInitialParametersState = (): { [key: string]: string } => {
+        let initialState: { [key: string]: string } = {};
+        sidePanelData.currentAnalysis.inputParameters.forEach((inputParameter) => {
+            initialState[inputParameter.execFileEntryId] =
+                createExecution.parameters[inputParameter.execFileEntryId] ?? inputParameter.value;
+            if (inputParameter.label.includes("Service")) {
+                initialState[inputParameter.execFileEntryId] = config.hostname;
+            }
+        });
+        return initialState;
+    };
+
+    React.useEffect(() => {
+        if (project === null) {
+            appDispatch(getProject(id ?? ""));
+        }
+    }, [project]);
+
+    const [datasetSelect, setDatasetSelect] = React.useState<{ [key: string]: string }>(getInputDatasetInitialState());
+    const [parameters, setParameters] = React.useState<{ [key: string]: string }>(getInitialParametersState());
+
+    React.useEffect(() => {
+        setDatasetSelect(getInputDatasetInitialState());
+        setParameters(getInitialParametersState());
+    }, [sidePanelData, createExecution]);
+
+    const updateParameter = (execFileEntryId: string, value: string) => {
+        setParameters((prev) => {
+            return { ...prev, [execFileEntryId]: value };
+        });
+    };
+
+    const updateDatasetSelect = (execFileEntryId: string, datasetId: string) => {
+        setDatasetSelect((prev) => {
+            return { ...prev, [execFileEntryId]: datasetId };
+        });
+    };
 
     const handleClose = () => {
-        appDispatch(toggleSidePanel());
+        appDispatch(clearSidePanelData());
+    };
+
+    // Add dataset to project from service
+    const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = React.useState(false);
+    const addDatasetFunc = (projectId: string, resource: Dataset) => {
+        appDispatch(addDatasetToProject({ projectId, datasets: [resource] }));
+        setOpenAddDatasetFromServiceDialog(false);
     };
 
     const downloadFile = async (datasetId: string) => {
@@ -59,6 +137,24 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
             }
         }
     };
+
+    const projectDatasetOptions = project?.datasets.map((dataset) => (
+        <Option key={dataset.id} value={dataset.id}>
+            {dataset.title}
+        </Option>
+    ));
+
+    const projectHazardOptions = project?.hazards.map((hazard) => (
+        <Option key={hazard.id} value={hazard.id}>
+            {hazard.name}
+        </Option>
+    ));
+
+    const projectDFR3MappingOptions = project?.dfr3Mappings.map((dfr3Mapping) => (
+        <Option key={dfr3Mapping.id} value={dfr3Mapping.id}>
+            {dfr3Mapping.name}
+        </Option>
+    ));
 
     if (!sidePanelData.open) {
         return null;
@@ -93,6 +189,16 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                 </Tooltip>
             </Stack>
             <Divider role="presentation" />
+            {/* For adding dataset from service */}
+            <AddFromServiceDialog
+                projectId={id ?? ""}
+                resourceType="dataset"
+                open={openAddDatasetFromServiceDialog}
+                onClose={() => {
+                    setOpenAddDatasetFromServiceDialog(false);
+                }}
+                onAddClick={addDatasetFunc}
+            />
             <Stack
                 direction="column"
                 spacing={4}
@@ -131,114 +237,268 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                     </TabList>
 
                     <TabPanel sx={{ padding: "24px" }} value={0}>
-                        {sidePanelData.currentAnalysis.inputDatasets.length > 0 && (
-                            <Box mb={4}>
-                                <Typography
-                                    level="h4"
-                                    sx={{
-                                        fontWeight: 590,
-                                        fontSize: "16px",
-                                        lineHeight: "24px",
-                                        paragraph: "28px",
-                                        color: "#172B4D",
-                                        letter: "5%",
-                                        textTransform: "uppercase",
-                                        mb: "10px"
-                                    }}
-                                >
-                                    Input Datasets
-                                </Typography>
-                                <Stack direction="column" spacing={2}>
-                                    {sidePanelData.currentAnalysis.inputDatasets.map((inputDataset) => (
-                                        <Box key={inputDataset.execFileEntryId}>
-                                            <Typography
-                                                level="h4"
-                                                sx={{
-                                                    fontWeight: 400,
-                                                    fontSize: "14px",
-                                                    lineHeight: "24px",
-                                                    paragraph: "28px",
-                                                    color: "#172B4D"
-                                                }}
-                                            >
-                                                {inputDataset.label}
-                                            </Typography>
-                                            {inputDataset.fromExisting !== null ? (
+                        <form
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                                let actualDatasets: { [key: string]: string } = {};
+                                let actualParameters: { [key: string]: string } = {};
+                                sidePanelData.currentAnalysis.inputDatasets.forEach((inputDataset) => {
+                                    if (inputDataset.fromExisting === null) {
+                                        if (
+                                            inputDataset.label.includes("Hazard") ||
+                                            inputDataset.label.includes("DFR3")
+                                        ) {
+                                            actualParameters[inputDataset.execFileEntryId] =
+                                                datasetSelect[inputDataset.execFileEntryId];
+                                        } else {
+                                            actualDatasets[inputDataset.execFileEntryId] =
+                                                datasetSelect[inputDataset.execFileEntryId];
+                                        }
+                                    }
+                                });
+                                actualParameters = { ...actualParameters, ...parameters };
+                                appDispatch(
+                                    updateCreateExecutionTemplateDatasetAndParams({
+                                        datasets: actualDatasets,
+                                        parameters: actualParameters
+                                    })
+                                );
+                                appDispatch(updateExecutionSidePanelCheckStatus(sidePanelData.currentAnalysis.id));
+                                appDispatch(clearSidePanelData());
+                            }}
+                        >
+                            {sidePanelData.currentAnalysis.inputDatasets.length > 0 && (
+                                <Box mb={4}>
+                                    <Typography
+                                        level="h4"
+                                        sx={{
+                                            fontWeight: 590,
+                                            fontSize: "16px",
+                                            lineHeight: "24px",
+                                            paragraph: "28px",
+                                            color: "#172B4D",
+                                            letter: "5%",
+                                            textTransform: "uppercase",
+                                            mb: "10px"
+                                        }}
+                                    >
+                                        Input Datasets
+                                    </Typography>
+                                    <Stack direction="column" spacing={2}>
+                                        {sidePanelData.currentAnalysis.inputDatasets.map((inputDataset) => (
+                                            <Box key={inputDataset.execFileEntryId}>
+                                                {inputDataset.required ? (
+                                                    <Typography
+                                                        level="h4"
+                                                        component="label"
+                                                        htmlFor={`${inputDataset.label}-select`}
+                                                        sx={{
+                                                            display: "block",
+                                                            mb: 1,
+                                                            fontWeight: 400,
+                                                            fontSize: "14px",
+                                                            lineHeight: "24px",
+                                                            paragraph: "28px",
+                                                            color: "#172B4D"
+                                                        }}
+                                                    >
+                                                        {inputDataset.label}
+                                                        <Typography
+                                                            component="span"
+                                                            sx={{ color: "red", marginLeft: 0.5 }}
+                                                        >
+                                                            *
+                                                        </Typography>
+                                                    </Typography>
+                                                ) : (
+                                                    <Typography
+                                                        level="h4"
+                                                        sx={{
+                                                            display: "block",
+                                                            mb: 1,
+                                                            fontWeight: 400,
+                                                            fontSize: "14px",
+                                                            lineHeight: "24px",
+                                                            paragraph: "28px",
+                                                            color: "#172B4D"
+                                                        }}
+                                                    >
+                                                        {inputDataset.label}
+                                                    </Typography>
+                                                )}
+                                                {inputDataset.fromExisting !== null ? (
+                                                    <Input
+                                                        disabled
+                                                        value={`Imported from ${inputDataset.fromExisting.outputName}`}
+                                                        variant="solid"
+                                                        sx={{
+                                                            "&.Mui-disabled": {
+                                                                color: "#AB47BC",
+                                                                backgroundColor: "#F3E5F5"
+                                                            }
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <Stack direction="row" spacing={2} alignItems="center">
+                                                        <Box flexGrow={1}>
+                                                            <Select
+                                                                id={`${inputDataset.label}-select`}
+                                                                disabled={!createMode}
+                                                                value={
+                                                                    datasetSelect[inputDataset.execFileEntryId] ?? ""
+                                                                }
+                                                                placeholder={`Select ${
+                                                                    inputDataset.label.includes("Hazard")
+                                                                        ? "Hazard"
+                                                                        : inputDataset.label.includes("DFR3")
+                                                                        ? "DFR3 Mapping"
+                                                                        : "Dataset"
+                                                                }`}
+                                                                name={inputDataset.execFileEntryId}
+                                                                required={
+                                                                    inputDataset.label.includes("DFR3")
+                                                                        ? false
+                                                                        : inputDataset.required
+                                                                }
+                                                                onChange={(
+                                                                    _e: React.SyntheticEvent | null,
+                                                                    value: string | null
+                                                                ) => {
+                                                                    // add logic to handle dataset, hazard and dfr3 selections
+                                                                    updateDatasetSelect(
+                                                                        inputDataset.execFileEntryId,
+                                                                        value ?? ""
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {!createMode && (
+                                                                    <Option value={inputDataset.datasetId}>
+                                                                        {inputDataset.datasetId}
+                                                                    </Option>
+                                                                )}
+                                                                {inputDataset.label.includes("Hazard")
+                                                                    ? projectHazardOptions
+                                                                    : inputDataset.label.includes("DFR3")
+                                                                    ? projectDFR3MappingOptions
+                                                                    : projectDatasetOptions}
+                                                            </Select>
+                                                        </Box>
+                                                        {createMode && (
+                                                            <Tooltip title="Add from Service" placement="bottom">
+                                                                <IconButton
+                                                                    onClick={() => {
+                                                                        setOpenAddDatasetFromServiceDialog(true);
+                                                                    }}
+                                                                >
+                                                                    <AddIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        )}
+                                                    </Stack>
+                                                )}
+                                            </Box>
+                                        ))}
+                                    </Stack>
+                                </Box>
+                            )}
+                            {sidePanelData.currentAnalysis.inputParameters.length > 0 && (
+                                <Box>
+                                    <Typography
+                                        level="h4"
+                                        sx={{
+                                            fontWeight: 590,
+                                            fontSize: "16px",
+                                            lineHeight: "24px",
+                                            paragraph: "28px",
+                                            color: "#172B4D",
+                                            letter: "5%",
+                                            textTransform: "uppercase",
+                                            mb: "10px"
+                                        }}
+                                    >
+                                        Input Parameters
+                                    </Typography>
+                                    <Stack direction="column" spacing={2}>
+                                        {sidePanelData.currentAnalysis.inputParameters.map((inputParameter) => (
+                                            <Box key={inputParameter.execFileEntryId}>
+                                                {inputParameter.required ? (
+                                                    <Typography
+                                                        level="h4"
+                                                        component="label"
+                                                        htmlFor={`${inputParameter.label}-input`}
+                                                        sx={{
+                                                            display: "block",
+                                                            mb: 1,
+                                                            fontWeight: 400,
+                                                            fontSize: "14px",
+                                                            lineHeight: "24px",
+                                                            paragraph: "28px",
+                                                            color: "#172B4D"
+                                                        }}
+                                                    >
+                                                        {inputParameter.label}
+                                                        <Typography
+                                                            component="span"
+                                                            sx={{ color: "red", marginLeft: 0.5 }}
+                                                        >
+                                                            *
+                                                        </Typography>
+                                                    </Typography>
+                                                ) : (
+                                                    <Typography
+                                                        level="h4"
+                                                        sx={{
+                                                            display: "block",
+                                                            mb: 1,
+                                                            fontWeight: 400,
+                                                            fontSize: "14px",
+                                                            lineHeight: "24px",
+                                                            paragraph: "28px",
+                                                            color: "#172B4D"
+                                                        }}
+                                                    >
+                                                        {inputParameter.label}
+                                                    </Typography>
+                                                )}
                                                 <Input
-                                                    disabled
-                                                    value={`Imported from ${inputDataset.fromExisting.outputName}`}
-                                                    variant="solid"
-                                                    sx={{
-                                                        "&.Mui-disabled": {
-                                                            color: "#AB47BC",
-                                                            backgroundColor: "#F3E5F5"
+                                                    disabled={!createMode}
+                                                    value={parameters[inputParameter.execFileEntryId]}
+                                                    name={inputParameter.execFileEntryId}
+                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                        if (
+                                                            inputParameter.label !== "Analysis" &&
+                                                            !inputParameter.label.includes("Service")
+                                                        ) {
+                                                            updateParameter(
+                                                                inputParameter.execFileEntryId,
+                                                                e.target.value
+                                                            );
                                                         }
                                                     }}
-                                                />
-                                            ) : (
-                                                <Input
-                                                    disabled
-                                                    value={inputDataset.datasetId}
-                                                    variant="solid"
+                                                    variant={createMode ? "outlined" : "solid"}
                                                     sx={{
                                                         "&.Mui-disabled": {
                                                             color: "#1E293B"
                                                         }
                                                     }}
                                                 />
-                                            )}
-                                        </Box>
-                                    ))}
-                                </Stack>
-                            </Box>
-                        )}
-                        {sidePanelData.currentAnalysis.inputParameters.length > 0 && (
-                            <Box>
-                                <Typography
-                                    level="h4"
-                                    sx={{
-                                        fontWeight: 590,
-                                        fontSize: "16px",
-                                        lineHeight: "24px",
-                                        paragraph: "28px",
-                                        color: "#172B4D",
-                                        letter: "5%",
-                                        textTransform: "uppercase",
-                                        mb: "10px"
-                                    }}
-                                >
-                                    Input Parameters
-                                </Typography>
-                                <Stack direction="column" spacing={2}>
-                                    {sidePanelData.currentAnalysis.inputParameters.map((inputParameter) => (
-                                        <Box key={inputParameter.execFileEntryId}>
-                                            <Typography
-                                                level="h4"
-                                                sx={{
-                                                    fontWeight: 400,
-                                                    fontSize: "14px",
-                                                    lineHeight: "24px",
-                                                    paragraph: "28px",
-                                                    color: "#172B4D"
-                                                }}
-                                            >
-                                                {inputParameter.label}
-                                            </Typography>
-                                            <Input
-                                                disabled
-                                                value={inputParameter.value}
-                                                variant="solid"
-                                                sx={{
-                                                    "&.Mui-disabled": {
-                                                        color: "#1E293B"
-                                                    }
-                                                }}
-                                            />
-                                        </Box>
-                                    ))}
-                                </Stack>
-                            </Box>
-                        )}
+                                            </Box>
+                                        ))}
+                                    </Stack>
+                                </Box>
+                            )}
+                            {createMode && (
+                                <Box mt={4}>
+                                    <Button
+                                        type="submit"
+                                        variant="solid"
+                                        sx={{ backgroundColor: "primary.main", color: "white" }}
+                                    >
+                                        Save this configuration
+                                    </Button>
+                                </Box>
+                            )}
+                        </form>
                     </TabPanel>
                     <TabPanel value={1}>
                         <Box>
