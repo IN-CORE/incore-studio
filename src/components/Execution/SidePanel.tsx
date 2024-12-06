@@ -34,7 +34,12 @@ import {
     updateExecutionSidePanelCheckStatus,
     clearSidePanelData
 } from "@app/reducer/executionSlice";
-import { addDatasetToProject, getProject } from "@app/reducer/projectSlice";
+import {
+    addDatasetToProject,
+    addDFR3MappingToProject,
+    addHazardToProject,
+    getProject
+} from "@app/reducer/projectSlice";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
@@ -112,6 +117,20 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const addDatasetFunc = (projectId: string, resource: Dataset) => {
         appDispatch(addDatasetToProject({ projectId, datasets: [resource] }));
         setOpenAddDatasetFromServiceDialog(false);
+    };
+
+    // Add hazard to project from service
+    const [openAddHazardFromServiceDialog, setOpenAddHazardFromServiceDialog] = React.useState(false);
+    const addHazardFunc = (projectId: string, resource: Hazard) => {
+        appDispatch(addHazardToProject({ projectId, hazards: [resource] }));
+        setOpenAddHazardFromServiceDialog(false);
+    };
+
+    // Add hazard to project from service
+    const [openAddDFR3MappingFromServiceDialog, setOpenAddDFR3MappingFromServiceDialog] = React.useState(false);
+    const addDFR3MappingFunc = (projectId: string, resource: DFR3Mapping) => {
+        appDispatch(addDFR3MappingToProject({ projectId, dfr3Mappings: [resource] }));
+        setOpenAddDFR3MappingFromServiceDialog(false);
     };
 
     const downloadFile = async (datasetId: string) => {
@@ -198,6 +217,25 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                     setOpenAddDatasetFromServiceDialog(false);
                 }}
                 onAddClick={addDatasetFunc}
+            />
+            {/* For adding Hazard from service */}
+            <AddFromServiceDialog
+                projectId={id ?? ""}
+                resourceType="hazard"
+                open={openAddHazardFromServiceDialog}
+                onClose={() => {
+                    setOpenAddHazardFromServiceDialog(false);
+                }}
+                onAddClick={addHazardFunc}
+            />
+            <AddFromServiceDialog
+                projectId={id ?? ""}
+                resourceType="DFR3 Mapping"
+                open={openAddDFR3MappingFromServiceDialog}
+                onClose={() => {
+                    setOpenAddDFR3MappingFromServiceDialog(false);
+                }}
+                onAddClick={addDFR3MappingFunc}
             />
             <Stack
                 direction="column"
@@ -387,7 +425,13 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                             <Tooltip title="Add from Service" placement="bottom">
                                                                 <IconButton
                                                                     onClick={() => {
-                                                                        setOpenAddDatasetFromServiceDialog(true);
+                                                                        inputDataset.label.includes("Hazard")
+                                                                            ? setOpenAddHazardFromServiceDialog(true)
+                                                                            : inputDataset.label.includes("DFR3")
+                                                                            ? setOpenAddDFR3MappingFromServiceDialog(
+                                                                                  true
+                                                                              )
+                                                                            : setOpenAddDatasetFromServiceDialog(true);
                                                                     }}
                                                                 >
                                                                     <AddIcon />
