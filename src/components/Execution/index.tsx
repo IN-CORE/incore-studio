@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { Box, Button, Typography, Stack, Tooltip, IconButton } from "@mui/joy";
@@ -11,7 +11,7 @@ import {
     setExecutionSidePanelCheckStatus
     // updateExecutionSidePanelCheckStatus
 } from "@app/reducer/executionSlice";
-import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { useAppDispatch, useAppSelector, useExecutionPolling } from "@app/store/hooks";
 import withLoading from "@app/components/hocs/withLoading";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
@@ -34,20 +34,23 @@ const WorkflowWithLoading = withLoading(Workflow);
 const WorkflowWithLoadingAndErrorHandling = withErrorHandling(WorkflowWithLoading);
 
 const ExecutionComponent: React.FC<{
-    currentExecution: DatawolfExecutionFile | null;
     create: boolean;
-    wfId: string | undefined;
-}> = ({ currentExecution, create, wfId }): JSX.Element => {
+}> = ({ create }): JSX.Element => {
     const navigate = useNavigate();
+    const { wfID } = useParams<{ exId: string; wfID: string }>();
     const appDispatch = useAppDispatch();
     const { id } = useParams<{ id: string }>();
     const { setNodes, setEdges } = useStore(useShallow(selector));
 
     const sidePanelData = useAppSelector((state) => state.execution.sidePanelData);
     // const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
+    const currentExecution = useAppSelector((state) => state.execution.currentExecution);
     const reactFlowWorkflow = useAppSelector((state) => state.workflow.reactFlowWorkflow);
     const workflowLoading = useAppSelector((state) => state.workflow.workflowLoading);
     const workflowError = useAppSelector((state) => state.workflow.workflowError);
+    if (currentExecution !== null) {
+        useExecutionPolling(currentExecution.id, 10000);
+    }
 
     const handleBackClick = (wfId: string | undefined) => {
         appDispatch(resetExecutionState());
@@ -64,11 +67,9 @@ const ExecutionComponent: React.FC<{
 
     React.useEffect(() => {
         if (!create && currentExecution !== null) {
-            appDispatch(
-                getWorkflow({ workflowID: currentExecution.workflowId, isExecution: true, execution: currentExecution })
-            );
-        } else if (create && wfId !== undefined) {
-            appDispatch(getWorkflow({ workflowID: wfId, isExecution: true }));
+            appDispatch(getWorkflow({ workflowID: currentExecution.workflowId, isExecution: true }));
+        } else if (create && wfID !== undefined) {
+            appDispatch(getWorkflow({ workflowID: wfID, isExecution: true }));
         }
     }, []);
 
@@ -80,7 +81,7 @@ const ExecutionComponent: React.FC<{
                         <Stack direction="row" spacing={2}>
                             <Box sx={{ alignContent: "center" }}>
                                 <Tooltip title="Go back" variant="plain" color="neutral" sx={{ color: "#172B4D" }}>
-                                    <IconButton variant="plain" onClick={() => handleBackClick(wfId)}>
+                                    <IconButton variant="plain" onClick={() => handleBackClick(wfID)}>
                                         <ArrowBackIosRoundedIcon />
                                     </IconButton>
                                 </Tooltip>
@@ -238,40 +239,20 @@ const ExecutionComponentWithErrorHandling = withErrorHandling(ExecutionComponent
 const ExecutionComponentWithLoadingAndErrorHandling = withLoading(ExecutionComponentWithErrorHandling);
 
 const Execution: React.FC<{ create: boolean }> = ({ create }): JSX.Element => {
-    const { exId, wfID } = useParams<{ exId: string; wfID: string }>();
+    const { exId } = useParams<{ exId: string; wfID: string }>();
     const appDispatch = useAppDispatch();
     const currentExecution = useAppSelector((state) => state.execution.currentExecution);
     const loading = useAppSelector((state) => state.execution.loading);
     const error = useAppSelector((state) => state.execution.error);
 
-    const [refreshing, setRefreshing] = useState(false);
-
     React.useEffect(() => {
         if (!create && exId !== undefined && currentExecution === null) {
             // Dispatch immediately on mount
             appDispatch(getExecutionById(exId));
-            setRefreshing(true);
-
-            // Set up interval to fetch every 10 seconds
-            const intervalId = setInterval(() => {
-                appDispatch(getExecutionById(exId));
-            }, 10000);
-
-            // Clear interval on unmount
-            return () => clearInterval(intervalId);
         }
     }, []);
 
-    return (
-        <ExecutionComponentWithLoadingAndErrorHandling
-            wfId={wfID}
-            create={create}
-            currentExecution={currentExecution}
-            isLoading={loading}
-            isRefreshing={refreshing}
-            error={error}
-        />
-    );
+    return <ExecutionComponentWithLoadingAndErrorHandling create={create} isLoading={loading} error={error} />;
 };
 
 export default Execution;

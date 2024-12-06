@@ -87,22 +87,14 @@ export const createNewWorkflow = createAsyncThunk(
 
 export const getWorkflow = createAsyncThunk(
     "workflow/getWorkflow",
-    async ({
-        workflowID,
-        isExecution = false,
-        execution = undefined
-    }: {
-        workflowID: string | undefined;
-        isExecution?: boolean;
-        execution?: DatawolfExecutionFile;
-    }) => {
+    async ({ workflowID, isExecution = false }: { workflowID: string | undefined; isExecution?: boolean }) => {
         if (!workflowID) {
             throw new Error("No workflow ID provided");
         }
         const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}`, { headers: getHeaders() });
         // const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}`);
 
-        return { data: response.data, isExecution, execution };
+        return { data: response.data, isExecution };
     }
 );
 
@@ -223,8 +215,7 @@ const workflowSlice = createSlice({
                     let parsedWorkflow = addNewAnalysisNodesAndEdgesWorkflow(
                         action.payload.data,
                         state.dependencyGraph,
-                        action.payload.isExecution,
-                        action.payload.execution
+                        action.payload.isExecution
                     );
                     if (parsedWorkflow.valid) {
                         state.currentWorkflow = action.payload.data;
