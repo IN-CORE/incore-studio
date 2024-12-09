@@ -25,7 +25,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Modal that adds resources from service to project [#40](https://github.com/IN-CORE/incore-studio/issues/40)
 - Create Execution component for displaying configurations and results [#5](https://github.com/IN-CORE/incore-studio/issues/5)
 - Display status of each execution steps [#39](https://github.com/IN-CORE/incore-studio/issues/39)
--
+- Modal to create a new workflow and add to project [#41](https://github.com/IN-CORE/incore-studio/issues/41)
+
 ### Changed
 
 - Navbar file structure. [#37](https://github.com/IN-CORE/incore-studio/issues/37)
