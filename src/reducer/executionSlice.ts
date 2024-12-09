@@ -43,6 +43,7 @@ export const getExecutionById = createAsyncThunk("execution/getExecutionById", a
 });
 
 export const createNewExecution = createAsyncThunk("execution/createExecution", async (execution: ExecutionCreate) => {
+    console.log(execution);
     const response = await axios.post(`${DATAWOLF_API_URL}/executions`, execution, { headers: getHeaders() });
     return response.data;
 });

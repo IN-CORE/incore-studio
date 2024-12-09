@@ -51,6 +51,9 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
 
     const sidePanelData = useAppSelector((state) => state.execution.sidePanelData);
     const project = useAppSelector((state) => state.project.project);
+    const projectDataset = useAppSelector((state) => state.project.projectDatasets);
+    const projectHazard = useAppSelector((state) => state.project.projectHazards);
+    const projectDFR3Mapping = useAppSelector((state) => state.project.projectDFR3Mappings);
 
     const createExecution = useAppSelector((state) => state.execution.createExecution);
 
@@ -82,11 +85,37 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         return initialState;
     };
 
+    const [projectDatasetOptions, setProjectDatasetOptions] = React.useState<JSX.Element[] | null>(null);
+    const [projectHazardOptions, setProjectHazardOptions] = React.useState<JSX.Element[] | null>(null);
+    const [projectDFR3MappingOptions, setProjectDFR3MappingOptions] = React.useState<JSX.Element[] | null>(null);
+
     React.useEffect(() => {
-        if (project === null) {
-            appDispatch(getProject(id ?? ""));
+        if (project === null && id) {
+            appDispatch(getProject(id));
+        } else {
+            setProjectDatasetOptions(
+                projectDataset.map((dataset) => (
+                    <Option key={dataset.id} value={dataset.id}>
+                        {dataset.title}
+                    </Option>
+                ))
+            );
+            setProjectHazardOptions(
+                projectHazard.map((hazard) => (
+                    <Option key={hazard.id} value={hazard.id}>
+                        {hazard.name}
+                    </Option>
+                ))
+            );
+            setProjectDFR3MappingOptions(
+                projectDFR3Mapping.map((dfr3Mapping) => (
+                    <Option key={dfr3Mapping.id} value={dfr3Mapping.id}>
+                        {dfr3Mapping.name}
+                    </Option>
+                ))
+            );
         }
-    }, [project]);
+    }, [project, projectDataset, projectHazard, projectDFR3Mapping]);
 
     const [datasetSelect, setDatasetSelect] = React.useState<{ [key: string]: string }>(getInputDatasetInitialState());
     const [parameters, setParameters] = React.useState<{ [key: string]: string }>(getInitialParametersState());
@@ -129,6 +158,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     // Add hazard to project from service
     const [openAddDFR3MappingFromServiceDialog, setOpenAddDFR3MappingFromServiceDialog] = React.useState(false);
     const addDFR3MappingFunc = (projectId: string, resource: DFR3Mapping) => {
+        console.log(resource);
         appDispatch(addDFR3MappingToProject({ projectId, dfr3Mappings: [resource] }));
         setOpenAddDFR3MappingFromServiceDialog(false);
     };
@@ -156,24 +186,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
             }
         }
     };
-
-    const projectDatasetOptions = project?.datasets.map((dataset) => (
-        <Option key={dataset.id} value={dataset.id}>
-            {dataset.title}
-        </Option>
-    ));
-
-    const projectHazardOptions = project?.hazards.map((hazard) => (
-        <Option key={hazard.id} value={hazard.id}>
-            {hazard.name}
-        </Option>
-    ));
-
-    const projectDFR3MappingOptions = project?.dfr3Mappings.map((dfr3Mapping) => (
-        <Option key={dfr3Mapping.id} value={dfr3Mapping.id}>
-            {dfr3Mapping.name}
-        </Option>
-    ));
 
     if (!sidePanelData.open) {
         return null;

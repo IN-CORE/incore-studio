@@ -466,6 +466,10 @@ const projectSlice = createSlice({
             })
             .addCase(getProject.fulfilled, (state, action) => {
                 state.loading = false;
+                state.projectDFR3Mappings = action.payload.dfr3Mappings;
+                state.projectHazards = action.payload.hazards;
+                state.projectDatasets = action.payload.datasets;
+                state.projectWorkflows = action.payload.workflows;
                 state.project = action.payload;
             })
             .addCase(getProject.rejected, (state, action) => {
@@ -509,6 +513,9 @@ const projectSlice = createSlice({
             .addCase(addDatasetToProject.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projectDatasets = action.payload?.datasets;
+                if (state.project) {
+                    state.project.datasets = action.payload?.datasets;
+                }
                 state.success = "Successfully added datasets to the project";
             })
             .addCase(addDatasetToProject.rejected, (state, action) => {
@@ -552,6 +559,9 @@ const projectSlice = createSlice({
             .addCase(addWorkflowToProject.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projectWorkflows = action.payload?.workflows;
+                if (state.project) {
+                    state.project.workflows = action.payload?.workflows;
+                }
                 state.success = "Successfully added workflows to the project";
             })
             .addCase(addWorkflowToProject.rejected, (state, action) => {
@@ -609,6 +619,9 @@ const projectSlice = createSlice({
             .addCase(addHazardToProject.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projectHazards = action.payload?.hazards;
+                if (state.project) {
+                    state.project.hazards = action.payload?.hazards;
+                }
                 state.success = "Successfully added hazards to the project";
             })
             .addCase(addHazardToProject.rejected, (state, action) => {
@@ -667,6 +680,9 @@ const projectSlice = createSlice({
             .addCase(addDFR3MappingToProject.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projectDFR3Mappings = action.payload?.dfr3Mappings;
+                if (state.project) {
+                    state.project.dfr3Mappings = action.payload?.dfr3Mappings;
+                }
                 state.success = "Successfully added dfr3mappings to the project";
             })
             .addCase(addDFR3MappingToProject.rejected, (state, action) => {
@@ -752,6 +768,9 @@ const projectSlice = createSlice({
             .addCase(addLayerToVisualization.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projectVisualizations = action.payload?.visualizations;
+                if (state.project) {
+                    state.project.visualizations = action.payload?.visualizations;
+                }
                 state.success = "Successfully added layers to the project visualizations";
             })
             .addCase(addLayerToVisualization.rejected, (state, action) => {

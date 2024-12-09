@@ -50,7 +50,8 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
                 createNewExecution({
                     ...createExecution,
                     title: name,
-                    creatorId: datawolfUser?.id ?? "",
+                    // creatorId: datawolfUser?.id ?? "", // TODO: Fix this
+                    creatorId: "4de8e6fa-5adc-4afd-bf40-b4d12f27e551",
                     description
                 })
             );
