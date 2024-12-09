@@ -236,3 +236,40 @@ export const extractStatus = (executionItem: DatawolfExecutionFile | null): stri
     }
     return "UNDEFINED";
 };
+
+export function getStatusColor(status?: string) {
+    switch (status) {
+        case "FAILED":
+        case "ABORTED":
+            return "danger";
+        case "RUNNING":
+            return "primary";
+        case "QUEUED":
+            return "neutral";
+        case "WAITING":
+        case "UNKNOWN":
+            return "warning";
+        case "FINISHED":
+            return "success";
+        default:
+            return "neutral";
+    }
+}
+
+// export function attachExecutionStatusToSteps(execution: DatawolfExecutionFile, workflow: Workflow) {
+//     if (!execution || !workflow || !workflow.steps) {
+//         throw new Error("Invalid execution or workflow data.");
+//     }
+//
+//     return workflow.steps.map((step) => {
+//         const stepId = step.id;
+//
+//         return {
+//             ...step,
+//             executionStatus: execution.stepState?.[stepId] || "NOT_STARTED", // Default to "NOT_STARTED"
+//             queuedAt: execution.stepsQueued?.[stepId] || null,
+//             startedAt: execution.stepsStart?.[stepId] || null,
+//             endedAt: execution.stepsEnd?.[stepId] || null,
+//         };
+//     });
+// }

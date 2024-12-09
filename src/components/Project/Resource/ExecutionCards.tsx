@@ -57,10 +57,10 @@ const ExecutionCardsComponent: React.FC<{ executions: DatawolfExecutionFile[]; p
                         ["FAILED", "ABORTED"].indexOf(status) >= 0
                             ? 0
                             : ["RUNNING", "QUEUED", "WAITING"].indexOf(status) >= 0
-                            ? 1
-                            : ["UNKNOWN", "UNDEFINED"].indexOf(status) >= 0
-                            ? 3
-                            : 2;
+                              ? 1
+                              : ["UNKNOWN", "UNDEFINED"].indexOf(status) >= 0
+                                ? 3
+                                : 2;
                     return (
                         <Grid key={execution.id} xs={12} sm={12} md={6} lg={4}>
                             {/* TODO: add link to execution page to see results and parameters. */}

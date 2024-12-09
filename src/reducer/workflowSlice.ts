@@ -94,7 +94,7 @@ export const getWorkflow = createAsyncThunk(
         const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}`, { headers: getHeaders() });
         // const response = await axios.get(`${DATAWOLF_API_URL}/workflows/${workflowID}`);
 
-        return { data: response.data, isExecution: isExecution };
+        return { data: response.data, isExecution };
     }
 );
 

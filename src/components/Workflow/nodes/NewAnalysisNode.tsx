@@ -22,8 +22,9 @@ import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { setSidePanelData } from "@app/reducer/workflowSlice";
 import { setExecutionSidePanelData } from "@app/reducer/executionSlice";
-import useStore, { type ReactFlowAppState } from "../reactFlowStore";
 import { theme } from "@app/theme";
+import { Progress } from "@app/components/Progress";
+import useStore, { type ReactFlowAppState } from "../reactFlowStore";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -43,7 +44,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const sidePanelData = useAppSelector((state) => state.execution.sidePanelData);
 
     const getInputParameters = () => {
-        let inputParameters: {
+        const inputParameters: {
             execFileEntryId: string;
             label: string;
             value: string;
@@ -51,9 +52,9 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
         if (data.stepData !== undefined) {
             data.stepData.tool.parameters.forEach((param) => {
                 if (param.title !== "hazard_id" && param.title !== "dfr3_mapping_set") {
-                    let execFileEntryId = data.stepData?.parameters[param.parameterId] ?? "";
+                    const execFileEntryId = data.stepData?.parameters[param.parameterId] ?? "";
                     inputParameters.push({
-                        execFileEntryId: execFileEntryId,
+                        execFileEntryId,
                         label: param.title,
                         value:
                             currentExecution !== null
@@ -71,15 +72,15 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     };
 
     const getOutputDatasets = () => {
-        let outputDatasets: {
+        const outputDatasets: {
             execFileEntryId: string;
             label: string;
             datasetId: string;
         }[] = [];
         data.outputHandles.forEach((output) => {
-            let execFileEntryId = data.stepData?.outputs[output.dataId] ?? "";
+            const execFileEntryId = data.stepData?.outputs[output.dataId] ?? "";
             outputDatasets.push({
-                execFileEntryId: execFileEntryId,
+                execFileEntryId,
                 label: output.label,
                 datasetId:
                     currentExecution !== null
@@ -95,7 +96,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     };
 
     const getInputDatasets = () => {
-        let inputDatasets: {
+        const inputDatasets: {
             execFileEntryId: string;
             label: string;
             fromExisting: {
@@ -106,11 +107,11 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
         }[] = [];
         data.inputHandles.forEach((input) => {
             if (input.dataId === "dfr3_mapping" && data.stepData !== undefined) {
-                let dfr3_param = data.stepData.tool.parameters.find((param) => param.title === "dfr3_mapping_set");
+                const dfr3_param = data.stepData.tool.parameters.find((param) => param.title === "dfr3_mapping_set");
                 if (dfr3_param !== undefined) {
-                    let execFileEntryId = data.stepData?.parameters[dfr3_param.parameterId] ?? "";
+                    const execFileEntryId = data.stepData?.parameters[dfr3_param.parameterId] ?? "";
                     inputDatasets.push({
-                        execFileEntryId: execFileEntryId,
+                        execFileEntryId,
                         label: input.label,
                         fromExisting: null,
                         datasetId: currentExecution !== null ? currentExecution.parameters[execFileEntryId] ?? "" : ""
@@ -118,11 +119,11 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                 }
                 // if not found then there is some issue with the tool. Don't display anything, silently fail.
             } else if (input.dataId === "hazard" && data.stepData !== undefined) {
-                let hazard_param = data.stepData.tool.parameters.find((param) => param.title === "hazard_id");
+                const hazard_param = data.stepData.tool.parameters.find((param) => param.title === "hazard_id");
                 if (hazard_param !== undefined) {
-                    let execFileEntryId = data.stepData?.parameters[hazard_param.parameterId] ?? "";
+                    const execFileEntryId = data.stepData?.parameters[hazard_param.parameterId] ?? "";
                     inputDatasets.push({
-                        execFileEntryId: execFileEntryId,
+                        execFileEntryId,
                         label: input.label,
                         fromExisting: null,
                         datasetId: currentExecution !== null ? currentExecution.parameters[execFileEntryId] ?? "" : ""
@@ -130,15 +131,15 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                 }
                 // if not found then there is some issue with the tool. Don't display anything, silently fail.
             } else {
-                let incomingEdge = edges.find((edge) => edge.target === id && edge.targetHandle === input.id);
+                const incomingEdge = edges.find((edge) => edge.target === id && edge.targetHandle === input.id);
                 let opSrcNodeName = "";
                 let opHandleName = "";
-                let execFileEntryId = data.stepData?.inputs[input.dataId] ?? "";
+                const execFileEntryId = data.stepData?.inputs[input.dataId] ?? "";
                 if (incomingEdge !== undefined) {
                     // @ts-ignore
-                    let sourceNode = nodes.find((node) => node.id === incomingEdge.source) as NewAnalysisNode;
+                    const sourceNode = nodes.find((node) => node.id === incomingEdge.source) as NewAnalysisNode;
                     if (sourceNode) {
-                        let opHandle = sourceNode.data.outputHandles.find(
+                        const opHandle = sourceNode.data.outputHandles.find(
                             // @ts-ignore
                             (handle) => handle.id === incomingEdge.sourceHandle
                         );
@@ -148,7 +149,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         }
                     }
                     inputDatasets.push({
-                        execFileEntryId: execFileEntryId,
+                        execFileEntryId,
                         label: input.label,
                         fromExisting: {
                             analysisName: opSrcNodeName,
@@ -157,7 +158,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     });
                 } else {
                     inputDatasets.push({
-                        execFileEntryId: execFileEntryId,
+                        execFileEntryId,
                         label: input.label,
                         fromExisting: null,
                         datasetId:
@@ -182,7 +183,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     open: true,
                     currentAnalysis: {
                         name: data.label,
-                        id: id,
+                        id,
                         inputDatasets: getInputDatasets(),
                         inputParameters: getInputParameters(),
                         outputDatasets: getOutputDatasets()
@@ -199,9 +200,9 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const handleDelete = () => {
         const node = nodes.find((n) => n.id === id);
         if (node) {
-            let nodesTobeDeleted = [node];
+            const nodesTobeDeleted = [node];
 
-            let connectedEdges = getConnectedEdges([node], edges);
+            const connectedEdges = getConnectedEdges([node], edges);
 
             setNodes(nodes.filter((n) => !nodesTobeDeleted.includes(n)));
             setEdges(edges.filter((e) => !connectedEdges.includes(e)));
@@ -327,7 +328,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                                                 open: true,
                                                 currentAnalysis: {
                                                     name: data.label,
-                                                    id: id,
+                                                    id,
                                                     inputDatasets: getInputDatasets(),
                                                     inputParameters: getInputParameters(),
                                                     outputDatasets: getOutputDatasets()
@@ -383,7 +384,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                                     setSidePanelData({
                                         open: true,
                                         type: "previous",
-                                        currentAnalysis: { name: data.name, id: id }
+                                        currentAnalysis: { name: data.name, id }
                                     })
                                 );
                             }}
@@ -406,7 +407,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                                     setSidePanelData({
                                         open: true,
                                         type: "next",
-                                        currentAnalysis: { name: data.name, id: id }
+                                        currentAnalysis: { name: data.name, id }
                                     })
                                 );
                             }}
@@ -462,6 +463,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     </Box>
                 </Handle>
             ))}
+            {data.isExecution && <Progress status={currentExecution?.stepState?.[id] ?? undefined} />}
         </Box>
     );
 }
