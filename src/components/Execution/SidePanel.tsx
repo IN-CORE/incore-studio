@@ -383,14 +383,17 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 id={`${inputDataset.label}-select`}
                                                                 disabled={!createMode}
                                                                 value={
-                                                                    datasetSelect[inputDataset.execFileEntryId] ?? ""
+                                                                    !createMode
+                                                                        ? inputDataset.datasetId
+                                                                        : datasetSelect[inputDataset.execFileEntryId] ??
+                                                                          ""
                                                                 }
                                                                 placeholder={`Select ${
                                                                     inputDataset.label.includes("Hazard")
                                                                         ? "Hazard"
                                                                         : inputDataset.label.includes("DFR3")
-                                                                          ? "DFR3 Mapping"
-                                                                          : "Dataset"
+                                                                        ? "DFR3 Mapping"
+                                                                        : "Dataset"
                                                                 }`}
                                                                 name={inputDataset.execFileEntryId}
                                                                 required={
@@ -417,8 +420,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 {inputDataset.label.includes("Hazard")
                                                                     ? projectHazardOptions
                                                                     : inputDataset.label.includes("DFR3")
-                                                                      ? projectDFR3MappingOptions
-                                                                      : projectDatasetOptions}
+                                                                    ? projectDFR3MappingOptions
+                                                                    : projectDatasetOptions}
                                                             </Select>
                                                         </Box>
                                                         {createMode && (
@@ -428,12 +431,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         inputDataset.label.includes("Hazard")
                                                                             ? setOpenAddHazardFromServiceDialog(true)
                                                                             : inputDataset.label.includes("DFR3")
-                                                                              ? setOpenAddDFR3MappingFromServiceDialog(
-                                                                                    true
-                                                                                )
-                                                                              : setOpenAddDatasetFromServiceDialog(
-                                                                                    true
-                                                                                );
+                                                                            ? setOpenAddDFR3MappingFromServiceDialog(
+                                                                                  true
+                                                                              )
+                                                                            : setOpenAddDatasetFromServiceDialog(true);
                                                                     }}
                                                                 >
                                                                     <AddIcon />

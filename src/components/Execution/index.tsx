@@ -19,7 +19,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import SidePanel from "./SidePanel";
 import Workflow from "@app/components/Workflow";
-import { getWorkflow } from "@app/reducer/workflowSlice";
+import { getWorkflow, clearWorkflowState } from "@app/reducer/workflowSlice";
 import CreateExecutionDialog from "./CreateExecutionDialog";
 
 import { ReactSVG } from "react-svg";
@@ -78,6 +78,10 @@ const ExecutionComponent: React.FC<{
         } else if (create && wfID !== undefined) {
             appDispatch(getWorkflow({ workflowID: wfID, isExecution: true }));
         }
+
+        return () => {
+            appDispatch(clearWorkflowState());
+        };
     }, []);
 
     return (
@@ -208,6 +212,7 @@ const ExecutionComponent: React.FC<{
                                     if (create) {
                                         setOpenExecutionDialog(true);
                                     } else {
+                                        appDispatch(resetExecutionState());
                                         navigate(`/project/${id}/workflows/${wfID}/execution/create`);
                                     }
                                 }}

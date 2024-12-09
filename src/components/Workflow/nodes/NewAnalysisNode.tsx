@@ -472,7 +472,9 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     </Box>
                 </Handle>
             ))}
-            {data.isExecution && <Progress status={currentExecution?.stepState?.[id] ?? undefined} />}
+            {data.isExecution && currentExecution !== null && (
+                <Progress status={currentExecution?.stepState?.[id] ?? undefined} />
+            )}
         </Box>
     );
 }
