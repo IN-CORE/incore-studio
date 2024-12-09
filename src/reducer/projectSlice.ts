@@ -306,6 +306,16 @@ export const deleteProjectHazards = createAsyncThunk(
     }
 );
 
+export const addWorkflowToProject = createAsyncThunk(
+    "projects/addWorkflowToProject",
+    async ({ projectId, workflows }: { projectId: string; workflows: any }) => {
+        const response = await axios.post(`${PROJECT_API_URL}/${projectId}/workflows`, workflows, {
+            headers: getHeaders()
+        });
+        return response.data;
+    }
+);
+
 export const deleteProjectWorkflows = createAsyncThunk(
     "projects/deleteProjectWorkflows",
     async ({ projectId, workflowIds }: { projectId: string; workflowIds: string[] }) => {
@@ -533,6 +543,20 @@ const projectSlice = createSlice({
             .addCase(getProjectWorkflows.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project workflows";
+            })
+            .addCase(addWorkflowToProject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = null;
+            })
+            .addCase(addWorkflowToProject.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectWorkflows = action.payload?.workflows;
+                state.success = "Successfully added workflows to the project";
+            })
+            .addCase(addWorkflowToProject.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to add workflow to the project";
             })
             .addCase(deleteProjectWorkflows.pending, (state) => {
                 state.loading = true;
