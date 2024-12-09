@@ -240,8 +240,8 @@ export const createWorkflowFileFromNodesAndEdges = ({
                 analysisNode.data.stepData !== undefined
                     ? analysisNode.data.stepData.tool.id
                     : analysisNode.data.toolID !== undefined
-                    ? analysisNode.data.toolID
-                    : ""
+                      ? analysisNode.data.toolID
+                      : ""
             ];
         let stepId = analysisNode.id;
         let title = tool.title;
@@ -472,7 +472,6 @@ export const addNewAnalysisNodesAndEdgesWorkflow = (
 ): { workflow: ReactFlowWorkflow; valid: boolean; reason: string } => {
     let nodes: AppNode[] = [];
     let edges: Edge[] = [];
-    console.log(isExecution);
     let sourceNodeLookup: { [key: string]: { analysisId: string; handleId: string } } = {};
     let targetNodeLookup: { [key: string]: { analysisId: string; handleId: string }[] } = {};
     let mappingUUIDSet: Set<string> = new Set();

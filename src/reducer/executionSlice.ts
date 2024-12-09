@@ -51,6 +51,17 @@ const executionSlice = createSlice({
     name: "execution",
     initialState,
     reducers: {
+        setCurrentExecution: (state, action) => {
+            if (action.payload === "") {
+                state.currentExecution = null;
+                state.loading = false;
+                state.error = "Execution not found";
+                return;
+            }
+            state.currentExecution = action.payload;
+            state.loading = false;
+            state.error = null;
+        },
         resetExecutionState: (state) => {
             state.currentExecution = null;
             state.executionReactFlowState = initialExecutionReactFlowState;
@@ -145,6 +156,7 @@ const executionSlice = createSlice({
 
 export const {
     resetExecutionState,
+    setCurrentExecution,
     toggleSidePanel,
     setExecutionSidePanelCheckStatus,
     updateExecutionSidePanelCheckStatus,
