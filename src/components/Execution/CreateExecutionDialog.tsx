@@ -16,7 +16,7 @@ import {
 } from "@mui/joy";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getDatawolfUser } from "@app/reducer/workflowSlice";
-import { createNewExecution } from "@app/reducer/executionSlice";
+import { createNewExecution, clearSidePanelData } from "@app/reducer/executionSlice";
 import { useNavigate } from "react-router-dom";
 
 interface CreateExecutionDialogProps {
@@ -40,7 +40,16 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
 
     React.useEffect(() => {
         if (datawolfUser === null) {
-            appDispatch(getDatawolfUser({ email: auth?.user?.profile?.email }));
+            appDispatch(
+                getDatawolfUser({
+                    email:
+                        auth?.user?.profile?.preferred_username === "" ||
+                        auth?.user?.profile?.preferred_username === null ||
+                        auth?.user?.profile?.preferred_username === undefined
+                            ? auth?.user?.profile?.email
+                            : auth?.user?.profile?.preferred_username
+                })
+            );
         }
     }, []);
 
@@ -50,8 +59,8 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
                 createNewExecution({
                     ...createExecution,
                     title: name,
-                    // creatorId: datawolfUser?.id ?? "", // TODO: Fix this
-                    creatorId: "4de8e6fa-5adc-4afd-bf40-b4d12f27e551",
+                    creatorId: datawolfUser?.id ?? "", // TODO: Fix this
+                    // creatorId: "4de8e6fa-5adc-4afd-bf40-b4d12f27e551",
                     description
                 })
             );
@@ -59,6 +68,7 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
 
             if (newExecutionId) {
                 // Navigate to the new project page
+                appDispatch(clearSidePanelData());
                 navigate(`/project/${id}/workflows/${wfId}/execution/${newExecutionId}`);
             } else {
                 console.error("Error creating Execution");
