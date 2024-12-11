@@ -12,12 +12,18 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import StorageIcon from "@mui/icons-material/Storage";
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 
 import { useShallow } from "zustand/react/shallow";
 
 import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { setSidePanelData } from "@app/reducer/workflowSlice";
+import { setExecutionSidePanelData } from "@app/reducer/executionSlice";
+import { theme } from "@app/theme";
+import { Progress } from "@app/components/Progress";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
 
 const selector = (state: ReactFlowAppState) => ({
@@ -33,6 +39,168 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const updateNodeInternals = useUpdateNodeInternals();
     const appDispatch = useAppDispatch();
     const hoveredAnalysisID = useAppSelector((state) => state.workflow.hoveredAnalysis);
+    // const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
+    const currentExecution = useAppSelector((state) => state.execution.currentExecution);
+    const executionParametersAndInputsChecked = useAppSelector(
+        (state) => state.execution.executionParametersAndInputsChecked
+    );
+
+    const getInputParameters = () => {
+        const inputParameters: {
+            execFileEntryId: string;
+            label: string;
+            value: string;
+            required: boolean;
+        }[] = [];
+        if (data.stepData !== undefined) {
+            data.stepData.tool.parameters.forEach((param) => {
+                if (param.title !== "hazard_id" && param.title !== "dfr3_mapping_set") {
+                    const execFileEntryId = data.stepData?.parameters[param.parameterId] ?? "";
+                    inputParameters.push({
+                        execFileEntryId,
+                        label: param.title,
+                        required: !param.allowNull,
+                        value:
+                            currentExecution !== null
+                                ? currentExecution.parameters[execFileEntryId] !== undefined
+                                    ? currentExecution.parameters[execFileEntryId] === ""
+                                        ? "Not Set"
+                                        : currentExecution.parameters[execFileEntryId]
+                                    : "N/A"
+                                : ""
+                    });
+                }
+            });
+        }
+        return inputParameters;
+    };
+
+    const getOutputDatasets = () => {
+        const outputDatasets: {
+            execFileEntryId: string;
+            label: string;
+            datasetId: string;
+        }[] = [];
+        data.outputHandles.forEach((output) => {
+            const execFileEntryId = data.stepData?.outputs[output.dataId] ?? "";
+            outputDatasets.push({
+                execFileEntryId,
+                label: output.label,
+                datasetId:
+                    currentExecution !== null
+                        ? currentExecution.datasets[execFileEntryId] !== undefined
+                            ? currentExecution.datasets[execFileEntryId] === ""
+                                ? "Not present"
+                                : currentExecution.datasets[execFileEntryId]
+                            : "N/A"
+                        : ""
+            });
+        });
+        return outputDatasets;
+    };
+
+    const getInputDatasets = () => {
+        const inputDatasets: {
+            execFileEntryId: string;
+            label: string;
+            fromExisting: {
+                analysisName: string;
+                outputName: string;
+            } | null;
+            required: boolean;
+            datasetId?: string;
+        }[] = [];
+        data.inputHandles.forEach((input) => {
+            if (input.dataId === "dfr3_mapping" && data.stepData !== undefined) {
+                const dfr3_param = data.stepData.tool.parameters.find((param) => param.title === "dfr3_mapping_set");
+                if (dfr3_param !== undefined) {
+                    const execFileEntryId = data.stepData?.parameters[dfr3_param.parameterId] ?? "";
+                    inputDatasets.push({
+                        execFileEntryId,
+                        label: input.label,
+                        fromExisting: null,
+                        required: true,
+                        datasetId: currentExecution !== null ? currentExecution.parameters[execFileEntryId] ?? "" : ""
+                    });
+                }
+                // if not found then there is some issue with the tool. Don't display anything, silently fail.
+            } else if (input.dataId === "hazard" && data.stepData !== undefined) {
+                const hazard_param = data.stepData.tool.parameters.find((param) => param.title === "hazard_id");
+                if (hazard_param !== undefined) {
+                    const execFileEntryId = data.stepData?.parameters[hazard_param.parameterId] ?? "";
+                    inputDatasets.push({
+                        execFileEntryId,
+                        label: input.label,
+                        fromExisting: null,
+                        required: true,
+                        datasetId: currentExecution !== null ? currentExecution.parameters[execFileEntryId] ?? "" : ""
+                    });
+                }
+                // if not found then there is some issue with the tool. Don't display anything, silently fail.
+            } else {
+                const incomingEdge = edges.find((edge) => edge.target === id && edge.targetHandle === input.id);
+                let opSrcNodeName = "";
+                let opHandleName = "";
+                const execFileEntryId = data.stepData?.inputs[input.dataId] ?? "";
+                if (incomingEdge !== undefined) {
+                    // @ts-ignore
+                    const sourceNode = nodes.find((node) => node.id === incomingEdge.source) as NewAnalysisNode;
+                    if (sourceNode) {
+                        const opHandle = sourceNode.data.outputHandles.find(
+                            // @ts-ignore
+                            (handle) => handle.id === incomingEdge.sourceHandle
+                        );
+                        if (opHandle) {
+                            opSrcNodeName = sourceNode.data.label;
+                            opHandleName = opHandle.label;
+                        }
+                    }
+                    inputDatasets.push({
+                        execFileEntryId,
+                        label: input.label,
+                        fromExisting: {
+                            analysisName: opSrcNodeName,
+                            outputName: opHandleName
+                        },
+                        required: false
+                    });
+                } else {
+                    inputDatasets.push({
+                        execFileEntryId,
+                        label: input.label,
+                        fromExisting: null,
+                        required: input.required,
+                        datasetId:
+                            currentExecution !== null
+                                ? currentExecution.datasets[execFileEntryId] !== undefined
+                                    ? currentExecution.datasets[execFileEntryId] === ""
+                                        ? "Not Set"
+                                        : currentExecution.datasets[execFileEntryId]
+                                    : "N/A"
+                                : ""
+                    });
+                }
+            }
+        });
+        return inputDatasets;
+    };
+
+    React.useEffect(() => {
+        if (selected) {
+            appDispatch(
+                setExecutionSidePanelData({
+                    open: true,
+                    currentAnalysis: {
+                        name: data.label,
+                        id,
+                        inputDatasets: getInputDatasets(),
+                        inputParameters: getInputParameters(),
+                        outputDatasets: getOutputDatasets()
+                    }
+                })
+            );
+        }
+    }, [selected]);
 
     React.useEffect(() => {
         updateNodeInternals(id);
@@ -41,9 +209,9 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const handleDelete = () => {
         const node = nodes.find((n) => n.id === id);
         if (node) {
-            let nodesTobeDeleted = [node];
+            const nodesTobeDeleted = [node];
 
-            let connectedEdges = getConnectedEdges([node], edges);
+            const connectedEdges = getConnectedEdges([node], edges);
 
             setNodes(nodes.filter((n) => !nodesTobeDeleted.includes(n)));
             setEdges(edges.filter((e) => !connectedEdges.includes(e)));
@@ -56,13 +224,30 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     };
     const MIN_HEIGHT = data.inputHandles.length * 20 + 60;
 
+    const NodeHeading = (
+        <Box sx={{ display: "flex", alignItems: "center", my: "4px", width: "100%" }}>
+            <TrendingUpIcon sx={{ color: "#EF6C00", marginRight: "5px" }} />
+            <Typography
+                level="h4"
+                sx={{
+                    fontWeight: 400,
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                    color: "#EF6C00"
+                }}
+            >
+                Analysis Type
+            </Typography>
+        </Box>
+    );
+
     return (
         <Box
             sx={{
-                border: selected || hoveredAnalysisID === id ? "4px solid #EF6C00" : "2px solid black",
+                border: selected || hoveredAnalysisID === id ? "4px solid #FB8C00" : "2px solid black",
                 borderRadius: "3px",
                 padding: "6px 14px 6px 14px",
-                backgroundColor: selected ? "#FFE3CC" : "white",
+                backgroundColor: selected ? "#FFF1D9" : "white",
                 height: "auto",
                 minHeight: `${MIN_HEIGHT}px`,
                 width: "400px",
@@ -119,22 +304,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     </Box>
                 </Handle>
             ))}
-            {zoom > 1 && (
-                <Box sx={{ display: "flex", alignItems: "center", my: "4px", width: "100%" }}>
-                    <TrendingUpIcon sx={{ color: "#EF6C00", marginRight: "5px" }} />
-                    <Typography
-                        level="h4"
-                        sx={{
-                            fontWeight: 400,
-                            fontSize: "16px",
-                            lineHeight: "24px",
-                            color: "#EF6C00"
-                        }}
-                    >
-                        Analysis Type
-                    </Typography>
-                </Box>
-            )}
+            {data.isExecution ? NodeHeading : zoom > 1 && NodeHeading}
             <Stack direction="column" spacing={4} sx={{ my: "6px", height: "100%", width: "100%" }}>
                 <Box
                     sx={{
@@ -146,72 +316,115 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     }}
                 >
                     <Box>
-                        <Typography level="h2" sx={{ fontWeight: 600, fontSize: zoom > 1 ? "24px" : "28px" }}>
+                        <Typography level="h2" sx={{ fontWeight: 600, fontSize: zoom > 1 ? "20px" : "24px" }}>
                             {data.label}
                         </Typography>
                     </Box>
-                    <Box sx={{ position: "absolute", right: "5px", top: "5px" }}>
-                        <Tooltip
-                            title="Delete"
-                            variant="plain"
-                            color="neutral"
-                            placement="right"
-                            sx={{ color: "#172B4D" }}
-                        >
-                            <IconButton variant="plain" onClick={handleDelete}>
-                                <CancelRoundedIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </Box>
+                    {data.isExecution ? (
+                        <Box sx={{ position: "absolute", right: "5px", top: "5px" }}>
+                            <Tooltip
+                                title="Configure"
+                                variant="plain"
+                                color="neutral"
+                                placement="right"
+                                sx={{ color: "#172B4D" }}
+                            >
+                                <IconButton
+                                    variant="plain"
+                                    onClick={() =>
+                                        appDispatch(
+                                            setExecutionSidePanelData({
+                                                open: true,
+                                                currentAnalysis: {
+                                                    name: data.label,
+                                                    id,
+                                                    inputDatasets: getInputDatasets(),
+                                                    inputParameters: getInputParameters(),
+                                                    outputDatasets: getOutputDatasets()
+                                                }
+                                            })
+                                        )
+                                    }
+                                >
+                                    <SettingsRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    ) : (
+                        <Box sx={{ position: "absolute", right: "5px", top: "5px" }}>
+                            <Tooltip
+                                title="Delete"
+                                variant="plain"
+                                color="neutral"
+                                placement="right"
+                                sx={{ color: "#172B4D" }}
+                            >
+                                <IconButton variant="plain" onClick={handleDelete}>
+                                    <CancelRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    )}
+                    {data.isExecution && currentExecution === null && (
+                        <>
+                            {executionParametersAndInputsChecked[id] ? (
+                                <CheckCircleRoundedIcon sx={{ color: theme.palette.success[400] }} />
+                            ) : (
+                                <CheckCircleOutlineRoundedIcon />
+                            )}
+                        </>
+                    )}
                 </Box>
-                <Stack direction="row" spacing={2} justifyContent="space-between">
-                    <Button
-                        variant="solid"
-                        sx={{
-                            "backgroundColor": "#EF6C00",
-                            "color": "white",
-                            "fontWeight": 600,
-                            "borderRadius": "2px",
-                            ":hover": { backgroundColor: "#DF6500" }
-                        }}
-                        startDecorator={<AddRoundedIcon />}
-                        fullWidth
-                        onClick={() => {
-                            appDispatch(
-                                setSidePanelData({
-                                    open: true,
-                                    type: "previous",
-                                    currentAnalysis: { name: data.name, id: id }
-                                })
-                            );
-                        }}
-                    >
-                        Add previous
-                    </Button>
-                    <Button
-                        variant="solid"
-                        sx={{
-                            "backgroundColor": "#EF6C00",
-                            "color": "white",
-                            "fontWeight": 600,
-                            "borderRadius": "2px",
-                            ":hover": { backgroundColor: "#DF6500" }
-                        }}
-                        startDecorator={<AddRoundedIcon />}
-                        fullWidth
-                        onClick={() => {
-                            appDispatch(
-                                setSidePanelData({
-                                    open: true,
-                                    type: "next",
-                                    currentAnalysis: { name: data.name, id: id }
-                                })
-                            );
-                        }}
-                    >
-                        Add Next
-                    </Button>
-                </Stack>
+                {!data.isExecution && (
+                    <Stack direction="row" spacing={2} justifyContent="space-between">
+                        <Button
+                            variant="solid"
+                            sx={{
+                                "backgroundColor": "#EF6C00",
+                                "color": "white",
+                                "fontWeight": 600,
+                                "borderRadius": "2px",
+                                ":hover": { backgroundColor: "#DF6500" }
+                            }}
+                            startDecorator={<AddRoundedIcon />}
+                            fullWidth
+                            onClick={() => {
+                                appDispatch(
+                                    setSidePanelData({
+                                        open: true,
+                                        type: "previous",
+                                        currentAnalysis: { name: data.name, id }
+                                    })
+                                );
+                            }}
+                        >
+                            Add previous
+                        </Button>
+                        <Button
+                            variant="solid"
+                            sx={{
+                                "backgroundColor": "#EF6C00",
+                                "color": "white",
+                                "fontWeight": 600,
+                                "borderRadius": "2px",
+                                ":hover": { backgroundColor: "#DF6500" }
+                            }}
+                            startDecorator={<AddRoundedIcon />}
+                            fullWidth
+                            onClick={() => {
+                                appDispatch(
+                                    setSidePanelData({
+                                        open: true,
+                                        type: "next",
+                                        currentAnalysis: { name: data.name, id }
+                                    })
+                                );
+                            }}
+                        >
+                            Add Next
+                        </Button>
+                    </Stack>
+                )}
             </Stack>
 
             {data.outputHandles.map((outpt, index) => (
@@ -259,6 +472,9 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     </Box>
                 </Handle>
             ))}
+            {data.isExecution && currentExecution !== null && (
+                <Progress status={currentExecution?.stepState?.[id] ?? undefined} />
+            )}
         </Box>
     );
 }

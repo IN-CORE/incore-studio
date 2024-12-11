@@ -22,9 +22,11 @@ import {
     saveWorkflow,
     getDatawolfUser
 } from "@app/reducer/workflowSlice";
+import { finalizeWorkflow, getProject } from "@app/reducer/projectSlice";
 import { createWorkflowFileFromNodesAndEdgesV2 } from "@app/components/Workflow/workflowUtils";
 import InvalidWorkflowFilePage from "@app/components/InvalidWorkflowFilePage";
 import SidePanel from "./SidePanel";
+import FinalizeWorkflowDialog from "@app/components/FinalizeWorkflowDialog";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -34,7 +36,7 @@ const selector = (state: ReactFlowAppState) => ({
 });
 
 const WorkflowEditor = (): JSX.Element => {
-    const { wfID } = useParams<{ wfID: string }>();
+    const { id, wfID } = useParams<{ id: string; wfID: string }>();
     const appDispatch = useAppDispatch();
     const navigate = useNavigate();
     const auth = useAuth();
@@ -43,6 +45,7 @@ const WorkflowEditor = (): JSX.Element => {
     // Redux state
     const reactFlowWorkflow = useAppSelector((state) => state.workflow.reactFlowWorkflow);
     const workflowID = useAppSelector((state) => state.workflow.datawolfWorkflowID);
+    const project = useAppSelector((state) => state.project.project);
     const workflowLoading = useAppSelector((state) => state.workflow.workflowLoading);
     const workflowError = useAppSelector((state) => state.workflow.workflowError);
     const createdWorkflowLoading = useAppSelector((state) => state.workflow.createdWorkflowLoading);
@@ -60,6 +63,16 @@ const WorkflowEditor = (): JSX.Element => {
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
     const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
+
+    const [openFinalize, setOpenFinalize] = React.useState(false);
+    const [confirmFinalize, setConfirmFinalize] = React.useState(false);
+
+    React.useEffect(() => {
+        if (confirmFinalize && wfID && id) {
+            appDispatch(finalizeWorkflow({ projectId: id, workflowId: wfID }));
+            navigate(`/project/${id}/workflows/${wfID}/execution/create`);
+        }
+    }, [confirmFinalize]);
 
     React.useEffect(() => {
         if (saveWorkflowError) {
@@ -88,6 +101,9 @@ const WorkflowEditor = (): JSX.Element => {
     React.useEffect(() => {
         if (wfID !== workflowID) {
             appDispatch(getWorkflow({ workflowID: wfID }));
+        }
+        if (project === null && id) {
+            appDispatch(getProject(id));
         }
         appDispatch(getWorkflowTools());
         appDispatch(getDatawolfUser({ email: auth?.user?.profile?.email }));
@@ -185,36 +201,50 @@ const WorkflowEditor = (): JSX.Element => {
                                         </Tooltip>
                                     </Box>
                                     <Box>
-                                        <Typography
-                                            level="h3"
-                                            sx={{
-                                                fontWeight: 800,
-                                                fontSize: "18px",
-                                                lineHeight: "24px",
-                                                color: "#172B4D"
-                                            }}
-                                        >
-                                            {currentWorkflow?.title}
-                                        </Typography>
+                                        <Stack direction="row" spacing={2} alignItems="center">
+                                            <Typography
+                                                level="h3"
+                                                sx={{
+                                                    fontWeight: 800,
+                                                    fontSize: "18px",
+                                                    lineHeight: "24px",
+                                                    color: "#172B4D"
+                                                }}
+                                            >
+                                                {currentWorkflow?.title}
+                                            </Typography>
+                                            <Typography
+                                                level="h4"
+                                                sx={{
+                                                    fontWeight: 400,
+                                                    fontSize: "12px",
+                                                    lineHeight: "20px",
+                                                    color: "#42526EB2"
+                                                }}
+                                            >
+                                                {new Date(
+                                                    currentWorkflow ? currentWorkflow.created : ""
+                                                ).toLocaleDateString("en-US", {
+                                                    year: "numeric",
+                                                    month: "long",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit"
+                                                })}
+                                            </Typography>
+                                        </Stack>
                                         <Typography
                                             level="h4"
                                             sx={{
                                                 fontWeight: 400,
-                                                fontSize: "12px",
+                                                fontSize: "14px",
                                                 lineHeight: "20px",
                                                 color: "#42526EB2"
                                             }}
                                         >
-                                            Created on:{" "}
-                                            {new Date(
-                                                currentWorkflow ? currentWorkflow.created : ""
-                                            ).toLocaleDateString("en-US", {
-                                                year: "numeric",
-                                                month: "long",
-                                                day: "numeric",
-                                                hour: "2-digit",
-                                                minute: "2-digit"
-                                            })}
+                                            {currentWorkflow?.description === ""
+                                                ? "Description not provided"
+                                                : currentWorkflow?.description}
                                         </Typography>
                                     </Box>
                                 </Stack>
@@ -250,8 +280,22 @@ const WorkflowEditor = (): JSX.Element => {
                                     >
                                         Save
                                     </Button>
-                                    <Button variant="solid" sx={{ backgroundColor: "primary.main" }}>
-                                        Finalize
+                                    <Button
+                                        variant="solid"
+                                        sx={{ backgroundColor: "primary.main" }}
+                                        onClick={() => {
+                                            if (
+                                                project?.workflows.find((wf: Workflow) => wf.id === wfID)?.isFinalized
+                                            ) {
+                                                navigate(`/project/${id}/workflows/${wfID}/execution/create`);
+                                            } else {
+                                                setOpenFinalize(true);
+                                            }
+                                        }}
+                                    >
+                                        {project?.workflows.find((wf: Workflow) => wf.id === wfID)?.isFinalized
+                                            ? "Create Execution"
+                                            : "Finalize Workflow"}
                                     </Button>
                                 </Stack>
                                 <Snackbar
@@ -268,6 +312,11 @@ const WorkflowEditor = (): JSX.Element => {
                                     {snackbarMessage}
                                 </Snackbar>
                             </Box>
+                            <FinalizeWorkflowDialog
+                                open={openFinalize}
+                                onClose={() => setOpenFinalize(false)}
+                                confirmFinalize={() => setConfirmFinalize(true)}
+                            />
                         </Stack>
                     </Box>
                     {nodes.length === 0 ? (

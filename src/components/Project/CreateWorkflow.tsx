@@ -50,7 +50,12 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
                     creator:
                         datawolfUser === null
                             ? {
-                                  email: auth?.user?.profile?.email,
+                                  email:
+                                      auth?.user?.profile?.preferred_username === "" ||
+                                      auth?.user?.profile?.preferred_username === null ||
+                                      auth?.user?.profile?.preferred_username === undefined
+                                          ? auth?.user?.profile?.email
+                                          : auth?.user?.profile?.preferred_username,
                                   firstName: auth?.user?.profile?.given_name,
                                   lastName: auth?.user?.profile?.family_name
                               }

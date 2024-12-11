@@ -11,6 +11,7 @@ config.keycloakConfig = {
     authority: `${hostname}/auth/realms/In-core`,
     client_id: "react-auth"
 };
+config.dataService = `${hostname}/data/api/datasets`;
 
 // TODO replace this with dynamically pulling from GeoServer
 config.sytles = [

@@ -12,6 +12,7 @@ const LazyProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Re
 const LazyProjectWorkflowExecutionSummaryPage = lazy(
     () => import("@app/components/Project/Resource/WorkflowExecutionSummaryPage")
 );
+const LazyExecutionPage = lazy(() => import("@app/components/Execution"));
 
 /**
  A mapping of routes to `RouteProps`.
@@ -24,13 +25,6 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
         element: (
             <Suspense fallback={<Loading />}>
                 <LazyHome />
-            </Suspense>
-        )
-    },
-    "/workflow-editor/:wfID": {
-        element: (
-            <Suspense fallback={<Loading />}>
-                <LazyWorkflowEditor />
             </Suspense>
         )
     },
@@ -66,6 +60,27 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
         element: (
             <Suspense fallback={<Loading />}>
                 <LazyProjectWorkflowsPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/workflows/:wfID/execution/:exId": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyExecutionPage create={false} key={"existing-execution-page"} />
+            </Suspense>
+        )
+    },
+    "/project/:id/workflows/:wfID/execution/create": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyExecutionPage create={true} key={"create-new-execution-page"} />
+            </Suspense>
+        )
+    },
+    "/project/:id/workflows/:wfID/workflow-editor": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyWorkflowEditor />
             </Suspense>
         )
     },

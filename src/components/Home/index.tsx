@@ -1,9 +1,12 @@
 import React from "react";
 import { Box, Container, Typography } from "@mui/joy";
+import { useAuth } from "react-oidc-context";
 
 import Project from "@app/components/Project";
 
 const Home = (): JSX.Element => {
+    const auth = useAuth();
+    console.log(auth);
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <Box sx={{ flexShrink: 0 }} mt={5}>
