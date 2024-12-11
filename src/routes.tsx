@@ -66,14 +66,14 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
     "/project/:id/workflows/:wfID/execution/:exId": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyExecutionPage create={false} />
+                <LazyExecutionPage create={false} key={"existing-execution-page"} />
             </Suspense>
         )
     },
     "/project/:id/workflows/:wfID/execution/create": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyExecutionPage create={true} />
+                <LazyExecutionPage create={true} key={"create-new-execution-page"} />
             </Suspense>
         )
     },

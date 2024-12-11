@@ -487,11 +487,23 @@ export const addNewAnalysisNodesAndEdgesWorkflow = (
                 } else {
                     targetNodeLookup[step.inputs[input.dataId]].push({ analysisId: step.id, handleId: newId });
                 }
-                return { id: newId, label: input.title, dataId: input.dataId, type: "input" };
+                return {
+                    id: newId,
+                    label: input.title,
+                    dataId: input.dataId,
+                    type: "input",
+                    required: !input.allowNull
+                };
             });
             // add Hazard input handle
             if (step.tool.parameters.some((param) => param.title === "hazard_id")) {
-                inputHandles.push({ id: `${step.id}_hazard`, label: "Hazard", dataId: "hazard", type: "input" });
+                inputHandles.push({
+                    id: `${step.id}_hazard`,
+                    label: "Hazard",
+                    dataId: "hazard",
+                    type: "input",
+                    required: true
+                });
             }
             // add DFR3 Mapping Set input handle
             if (step.tool.parameters.some((param) => param.title === "dfr3_mapping_set")) {
@@ -499,7 +511,8 @@ export const addNewAnalysisNodesAndEdgesWorkflow = (
                     id: `${step.id}_dfr3_mapping_set`,
                     label: "DFR3 Mapping Set",
                     dataId: "dfr3_mapping",
-                    type: "input"
+                    type: "input",
+                    required: true
                 });
             }
 
@@ -724,11 +737,23 @@ export const getNodeFromToolV2 = (
     if (tool !== undefined) {
         let stepId = uuidv4();
         let inputHandles = tool.inputs.map((input) => {
-            return { id: uuidv4(), label: input.title, dataId: input.dataId, type: "input" };
+            return {
+                id: uuidv4(),
+                label: input.title,
+                dataId: input.dataId,
+                type: "input",
+                required: !input.allowNull
+            };
         });
         // add Hazard input handle
         if (tool.parameters.some((param) => param.title === "hazard_type" || param.title === "hazard_id")) {
-            inputHandles.push({ id: `${stepId}_hazard`, label: "Hazard", dataId: "hazard", type: "input" });
+            inputHandles.push({
+                id: `${stepId}_hazard`,
+                label: "Hazard",
+                dataId: "hazard",
+                type: "input",
+                required: true
+            });
         }
         // add DFR3 Mapping Set input handle
         if (tool.parameters.some((param) => param.title === "dfr3_mapping_set")) {
@@ -736,7 +761,8 @@ export const getNodeFromToolV2 = (
                 id: `${stepId}_dfr3_mapping_set`,
                 label: "DFR3 Mapping Set",
                 dataId: "dfr3_mapping",
-                type: "input"
+                type: "input",
+                required: true
             });
         }
 

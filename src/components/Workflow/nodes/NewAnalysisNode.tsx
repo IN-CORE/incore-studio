@@ -41,13 +41,16 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const hoveredAnalysisID = useAppSelector((state) => state.workflow.hoveredAnalysis);
     // const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
     const currentExecution = useAppSelector((state) => state.execution.currentExecution);
-    const sidePanelData = useAppSelector((state) => state.execution.sidePanelData);
+    const executionParametersAndInputsChecked = useAppSelector(
+        (state) => state.execution.executionParametersAndInputsChecked
+    );
 
     const getInputParameters = () => {
         const inputParameters: {
             execFileEntryId: string;
             label: string;
             value: string;
+            required: boolean;
         }[] = [];
         if (data.stepData !== undefined) {
             data.stepData.tool.parameters.forEach((param) => {
@@ -56,6 +59,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     inputParameters.push({
                         execFileEntryId,
                         label: param.title,
+                        required: !param.allowNull,
                         value:
                             currentExecution !== null
                                 ? currentExecution.parameters[execFileEntryId] !== undefined
@@ -103,6 +107,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                 analysisName: string;
                 outputName: string;
             } | null;
+            required: boolean;
             datasetId?: string;
         }[] = [];
         data.inputHandles.forEach((input) => {
@@ -114,6 +119,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         execFileEntryId,
                         label: input.label,
                         fromExisting: null,
+                        required: true,
                         datasetId: currentExecution !== null ? currentExecution.parameters[execFileEntryId] ?? "" : ""
                     });
                 }
@@ -126,6 +132,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         execFileEntryId,
                         label: input.label,
                         fromExisting: null,
+                        required: true,
                         datasetId: currentExecution !== null ? currentExecution.parameters[execFileEntryId] ?? "" : ""
                     });
                 }
@@ -154,13 +161,15 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         fromExisting: {
                             analysisName: opSrcNodeName,
                             outputName: opHandleName
-                        }
+                        },
+                        required: false
                     });
                 } else {
                     inputDatasets.push({
                         execFileEntryId,
                         label: input.label,
                         fromExisting: null,
+                        required: input.required,
                         datasetId:
                             currentExecution !== null
                                 ? currentExecution.datasets[execFileEntryId] !== undefined
@@ -356,9 +365,9 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                             </Tooltip>
                         </Box>
                     )}
-                    {data.isExecution && (
+                    {data.isExecution && currentExecution === null && (
                         <>
-                            {sidePanelData.executionParametersAndInputsChecked[id] ? (
+                            {executionParametersAndInputsChecked[id] ? (
                                 <CheckCircleRoundedIcon sx={{ color: theme.palette.success[400] }} />
                             ) : (
                                 <CheckCircleOutlineRoundedIcon />
@@ -463,7 +472,9 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     </Box>
                 </Handle>
             ))}
-            {data.isExecution && <Progress status={currentExecution?.stepState?.[id] ?? undefined} />}
+            {data.isExecution && currentExecution !== null && (
+                <Progress status={currentExecution?.stepState?.[id] ?? undefined} />
+            )}
         </Box>
     );
 }

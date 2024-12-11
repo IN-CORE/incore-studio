@@ -44,10 +44,10 @@ export const MapComponent: React.FC<MapComponentProps> = ({
 
         // Initialize the activeLayers state to set each layer's visibility to false (hidden)
         const initialActiveLayers = uniqueLayers.reduce((acc, layer) => {
-            const layerId = layer.layerId;
+            const layerId = layer?.layerId;
             return { ...acc, [layerId]: false };
         }, {});
-        initialActiveLayers[uniqueLayers[0].layerId] = true; // Set the first layer to visible by default
+        initialActiveLayers[uniqueLayers[0]?.layerId] = true; // Set the first layer to visible by default
         setActiveLayers(initialActiveLayers);
     }, [layers]);
 

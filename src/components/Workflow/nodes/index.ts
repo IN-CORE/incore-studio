@@ -41,7 +41,7 @@ export type NewAnalysisNode = Node<
     {
         label: string;
         name: string;
-        inputHandles: { id: string; label: string; dataId: string; type: string }[];
+        inputHandles: { id: string; label: string; dataId: string; required: boolean; type: string }[];
         outputHandles: { id: string; label: string; dataId: string; type: string }[];
         stepData?: DatawolfWorkflowFileStep;
         tool?: DatawolfWorkflowTool;

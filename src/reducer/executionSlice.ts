@@ -15,9 +15,9 @@ const initialState: ExecutionState = {
     currentExecution: null,
     loading: false,
     error: null,
+    executionParametersAndInputsChecked: {},
     sidePanelData: {
         open: false,
-        executionParametersAndInputsChecked: {},
         currentAnalysis: {
             name: "",
             id: "",
@@ -42,6 +42,12 @@ export const getExecutionById = createAsyncThunk("execution/getExecutionById", a
     return response.data;
 });
 
+export const createNewExecution = createAsyncThunk("execution/createExecution", async (execution: ExecutionCreate) => {
+    console.log(execution);
+    const response = await axios.post(`${DATAWOLF_API_URL}/executions`, execution, { headers: getHeaders() });
+    return response.data;
+});
+
 const executionSlice = createSlice({
     name: "execution",
     initialState,
@@ -60,9 +66,9 @@ const executionSlice = createSlice({
         resetExecutionState: (state) => {
             state.currentExecution = null;
             state.executionReactFlowState = initialExecutionReactFlowState;
+            state.executionParametersAndInputsChecked = {};
             state.sidePanelData = {
                 open: false,
-                executionParametersAndInputsChecked: {},
                 currentAnalysis: {
                     name: "",
                     id: "",
@@ -82,10 +88,10 @@ const executionSlice = createSlice({
             action.payload.forEach((item: string) => {
                 checkedData[item] = false;
             });
-            state.sidePanelData.executionParametersAndInputsChecked = checkedData;
+            state.executionParametersAndInputsChecked = checkedData;
         },
         updateExecutionSidePanelCheckStatus: (state, action) => {
-            state.sidePanelData.executionParametersAndInputsChecked[action.payload] = true;
+            state.executionParametersAndInputsChecked[action.payload] = true;
         },
         setExecutionSidePanelData: (state, action) => {
             state.sidePanelData = {
@@ -96,7 +102,6 @@ const executionSlice = createSlice({
         clearSidePanelData: (state) => {
             state.sidePanelData = {
                 open: false,
-                executionParametersAndInputsChecked: {},
                 currentAnalysis: {
                     name: "",
                     id: "",
@@ -104,6 +109,25 @@ const executionSlice = createSlice({
                     inputParameters: [],
                     outputDatasets: []
                 }
+            };
+        },
+        setCreateExecutionTemplate: (state, action) => {
+            state.createExecution = action.payload;
+        },
+        updateCreateExecutionTemplateDatasetAndParams: (state, action) => {
+            state.createExecution.datasets = {
+                ...state.createExecution.datasets,
+                ...action.payload.datasets
+            };
+            state.createExecution.parameters = {
+                ...state.createExecution.parameters,
+                ...action.payload.parameters
+            };
+        },
+        updateCreateExecutionTemplate: (state, action) => {
+            state.createExecution = {
+                ...state.createExecution,
+                ...action.payload
             };
         }
     },
@@ -138,7 +162,10 @@ export const {
     setExecutionSidePanelCheckStatus,
     updateExecutionSidePanelCheckStatus,
     setExecutionSidePanelData,
-    clearSidePanelData
+    clearSidePanelData,
+    setCreateExecutionTemplate,
+    updateCreateExecutionTemplateDatasetAndParams,
+    updateCreateExecutionTemplate
 } = executionSlice.actions;
 
 export default executionSlice.reducer;

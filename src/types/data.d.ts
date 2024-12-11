@@ -42,6 +42,7 @@ interface DatawolfIO {
     deleted: boolean;
     dataId: string;
     mimeType: string;
+    allowNull: boolean;
 }
 
 interface DatawolfToolParameter {
@@ -325,16 +326,31 @@ interface WorkflowState {
     error: string | null;
 }
 
+interface ExecutionCreate {
+    deleted: boolean;
+    title: string;
+    description: string;
+    workflowId: string;
+    creatorId: string;
+    parameters: {
+        [key: string]: string;
+    };
+    datasets: {
+        [key: string]: string;
+    };
+}
+
 interface ExecutionState {
     executionReactFlowState: ReactFlowWorkflow;
     currentExecution: DatawolfExecutionFile | null;
     loading: boolean;
     error: string | null;
+    executionParametersAndInputsChecked: {
+        [key: string]: boolean; // key is analysis node id
+    };
     sidePanelData: {
         open: boolean;
-        executionParametersAndInputsChecked: {
-            [key: string]: boolean; // key is analysis node id
-        };
+
         currentAnalysis: {
             name: string;
             id: string;
@@ -345,12 +361,14 @@ interface ExecutionState {
                     analysisName: string;
                     outputName: string;
                 } | null;
+                required: boolean;
                 datasetId?: string;
             }[];
             inputParameters: {
                 execFileEntryId: string;
                 label: string;
                 value: string;
+                required: boolean;
             }[];
             outputDatasets: {
                 execFileEntryId: string;
@@ -359,17 +377,5 @@ interface ExecutionState {
             }[];
         };
     };
-    createExecution: {
-        deleted: boolean;
-        title: string;
-        description: string;
-        workflowId: string;
-        creatorId: string;
-        parameters: {
-            [key: string]: string;
-        };
-        datasets: {
-            [key: string]: string;
-        };
-    };
+    createExecution: ExecutionCreate;
 }

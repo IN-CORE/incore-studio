@@ -11,7 +11,7 @@ import {
     setExecutionSidePanelCheckStatus
     // updateExecutionSidePanelCheckStatus
 } from "@app/reducer/executionSlice";
-import { useAppDispatch, useAppSelector, useExecutionPolling } from "@app/store/hooks";
+import { useAppDispatch, useAppSelector, useExecutionTemplate, useExecutionPolling } from "@app/store/hooks";
 import withLoading from "@app/components/hocs/withLoading";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
@@ -19,7 +19,8 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import SidePanel from "./SidePanel";
 import Workflow from "@app/components/Workflow";
-import { getWorkflow } from "@app/reducer/workflowSlice";
+import { getWorkflow, clearWorkflowState } from "@app/reducer/workflowSlice";
+import CreateExecutionDialog from "./CreateExecutionDialog";
 
 import { ReactSVG } from "react-svg";
 
@@ -48,6 +49,12 @@ const ExecutionComponent: React.FC<{
     const reactFlowWorkflow = useAppSelector((state) => state.workflow.reactFlowWorkflow);
     const workflowLoading = useAppSelector((state) => state.workflow.workflowLoading);
     const workflowError = useAppSelector((state) => state.workflow.workflowError);
+    const executionParametersAndInputsChecked = useAppSelector(
+        (state) => state.execution.executionParametersAndInputsChecked
+    );
+    const [openExecutionDialog, setOpenExecutionDialog] = React.useState(false);
+
+    useExecutionTemplate(wfID);
     if (currentExecution !== null) {
         useExecutionPolling(currentExecution.id, 10000);
     }
@@ -71,6 +78,10 @@ const ExecutionComponent: React.FC<{
         } else if (create && wfID !== undefined) {
             appDispatch(getWorkflow({ workflowID: wfID, isExecution: true }));
         }
+
+        return () => {
+            appDispatch(clearWorkflowState());
+        };
     }, []);
 
     return (
@@ -168,6 +179,13 @@ const ExecutionComponent: React.FC<{
                             )}
                             <Button
                                 variant="solid"
+                                disabled={
+                                    create
+                                        ? !Object.values(executionParametersAndInputsChecked).every(
+                                              (value) => value === true
+                                          )
+                                        : false
+                                }
                                 startDecorator={
                                     create ? (
                                         <ReactSVG
@@ -190,6 +208,14 @@ const ExecutionComponent: React.FC<{
                                     alignItems: "center", // Aligns text and icon vertically
                                     gap: "8px"
                                 }}
+                                onClick={() => {
+                                    if (create) {
+                                        setOpenExecutionDialog(true);
+                                    } else {
+                                        appDispatch(resetExecutionState());
+                                        navigate(`/project/${id}/workflows/${wfID}/execution/create`);
+                                    }
+                                }}
                             >
                                 {create ? "Execute Workflow" : "Create new"}
                             </Button>
@@ -210,6 +236,12 @@ const ExecutionComponent: React.FC<{
                     </Box>
                 </Stack>
             </Box>
+            <CreateExecutionDialog
+                open={openExecutionDialog}
+                onClose={() => setOpenExecutionDialog(false)}
+                wfId={wfID}
+                id={id}
+            />
 
             <Box sx={{ display: "flex", flexGrow: 1, position: "relative" }}>
                 <WorkflowWithLoadingAndErrorHandling

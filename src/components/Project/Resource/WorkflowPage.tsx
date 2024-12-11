@@ -13,6 +13,7 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
+import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflow";
 
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 import Snackbar from "@mui/joy/Snackbar";
@@ -48,8 +49,16 @@ const WorkflowPage = (): JSX.Element => {
 
     const onSearchClick = () => {};
     const onFilterClick = () => {};
-    const onCreateClick = () => {};
     const onSortClick = () => {};
+
+    // create workflow
+    const [openCreateWorkflowDialog, setOpenCreateWorkflowDialog] = useState(false);
+    const handleCloseCreateWorkflowDialog = () => {
+        setOpenCreateWorkflowDialog(false);
+    };
+    const onCreateWorkflowClick = () => {
+        setOpenCreateWorkflowDialog(true);
+    };
 
     // Table view vs Card view
     const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
@@ -107,11 +116,15 @@ const WorkflowPage = (): JSX.Element => {
                                     icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
                                     onSearchClick={onSearchClick}
                                     onFilterClick={onFilterClick}
-                                    onCreateClick={onCreateClick}
+                                    onCreateClick={onCreateWorkflowClick}
                                     onSortClick={onSortClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
-                                    createLabel="Add from Service"
+                                    createLabel="Create New Workflow"
+                                />
+                                <CreateWorkflowDialog
+                                    open={openCreateWorkflowDialog}
+                                    onClose={handleCloseCreateWorkflowDialog}
                                 />
                                 {isTableView ? (
                                     <ResourceTable
