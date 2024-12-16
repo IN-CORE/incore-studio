@@ -31,3 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Navbar file structure. [#37](https://github.com/IN-CORE/incore-studio/issues/37)
+
+### Fixed
+
+- Direct URL access to the sub pages in studio [#75](https://github.com/IN-CORE/incore-studio/issues/75)
