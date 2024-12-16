@@ -10,6 +10,7 @@ type FilterDropdownProps = {
 
 const FilterDropdown: React.FC<FilterDropdownProps> = ({ filters, onFilterSelect }) => {
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+    const [selectedValues, setSelectedValues] = React.useState<Record<string, string>>({});
 
     const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -19,14 +20,27 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ filters, onFilterSelect
         setAnchorEl(null);
     };
 
+    const handleInputChange = (filterName: string, value: string) => {
+        setSelectedValues((prev) => ({
+            ...prev,
+            [filterName]: value
+        }));
+        onFilterSelect(filterName, value);
+    };
+
+    const isAnyFilterApplied = Object.values(selectedValues).some((value) => value.trim() !== "");
+
     return (
         <div>
             <Button
                 onClick={handleOpen}
                 variant="soft"
                 startDecorator={<FilterAltOutlinedIcon />}
-                color="neutral"
-                sx={{ ml: 1 }}
+                color={isAnyFilterApplied ? "primary" : "neutral"} // Change color dynamically
+                sx={{
+                    ml: 1,
+                    color: isAnyFilterApplied ? "primary.light" : "primary.main"
+                }}
             >
                 Filter
             </Button>
@@ -45,7 +59,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ filters, onFilterSelect
                                 freeSolo
                                 placeholder={`Type to filter by ${breakCamelCaseAndCapitalize(filterName)}`}
                                 options={options}
-                                onInputChange={(_, value) => onFilterSelect(filterName, value)}
+                                onInputChange={(_, value) => handleInputChange(filterName, value)}
                                 sx={{ mt: 1 }}
                             />
                         </FormControl>
