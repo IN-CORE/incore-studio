@@ -133,6 +133,7 @@ const DFR3MappingPage = (): JSX.Element => {
                                     }}
                                     onCreateClick={onCreateClick}
                                     onSortClick={onSortClick}
+                                    sortOptions={["date", "type", "hazardType", "inventoryType", "name", "id"]}
                                     isTableView
                                     createLabel="Add from Service"
                                 />

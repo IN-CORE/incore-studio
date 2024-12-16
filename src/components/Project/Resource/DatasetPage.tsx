@@ -155,6 +155,7 @@ const DatasetPage = (): JSX.Element => {
                                     filters={{ type: [] }}
                                     onCreateClick={onCreateClick}
                                     onSortClick={onSortClick}
+                                    sortOptions={["date", "type", "title", "id"]}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"

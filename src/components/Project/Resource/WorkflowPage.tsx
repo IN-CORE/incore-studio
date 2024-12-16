@@ -118,6 +118,7 @@ const WorkflowPage = (): JSX.Element => {
                                     onFilterSelect={onFilterSelect}
                                     onCreateClick={onCreateWorkflowClick}
                                     onSortClick={onSortClick}
+                                    sortOptions={["created", "type", "title", "id"]}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Create New Workflow"

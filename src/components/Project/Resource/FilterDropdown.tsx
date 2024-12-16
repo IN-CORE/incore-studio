@@ -35,7 +35,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ filters, onFilterSelect
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
                 placement="bottom-start"
-                sx={{ width: "20em", padding: "1em" }}
+                sx={{ width: "15em", padding: "1em" }}
             >
                 {Object.entries(filters).map(([filterName, options]) => (
                     <Box key={filterName} mb={2}>

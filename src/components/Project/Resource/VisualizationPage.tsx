@@ -132,6 +132,7 @@ const VisualizationPage = (): JSX.Element => {
                                     filters={{ type: ["MAP", "CHART", "TABLE"] }}
                                     onCreateClick={onCreateClick}
                                     onSortClick={onSortClick}
+                                    sortOptions={["date", "type", "name", "id"]}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Create New Visualization"

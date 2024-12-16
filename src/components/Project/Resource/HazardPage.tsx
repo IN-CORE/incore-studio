@@ -150,6 +150,7 @@ const HazardPage = (): JSX.Element => {
                                     filters={{ type: ["earthquake", "tsunami", "hurricane", "tornado", "flood"] }}
                                     onCreateClick={onCreateClick}
                                     onSortClick={onSortClick}
+                                    sortOptions={["date", "type", "name", "id"]}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"
