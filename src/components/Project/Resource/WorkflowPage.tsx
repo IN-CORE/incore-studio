@@ -48,7 +48,7 @@ const WorkflowPage = (): JSX.Element => {
     }, [id, workflowPageNumber, deletedWorkflowIds]);
 
     const onSearchClick = () => {};
-    const onFilterClick = () => {};
+    const onFilterSelect = () => {};
     const onSortClick = () => {};
 
     // create workflow
@@ -115,7 +115,7 @@ const WorkflowPage = (): JSX.Element => {
                                     title="Workflows"
                                     icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
                                     onSearchClick={onSearchClick}
-                                    onFilterClick={onFilterClick}
+                                    onFilterSelect={onFilterSelect}
                                     onCreateClick={onCreateWorkflowClick}
                                     onSortClick={onSortClick}
                                     onViewChangeClick={onViewChangeClick}

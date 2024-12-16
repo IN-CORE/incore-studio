@@ -273,3 +273,13 @@ export function getStatusColor(status?: string) {
 //         };
 //     });
 // }
+
+export function breakCamelCaseAndCapitalize(camelCaseString: string): string {
+    return camelCaseString
+        .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space before uppercase letters
+        .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2") // Handle consecutive uppercase letters
+        .trim() // Remove leading/trailing spaces
+        .split(" ") // Split into words
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
+        .join(" "); // Join the words back into a phrase
+}

@@ -60,7 +60,7 @@ const DatasetPage = (): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSearchClick = () => {};
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilterClick = () => {};
+    const onFilterSelect = () => {};
     const onCreateClick = () => {
         setOpenAddDatasetFromServiceDialog(true);
     };
@@ -151,7 +151,8 @@ const DatasetPage = (): JSX.Element => {
                                     title="Datasets"
                                     icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
                                     onSearchClick={onSearchClick}
-                                    onFilterClick={onFilterClick}
+                                    onFilterSelect={onFilterSelect}
+                                    filters={{ type: [] }}
                                     onCreateClick={onCreateClick}
                                     onSortClick={onSortClick}
                                     onViewChangeClick={onViewChangeClick}

@@ -1,18 +1,19 @@
 import React from "react";
 import { Box, Typography, IconButton, Button, ButtonGroup } from "@mui/joy";
 import SearchIcon from "@mui/icons-material/Search";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SortIcon from "@mui/icons-material/Sort";
 import AddIcon from "@mui/icons-material/Add";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 
 import { SvgIconProps } from "@mui/material";
+import FilterDropdown from "@app/components/Project/Resource/FilterDropdown";
 
 interface ResourceFilterBarProps {
     title: string;
     onSearchClick?: () => void;
-    onFilterClick?: () => void;
+    filters?: Record<string, string[]>;
+    onFilterSelect?: () => void;
     onCreateClick?: () => void;
     onSortClick?: () => void;
     onViewChangeClick?: () => void;
@@ -23,9 +24,10 @@ interface ResourceFilterBarProps {
 
 const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     title,
+    filters,
     icon,
     onSearchClick,
-    onFilterClick,
+    onFilterSelect,
     onSortClick,
     onViewChangeClick,
     isTableView,
@@ -45,17 +47,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                         <SearchIcon />
                     </IconButton>
                 )}
-                {onFilterClick && (
-                    <Button
-                        onClick={onFilterClick}
-                        variant="soft"
-                        startDecorator={<FilterAltOutlinedIcon />}
-                        color="neutral"
-                        sx={{ ml: 1 }}
-                    >
-                        Filter
-                    </Button>
-                )}
+                {onFilterSelect && filters && <FilterDropdown filters={filters} onFilterSelect={onFilterSelect} />}
                 {onSortClick && (
                     <Button
                         onClick={onSortClick}

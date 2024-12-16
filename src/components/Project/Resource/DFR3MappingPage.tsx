@@ -54,7 +54,7 @@ const DFR3MappingPage = (): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSearchClick = () => {};
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilterClick = () => {};
+    const onFilterSelect = () => {};
     const onCreateClick = () => {
         setOpenAddDFR3MappingFromServiceDialog(true);
     };
@@ -116,7 +116,21 @@ const DFR3MappingPage = (): JSX.Element => {
                                     title="DFR3Mappings"
                                     icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
                                     onSearchClick={onSearchClick}
-                                    onFilterClick={onFilterClick}
+                                    onFilterSelect={onFilterSelect}
+                                    filters={{
+                                        hazardType: ["earthquake", "tsunami", "hurricane", "tornado", "flood"],
+                                        inventoryType: [
+                                            "building",
+                                            "bridge",
+                                            "roadway",
+                                            "electric_facility",
+                                            "eletric_power_line",
+                                            "water_facility",
+                                            "buried_pipeline",
+                                            "gas_facility"
+                                        ],
+                                        type: ["fragility", "repair", "restoration"]
+                                    }}
                                     onCreateClick={onCreateClick}
                                     onSortClick={onSortClick}
                                     isTableView
