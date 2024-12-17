@@ -31,14 +31,13 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ filters, onFilterSelect
     const isAnyFilterApplied = Object.values(selectedValues).some((value) => value.trim() !== "");
 
     return (
-        <div>
+        <Box mr={1}>
             <Button
                 onClick={handleOpen}
                 variant="soft"
                 startDecorator={<FilterAltOutlinedIcon />}
                 color={isAnyFilterApplied ? "primary" : "neutral"} // Change color dynamically
                 sx={{
-                    ml: 1,
                     color: isAnyFilterApplied ? "primary.light" : "primary.main"
                 }}
             >
@@ -66,7 +65,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ filters, onFilterSelect
                     </Box>
                 ))}
             </Menu>
-        </div>
+        </Box>
     );
 };
 
