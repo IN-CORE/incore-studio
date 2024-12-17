@@ -10,8 +10,7 @@ import {
     deleteProjectDatasets,
     addLayerToVisualization,
     getProjectVisualizations,
-    addDatasetToProject,
-    searchProjectDatasets
+    addDatasetToProject
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -58,15 +57,10 @@ const DatasetPage = (): JSX.Element => {
         }
     }, [id, datasetPageNumber, deletedDatasetIds]);
 
-    const onSearch = (text: string) => {
-        if (id)
-            appDispatch(searchProjectDatasets({ text, projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
-    };
-
     const onCreateClick = () => {
         setOpenAddDatasetFromServiceDialog(true);
     };
-    const onApply = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
         if (id) {
             const { filters, sortBy, order } = params;
 
@@ -166,10 +160,9 @@ const DatasetPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Datasets"
                                     icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearch={onSearch}
                                     filters={{ type: [] }}
                                     sortOptions={["date", "type", "title", "id"]}
-                                    onApply={onApply}
+                                    onApply={onApplyFilterSort}
                                     onCreateClick={onCreateClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}

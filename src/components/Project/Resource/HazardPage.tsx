@@ -10,8 +10,7 @@ import {
     deleteProjectHazards,
     getProject,
     getProjectHazards,
-    getProjectVisualizations,
-    searchProjectHazards
+    getProjectVisualizations
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -58,9 +57,22 @@ const HazardPage = (): JSX.Element => {
         }
     }, [id, hazardPageNumber, deletedHazardIds]);
 
-    const onSearch = (text: string) => {
-        if (id)
-            appDispatch(searchProjectHazards({ text, projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
+    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+        if (id) {
+            const { filters, sortBy, order } = params;
+
+            // Dispatch the Redux Thunk with updated parameters
+            appDispatch(
+                getProjectHazards({
+                    projectId: id,
+                    skip: (hazardPageNumber - 1) * 10, // Pagination logic
+                    limit: 10, // Number of items per page
+                    filters, // Filters applied
+                    sortBy, // Sorting field
+                    order // Sort order: "asc" or "desc"
+                })
+            );
+        }
     };
 
     const onCreateClick = () => {
@@ -145,9 +157,9 @@ const HazardPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Hazards"
                                     icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearch={onSearch}
                                     filters={{ type: ["earthquake", "tsunami", "hurricane", "tornado", "flood"] }}
                                     sortOptions={["date", "type", "name", "id"]}
+                                    onApply={onApplyFilterSort}
                                     onCreateClick={onCreateClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}

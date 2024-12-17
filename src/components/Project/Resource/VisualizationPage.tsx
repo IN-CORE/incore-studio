@@ -4,12 +4,7 @@ import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import {
-    deleteProjectVisualizations,
-    getProject,
-    getProjectVisualizations,
-    searchProjectVisualizations
-} from "@app/reducer/projectSlice";
+import { deleteProjectVisualizations, getProject, getProjectVisualizations } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -56,16 +51,22 @@ const VisualizationPage = (): JSX.Element => {
         }
     }, [id, visualizationPageNumber, deletedVisualizationIds]);
 
-    const onSearch = (text: string) => {
-        if (id)
+    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+        if (id) {
+            const { filters, sortBy, order } = params;
+
+            // Dispatch the Redux Thunk with updated parameters
             appDispatch(
-                searchProjectVisualizations({
-                    text,
+                getProjectVisualizations({
                     projectId: id,
-                    skip: (visualizationPageNumber - 1) * 10,
-                    limit: 10
+                    skip: (visualizationPageNumber - 1) * 10, // Pagination logic
+                    limit: 10, // Number of items per page
+                    filters, // Filters applied
+                    sortBy, // Sorting field
+                    order // Sort order: "asc" or "desc"
                 })
             );
+        }
     };
 
     // Table view vs Card view
@@ -137,9 +138,9 @@ const VisualizationPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Visualizations"
                                     icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearch={onSearch}
                                     filters={{ type: ["MAP", "CHART", "TABLE"] }}
                                     sortOptions={["date", "type", "name", "id"]}
+                                    onApply={onApplyFilterSort}
                                     onCreateClick={onCreateClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}

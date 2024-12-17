@@ -4,12 +4,7 @@ import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import {
-    deleteProjectWorkflows,
-    getProject,
-    getProjectWorkflows,
-    searchProjectWorkflows
-} from "@app/reducer/projectSlice";
+import { deleteProjectWorkflows, getProject, getProjectWorkflows } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -51,16 +46,22 @@ const WorkflowPage = (): JSX.Element => {
         if (id) appDispatch(getProjectWorkflows({ projectId: id, skip: (workflowPageNumber - 1) * 10, limit: 10 }));
     }, [id, workflowPageNumber, deletedWorkflowIds]);
 
-    const onSearch = (text: string) => {
-        if (id)
+    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+        if (id) {
+            const { filters, sortBy, order } = params;
+
+            // Dispatch the Redux Thunk with updated parameters
             appDispatch(
-                searchProjectWorkflows({
-                    text,
+                getProjectWorkflows({
                     projectId: id,
-                    skip: (workflowPageNumber - 1) * 10,
-                    limit: 10
+                    skip: (workflowPageNumber - 1) * 10, // Pagination logic
+                    limit: 10, // Number of items per page
+                    filters, // Filters applied
+                    sortBy, // Sorting field
+                    order // Sort order: "asc" or "desc"
                 })
             );
+        }
     };
 
     // create workflow
@@ -125,10 +126,10 @@ const WorkflowPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Workflows"
                                     icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearch={onSearch}
                                     onCreateClick={onCreateWorkflowClick}
                                     filters={{ type: ["workflow", "execution"] }}
                                     sortOptions={["created", "type", "title", "id"]}
+                                    onApply={onApplyFilterSort}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Create Workflow"

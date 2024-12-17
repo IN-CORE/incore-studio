@@ -234,23 +234,48 @@ export const getProjectDatasets = createAsyncThunk(
             params.order = order;
         }
 
-        try {
-            const response = await axios.get(`${PROJECT_API_URL}/${projectId}/datasets`, {
-                headers: getHeaders(),
-                params
-            });
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching project datasets:", error);
-            throw error; // Ensure errors are propagated to Redux for proper handling
-        }
+        const response = await axios.get(`${PROJECT_API_URL}/${projectId}/datasets`, {
+            headers: getHeaders(),
+            params
+        });
+        return response.data;
     }
 );
 
 export const getProjectHazards = createAsyncThunk(
     "projects/getProjectHazards",
-    async ({ projectId, skip = 0, limit = 9 }: { projectId: string; skip?: number; limit?: number }) => {
-        const params: Record<string, string | number> = { skip, limit };
+    async ({
+        projectId,
+        skip = 0,
+        limit = 9,
+        filters = {},
+        sortBy,
+        order = "asc"
+    }: {
+        projectId: string;
+        skip?: number;
+        limit?: number;
+        filters?: Record<string, string | number>;
+        sortBy?: string;
+        order?: string;
+    }) => {
+        // Build query parameters dynamically and remove empty/undefined filters
+        const params: Record<string, string | number> = {
+            skip,
+            limit,
+            ...Object.fromEntries(
+                Object.entries(filters).filter(
+                    ([, value]) => value !== undefined && value !== "" // Filter out empty and undefined values
+                )
+            )
+        };
+
+        // Add sorting parameters if provided
+        if (sortBy) {
+            params.sortBy = sortBy;
+            params.order = order;
+        }
+
         const response = await axios.get(`${PROJECT_API_URL}/${projectId}/hazards`, {
             headers: getHeaders(),
             params
@@ -261,8 +286,38 @@ export const getProjectHazards = createAsyncThunk(
 
 export const getProjectDRF3Mappings = createAsyncThunk(
     "projects/getProjectDRF3Mappings",
-    async ({ projectId, skip = 0, limit = 9 }: { projectId: string; skip?: number; limit?: number }) => {
-        const params: Record<string, string | number> = { skip, limit };
+    async ({
+        projectId,
+        skip = 0,
+        limit = 9,
+        filters = {},
+        sortBy,
+        order = "asc"
+    }: {
+        projectId: string;
+        skip?: number;
+        limit?: number;
+        filters?: Record<string, string | number>;
+        sortBy?: string;
+        order?: string;
+    }) => {
+        // Build query parameters dynamically and remove empty/undefined filters
+        const params: Record<string, string | number> = {
+            skip,
+            limit,
+            ...Object.fromEntries(
+                Object.entries(filters).filter(
+                    ([, value]) => value !== undefined && value !== "" // Filter out empty and undefined values
+                )
+            )
+        };
+
+        // Add sorting parameters if provided
+        if (sortBy) {
+            params.sortBy = sortBy;
+            params.order = order;
+        }
+
         const response = await axios.get(`${PROJECT_API_URL}/${projectId}/dfr3mappings`, {
             headers: getHeaders(),
             params
@@ -273,8 +328,38 @@ export const getProjectDRF3Mappings = createAsyncThunk(
 
 export const getProjectWorkflows = createAsyncThunk(
     "projects/getProjectWorkflows",
-    async ({ projectId, skip = 0, limit = 9 }: { projectId: string; skip?: number; limit?: number }) => {
-        const params: Record<string, string | number> = { skip, limit };
+    async ({
+        projectId,
+        skip = 0,
+        limit = 9,
+        filters = {},
+        sortBy,
+        order = "asc"
+    }: {
+        projectId: string;
+        skip?: number;
+        limit?: number;
+        filters?: Record<string, string | number>;
+        sortBy?: string;
+        order?: string;
+    }) => {
+        // Build query parameters dynamically and remove empty/undefined filters
+        const params: Record<string, string | number> = {
+            skip,
+            limit,
+            ...Object.fromEntries(
+                Object.entries(filters).filter(
+                    ([, value]) => value !== undefined && value !== "" // Filter out empty and undefined values
+                )
+            )
+        };
+
+        // Add sorting parameters if provided
+        if (sortBy) {
+            params.sortBy = sortBy;
+            params.order = order;
+        }
+
         const response = await axios.get(`${PROJECT_API_URL}/${projectId}/workflows`, {
             headers: getHeaders(),
             params
@@ -285,8 +370,38 @@ export const getProjectWorkflows = createAsyncThunk(
 
 export const getProjectVisualizations = createAsyncThunk(
     "projects/getProjectVisualizations",
-    async ({ projectId, skip = 0, limit = 9 }: { projectId: string; skip?: number; limit?: number }) => {
-        const params: Record<string, string | number> = { skip, limit };
+    async ({
+        projectId,
+        skip = 0,
+        limit = 9,
+        filters = {},
+        sortBy,
+        order = "asc"
+    }: {
+        projectId: string;
+        skip?: number;
+        limit?: number;
+        filters?: Record<string, string | number>;
+        sortBy?: string;
+        order?: string;
+    }) => {
+        // Build query parameters dynamically and remove empty/undefined filters
+        const params: Record<string, string | number> = {
+            skip,
+            limit,
+            ...Object.fromEntries(
+                Object.entries(filters).filter(
+                    ([, value]) => value !== undefined && value !== "" // Filter out empty and undefined values
+                )
+            )
+        };
+
+        // Add sorting parameters if provided
+        if (sortBy) {
+            params.sortBy = sortBy;
+            params.order = order;
+        }
+
         const response = await axios.get(`${PROJECT_API_URL}/${projectId}/visualizations`, {
             headers: getHeaders(),
             params

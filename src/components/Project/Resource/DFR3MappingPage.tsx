@@ -8,8 +8,7 @@ import {
     addDFR3MappingToProject,
     deleteProjectDFR3Mappings,
     getProject,
-    getProjectDRF3Mappings,
-    searchProjectDFR3Mappings
+    getProjectDRF3Mappings
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -52,11 +51,22 @@ const DFR3MappingPage = (): JSX.Element => {
             appDispatch(getProjectDRF3Mappings({ projectId: id, skip: (DFR3MappingPageNumber - 1) * 10, limit: 10 }));
     }, [id, DFR3MappingPageNumber, deletedDFR3MappingIds]);
 
-    const onSearch = (text: string) => {
-        if (id)
+    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+        if (id) {
+            const { filters, sortBy, order } = params;
+
+            // Dispatch the Redux Thunk with updated parameters
             appDispatch(
-                searchProjectDFR3Mappings({ text, projectId: id, skip: (DFR3MappingPageNumber - 1) * 10, limit: 10 })
+                getProjectDRF3Mappings({
+                    projectId: id,
+                    skip: (DFR3MappingPageNumber - 1) * 10, // Pagination logic
+                    limit: 10, // Number of items per page
+                    filters, // Filters applied
+                    sortBy, // Sorting field
+                    order // Sort order: "asc" or "desc"
+                })
             );
+        }
     };
 
     const onCreateClick = () => {
@@ -117,7 +127,6 @@ const DFR3MappingPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="DFR3Mappings"
                                     icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
-                                    onSearch={onSearch}
                                     filters={{
                                         hazardType: ["earthquake", "tsunami", "hurricane", "tornado", "flood"],
                                         inventoryType: [
@@ -132,8 +141,9 @@ const DFR3MappingPage = (): JSX.Element => {
                                         ],
                                         type: ["fragility", "repair", "restoration"]
                                     }}
-                                    onCreateClick={onCreateClick}
                                     sortOptions={["date", "type", "hazardType", "inventoryType", "name", "id"]}
+                                    onApply={onApplyFilterSort}
+                                    onCreateClick={onCreateClick}
                                     isTableView
                                     createLabel="Add from Service"
                                 />
