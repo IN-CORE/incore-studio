@@ -10,7 +10,8 @@ import {
     deleteProjectHazards,
     getProject,
     getProjectHazards,
-    getProjectVisualizations
+    getProjectVisualizations,
+    searchProjectHazards
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -57,8 +58,11 @@ const HazardPage = (): JSX.Element => {
         }
     }, [id, hazardPageNumber, deletedHazardIds]);
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSearchClick = () => {};
+    const onSearchClick = (text: string) => {
+        if (id)
+            appDispatch(searchProjectHazards({ text, projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterSelect = () => {};
     const onCreateClick = () => {

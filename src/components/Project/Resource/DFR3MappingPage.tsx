@@ -8,7 +8,8 @@ import {
     addDFR3MappingToProject,
     deleteProjectDFR3Mappings,
     getProject,
-    getProjectDRF3Mappings
+    getProjectDRF3Mappings,
+    searchProjectDFR3Mappings
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -51,8 +52,13 @@ const DFR3MappingPage = (): JSX.Element => {
             appDispatch(getProjectDRF3Mappings({ projectId: id, skip: (DFR3MappingPageNumber - 1) * 10, limit: 10 }));
     }, [id, DFR3MappingPageNumber, deletedDFR3MappingIds]);
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSearchClick = () => {};
+    const onSearchClick = (text: string) => {
+        if (id)
+            appDispatch(
+                searchProjectDFR3Mappings({ text, projectId: id, skip: (DFR3MappingPageNumber - 1) * 10, limit: 10 })
+            );
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterSelect = () => {};
     const onCreateClick = () => {

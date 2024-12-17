@@ -10,7 +10,8 @@ import {
     deleteProjectDatasets,
     addLayerToVisualization,
     getProjectVisualizations,
-    addDatasetToProject
+    addDatasetToProject,
+    searchProjectDatasets
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -57,8 +58,11 @@ const DatasetPage = (): JSX.Element => {
         }
     }, [id, datasetPageNumber, deletedDatasetIds]);
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSearchClick = () => {};
+    const onSearchClick = (text: string) => {
+        if (id)
+            appDispatch(searchProjectDatasets({ text, projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterSelect = () => {};
     const onCreateClick = () => {

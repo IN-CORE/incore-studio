@@ -4,7 +4,12 @@ import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { deleteProjectVisualizations, getProject, getProjectVisualizations } from "@app/reducer/projectSlice";
+import {
+    deleteProjectVisualizations,
+    getProject,
+    getProjectVisualizations,
+    searchProjectVisualizations
+} from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -51,8 +56,18 @@ const VisualizationPage = (): JSX.Element => {
         }
     }, [id, visualizationPageNumber, deletedVisualizationIds]);
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSearchClick = () => {};
+    const onSearchClick = (text: string) => {
+        if (id)
+            appDispatch(
+                searchProjectVisualizations({
+                    text,
+                    projectId: id,
+                    skip: (visualizationPageNumber - 1) * 10,
+                    limit: 10
+                })
+            );
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterSelect = () => {};
     // eslint-disable-next-line @typescript-eslint/no-empty-function

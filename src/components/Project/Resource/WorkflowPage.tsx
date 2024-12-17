@@ -2,9 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Container } from "@mui/joy";
 import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { deleteProjectWorkflows, getProject, getProjectWorkflows } from "@app/reducer/projectSlice";
+import {
+    deleteProjectWorkflows,
+    getProject,
+    getProjectWorkflows,
+    searchProjectWorkflows
+} from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -17,10 +22,11 @@ import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflow";
 
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 import Snackbar from "@mui/joy/Snackbar";
+import { useAppDispatch } from "@app/store/hooks";
 
 const WorkflowPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
-    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
@@ -37,18 +43,29 @@ const WorkflowPage = (): JSX.Element => {
 
     useEffect(() => {
         if (id) {
-            // @ts-ignore
-            dispatch(getProject(id));
+            appDispatch(getProject(id));
         }
     }, [id]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectWorkflows({ projectId: id, skip: (workflowPageNumber - 1) * 10, limit: 10 }));
+        if (id) appDispatch(getProjectWorkflows({ projectId: id, skip: (workflowPageNumber - 1) * 10, limit: 10 }));
     }, [id, workflowPageNumber, deletedWorkflowIds]);
 
-    const onSearchClick = () => {};
+    const onSearchClick = (text: string) => {
+        if (id)
+            appDispatch(
+                searchProjectWorkflows({
+                    text,
+                    projectId: id,
+                    skip: (workflowPageNumber - 1) * 10,
+                    limit: 10
+                })
+            );
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onFilterSelect = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSortClick = () => {};
 
     // create workflow
@@ -70,8 +87,7 @@ const WorkflowPage = (): JSX.Element => {
 
     // delete function
     const deleteWorkflowFunc = (projectId: string, workflow: Workflow) => {
-        // @ts-ignore
-        dispatch(deleteProjectWorkflows({ projectId, workflowIds: [workflow.id] }));
+        appDispatch(deleteProjectWorkflows({ projectId, workflowIds: [workflow.id] }));
     };
 
     // snackbar

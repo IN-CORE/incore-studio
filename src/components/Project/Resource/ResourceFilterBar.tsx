@@ -11,7 +11,7 @@ import Searchbox from "@app/components/Project/Resource/Searchbox";
 
 interface ResourceFilterBarProps {
     title: string;
-    onSearchClick?: () => void;
+    onSearchClick?: (text: string) => void;
     filters?: Record<string, string[]>;
     onFilterSelect?: () => void;
     onCreateClick?: () => void;
