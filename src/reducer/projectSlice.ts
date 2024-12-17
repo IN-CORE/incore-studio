@@ -202,13 +202,48 @@ export const deleteProject = createAsyncThunk("projects/deleteProject", async (p
 
 export const getProjectDatasets = createAsyncThunk(
     "projects/getProjectDatasets",
-    async ({ projectId, skip = 0, limit = 9 }: { projectId: string; skip?: number; limit?: number }) => {
-        const params: Record<string, string | number> = { skip, limit };
-        const response = await axios.get(`${PROJECT_API_URL}/${projectId}/datasets`, {
-            headers: getHeaders(),
-            params
-        });
-        return response.data;
+    async ({
+        projectId,
+        skip = 0,
+        limit = 9,
+        filters = {},
+        sortBy,
+        order = "asc"
+    }: {
+        projectId: string;
+        skip?: number;
+        limit?: number;
+        filters?: Record<string, string | number>;
+        sortBy?: string;
+        order?: "asc" | "desc";
+    }) => {
+        // Build query parameters dynamically and remove empty/undefined filters
+        const params: Record<string, string | number> = {
+            skip,
+            limit,
+            ...Object.fromEntries(
+                Object.entries(filters).filter(
+                    ([, value]) => value !== undefined && value !== "" // Filter out empty and undefined values
+                )
+            )
+        };
+
+        // Add sorting parameters if provided
+        if (sortBy) {
+            params.sortBy = sortBy;
+            params.order = order;
+        }
+
+        try {
+            const response = await axios.get(`${PROJECT_API_URL}/${projectId}/datasets`, {
+                headers: getHeaders(),
+                params
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching project datasets:", error);
+            throw error; // Ensure errors are propagated to Redux for proper handling
+        }
     }
 );
 

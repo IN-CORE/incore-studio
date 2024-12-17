@@ -13,7 +13,7 @@ interface ResourceFilterBarProps {
     title: string;
     onSearch?: (text: string) => void;
     filters?: Record<string, string[]>;
-    onFilterSelect?: () => void;
+    onFilter?: (filters: Record<string, string | number>) => void;
     onCreateClick?: () => void;
     onSortClick?: () => void;
     sortOptions?: string[];
@@ -27,7 +27,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     title,
     icon,
     onSearch,
-    onFilterSelect,
+    onFilter,
     filters,
     onSortClick,
     sortOptions,
@@ -45,7 +45,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
             </Box>
             <Box display="flex" alignItems="center">
                 {onSearch && <Searchbox onSearch={onSearch} />}
-                {onFilterSelect && filters && <FilterDropdown filters={filters} onFilterSelect={onFilterSelect} />}
+                {onFilter && filters && <FilterDropdown filters={filters} onFilter={onFilter} />}
                 {onSortClick && sortOptions && <SortDropdown sortOptions={sortOptions} onSortClick={onSortClick} />}
                 {onViewChangeClick && (
                     <ButtonGroup variant="soft" sx={{ ml: 1 }}>

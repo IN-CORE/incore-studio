@@ -64,7 +64,10 @@ const DatasetPage = (): JSX.Element => {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilterSelect = () => {};
+    const onFilter = (filters: Record<string, string | number>) => {
+        if (id)
+            appDispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10, filters }));
+    };
     const onCreateClick = () => {
         setOpenAddDatasetFromServiceDialog(true);
     };
@@ -155,7 +158,7 @@ const DatasetPage = (): JSX.Element => {
                                     title="Datasets"
                                     icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
                                     onSearch={onSearch}
-                                    onFilterSelect={onFilterSelect}
+                                    onFilter={onFilter}
                                     filters={{ type: [] }}
                                     onCreateClick={onCreateClick}
                                     onSortClick={onSortClick}

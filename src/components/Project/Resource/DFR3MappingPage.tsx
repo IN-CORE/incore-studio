@@ -60,7 +60,7 @@ const DFR3MappingPage = (): JSX.Element => {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilterSelect = () => {};
+    const onFilter = () => {};
     const onCreateClick = () => {
         setOpenAddDFR3MappingFromServiceDialog(true);
     };
@@ -122,7 +122,7 @@ const DFR3MappingPage = (): JSX.Element => {
                                     title="DFR3Mappings"
                                     icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
                                     onSearch={onSearch}
-                                    onFilterSelect={onFilterSelect}
+                                    onFilter={onFilter}
                                     filters={{
                                         hazardType: ["earthquake", "tsunami", "hurricane", "tornado", "flood"],
                                         inventoryType: [

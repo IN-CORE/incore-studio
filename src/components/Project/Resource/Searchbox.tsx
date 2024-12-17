@@ -28,7 +28,14 @@ const Searchbox: React.FC<SearchboxProps> = ({ onSearch }) => {
     return (
         <Box display="flex" alignItems="center" gap={1} mr={1}>
             {/* Search Button */}
-            <IconButton onClick={handleSearchClick} variant="soft">
+            <IconButton
+                onClick={handleSearchClick}
+                variant="soft"
+                color={searchValue ? "primary" : "neutral"} // Change
+                sx={{
+                    color: searchValue ? "primary.light" : "primary.main"
+                }}
+            >
                 <SearchIcon />
             </IconButton>
 

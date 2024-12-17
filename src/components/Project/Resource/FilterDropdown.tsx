@@ -5,17 +5,23 @@ import { breakCamelCaseAndCapitalize } from "@app/utils";
 
 type FilterDropdownProps = {
     filters: Record<string, string[]>; // Hashmap of filter names and possible values
-    onFilterSelect: (filter: string, value: string) => void; // Callback for filter selection
+    onFilter: (filters: Record<string, string | number>) => void; // Callback for filter selection
 };
 
-const FilterDropdown: React.FC<FilterDropdownProps> = ({ filters, onFilterSelect }) => {
+const FilterDropdown: React.FC<FilterDropdownProps> = ({ filters, onFilter }) => {
     const [selectedValues, setSelectedValues] = React.useState<Record<string, string>>({});
+
     const handleInputChange = (filterName: string, value: string) => {
-        setSelectedValues((prev) => ({
-            ...prev,
-            [filterName]: value
-        }));
-        onFilterSelect(filterName, value);
+        setSelectedValues((prev) => {
+            const updatedValues = {
+                ...prev,
+                [filterName]: value
+            };
+
+            // Notify the parent with the updated filter values
+            onFilter(updatedValues);
+            return updatedValues;
+        });
     };
 
     const isAnyFilterApplied = Object.values(selectedValues).some((value) => value.trim() !== "");
@@ -46,6 +52,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ filters, onFilterSelect
                                     options={options}
                                     onInputChange={(_, value) => handleInputChange(filterName, value)}
                                     sx={{ mt: 1 }}
+                                    value={selectedValues[filterName] || ""}
                                 />
                             </FormControl>
                         </Box>

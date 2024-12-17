@@ -69,7 +69,7 @@ const VisualizationPage = (): JSX.Element => {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilterSelect = () => {};
+    const onFilter = () => {};
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onSortClick = () => {};
 
@@ -143,7 +143,7 @@ const VisualizationPage = (): JSX.Element => {
                                     title="Visualizations"
                                     icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
                                     onSearch={onSearch}
-                                    onFilterSelect={onFilterSelect}
+                                    onFilter={onFilter}
                                     filters={{ type: ["MAP", "CHART", "TABLE"] }}
                                     onCreateClick={onCreateClick}
                                     onSortClick={onSortClick}

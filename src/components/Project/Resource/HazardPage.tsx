@@ -64,7 +64,7 @@ const HazardPage = (): JSX.Element => {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilterSelect = () => {};
+    const onFilter = () => {};
     const onCreateClick = () => {
         setOpenAddHazardFromServiceDialog(true);
     };
@@ -150,7 +150,7 @@ const HazardPage = (): JSX.Element => {
                                     title="Hazards"
                                     icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
                                     onSearch={onSearch}
-                                    onFilterSelect={onFilterSelect}
+                                    onFilter={onFilter}
                                     filters={{ type: ["earthquake", "tsunami", "hurricane", "tornado", "flood"] }}
                                     onCreateClick={onCreateClick}
                                     onSortClick={onSortClick}
