@@ -5,18 +5,16 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 
 import { SvgIconProps } from "@mui/material";
-import FilterDropdown from "@app/components/Project/Resource/FilterDropdown";
-import SortDropdown from "@app/components/Project/Resource/SortDropdown";
 import Searchbox from "@app/components/Project/Resource/Searchbox";
+import FilterSortDropdown from "@app/components/Project/Resource/FilterSortDropdown";
 
 interface ResourceFilterBarProps {
     title: string;
     onSearch?: (text: string) => void;
-    filters?: Record<string, string[]>;
-    onFilter?: (filters: Record<string, string | number>) => void;
     onCreateClick?: () => void;
-    onSortClick?: () => void;
     sortOptions?: string[];
+    filters?: Record<string, string[]>;
+    onApply?: (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => void; // Callback to send filter and sort data
     onViewChangeClick?: () => void;
     isTableView?: boolean;
     createLabel?: string;
@@ -27,10 +25,9 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     title,
     icon,
     onSearch,
-    onFilter,
     filters,
-    onSortClick,
     sortOptions,
+    onApply,
     onViewChangeClick,
     isTableView,
     onCreateClick,
@@ -45,8 +42,9 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
             </Box>
             <Box display="flex" alignItems="center">
                 {onSearch && <Searchbox onSearch={onSearch} />}
-                {onFilter && filters && <FilterDropdown filters={filters} onFilter={onFilter} />}
-                {onSortClick && sortOptions && <SortDropdown sortOptions={sortOptions} onSortClick={onSortClick} />}
+                {onApply && sortOptions && filters && (
+                    <FilterSortDropdown sortOptions={sortOptions} filters={filters} onApply={onApply} />
+                )}
                 {onViewChangeClick && (
                     <ButtonGroup variant="soft" sx={{ ml: 1 }}>
                         <IconButton onClick={onViewChangeClick}>

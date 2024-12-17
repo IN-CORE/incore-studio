@@ -63,13 +63,9 @@ const HazardPage = (): JSX.Element => {
             appDispatch(searchProjectHazards({ text, projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilter = () => {};
     const onCreateClick = () => {
         setOpenAddHazardFromServiceDialog(true);
     };
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSortClick = () => {};
 
     // Table view vs Card view
     const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
@@ -150,11 +146,9 @@ const HazardPage = (): JSX.Element => {
                                     title="Hazards"
                                     icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
                                     onSearch={onSearch}
-                                    onFilter={onFilter}
                                     filters={{ type: ["earthquake", "tsunami", "hurricane", "tornado", "flood"] }}
-                                    onCreateClick={onCreateClick}
-                                    onSortClick={onSortClick}
                                     sortOptions={["date", "type", "name", "id"]}
+                                    onCreateClick={onCreateClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"

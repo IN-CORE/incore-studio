@@ -215,7 +215,7 @@ export const getProjectDatasets = createAsyncThunk(
         limit?: number;
         filters?: Record<string, string | number>;
         sortBy?: string;
-        order?: "asc" | "desc";
+        order?: string;
     }) => {
         // Build query parameters dynamically and remove empty/undefined filters
         const params: Record<string, string | number> = {

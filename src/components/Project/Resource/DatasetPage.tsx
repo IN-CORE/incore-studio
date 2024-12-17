@@ -63,17 +63,26 @@ const DatasetPage = (): JSX.Element => {
             appDispatch(searchProjectDatasets({ text, projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilter = (filters: Record<string, string | number>) => {
-        if (id)
-            appDispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10, filters }));
-    };
     const onCreateClick = () => {
         setOpenAddDatasetFromServiceDialog(true);
     };
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSortClick = () => {};
+    const onApply = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+        if (id) {
+            const { filters, sortBy, order } = params;
 
+            // Dispatch the Redux Thunk with updated parameters
+            appDispatch(
+                getProjectDatasets({
+                    projectId: id,
+                    skip: (datasetPageNumber - 1) * 10, // Pagination logic
+                    limit: 10, // Number of items per page
+                    filters, // Filters applied
+                    sortBy, // Sorting field
+                    order // Sort order: "asc" or "desc"
+                })
+            );
+        }
+    };
     // Table view vs Card view
     const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
     const onViewChangeClick = () => {
@@ -158,11 +167,10 @@ const DatasetPage = (): JSX.Element => {
                                     title="Datasets"
                                     icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
                                     onSearch={onSearch}
-                                    onFilter={onFilter}
                                     filters={{ type: [] }}
-                                    onCreateClick={onCreateClick}
-                                    onSortClick={onSortClick}
                                     sortOptions={["date", "type", "title", "id"]}
+                                    onApply={onApply}
+                                    onCreateClick={onCreateClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"

@@ -59,13 +59,9 @@ const DFR3MappingPage = (): JSX.Element => {
             );
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilter = () => {};
     const onCreateClick = () => {
         setOpenAddDFR3MappingFromServiceDialog(true);
     };
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSortClick = () => {};
 
     const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
 
@@ -122,7 +118,6 @@ const DFR3MappingPage = (): JSX.Element => {
                                     title="DFR3Mappings"
                                     icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
                                     onSearch={onSearch}
-                                    onFilter={onFilter}
                                     filters={{
                                         hazardType: ["earthquake", "tsunami", "hurricane", "tornado", "flood"],
                                         inventoryType: [
@@ -138,7 +133,6 @@ const DFR3MappingPage = (): JSX.Element => {
                                         type: ["fragility", "repair", "restoration"]
                                     }}
                                     onCreateClick={onCreateClick}
-                                    onSortClick={onSortClick}
                                     sortOptions={["date", "type", "hazardType", "inventoryType", "name", "id"]}
                                     isTableView
                                     createLabel="Add from Service"

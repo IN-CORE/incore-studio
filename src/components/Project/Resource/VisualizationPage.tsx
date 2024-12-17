@@ -68,11 +68,6 @@ const VisualizationPage = (): JSX.Element => {
             );
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilter = () => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSortClick = () => {};
-
     // Table view vs Card view
     const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
     const onViewChangeClick = () => {
@@ -143,11 +138,9 @@ const VisualizationPage = (): JSX.Element => {
                                     title="Visualizations"
                                     icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
                                     onSearch={onSearch}
-                                    onFilter={onFilter}
                                     filters={{ type: ["MAP", "CHART", "TABLE"] }}
-                                    onCreateClick={onCreateClick}
-                                    onSortClick={onSortClick}
                                     sortOptions={["date", "type", "name", "id"]}
+                                    onCreateClick={onCreateClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Create Visualization"

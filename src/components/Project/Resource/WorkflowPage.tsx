@@ -63,11 +63,6 @@ const WorkflowPage = (): JSX.Element => {
             );
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilter = () => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSortClick = () => {};
-
     // create workflow
     const [openCreateWorkflowDialog, setOpenCreateWorkflowDialog] = useState(false);
     const handleCloseCreateWorkflowDialog = () => {
@@ -131,9 +126,8 @@ const WorkflowPage = (): JSX.Element => {
                                     title="Workflows"
                                     icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
                                     onSearch={onSearch}
-                                    onFilter={onFilter}
                                     onCreateClick={onCreateWorkflowClick}
-                                    onSortClick={onSortClick}
+                                    filters={{ type: ["workflow", "execution"] }}
                                     sortOptions={["created", "type", "title", "id"]}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
