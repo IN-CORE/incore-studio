@@ -51,7 +51,7 @@ const WorkflowPage = (): JSX.Element => {
         if (id) appDispatch(getProjectWorkflows({ projectId: id, skip: (workflowPageNumber - 1) * 10, limit: 10 }));
     }, [id, workflowPageNumber, deletedWorkflowIds]);
 
-    const onSearchClick = (text: string) => {
+    const onSearch = (text: string) => {
         if (id)
             appDispatch(
                 searchProjectWorkflows({
@@ -130,14 +130,14 @@ const WorkflowPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Workflows"
                                     icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearchClick={onSearchClick}
+                                    onSearch={onSearch}
                                     onFilterSelect={onFilterSelect}
                                     onCreateClick={onCreateWorkflowClick}
                                     onSortClick={onSortClick}
                                     sortOptions={["created", "type", "title", "id"]}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
-                                    createLabel="Create New Workflow"
+                                    createLabel="Create Workflow"
                                 />
                                 <CreateWorkflowDialog
                                     open={openCreateWorkflowDialog}

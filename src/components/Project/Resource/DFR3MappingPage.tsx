@@ -52,7 +52,7 @@ const DFR3MappingPage = (): JSX.Element => {
             appDispatch(getProjectDRF3Mappings({ projectId: id, skip: (DFR3MappingPageNumber - 1) * 10, limit: 10 }));
     }, [id, DFR3MappingPageNumber, deletedDFR3MappingIds]);
 
-    const onSearchClick = (text: string) => {
+    const onSearch = (text: string) => {
         if (id)
             appDispatch(
                 searchProjectDFR3Mappings({ text, projectId: id, skip: (DFR3MappingPageNumber - 1) * 10, limit: 10 })
@@ -121,7 +121,7 @@ const DFR3MappingPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="DFR3Mappings"
                                     icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
-                                    onSearchClick={onSearchClick}
+                                    onSearch={onSearch}
                                     onFilterSelect={onFilterSelect}
                                     filters={{
                                         hazardType: ["earthquake", "tsunami", "hurricane", "tornado", "flood"],

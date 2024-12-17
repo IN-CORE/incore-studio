@@ -58,7 +58,7 @@ const HazardPage = (): JSX.Element => {
         }
     }, [id, hazardPageNumber, deletedHazardIds]);
 
-    const onSearchClick = (text: string) => {
+    const onSearch = (text: string) => {
         if (id)
             appDispatch(searchProjectHazards({ text, projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
     };
@@ -149,7 +149,7 @@ const HazardPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Hazards"
                                     icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearchClick={onSearchClick}
+                                    onSearch={onSearch}
                                     onFilterSelect={onFilterSelect}
                                     filters={{ type: ["earthquake", "tsunami", "hurricane", "tornado", "flood"] }}
                                     onCreateClick={onCreateClick}

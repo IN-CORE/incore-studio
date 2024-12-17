@@ -58,7 +58,7 @@ const DatasetPage = (): JSX.Element => {
         }
     }, [id, datasetPageNumber, deletedDatasetIds]);
 
-    const onSearchClick = (text: string) => {
+    const onSearch = (text: string) => {
         if (id)
             appDispatch(searchProjectDatasets({ text, projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
     };
@@ -154,7 +154,7 @@ const DatasetPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Datasets"
                                     icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearchClick={onSearchClick}
+                                    onSearch={onSearch}
                                     onFilterSelect={onFilterSelect}
                                     filters={{ type: [] }}
                                     onCreateClick={onCreateClick}

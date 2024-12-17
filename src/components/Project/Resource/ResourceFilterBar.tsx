@@ -11,7 +11,7 @@ import Searchbox from "@app/components/Project/Resource/Searchbox";
 
 interface ResourceFilterBarProps {
     title: string;
-    onSearchClick?: (text: string) => void;
+    onSearch?: (text: string) => void;
     filters?: Record<string, string[]>;
     onFilterSelect?: () => void;
     onCreateClick?: () => void;
@@ -26,7 +26,7 @@ interface ResourceFilterBarProps {
 const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     title,
     icon,
-    onSearchClick,
+    onSearch,
     onFilterSelect,
     filters,
     onSortClick,
@@ -44,7 +44,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                 <Typography level="h4">{title}</Typography>
             </Box>
             <Box display="flex" alignItems="center">
-                {onSearchClick && <Searchbox onSearchClick={onSearchClick} />}
+                {onSearch && <Searchbox onSearch={onSearch} />}
                 {onFilterSelect && filters && <FilterDropdown filters={filters} onFilterSelect={onFilterSelect} />}
                 {onSortClick && sortOptions && <SortDropdown sortOptions={sortOptions} onSortClick={onSortClick} />}
                 {onViewChangeClick && (

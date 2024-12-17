@@ -56,7 +56,7 @@ const VisualizationPage = (): JSX.Element => {
         }
     }, [id, visualizationPageNumber, deletedVisualizationIds]);
 
-    const onSearchClick = (text: string) => {
+    const onSearch = (text: string) => {
         if (id)
             appDispatch(
                 searchProjectVisualizations({
@@ -142,7 +142,7 @@ const VisualizationPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Visualizations"
                                     icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearchClick={onSearchClick}
+                                    onSearch={onSearch}
                                     onFilterSelect={onFilterSelect}
                                     filters={{ type: ["MAP", "CHART", "TABLE"] }}
                                     onCreateClick={onCreateClick}
@@ -150,7 +150,7 @@ const VisualizationPage = (): JSX.Element => {
                                     sortOptions={["date", "type", "name", "id"]}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
-                                    createLabel="Create New Visualization"
+                                    createLabel="Create Visualization"
                                 />
                                 <CreateVisualizationDialog
                                     projectId={project.id}

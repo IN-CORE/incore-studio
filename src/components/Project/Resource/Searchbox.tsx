@@ -4,10 +4,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useEffect } from "react";
 
 type SearchboxProps = {
-    onSearchClick: (text: string) => void;
+    onSearch: (text: string) => void;
 };
 
-const Searchbox: React.FC<SearchboxProps> = ({ onSearchClick }) => {
+const Searchbox: React.FC<SearchboxProps> = ({ onSearch }) => {
     const [isExpanded, setIsExpanded] = React.useState(false); // Track if the search box is expanded
     const [searchValue, setSearchValue] = React.useState(""); // Track the search input value
 
@@ -21,7 +21,7 @@ const Searchbox: React.FC<SearchboxProps> = ({ onSearchClick }) => {
 
     useEffect(() => {
         if (isExpanded) {
-            onSearchClick(searchValue);
+            onSearch(searchValue);
         }
     }, [searchValue]);
 
