@@ -139,7 +139,8 @@ export const getExecutionsByWorkflowID = createAsyncThunk(
 );
 
 export const getDependencyGraph = createAsyncThunk("workflow/getDependencyGraph", async () => {
-    const response = await axios.get("/config/dependencyGraph.json");
+    const basename = process.env.NODE_ENV === "production" ? "/studio" : "";
+    const response = await axios.get(`${basename}/config/dependencyGraph.json`);
 
     return response.data;
 });
