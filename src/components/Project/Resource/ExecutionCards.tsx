@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 
 import { Alert, Grid, Link, Box, Stack, Card, CardContent, Chip, Typography, Button, useTheme } from "@mui/joy";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -84,10 +84,10 @@ const ExecutionCardsComponent: React.FC<{
                         ["FAILED", "ABORTED"].indexOf(status) >= 0
                             ? 0
                             : ["RUNNING", "QUEUED", "WAITING"].indexOf(status) >= 0
-                              ? 1
-                              : ["UNKNOWN", "UNDEFINED"].indexOf(status) >= 0
-                                ? 3
-                                : 2;
+                            ? 1
+                            : ["UNKNOWN", "UNDEFINED"].indexOf(status) >= 0
+                            ? 3
+                            : 2;
                     return (
                         <Grid key={execution.id} xs={12} sm={12} md={6} lg={4}>
                             {/* TODO: add link to execution page to see results and parameters. */}
@@ -111,8 +111,9 @@ const ExecutionCardsComponent: React.FC<{
                                             <Typography level="h3" sx={{ mb: 1 }}>
                                                 <Link
                                                     overlay
+                                                    component={RouterLink}
                                                     underline="none"
-                                                    href={`/project/${projectId}/workflows/${execution.workflowId}/execution/${execution.id}`}
+                                                    to={`/project/${projectId}/workflows/${execution.workflowId}/execution/${execution.id}`}
                                                     sx={{ color: "text.tertiary" }}
                                                 >
                                                     {execution.title}

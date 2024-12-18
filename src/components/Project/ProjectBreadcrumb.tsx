@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import Breadcrumbs from "@mui/joy/Breadcrumbs";
 import Link from "@mui/joy/Link";
 import Typography from "@mui/joy/Typography";
@@ -41,21 +42,28 @@ export const ProjectBreadcrumb = (props: ProjectBreadcrumbProps) => {
 
     return (
         <Breadcrumbs separator="›" aria-label="breadcrumbs">
-            <Link textColor="primary.main" underline="none" href="/">
+            <Link component={RouterLink} textColor="primary.main" underline="none" to="/">
                 <HomeIcon sx={{ mr: 0.5 }} />
                 Home
             </Link>
-            <Link textColor="primary.main" fontWeight="bolder" underline="none" href={project.href}>
+            <Link
+                component={RouterLink}
+                textColor="primary.main"
+                fontWeight="bolder"
+                underline="none"
+                to={project.href}
+            >
                 <FolderIcon sx={{ mr: 0.5 }} />
                 {project.label}
             </Link>
             {resource &&
                 (resourceName !== undefined ? (
                     <Link
+                        component={RouterLink}
                         textColor="primary.main"
                         fontWeight="bolder"
                         underline="none"
-                        href={`${project.href}/${resource}`}
+                        to={`${project.href}/${resource}`}
                     >
                         {getResourceIcon(resource)}
                         {resource}

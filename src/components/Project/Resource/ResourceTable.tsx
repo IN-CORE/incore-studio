@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown, Link } from "@mui/joy";
 import { formatHeaderName, parseDateTime } from "@app/utils";
@@ -117,8 +118,9 @@ export const ResourceTable = ({
                                 <MenuItem>
                                     <Link
                                         textColor="primary.main"
+                                        component={RouterLink}
                                         underline="none"
-                                        href={`/project/${projectId}/workflows/${resource.id}`}
+                                        to={`/project/${projectId}/workflows/${resource.id}`}
                                     >
                                         Open
                                     </Link>

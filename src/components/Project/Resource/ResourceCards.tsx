@@ -12,6 +12,7 @@ import {
     MenuItem
 } from "@mui/joy";
 import { Grid } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import React, { useState } from "react";
 import { parseDateTime } from "@app/utils";
 import { MapThumbnail } from "@app/components/Project/Thumbnails/MapThumbnail";
@@ -130,9 +131,10 @@ export const ResourceCards: React.FC<{
                                 {isWorkflow(resource) && (
                                     <MenuItem>
                                         <Link
+                                            component={RouterLink}
                                             textColor="primary.main"
                                             underline="none"
-                                            href={`/project/${projectId}/workflows/${resource.id}`}
+                                            to={`/project/${projectId}/workflows/${resource.id}`}
                                         >
                                             Open
                                         </Link>
