@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Box, Tab, TabList, TabPanel, Tabs, Typography, Link, Button, Autocomplete, Input } from "@mui/joy";
+import { Link as RouterLink } from "react-router-dom";
+import { Box, Tab, TabList, TabPanel, Tabs, Link, Typography, Button, Autocomplete, Input } from "@mui/joy";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
@@ -125,7 +126,7 @@ const Project = (): JSX.Element => {
                     Projects
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Link href="/tutorials" underline="hover" sx={{ fontWeight: "medium" }}>
+                    <Link to="/tutorials" component={RouterLink} underline="hover" sx={{ fontWeight: "medium" }}>
                         Tutorials
                     </Link>
                     <Button

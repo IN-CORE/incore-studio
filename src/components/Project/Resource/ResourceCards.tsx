@@ -1,18 +1,7 @@
-import {
-    Card,
-    Link,
-    Typography,
-    Box,
-    CardContent,
-    Chip,
-    Dropdown,
-    IconButton,
-    Menu,
-    MenuButton,
-    MenuItem
-} from "@mui/joy";
+import { Card, Typography, Box, CardContent, Chip, Dropdown, IconButton, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { Grid } from "@mui/material";
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { parseDateTime } from "@app/utils";
 import { MapThumbnail } from "@app/components/Project/Thumbnails/MapThumbnail";
 import { TableThumbnail } from "@app/components/Project/Thumbnails/TableThumbnail";
@@ -130,9 +119,8 @@ export const ResourceCards: React.FC<{
                                 {isWorkflow(resource) && (
                                     <MenuItem>
                                         <Link
-                                            textColor="primary.main"
-                                            underline="none"
-                                            href={`/project/${projectId}/workflows/${resource.id}`}
+                                            style={{ textDecoration: "none", color: "inherit" }}
+                                            to={`/project/${projectId}/workflows/${resource.id}`}
                                         >
                                             Open
                                         </Link>
