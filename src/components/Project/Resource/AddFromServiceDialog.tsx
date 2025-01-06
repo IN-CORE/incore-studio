@@ -12,9 +12,12 @@ import {
     Option,
     Select,
     Stack,
-    Typography
+    Typography,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails
 } from "@mui/material";
-import { fetchResource, toSingular } from "@app/utils";
+import { searchResource, toSingular } from "@app/utils";
 
 interface AddFromServiceDialogProps {
     projectId: string;
@@ -31,39 +34,34 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
     onClose,
     onAddClick
 }) => {
-    const [resourceId, setResourceId] = useState("");
     const [hazardType, setHazardType] = useState("");
-    const [validationMessage, setValidationMessage] = useState<string | null>(null);
-    const [isResourceValid, setIsResourceValid] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);
+    const [messageType, setMessageType] = useState<"success" | "danger" | "primary" | "neutral" | undefined>("danger");
     const [resource, setResource] = useState<Hazard | Dataset | DFR3Mapping | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const resultsPerPage = 5; // Default results per page
 
     useEffect(() => {
-        const validateResource = async () => {
-            if (!resourceId) {
-                setValidationMessage(null);
-                setIsResourceValid(false);
-                setResource(null);
+        const fetchSearchResources = async () => {
+            if (!searchQuery) {
+                setSearchResults([]);
                 return;
             }
 
-            const result = await fetchResource(resourceType, resourceId, hazardType);
-            if (result.error) {
-                setValidationMessage(result.error);
-                setIsResourceValid(false);
-                setResource(null);
+            const results = await searchResource(resourceType, searchQuery, resultsPerPage, 0, hazardType);
+            if (results.error) {
+                setMessage(results.error);
+                setMessageType("danger");
+                setSearchResults([]);
             } else {
-                setValidationMessage(null);
-                setIsResourceValid(true);
-
-                // adjust type of the resource
-                if (hazardType) result.type = toSingular(hazardType);
-                if (resourceType.toLowerCase() === "dfr3 mapping") result.type = result.mappingType;
-                setResource(result);
+                setMessage(null);
+                setSearchResults(results);
             }
         };
 
-        validateResource();
-    }, [resourceId, resourceType, hazardType]);
+        fetchSearchResources();
+    }, [searchQuery, resourceType, hazardType]);
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -80,6 +78,7 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                     <Typography level="h4" sx={{ mb: 1, textTransform: "capitalize" }}>
                         Add {resourceType} to Project
                     </Typography>
+
                     {resourceType === "hazard" && (
                         <FormControl required>
                             <FormLabel>Select Hazard Type</FormLabel>
@@ -96,37 +95,55 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                             </Select>
                         </FormControl>
                     )}
+
+                    {/* Search Bar */}
+                    <FormControl>
+                        <FormLabel>Search by Name or ID</FormLabel>
+                        <Input
+                            placeholder="Enter name or ID"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </FormControl>
+
+                    {/* Search Results */}
                     <Stack spacing={2} sx={{ mt: 2 }}>
-                        <FormControl required>
-                            <FormLabel sx={{ textTransform: "capitalize" }}>{resourceType} ID</FormLabel>
-                            <Input
-                                placeholder="ID"
-                                value={resourceId}
-                                onChange={(e) => setResourceId(e.target.value)}
-                                error={!!validationMessage}
-                            />
-                            {validationMessage && (
-                                <Typography color="danger" sx={{ mt: 1 }}>
-                                    {validationMessage}
-                                </Typography>
-                            )}
-                            {isResourceValid && resource && (
-                                <Typography color="success" sx={{ mt: 1 }}>
-                                    {
-                                        // eslint-disable-next-line no-nested-ternary
-                                        "description" in resource && resource.description
-                                            ? resource.description
-                                            : // eslint-disable-next-line no-nested-ternary
-                                              "name" in resource && resource.name
-                                              ? resource.name
-                                              : "title" in resource && resource.title
-                                                ? resource.title
-                                                : "Resource is valid"
-                                    }{" "}
-                                    - {resource.owner}
-                                </Typography>
-                            )}
-                        </FormControl>
+                        {searchResults.map((result) => (
+                            <Accordion key={result.id} variant="outlined">
+                                <AccordionSummary>
+                                    <Typography sx={{ textTransform: "capitalize" }}>
+                                        {result.name || result.title || "Unnamed Resource"}
+                                    </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Typography>{result.description || "No description available."}</Typography>
+                                    <Button
+                                        variant="outlined"
+                                        sx={{ mt: 1 }}
+                                        onClick={() => {
+                                            // adjust type of the resource
+                                            if (hazardType) result.type = toSingular(hazardType);
+                                            if (resourceType.toLowerCase() === "dfr3 mapping")
+                                                result.type = result.mappingType;
+                                            setResource(result);
+                                            setMessage(
+                                                `Adding ${
+                                                    result.name || result.title || "Unnamed Resource"
+                                                } to project?`
+                                            );
+                                            setMessageType("success");
+                                        }}
+                                    >
+                                        Select
+                                    </Button>
+                                </AccordionDetails>
+                            </Accordion>
+                        ))}
+                        {message && (
+                            <Typography color={messageType} sx={{ mt: 1 }}>
+                                {message}
+                            </Typography>
+                        )}
                     </Stack>
                     <Stack direction="row" spacing={1} sx={{ mt: 3, justifyContent: "flex-end" }}>
                         <Button variant="plain" onClick={onClose}>
@@ -134,18 +151,12 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                         </Button>
                         <Button
                             variant="solid"
-                            disabled={
-                                resourceType === "hazard"
-                                    ? !resourceId || !hazardType || !isResourceValid
-                                    : !resourceId || !isResourceValid
-                            }
+                            disabled={!resource}
                             onClick={() => {
                                 onAddClick(projectId, resource);
                                 setResource(null);
-                                setResourceId("");
                                 setHazardType("");
-                                setValidationMessage(null);
-                                setIsResourceValid(false);
+                                setMessage(null);
                             }}
                         >
                             Add to Project
