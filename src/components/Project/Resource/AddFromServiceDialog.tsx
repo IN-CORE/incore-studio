@@ -119,6 +119,7 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                             placeholder="Name or ID"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
+                            disabled={!hazardType && resourceType === "hazard"}
                         />
                     </FormControl>
                     {message && (
