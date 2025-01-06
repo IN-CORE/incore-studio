@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Navbar file structure. [#37](https://github.com/IN-CORE/incore-studio/issues/37)
+- Improve "add from service" modal. [#66](https://github.com/IN-CORE/incore-studio/issues/66)
 
 ### Fixed
 
