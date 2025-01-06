@@ -15,7 +15,8 @@ import {
     Typography,
     Accordion,
     AccordionSummary,
-    AccordionDetails
+    AccordionDetails,
+    AccordionGroup
 } from "@mui/material";
 import { searchResource, toSingular } from "@app/utils";
 
@@ -80,10 +81,10 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                     </Typography>
 
                     {resourceType === "hazard" && (
-                        <FormControl required>
+                        <FormControl required sx={{ marginTop: "1em" }}>
                             <FormLabel>Select Hazard Type</FormLabel>
                             <Select
-                                placeholder="Type"
+                                placeholder="Hazard Type"
                                 value={hazardType}
                                 onChange={(_, newValue) => setHazardType(newValue || "")}
                             >
@@ -97,47 +98,47 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                     )}
 
                     {/* Search Bar */}
-                    <FormControl>
+                    <FormControl required sx={{ marginTop: "1em" }}>
                         <FormLabel>Search by Name or ID</FormLabel>
                         <Input
-                            placeholder="Enter name or ID"
+                            placeholder="Name or ID"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </FormControl>
 
                     {/* Search Results */}
-                    <Stack spacing={2} sx={{ mt: 2 }}>
+                    <Stack spacing={1} sx={{ mt: 2 }}>
                         {searchResults.map((result) => (
-                            <Accordion key={result.id} variant="outlined">
-                                <AccordionSummary>
-                                    <Typography sx={{ textTransform: "capitalize" }}>
-                                        {result.name || result.title || "Unnamed Resource"}
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>{result.description || "No description available."}</Typography>
-                                    <Button
-                                        variant="outlined"
-                                        sx={{ mt: 1 }}
-                                        onClick={() => {
-                                            // adjust type of the resource
-                                            if (hazardType) result.type = toSingular(hazardType);
-                                            if (resourceType.toLowerCase() === "dfr3 mapping")
-                                                result.type = result.mappingType;
-                                            setResource(result);
-                                            setMessage(
-                                                `Adding ${
-                                                    result.name || result.title || "Unnamed Resource"
-                                                } to project?`
-                                            );
-                                            setMessageType("success");
-                                        }}
-                                    >
-                                        Select
-                                    </Button>
-                                </AccordionDetails>
-                            </Accordion>
+                            <AccordionGroup size="md">
+                                <Accordion key={result.id}>
+                                    <AccordionSummary>
+                                        {result.name ?? result.title ?? "Unnamed Resource"} -{" "}
+                                        {result.owner ?? "Unknown Owner"}
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography>{result.description || "No description available."}</Typography>
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => {
+                                                // adjust type of the resource
+                                                if (hazardType) result.type = toSingular(hazardType);
+                                                if (resourceType.toLowerCase() === "dfr3 mapping")
+                                                    result.type = result.mappingType;
+                                                setResource(result);
+                                                setMessage(
+                                                    `Adding ${
+                                                        result.name || result.title || "Unnamed Resource"
+                                                    } to project?`
+                                                );
+                                                setMessageType("success");
+                                            }}
+                                        >
+                                            Select
+                                        </Button>
+                                    </AccordionDetails>
+                                </Accordion>
+                            </AccordionGroup>
                         ))}
                         {message && (
                             <Typography color={messageType} sx={{ mt: 1 }}>
