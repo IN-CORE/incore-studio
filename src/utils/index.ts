@@ -297,6 +297,18 @@ export function getStatusColor(status?: string) {
     }
 }
 
+export function downloadMetadata(data: any): void {
+    const metadata = JSON.stringify(data, null, 2); // Example metadata formatting
+    const blob = new Blob([metadata], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${data.name || data.title || "metadata"}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
 // export function attachExecutionStatusToSteps(execution: DatawolfExecutionFile, workflow: Workflow) {
 //     if (!execution || !workflow || !workflow.steps) {
 //         throw new Error("Invalid execution or workflow data.");
