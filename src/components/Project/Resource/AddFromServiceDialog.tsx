@@ -88,9 +88,9 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
 
     return (
         <Modal open={open} onClose={onClose}>
-            <ModalDialog layout="fullscreen" sx={{ backgroundColor: "#fff" }}>
+            <ModalDialog sx={{ backgroundColor: "#fff", width: "50em" }}>
                 <ModalClose />
-                <Box sx={{ maxWidth: "100%", padding: "5% 10%", overflow: "auto" }}>
+                <Box sx={{ maxWidth: "100%", padding: "5%", overflow: "auto" }}>
                     <Typography level="h4" sx={{ mb: 1, textTransform: "capitalize" }}>
                         Add {resourceType} to Project
                     </Typography>
