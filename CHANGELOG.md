@@ -35,3 +35,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Direct URL access to the sub pages in studio [#75](https://github.com/IN-CORE/incore-studio/issues/75)
+- Stale state cleanup and ensure correctness of the state on page load through internal navigation [#79](https://github.com/IN-CORE/incore-studio/issues/79)

@@ -99,14 +99,19 @@ const WorkflowEditor = (): JSX.Element => {
     }, [reactFlowWorkflow]);
 
     React.useEffect(() => {
-        if (wfID !== workflowID) {
+        if (wfID) {
             appDispatch(getWorkflow({ workflowID: wfID }));
         }
-        if (project === null && id) {
+        if (id) {
             appDispatch(getProject(id));
         }
         appDispatch(getWorkflowTools());
         appDispatch(getDatawolfUser({ email: auth?.user?.profile?.email }));
+        return () => {
+            appDispatch(clearWorkflowState());
+            setNodes([]);
+            setEdges([]);
+        };
     }, []);
 
     const handleBackClick = () => {
