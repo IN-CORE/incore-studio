@@ -35,3 +35,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Direct URL access to the sub pages in studio [#75](https://github.com/IN-CORE/incore-studio/issues/75)
+- Github action to create a container with the name with string value [#85](https://github.com/IN-CORE/incore-studio/issues/85)
