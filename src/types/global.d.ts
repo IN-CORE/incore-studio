@@ -1,45 +1,45 @@
-declare module '*.json' {
+declare module "*.json" {
+    const value: any;
+    export default value;
+}
+
+declare module "*.geojson" {
     const src: string;
     export default src;
 }
 
-declare module '*.geojson' {
+declare module "*.bmp" {
     const src: string;
     export default src;
 }
 
-declare module '*.bmp' {
+declare module "*.gif" {
     const src: string;
     export default src;
 }
 
-declare module '*.gif' {
+declare module "*.jpg" {
     const src: string;
     export default src;
 }
 
-declare module '*.jpg' {
+declare module "*.jpeg" {
     const src: string;
     export default src;
 }
 
-declare module '*.jpeg' {
+declare module "*.png" {
     const src: string;
     export default src;
 }
 
-declare module '*.png' {
+declare module "*.webp" {
     const src: string;
     export default src;
 }
 
-declare module '*.webp' {
-    const src: string;
-    export default src;
-}
-
-declare module '*.svg' {
-    import * as React from 'react';
+declare module "*.svg" {
+    import * as React from "react";
 
     export const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
 
@@ -47,12 +47,12 @@ declare module '*.svg' {
     export default src;
 }
 
-declare module '*.module.css' {
+declare module "*.module.css" {
     const classes: { readonly [key: string]: string };
     export default classes;
 }
 
-declare module '*.module.scss' {
+declare module "*.module.scss" {
     const classes: { readonly [key: string]: string };
     export default classes;
 }
