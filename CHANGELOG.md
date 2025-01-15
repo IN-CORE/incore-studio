@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [Alpha-1] - 01-09-2025
 
 ### Added
 
@@ -35,3 +35,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Direct URL access to the sub pages in studio [#75](https://github.com/IN-CORE/incore-studio/issues/75)
+- Github action to create a container with the name with string value [#85](https://github.com/IN-CORE/incore-studio/issues/85)
