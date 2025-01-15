@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Stale state cleanup and ensure correctness of the state on page load through internal navigation [#79](https://github.com/IN-CORE/incore-studio/issues/79)
+
+## [Alpha-1] - 01-09-2025
+
 ### Added
 
 - React-flow package and workflow component. [#1](https://github.com/IN-CORE/incore-studio/issues/1)
@@ -35,4 +41,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Direct URL access to the sub pages in studio [#75](https://github.com/IN-CORE/incore-studio/issues/75)
-- Stale state cleanup and ensure correctness of the state on page load through internal navigation [#79](https://github.com/IN-CORE/incore-studio/issues/79)
+- Github action to create a container with the name with string value [#85](https://github.com/IN-CORE/incore-studio/issues/85)
