@@ -1,5 +1,5 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useParams, useNavigate, Location, useBlocker } from "react-router-dom";
 
 import { Box, Button, Typography, Stack, Tooltip, IconButton } from "@mui/joy";
 import { useShallow } from "zustand/react/shallow";
@@ -17,12 +17,12 @@ import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
-import SidePanel from "./SidePanel";
 import Workflow from "@app/components/Workflow";
 import { getWorkflow, clearWorkflowState } from "@app/reducer/workflowSlice";
+import { ReactSVG } from "react-svg";
 import CreateExecutionDialog from "./CreateExecutionDialog";
 
-import { ReactSVG } from "react-svg";
+import SidePanel from "./SidePanel";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -38,6 +38,7 @@ const ExecutionComponent: React.FC<{
     create: boolean;
 }> = ({ create }): JSX.Element => {
     const navigate = useNavigate();
+
     const { wfID } = useParams<{ exId: string; wfID: string }>();
     const appDispatch = useAppDispatch();
     const { id } = useParams<{ id: string }>();
@@ -53,6 +54,39 @@ const ExecutionComponent: React.FC<{
         (state) => state.execution.executionParametersAndInputsChecked
     );
     const [openExecutionDialog, setOpenExecutionDialog] = React.useState(false);
+
+    // Prevent Browser Refresh / Close
+    useEffect(() => {
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            event.preventDefault();
+            event.returnValue =
+                "You have unsaved changes. If you leave this page without submitting, all progress will be lost.";
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, []);
+
+    // Prevent Navigation
+    const blocker = useBlocker(
+        ({ currentLocation, nextLocation }: { currentLocation: Location; nextLocation: Location }) =>
+            currentLocation.pathname !== nextLocation.pathname
+    );
+    useEffect(() => {
+        if (blocker.state === "blocked") {
+            if (
+                window.confirm(
+                    "You have unsaved changes. If you leave this page without submitting, all progress will be lost."
+                )
+            ) {
+                blocker.proceed(); // Allow navigation
+            } else {
+                blocker.reset(); // Cancel navigation
+            }
+        }
+    }, [blocker]);
 
     useExecutionTemplate(wfID);
     if (currentExecution !== null) {
@@ -246,7 +280,7 @@ const ExecutionComponent: React.FC<{
             <Box sx={{ display: "flex", flexGrow: 1, position: "relative" }}>
                 <WorkflowWithLoadingAndErrorHandling
                     sidePanelOpen={sidePanelData.open}
-                    isExecution={true}
+                    isExecution
                     error={workflowError}
                     isLoading={workflowLoading}
                 />
