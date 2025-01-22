@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- Show warning message on execution page when refresh [#69](https://github.com/IN-CORE/incore-studio/issues/69)
+
 ## [Alpha-1] - 01-09-2025
 
 ### Added

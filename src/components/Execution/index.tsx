@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams, useNavigate, Location, useBlocker } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 import { Box, Button, Typography, Stack, Tooltip, IconButton } from "@mui/joy";
 import { useShallow } from "zustand/react/shallow";
@@ -38,7 +38,7 @@ const ExecutionComponent: React.FC<{
     create: boolean;
 }> = ({ create }): JSX.Element => {
     const navigate = useNavigate();
-
+    const location = useLocation();
     const { wfID } = useParams<{ exId: string; wfID: string }>();
     const appDispatch = useAppDispatch();
     const { id } = useParams<{ id: string }>();
@@ -69,24 +69,20 @@ const ExecutionComponent: React.FC<{
         };
     }, []);
 
-    // Prevent Navigation
-    const blocker = useBlocker(
-        ({ currentLocation, nextLocation }: { currentLocation: Location; nextLocation: Location }) =>
-            currentLocation.pathname !== nextLocation.pathname
-    );
+    // Handle Navigation Warning (For Back Button)
     useEffect(() => {
-        if (blocker.state === "blocked") {
-            if (
-                window.confirm(
-                    "You have unsaved changes. If you leave this page without submitting, all progress will be lost."
-                )
-            ) {
-                blocker.proceed(); // Allow navigation
-            } else {
-                blocker.reset(); // Cancel navigation
+        const handlePopState = (event: PopStateEvent) => {
+            if (!window.confirm("You have unsaved changes. Do you really want to leave?")) {
+                event.preventDefault();
+                navigate(location.pathname); // Stay on the current page
             }
-        }
-    }, [blocker]);
+        };
+
+        window.addEventListener("popstate", handlePopState);
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        };
+    }, [navigate, location.pathname]);
 
     useExecutionTemplate(wfID);
     if (currentExecution !== null) {
