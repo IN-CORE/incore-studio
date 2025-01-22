@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 
-import { Box, Stack, Input, IconButton, Tooltip } from "@mui/joy";
+import { Box, Stack, Input, IconButton, Snackbar, Tooltip } from "@mui/joy";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import BookmarkAddRoundedIcon from "@mui/icons-material/BookmarkAddRounded";
 
@@ -21,6 +21,9 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId, projec
     const [dataset, setDataset] = React.useState<Dataset | null>(null);
     const [selectedDataset, setSelectedDataset] = React.useState<Dataset | null>(null);
     const appDispatch = useAppDispatch();
+    const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
+    const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
 
     React.useEffect(() => {
         if (datasetId !== "" && datasetId !== "N/A" && datasetId !== "ERROR" && datasetId !== "Not present") {
@@ -48,6 +51,10 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId, projec
     };
     const handleAddVisualization = (visualizationId: string) => {
         if (selectedDataset && projectId) {
+            console.log("Adding to Visualization...");
+            setSnackbarMessage("Adding to Visualization...");
+            setSnackbarColor("warning");
+            setSnackbarOpen(true);
             if (selectedDataset.format === "shapefile") {
                 const layers = [
                     {
@@ -55,11 +62,23 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId, projec
                         layerId: selectedDataset.id
                     }
                 ];
-
-                // Dispatch the action with the new layers array
-                appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
+                try {
+                    // Dispatch the action with the new layers array
+                    appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
+                    setSnackbarMessage("Successfully added to Visualization!");
+                    setSnackbarColor("success");
+                    setSnackbarOpen(true);
+                } catch (error) {
+                    console.error("Error adding layer to visualization", error);
+                    setSnackbarMessage("Error adding to Visualization!");
+                    setSnackbarColor("danger");
+                    setSnackbarOpen(true);
+                }
             } else {
                 alert("Only shapefiles can be added to a visualization for now!");
+                setSnackbarMessage("Error adding to Visualization!");
+                setSnackbarColor("danger");
+                setSnackbarOpen(true);
             }
             setSelectedDataset(null);
         }
@@ -106,6 +125,7 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId, projec
                         color="neutral"
                         aria-label="Add to Visualization"
                         onClick={() => {
+                            setSelectedDataset(dataset);
                             setOpenVisDialog(true);
                         }}
                     >
@@ -119,6 +139,20 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId, projec
                 onClose={handleCloseVisDialog}
                 onAddVisualization={handleAddVisualization}
             />
+            <Snackbar
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                open={snackbarOpen}
+                onClose={() => {
+                    setSnackbarOpen(false);
+                    setSnackbarMessage("");
+                    setSnackbarColor("neutral");
+                }}
+                variant="outlined"
+                color={snackbarColor}
+                autoHideDuration={2000}
+            >
+                {snackbarMessage}
+            </Snackbar>
         </Box>
     );
 };

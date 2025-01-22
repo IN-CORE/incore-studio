@@ -124,15 +124,15 @@ export const useOutputDatasetsSynchronizationPolling = (
             try {
                 const wfFiles = await fetchWorkflowFiles(wfids);
                 const outputDatasetIDs = await getOutputDatasetIDsFromWorkflows(wfFiles);
-                const datasetIdsNotInProject = outputDatasetIDs.filter(
-                    (id) => !projectDatasets.find((d) => d.id === id)
-                );
+                let datasetIdsNotInProject = outputDatasetIDs.filter((id) => !projectDatasets.find((d) => d.id === id));
+                // filter out ids with "-"
+                datasetIdsNotInProject = datasetIdsNotInProject.filter((id) => !id.includes("-"));
                 if (datasetIdsNotInProject.length > 0) {
                     const newDatasets = await fetchDatasetsFromService(datasetIdsNotInProject);
                     appDispatch(addDatasetToProject({ projectId: projectId, datasets: newDatasets }));
                 }
             } catch (error) {
-                console.error("Error fetching workflow files: ", error);
+                console.error("Error fetching Dataset files: ", error);
             }
         };
 
