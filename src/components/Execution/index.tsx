@@ -58,21 +58,23 @@ const ExecutionComponent: React.FC<{
     // Prevent Browser Refresh / Close
     useEffect(() => {
         const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-            event.preventDefault();
-            event.returnValue =
-                "You have unsaved changes. If you leave this page without submitting, all progress will be lost.";
+            if (create) {
+                event.preventDefault();
+                event.returnValue =
+                    "You have unsaved changes. If you leave this page without submitting, all progress will be lost.";
+            }
         };
 
         window.addEventListener("beforeunload", handleBeforeUnload);
         return () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
         };
-    }, []);
+    }, [create]);
 
     // Handle Navigation Warning (For Back Button)
     useEffect(() => {
         const handlePopState = (event: PopStateEvent) => {
-            if (!window.confirm("You have unsaved changes. Do you really want to leave?")) {
+            if (create && !window.confirm("You have unsaved changes. Do you really want to leave?")) {
                 event.preventDefault();
                 navigate(location.pathname); // Stay on the current page
             }
