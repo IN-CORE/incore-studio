@@ -29,7 +29,7 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
-import { useAppDispatch } from "@app/store/hooks";
+import { useAppDispatch, useOutputDatasetsSynchronizationPolling } from "@app/store/hooks";
 
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import WorkflowIcon from "@mui/icons-material/AccountTree";
@@ -95,6 +95,9 @@ const ProjectPage = (): JSX.Element => {
     const datasetPreviousPage = () => {
         setDatasetPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
     };
+
+    // Synchronize all generated output datasets with the project datasets.
+    useOutputDatasetsSynchronizationPolling(projectWorkflows, 600000, id);
 
     // Fetch projects when filters or pagination change (but not during search)
     useEffect(() => {

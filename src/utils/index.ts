@@ -256,6 +256,63 @@ export function getStatusColor(status?: string) {
     }
 }
 
+export const getOutputDatasetIDsFromExecutionFile = (
+    execution: DatawolfExecutionFile,
+    workflow: DatawolfWorkflowFile
+): string[] => {
+    const outputDatasetIDs: string[] = [];
+    if (!execution || !workflow || !workflow.steps) {
+        return outputDatasetIDs;
+    }
+
+    workflow.steps.forEach((step) => {
+        Object.entries(step.outputs).forEach(([outputKey, outputValue]) => {
+            if (
+                outputValue !== "" &&
+                outputValue !== null &&
+                execution.datasets[outputValue] !== "" &&
+                execution.datasets[outputValue] !== null &&
+                execution.datasets[outputValue] !== "ERROR" &&
+                outputKey !== "stdout"
+            ) {
+                outputDatasetIDs.push(execution.datasets[outputValue]);
+            }
+        });
+    });
+
+    return outputDatasetIDs;
+};
+
+export const getOutputDatasetIDsFromWorkflows = async (workflows: DatawolfWorkflowFile[]): Promise<string[]> => {
+    const outputDatasetIDs: string[] = [];
+    for (const workflow of workflows) {
+        try {
+            const executions = await axios.get(`${config.datawolfApi}/workflows/${workflow.id ?? ""}/executions`, {
+                headers: getHeaders()
+            });
+            if (executions.data) {
+                for (const execution of executions.data) {
+                    outputDatasetIDs.push(...getOutputDatasetIDsFromExecutionFile(execution, workflow));
+                }
+            }
+        } catch (error: any) {
+            // Handle axios-specific errors
+            if (axios.isAxiosError(error)) {
+                console.error(
+                    "Error fetching executions:",
+                    error.response
+                        ? `Error: ${error.response.status} - ${error.response.data}`
+                        : `Network or unknown error: ${error.message}`
+                );
+            }
+
+            // Handle unexpected errors
+            console.error("Unexpected error:", error.message);
+        }
+    }
+    return outputDatasetIDs;
+};
+
 // export function attachExecutionStatusToSteps(execution: DatawolfExecutionFile, workflow: Workflow) {
 //     if (!execution || !workflow || !workflow.steps) {
 //         throw new Error("Invalid execution or workflow data.");
