@@ -89,7 +89,7 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
     return (
         <Modal open={open} onClose={onClose}>
             <ModalDialog sx={{ backgroundColor: "#fff", width: "50em" }}>
-                <ModalClose />
+                <ModalClose sx={{ zIndex: 20 }} />
                 <Box sx={{ maxWidth: "100%", padding: "5%", overflow: "auto" }}>
                     <Typography level="h4" sx={{ mb: 1, textTransform: "capitalize" }}>
                         Add {resourceType} to Project
@@ -166,7 +166,7 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                                             >
                                                 <Button
                                                     variant="solid"
-                                                    color="primary"
+                                                    sx={{ backgroundColor: "primary.main" }}
                                                     onClick={() => {
                                                         if (hazardType) result.type = toSingular(hazardType);
                                                         if (resourceType.toLowerCase() === "dfr3 mapping")
@@ -183,9 +183,15 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                                                 >
                                                     Select
                                                 </Button>
-                                                <Button variant="outlined">Preview</Button>
                                                 <Button
                                                     variant="outlined"
+                                                    sx={{ color: "primary.main", borderColor: "primary.main" }}
+                                                >
+                                                    Preview
+                                                </Button>
+                                                <Button
+                                                    variant="outlined"
+                                                    sx={{ color: "primary.main", borderColor: "primary.main" }}
                                                     onClick={() => {
                                                         downloadMetadata(result);
                                                     }}
@@ -212,11 +218,12 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                         )}
                     </Stack>
                     <Stack direction="row" spacing={1} sx={{ mt: 3, justifyContent: "flex-end" }}>
-                        <Button variant="plain" onClick={onClose}>
+                        <Button variant="plain" onClick={onClose} sx={{ color: "primary.main" }}>
                             Cancel
                         </Button>
                         <Button
                             variant="solid"
+                            sx={{ backgroundColor: "primary.main" }}
                             disabled={!resource}
                             onClick={() => {
                                 onAddClick(projectId, resource);
