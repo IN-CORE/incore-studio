@@ -14,7 +14,7 @@ import AddAnalysisModal from "@app/components/AddAnalysisModal";
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import Workflow from "@app/components/Workflow";
 import Loading from "@app/components/Loading";
-import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { useAppDispatch, useAppSelector, useWorkflowAutoSave } from "@app/store/hooks";
 import {
     getWorkflow,
     clearWorkflowState,
@@ -107,9 +107,22 @@ const WorkflowEditor = (): JSX.Element => {
         }
         appDispatch(getWorkflowTools());
         appDispatch(getDatawolfUser({ email: auth?.user?.profile?.email }));
+
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            event.preventDefault();
+            event.returnValue =
+                "You might have unsaved changes. If you leave this page without submitting, all unsaved progress will be lost.";
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
     }, []);
 
     const handleBackClick = () => {
+        // Auto save workflow before leaving
+        handleSaveClick();
         appDispatch(clearWorkflowState());
         navigate(-1);
     };
@@ -149,18 +162,26 @@ const WorkflowEditor = (): JSX.Element => {
         }
     };
 
+    const getSaveWorkflowFile = (): DatawolfWorkflowFile => {
+        return createWorkflowFileFromNodesAndEdgesV2({
+            nodes,
+            edges,
+            creator: datawolfUser,
+            datawolfWorkflowFileID: workflowID,
+            title: currentWorkflow !== null ? currentWorkflow.title : "Untitled Workflow",
+            description: currentWorkflow !== null ? currentWorkflow.description : "",
+            created: currentWorkflow !== null ? currentWorkflow.created : new Date().toISOString(),
+            tools: datawolfTools
+        });
+    };
+
+    // autosave workflow periodically
+    const interval = 300000; // 300 seconds
+    useWorkflowAutoSave(getSaveWorkflowFile(), workflowID, interval);
+
     const handleSaveClick = () => {
         if (currentWorkflow !== null && workflowID !== null) {
-            const newWorkflowFile = createWorkflowFileFromNodesAndEdgesV2({
-                nodes,
-                edges,
-                creator: datawolfUser,
-                datawolfWorkflowFileID: workflowID,
-                title: currentWorkflow !== null ? currentWorkflow.title : "Untitled Workflow",
-                description: currentWorkflow !== null ? currentWorkflow.description : "",
-                created: currentWorkflow !== null ? currentWorkflow.created : new Date().toISOString(),
-                tools: datawolfTools
-            });
+            const newWorkflowFile = getSaveWorkflowFile();
 
             appDispatch(saveWorkflow({ workflowID, workflow: newWorkflowFile }));
         } // else dispatch save workflow error
