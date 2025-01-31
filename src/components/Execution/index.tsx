@@ -20,6 +20,8 @@ import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import Workflow from "@app/components/Workflow";
 import { getWorkflow, clearWorkflowState } from "@app/reducer/workflowSlice";
 import { ReactSVG } from "react-svg";
+import { DialogActions, DialogContent, DialogTitle, Divider, Modal, ModalDialog } from "@mui/material";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import CreateExecutionDialog from "./CreateExecutionDialog";
 
 import SidePanel from "./SidePanel";
@@ -54,6 +56,7 @@ const ExecutionComponent: React.FC<{
         (state) => state.execution.executionParametersAndInputsChecked
     );
     const [openExecutionDialog, setOpenExecutionDialog] = React.useState(false);
+    const [saveExecutionModalConfirmation, setSaveExecutionModalConfirmation] = React.useState(false);
 
     // Prevent Browser Refresh / Close
     useEffect(() => {
@@ -91,9 +94,8 @@ const ExecutionComponent: React.FC<{
         useExecutionPolling(currentExecution.id, 10000);
     }
 
-    const handleBackClick = (wfId: string | undefined) => {
-        appDispatch(resetExecutionState());
-        navigate(`/project/${id}/workflows/${wfId}`);
+    const handleBackClick = () => {
+        setSaveExecutionModalConfirmation(true);
     };
 
     React.useEffect(() => {
@@ -124,11 +126,49 @@ const ExecutionComponent: React.FC<{
                         <Stack direction="row" spacing={2}>
                             <Box sx={{ alignContent: "center" }}>
                                 <Tooltip title="Go back" variant="plain" color="neutral" sx={{ color: "#172B4D" }}>
-                                    <IconButton variant="plain" onClick={() => handleBackClick(wfID)}>
+                                    <IconButton variant="plain" onClick={() => handleBackClick()}>
                                         <ArrowBackIosRoundedIcon />
                                     </IconButton>
                                 </Tooltip>
                             </Box>
+                            <Modal
+                                open={saveExecutionModalConfirmation}
+                                onClose={(_event: React.MouseEvent<HTMLButtonElement>) => {
+                                    setSaveExecutionModalConfirmation(false);
+                                }}
+                                sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                            >
+                                <ModalDialog variant="outlined" role="alertdialog">
+                                    <DialogTitle sx={{ fontWeight: "lg" }}>
+                                        <WarningRoundedIcon />
+                                        Save Changes Before Leaving?
+                                    </DialogTitle>
+                                    <Divider />
+                                    <DialogContent>
+                                        You have unsaved changes. If you leave this page without submitting, all
+                                        progress will be lost.
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button
+                                            variant="solid"
+                                            color="danger"
+                                            onClick={() => {
+                                                appDispatch(resetExecutionState());
+                                                navigate(`/project/${id}/workflows/${wfID}`);
+                                            }}
+                                        >
+                                            Leave
+                                        </Button>
+                                        <Button
+                                            variant="plain"
+                                            color="neutral"
+                                            onClick={() => setSaveExecutionModalConfirmation(false)}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </DialogActions>
+                                </ModalDialog>
+                            </Modal>
                             <Box>
                                 <Stack direction="row" spacing={2} alignItems="center">
                                     <Typography
