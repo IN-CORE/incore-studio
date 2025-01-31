@@ -6,6 +6,7 @@ import config from "@app/app.config";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "@app/store";
 import { setCreateExecutionTemplate, setCurrentExecution } from "@app/reducer/executionSlice";
+import { saveWorkflow } from "@app/reducer/workflowSlice";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
@@ -74,4 +75,21 @@ export const useExecutionPolling = (executionId: string | null, interval: number
         // cleanup
         return () => clearInterval(intervalId);
     }, [executionId, interval, appDispatch]);
+};
+
+export const useWorkflowAutoSave = (workflow: DatawolfWorkflowFile, workflowID: string | null, interval: number) => {
+    const appDispatch = useAppDispatch();
+
+    React.useEffect(() => {
+        if (workflowID === null || !interval) return;
+
+        const autoSaveWorkflow = () => {
+            appDispatch(saveWorkflow({ workflowID, workflow }));
+        };
+
+        const intervalId = setInterval(autoSaveWorkflow, interval);
+
+        // cleanup
+        return () => clearInterval(intervalId);
+    }, [workflow, workflowID, interval, appDispatch]);
 };
