@@ -118,7 +118,7 @@ export const ResourceCards: React.FC<{
                                 slots={{ root: IconButton }}
                                 slotProps={{
                                     root: {
-                                        sx: { position: "absolute", top: 8, right: -10, zIndex: 1000 },
+                                        sx: { position: "absolute", top: 8, right: -10, zIndex: 5 },
                                         variant: "plain",
                                         color: "neutral"
                                     }

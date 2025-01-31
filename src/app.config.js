@@ -12,6 +12,7 @@ config.keycloakConfig = {
     client_id: "react-auth"
 };
 config.dataService = `${hostname}/data/api/datasets`;
+config.semanticService = `${hostname}/semantics/api/types`;
 
 // TODO replace this with dynamically pulling from GeoServer
 config.sytles = [

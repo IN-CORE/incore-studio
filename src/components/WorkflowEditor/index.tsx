@@ -2,7 +2,20 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 
-import { Box, Button, Card, CardContent, CardActions, IconButton, Stack, Typography, Tooltip } from "@mui/joy";
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CardActions,
+    IconButton,
+    Modal,
+    ModalClose,
+    Sheet,
+    Stack,
+    Typography,
+    Tooltip
+} from "@mui/joy";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
@@ -66,6 +79,7 @@ const WorkflowEditor = (): JSX.Element => {
 
     const [openFinalize, setOpenFinalize] = React.useState(false);
     const [confirmFinalize, setConfirmFinalize] = React.useState(false);
+    const [finalizedRedirectModalOpen, setFinalizedRedirectModalOpen] = React.useState(false);
 
     React.useEffect(() => {
         if (confirmFinalize && wfID && id) {
@@ -97,6 +111,15 @@ const WorkflowEditor = (): JSX.Element => {
             setEdges(reactFlowWorkflow.edges);
         }
     }, [reactFlowWorkflow]);
+
+    // on project load, check if the workflow is finalized, if so, redirect to execution page
+    React.useEffect(() => {
+        if (project) {
+            if (project.workflows.find((wf: Workflow) => wf.id === wfID)?.isFinalized) {
+                setFinalizedRedirectModalOpen(true);
+            }
+        }
+    }, [project]);
 
     React.useEffect(() => {
         if (wfID !== workflowID) {
@@ -340,6 +363,33 @@ const WorkflowEditor = (): JSX.Element => {
                             />
                         </Stack>
                     </Box>
+                    <Modal
+                        aria-labelledby="close-modal-title"
+                        aria-describedby="modal-desc"
+                        open={finalizedRedirectModalOpen}
+                        onClose={(_event: React.MouseEvent<HTMLButtonElement>) => {
+                            setFinalizedRedirectModalOpen(false);
+                            navigate(`/project/${id}/workflows/${wfID}/execution/create`);
+                        }}
+                        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                    >
+                        <Sheet variant="outlined" sx={{ minWidth: 300, borderRadius: "md", p: 3 }}>
+                            <ModalClose variant="outlined" />
+                            <Typography
+                                component="h2"
+                                id="close-modal-title"
+                                level="h4"
+                                textColor="inherit"
+                                sx={{ fontWeight: "lg" }}
+                            >
+                                Workflow Finalized!
+                            </Typography>
+                            <Typography id="modal-desc" textColor="text.tertiary">
+                                This workflow has been finalized! You can no longer make edits. You will be now
+                                redirected to the execution page.
+                            </Typography>
+                        </Sheet>
+                    </Modal>
                     {nodes.length === 0 ? (
                         <Box
                             sx={{
