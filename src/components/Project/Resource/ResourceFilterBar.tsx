@@ -1,20 +1,20 @@
 import React from "react";
 import { Box, Typography, IconButton, Button, ButtonGroup } from "@mui/joy";
-import SearchIcon from "@mui/icons-material/Search";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
-import SortIcon from "@mui/icons-material/Sort";
 import AddIcon from "@mui/icons-material/Add";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 
 import { SvgIconProps } from "@mui/material";
+import Searchbox from "@app/components/Project/Resource/Searchbox";
+import FilterSortDropdown from "@app/components/Project/Resource/FilterSortDropdown";
 
 interface ResourceFilterBarProps {
     title: string;
-    onSearchClick?: () => void;
-    onFilterClick?: () => void;
+    onSearch?: (text: string) => void;
     onCreateClick?: () => void;
-    onSortClick?: () => void;
+    sortOptions?: string[];
+    filters?: Record<string, string[]>;
+    onApply?: (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => void; // Callback to send filter and sort data
     onViewChangeClick?: () => void;
     isTableView?: boolean;
     createLabel?: string;
@@ -24,9 +24,10 @@ interface ResourceFilterBarProps {
 const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     title,
     icon,
-    onSearchClick,
-    onFilterClick,
-    onSortClick,
+    onSearch,
+    filters,
+    sortOptions,
+    onApply,
     onViewChangeClick,
     isTableView,
     onCreateClick,
@@ -40,32 +41,9 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                 <Typography level="h4">{title}</Typography>
             </Box>
             <Box display="flex" alignItems="center">
-                {onSearchClick && (
-                    <IconButton onClick={onSearchClick} variant="soft">
-                        <SearchIcon />
-                    </IconButton>
-                )}
-                {onFilterClick && (
-                    <Button
-                        onClick={onFilterClick}
-                        variant="soft"
-                        startDecorator={<FilterAltOutlinedIcon />}
-                        color="neutral"
-                        sx={{ ml: 1 }}
-                    >
-                        Filter
-                    </Button>
-                )}
-                {onSortClick && (
-                    <Button
-                        onClick={onSortClick}
-                        variant="soft"
-                        startDecorator={<SortIcon />}
-                        color="neutral"
-                        sx={{ ml: 1 }}
-                    >
-                        Sort
-                    </Button>
+                {onSearch && <Searchbox onSearch={onSearch} />}
+                {onApply && sortOptions && filters && (
+                    <FilterSortDropdown sortOptions={sortOptions} filters={filters} onApply={onApply} />
                 )}
                 {onViewChangeClick && (
                     <ButtonGroup variant="soft" sx={{ ml: 1 }}>

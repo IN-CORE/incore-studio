@@ -57,16 +57,26 @@ const DatasetPage = (): JSX.Element => {
         }
     }, [id, datasetPageNumber, deletedDatasetIds]);
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSearchClick = () => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilterClick = () => {};
     const onCreateClick = () => {
         setOpenAddDatasetFromServiceDialog(true);
     };
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSortClick = () => {};
+    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+        if (id) {
+            const { filters, sortBy, order } = params;
 
+            // Dispatch the Redux Thunk with updated parameters
+            appDispatch(
+                getProjectDatasets({
+                    projectId: id,
+                    skip: (datasetPageNumber - 1) * 10, // Pagination logic
+                    limit: 10, // Number of items per page
+                    filters, // Filters applied
+                    sortBy, // Sorting field
+                    order // Sort order: "asc" or "desc"
+                })
+            );
+        }
+    };
     // Table view vs Card view
     const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
     const onViewChangeClick = () => {
@@ -150,10 +160,10 @@ const DatasetPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Datasets"
                                     icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearchClick={onSearchClick}
-                                    onFilterClick={onFilterClick}
+                                    filters={{ type: [] }}
+                                    sortOptions={["date", "type", "title", "id"]}
+                                    onApply={onApplyFilterSort}
                                     onCreateClick={onCreateClick}
-                                    onSortClick={onSortClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"
