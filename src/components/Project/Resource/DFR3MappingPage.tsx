@@ -51,15 +51,27 @@ const DFR3MappingPage = (): JSX.Element => {
             appDispatch(getProjectDRF3Mappings({ projectId: id, skip: (DFR3MappingPageNumber - 1) * 10, limit: 10 }));
     }, [id, DFR3MappingPageNumber, deletedDFR3MappingIds]);
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSearchClick = () => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilterClick = () => {};
+    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+        if (id) {
+            const { filters, sortBy, order } = params;
+
+            // Dispatch the Redux Thunk with updated parameters
+            appDispatch(
+                getProjectDRF3Mappings({
+                    projectId: id,
+                    skip: (DFR3MappingPageNumber - 1) * 10, // Pagination logic
+                    limit: 10, // Number of items per page
+                    filters, // Filters applied
+                    sortBy, // Sorting field
+                    order // Sort order: "asc" or "desc"
+                })
+            );
+        }
+    };
+
     const onCreateClick = () => {
         setOpenAddDFR3MappingFromServiceDialog(true);
     };
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSortClick = () => {};
 
     const projectDFR3Mappings = useSelector((state: RootState) => state.project.projectDFR3Mappings);
 
@@ -115,10 +127,23 @@ const DFR3MappingPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="DFR3Mappings"
                                     icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
-                                    onSearchClick={onSearchClick}
-                                    onFilterClick={onFilterClick}
+                                    filters={{
+                                        hazardType: ["earthquake", "tsunami", "hurricane", "tornado", "flood"],
+                                        inventoryType: [
+                                            "building",
+                                            "bridge",
+                                            "roadway",
+                                            "electric_facility",
+                                            "eletric_power_line",
+                                            "water_facility",
+                                            "buried_pipeline",
+                                            "gas_facility"
+                                        ],
+                                        type: ["fragility", "repair", "restoration"]
+                                    }}
+                                    sortOptions={["date", "type", "hazardType", "inventoryType", "name", "id"]}
+                                    onApply={onApplyFilterSort}
                                     onCreateClick={onCreateClick}
-                                    onSortClick={onSortClick}
                                     isTableView
                                     createLabel="Add from Service"
                                 />
