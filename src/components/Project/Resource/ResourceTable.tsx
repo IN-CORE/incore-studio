@@ -181,7 +181,7 @@ export const ResourceTable = ({
                             {formatHeaderName(column)}
                         </th>
                     ))}
-                    <th style={{ backgroundColor: "white", textAlign: "right" }}>Action</th>
+                    <th style={{ backgroundColor: "white", textAlign: "right", width: "10%" }}>Action</th>
                 </tr>
             </thead>
             <tbody>

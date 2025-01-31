@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Show warning message on execution page when refresh [#69](https://github.com/IN-CORE/incore-studio/issues/69)
 
+### Added
+- Checks on the workflow-editor to prevent the user to make edits on finalized workflow. [#73](https://github.com/IN-CORE/incore-studio/issues/73)
+
 ## [Alpha-1] - 01-09-2025
 
 ### Added
@@ -32,10 +35,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Ability to fill out parameters and input datasets for execution [#61](https://github.com/IN-CORE/incore-studio/issues/61)
 - Display status of each execution steps [#39](https://github.com/IN-CORE/incore-studio/issues/39)
 - Modal to create a new workflow and add to project [#41](https://github.com/IN-CORE/incore-studio/issues/41)
+- Implement search, filter and sort for project resources [#48](https://github.com/IN-CORE/incore-studio/issues/48)
 
 ### Changed
 
 - Navbar file structure. [#37](https://github.com/IN-CORE/incore-studio/issues/37)
+- Improve "add from service" modal. [#66](https://github.com/IN-CORE/incore-studio/issues/66)
 
 ### Fixed
 
