@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Container } from "@mui/joy";
 import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import { deleteProjectWorkflows, getProject, getProjectWorkflows } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
@@ -17,10 +17,11 @@ import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflow";
 
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 import Snackbar from "@mui/joy/Snackbar";
+import { useAppDispatch } from "@app/store/hooks";
 
 const WorkflowPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
-    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
@@ -37,19 +38,31 @@ const WorkflowPage = (): JSX.Element => {
 
     useEffect(() => {
         if (id) {
-            // @ts-ignore
-            dispatch(getProject(id));
+            appDispatch(getProject(id));
         }
     }, [id]);
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getProjectWorkflows({ projectId: id, skip: (workflowPageNumber - 1) * 10, limit: 10 }));
+        if (id) appDispatch(getProjectWorkflows({ projectId: id, skip: (workflowPageNumber - 1) * 10, limit: 10 }));
     }, [id, workflowPageNumber, deletedWorkflowIds]);
 
-    const onSearchClick = () => {};
-    const onFilterClick = () => {};
-    const onSortClick = () => {};
+    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+        if (id) {
+            const { filters, sortBy, order } = params;
+
+            // Dispatch the Redux Thunk with updated parameters
+            appDispatch(
+                getProjectWorkflows({
+                    projectId: id,
+                    skip: (workflowPageNumber - 1) * 10, // Pagination logic
+                    limit: 10, // Number of items per page
+                    filters, // Filters applied
+                    sortBy, // Sorting field
+                    order // Sort order: "asc" or "desc"
+                })
+            );
+        }
+    };
 
     // create workflow
     const [openCreateWorkflowDialog, setOpenCreateWorkflowDialog] = useState(false);
@@ -70,8 +83,7 @@ const WorkflowPage = (): JSX.Element => {
 
     // delete function
     const deleteWorkflowFunc = (projectId: string, workflow: Workflow) => {
-        // @ts-ignore
-        dispatch(deleteProjectWorkflows({ projectId, workflowIds: [workflow.id] }));
+        appDispatch(deleteProjectWorkflows({ projectId, workflowIds: [workflow.id] }));
     };
 
     // snackbar
@@ -114,13 +126,13 @@ const WorkflowPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Workflows"
                                     icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearchClick={onSearchClick}
-                                    onFilterClick={onFilterClick}
                                     onCreateClick={onCreateWorkflowClick}
-                                    onSortClick={onSortClick}
+                                    filters={{ type: ["workflow", "execution"] }}
+                                    sortOptions={["created", "type", "title", "id"]}
+                                    onApply={onApplyFilterSort}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
-                                    createLabel="Create New Workflow"
+                                    createLabel="Create Workflow"
                                 />
                                 <CreateWorkflowDialog
                                     open={openCreateWorkflowDialog}

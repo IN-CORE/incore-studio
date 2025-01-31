@@ -57,15 +57,27 @@ const HazardPage = (): JSX.Element => {
         }
     }, [id, hazardPageNumber, deletedHazardIds]);
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSearchClick = () => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onFilterClick = () => {};
+    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+        if (id) {
+            const { filters, sortBy, order } = params;
+
+            // Dispatch the Redux Thunk with updated parameters
+            appDispatch(
+                getProjectHazards({
+                    projectId: id,
+                    skip: (hazardPageNumber - 1) * 10, // Pagination logic
+                    limit: 10, // Number of items per page
+                    filters, // Filters applied
+                    sortBy, // Sorting field
+                    order // Sort order: "asc" or "desc"
+                })
+            );
+        }
+    };
+
     const onCreateClick = () => {
         setOpenAddHazardFromServiceDialog(true);
     };
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onSortClick = () => {};
 
     // Table view vs Card view
     const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
@@ -145,10 +157,10 @@ const HazardPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Hazards"
                                     icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
-                                    onSearchClick={onSearchClick}
-                                    onFilterClick={onFilterClick}
+                                    filters={{ type: ["earthquake", "tsunami", "hurricane", "tornado", "flood"] }}
+                                    sortOptions={["date", "type", "name", "id"]}
+                                    onApply={onApplyFilterSort}
                                     onCreateClick={onCreateClick}
-                                    onSortClick={onSortClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"
