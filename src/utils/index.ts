@@ -201,6 +201,47 @@ export async function fetchResource(resourceType: string, resourceId: string, ha
     }
 }
 
+export async function searchResource(
+    resourceType: string,
+    query: string,
+    limit?: number,
+    skip?: number,
+    hazardType?: string
+) {
+    let url = config.hostname;
+
+    if (resourceType.toLowerCase() === "dataset") {
+        url = `${url}/data/api/datasets/search?text=${query}&limit=${limit ?? 5}&skip=${skip ?? 0}`;
+    } else if (resourceType.toLowerCase() === "hazard") {
+        url = `${url}/hazard/api/${hazardType}/search?text=${query}&limit=${limit ?? 5}&skip=${skip ?? 0}`;
+    } else if (resourceType.toLowerCase().includes("mapping")) {
+        url = `${url}/dfr3/api/mappings/search?text=${query}&limit=${limit ?? 5}&skip=${skip ?? 0}`;
+    }
+
+    try {
+        const response = await axios.get(url, { headers: getHeaders() });
+
+        // Check if the response has data
+        if (!response.data || Object.keys(response.data).length === 0) {
+            return { error: `No data found for resourceType: ${resourceType}, query: ${query}` };
+        }
+
+        return response.data;
+    } catch (error: any) {
+        // Handle axios-specific errors
+        if (axios.isAxiosError(error)) {
+            return {
+                error: error.response
+                    ? `Error: ${error.response.status} - ${error.response.data}`
+                    : `Network or unknown error: ${error.message}`
+            };
+        }
+
+        // Handle unexpected errors
+        return { error: `Unexpected error: ${error.message}` };
+    }
+}
+
 export function toSingular(disaster: string): string {
     // Mapping of plural to singular forms
     const singularMapping: { [key: string]: string } = {
@@ -254,6 +295,18 @@ export function getStatusColor(status?: string) {
         default:
             return "neutral";
     }
+}
+
+export function downloadMetadata(data: any): void {
+    const metadata = JSON.stringify(data, null, 2); // Example metadata formatting
+    const blob = new Blob([metadata], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${data.name || data.title || "metadata"}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
 // export function attachExecutionStatusToSteps(execution: DatawolfExecutionFile, workflow: Workflow) {
