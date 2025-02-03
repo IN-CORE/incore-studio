@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "@app/store";
 import { setCreateExecutionTemplate, setCurrentExecution } from "@app/reducer/executionSlice";
 import { addDatasetToProject } from "@app/reducer/projectSlice";
+import { saveWorkflow } from "@app/reducer/workflowSlice";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
@@ -80,7 +81,7 @@ export const useExecutionPolling = (executionId: string | null, interval: number
 const fetchDatasetsFromService = async (datasetIds: string[]): Promise<Dataset[]> => {
     try {
         const requests = datasetIds.map((id) =>
-            axios.get<Dataset>(`${config.hostname}/data/api/datasets/${id}`, { headers: getHeaders() })
+            axios.get<Dataset>(`${config.dataService}/${id}`, { headers: getHeaders() })
         );
         const responses = await Promise.all(requests);
 
@@ -143,4 +144,21 @@ export const useOutputDatasetsSynchronizationPolling = (
         // cleanup
         return () => clearInterval(intervalId);
     }, [projectWorkflows, interval]);
+};
+
+export const useWorkflowAutoSave = (workflow: DatawolfWorkflowFile, workflowID: string | null, interval: number) => {
+    const appDispatch = useAppDispatch();
+
+    React.useEffect(() => {
+        if (workflowID === null || !interval) return;
+
+        const autoSaveWorkflow = () => {
+            appDispatch(saveWorkflow({ workflowID, workflow }));
+        };
+
+        const intervalId = setInterval(autoSaveWorkflow, interval);
+
+        // cleanup
+        return () => clearInterval(intervalId);
+    }, [workflow, workflowID, interval, appDispatch]);
 };

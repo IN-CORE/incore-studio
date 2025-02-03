@@ -29,7 +29,7 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId, projec
         if (datasetId !== "" && datasetId !== "N/A" && datasetId !== "ERROR" && datasetId !== "Not present") {
             const fetchDataset = async () => {
                 try {
-                    const response = await axios.get<Dataset>(`${config.hostname}/data/api/datasets/${datasetId}`, {
+                    const response = await axios.get<Dataset>(`${config.dataService}/${datasetId}`, {
                         headers: getHeaders()
                     });
                     if (response.status === 200) {

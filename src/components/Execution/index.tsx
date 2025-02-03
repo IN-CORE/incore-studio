@@ -1,5 +1,5 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 import { Box, Button, Typography, Stack, Tooltip, IconButton } from "@mui/joy";
 import { useShallow } from "zustand/react/shallow";
@@ -17,12 +17,14 @@ import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
-import SidePanel from "./SidePanel";
 import Workflow from "@app/components/Workflow";
 import { getWorkflow, clearWorkflowState } from "@app/reducer/workflowSlice";
+import { ReactSVG } from "react-svg";
+import { DialogActions, DialogContent, DialogTitle, Divider, Modal, ModalDialog } from "@mui/material";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import CreateExecutionDialog from "./CreateExecutionDialog";
 
-import { ReactSVG } from "react-svg";
+import SidePanel from "./SidePanel";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -38,6 +40,7 @@ const ExecutionComponent: React.FC<{
     create: boolean;
 }> = ({ create }): JSX.Element => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { wfID } = useParams<{ exId: string; wfID: string }>();
     const appDispatch = useAppDispatch();
     const { id } = useParams<{ id: string }>();
@@ -53,15 +56,49 @@ const ExecutionComponent: React.FC<{
         (state) => state.execution.executionParametersAndInputsChecked
     );
     const [openExecutionDialog, setOpenExecutionDialog] = React.useState(false);
+    const [saveExecutionModalConfirmation, setSaveExecutionModalConfirmation] = React.useState(false);
+
+    // Prevent Browser Refresh / Close
+    useEffect(() => {
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            if (create) {
+                event.preventDefault();
+                event.returnValue =
+                    "You have unsaved changes. If you leave this page without submitting, all progress will be lost.";
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [create]);
+
+    // Handle Navigation Warning (For Back Button)
+    useEffect(() => {
+        const handlePopState = (event: PopStateEvent) => {
+            if (create && !window.confirm("You have unsaved changes. Do you really want to leave?")) {
+                event.preventDefault();
+                navigate(location.pathname); // Stay on the current page
+            }
+        };
+
+        window.addEventListener("popstate", handlePopState);
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        };
+    }, [navigate, location.pathname]);
 
     useExecutionTemplate(wfID);
-    if (currentExecution !== null) {
-        useExecutionPolling(currentExecution.id, 10000);
-    }
+    useExecutionPolling(currentExecution ? currentExecution.id : null, 10000);
 
-    const handleBackClick = (wfId: string | undefined) => {
-        appDispatch(resetExecutionState());
-        navigate(`/project/${id}/workflows/${wfId}`);
+    const handleBackClick = () => {
+        if (create) {
+            setSaveExecutionModalConfirmation(true);
+        } else {
+            appDispatch(resetExecutionState());
+            navigate(`/project/${id}/workflows/${wfID}`);
+        }
     };
 
     React.useEffect(() => {
@@ -92,11 +129,49 @@ const ExecutionComponent: React.FC<{
                         <Stack direction="row" spacing={2}>
                             <Box sx={{ alignContent: "center" }}>
                                 <Tooltip title="Go back" variant="plain" color="neutral" sx={{ color: "#172B4D" }}>
-                                    <IconButton variant="plain" onClick={() => handleBackClick(wfID)}>
+                                    <IconButton variant="plain" onClick={() => handleBackClick()}>
                                         <ArrowBackIosRoundedIcon />
                                     </IconButton>
                                 </Tooltip>
                             </Box>
+                            <Modal
+                                open={saveExecutionModalConfirmation}
+                                onClose={(_event: React.MouseEvent<HTMLButtonElement>) => {
+                                    setSaveExecutionModalConfirmation(false);
+                                }}
+                                sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                            >
+                                <ModalDialog variant="outlined" role="alertdialog">
+                                    <DialogTitle sx={{ fontWeight: "lg" }}>
+                                        <WarningRoundedIcon />
+                                        Save Changes Before Leaving?
+                                    </DialogTitle>
+                                    <Divider />
+                                    <DialogContent>
+                                        You have unsaved changes. If you leave this page without submitting, all
+                                        progress will be lost.
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button
+                                            variant="solid"
+                                            color="danger"
+                                            onClick={() => {
+                                                appDispatch(resetExecutionState());
+                                                navigate(`/project/${id}/workflows/${wfID}`);
+                                            }}
+                                        >
+                                            Leave
+                                        </Button>
+                                        <Button
+                                            variant="plain"
+                                            color="neutral"
+                                            onClick={() => setSaveExecutionModalConfirmation(false)}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </DialogActions>
+                                </ModalDialog>
+                            </Modal>
                             <Box>
                                 <Stack direction="row" spacing={2} alignItems="center">
                                     <Typography
@@ -246,7 +321,7 @@ const ExecutionComponent: React.FC<{
             <Box sx={{ display: "flex", flexGrow: 1, position: "relative" }}>
                 <WorkflowWithLoadingAndErrorHandling
                     sidePanelOpen={sidePanelData.open}
-                    isExecution={true}
+                    isExecution
                     error={workflowError}
                     isLoading={workflowLoading}
                 />
