@@ -8,8 +8,13 @@ import {
     Card,
     CardContent,
     CardActions,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Divider,
     IconButton,
     Modal,
+    ModalDialog,
     ModalClose,
     Sheet,
     Stack,
@@ -19,6 +24,7 @@ import {
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import Snackbar from "@mui/joy/Snackbar";
 
 import { useShallow } from "zustand/react/shallow";
@@ -27,7 +33,7 @@ import AddAnalysisModal from "@app/components/AddAnalysisModal";
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import Workflow from "@app/components/Workflow";
 import Loading from "@app/components/Loading";
-import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { useAppDispatch, useAppSelector, useWorkflowAutoSave } from "@app/store/hooks";
 import {
     getWorkflow,
     clearWorkflowState,
@@ -80,6 +86,16 @@ const WorkflowEditor = (): JSX.Element => {
     const [openFinalize, setOpenFinalize] = React.useState(false);
     const [confirmFinalize, setConfirmFinalize] = React.useState(false);
     const [finalizedRedirectModalOpen, setFinalizedRedirectModalOpen] = React.useState(false);
+    const [saveWorkflowModalConfirmation, setSaveWorkflowModalConfirmation] = React.useState(false);
+    const [lastSaved, setLastSaved] = React.useState<number>(Date.now() - 5 * 60 * 1000 - 1);
+
+    const updateLastSaved = () => {
+        setLastSaved(Date.now());
+    };
+
+    const isRecentSave = () => {
+        return Date.now() - lastSaved <= 5 * 60 * 1000; // 5 minutes in milliseconds
+    };
 
     React.useEffect(() => {
         if (confirmFinalize && wfID && id) {
@@ -130,16 +146,42 @@ const WorkflowEditor = (): JSX.Element => {
         }
         appDispatch(getWorkflowTools());
         appDispatch(getDatawolfUser({ email: auth?.user?.profile?.email }));
+
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            event.preventDefault();
+            event.returnValue =
+                "You might have unsaved changes. If you leave this page without submitting, all unsaved progress will be lost.";
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
         return () => {
             appDispatch(clearWorkflowState());
             setNodes([]);
             setEdges([]);
+            window.removeEventListener("beforeunload", handleBeforeUnload);
         };
     }, []);
 
+    React.useEffect(() => {
+        const handlePopState = (event: PopStateEvent) => {
+            if (!window.confirm("You have unsaved changes. Do you really want to leave?")) {
+                event.preventDefault();
+            }
+        };
+
+        window.addEventListener("popstate", handlePopState);
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        };
+    }, [navigate, location.pathname]);
+
     const handleBackClick = () => {
-        appDispatch(clearWorkflowState());
-        navigate(-1);
+        if (isRecentSave()) {
+            appDispatch(clearWorkflowState());
+            navigate(-1);
+        } else {
+            setSaveWorkflowModalConfirmation(true);
+        }
     };
 
     const handleExportJSONClick = () => {
@@ -177,20 +219,29 @@ const WorkflowEditor = (): JSX.Element => {
         }
     };
 
+    const getSaveWorkflowFile = (): DatawolfWorkflowFile => {
+        return createWorkflowFileFromNodesAndEdgesV2({
+            nodes,
+            edges,
+            creator: datawolfUser,
+            datawolfWorkflowFileID: workflowID,
+            title: currentWorkflow !== null ? currentWorkflow.title : "Untitled Workflow",
+            description: currentWorkflow !== null ? currentWorkflow.description : "",
+            created: currentWorkflow !== null ? currentWorkflow.created : new Date().toISOString(),
+            tools: datawolfTools
+        });
+    };
+
+    // autosave workflow periodically
+    const interval = 300000; // 300 seconds
+    useWorkflowAutoSave(getSaveWorkflowFile(), workflowID, interval);
+
     const handleSaveClick = () => {
         if (currentWorkflow !== null && workflowID !== null) {
-            const newWorkflowFile = createWorkflowFileFromNodesAndEdgesV2({
-                nodes,
-                edges,
-                creator: datawolfUser,
-                datawolfWorkflowFileID: workflowID,
-                title: currentWorkflow !== null ? currentWorkflow.title : "Untitled Workflow",
-                description: currentWorkflow !== null ? currentWorkflow.description : "",
-                created: currentWorkflow !== null ? currentWorkflow.created : new Date().toISOString(),
-                tools: datawolfTools
-            });
+            const newWorkflowFile = getSaveWorkflowFile();
 
             appDispatch(saveWorkflow({ workflowID, workflow: newWorkflowFile }));
+            updateLastSaved();
         } // else dispatch save workflow error
     };
     return (
@@ -373,6 +424,43 @@ const WorkflowEditor = (): JSX.Element => {
                                 redirected to the execution page.
                             </Typography>
                         </Sheet>
+                    </Modal>
+                    <Modal
+                        open={saveWorkflowModalConfirmation}
+                        onClose={(_event: React.MouseEvent<HTMLButtonElement>) => {
+                            setSaveWorkflowModalConfirmation(false);
+                        }}
+                        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                    >
+                        <ModalDialog variant="outlined" role="alertdialog">
+                            <DialogTitle sx={{ fontWeight: "lg" }}>
+                                <WarningRoundedIcon />
+                                Save Changes Before Leaving?
+                            </DialogTitle>
+                            <Divider />
+                            <DialogContent>
+                                Your changes may not be saved. Do you want to save them before leaving?
+                            </DialogContent>
+                            <DialogActions>
+                                <Button
+                                    variant="solid"
+                                    color="danger"
+                                    onClick={() => {
+                                        appDispatch(clearWorkflowState());
+                                        navigate(-1);
+                                    }}
+                                >
+                                    Discard changes
+                                </Button>
+                                <Button
+                                    variant="plain"
+                                    color="neutral"
+                                    onClick={() => setSaveWorkflowModalConfirmation(false)}
+                                >
+                                    Cancel
+                                </Button>
+                            </DialogActions>
+                        </ModalDialog>
                     </Modal>
                     {nodes.length === 0 ? (
                         <Box

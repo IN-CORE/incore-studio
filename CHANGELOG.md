@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-
 ### Added
 
+- Autosave feature on Workflow-editor [#72](https://github.com/IN-CORE/incore-studio/issues/72)
 - Checks on the workflow-editor to prevent the user to make edits on finalized workflow. [#73](https://github.com/IN-CORE/incore-studio/issues/73)
+
+### Changed
+
+- Show warning message on execution page when refresh [#69](https://github.com/IN-CORE/incore-studio/issues/69)
+- Improve "add from service" modal. [#66](https://github.com/IN-CORE/incore-studio/issues/66)
 
 ### Fixed
 
@@ -43,7 +48,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Navbar file structure. [#37](https://github.com/IN-CORE/incore-studio/issues/37)
-- Improve "add from service" modal. [#66](https://github.com/IN-CORE/incore-studio/issues/66)
 
 ### Fixed
 
