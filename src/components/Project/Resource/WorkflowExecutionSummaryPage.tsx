@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getProject } from "@app/reducer/projectSlice";
-import { getWorkflow, raiseWorkflowError } from "@app/reducer/workflowSlice";
+import { clearWorkflowState, getWorkflow, raiseWorkflowError } from "@app/reducer/workflowSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import withLoading from "@app/components/hocs/withLoading";
@@ -12,6 +12,7 @@ import WorkflowSummary from "@app/components/Workflow/WorkflowSummary";
 import { useSummaryStore, type SummaryReactFlowStoreState } from "@app/components/Workflow/reactFlowStore";
 import { getWorkflowSummary } from "@app/components/Workflow/workflowUtils";
 import ExecutionCards from "./ExecutionCards";
+import { resetExecutionState } from "@app/reducer/executionSlice";
 
 const selector = (state: SummaryReactFlowStoreState) => ({
     setNodes: state.setNodes,
@@ -88,6 +89,13 @@ const WorkflowExecutionSummaryPage = (): JSX.Element => {
             }
         }
     }, [project, wfID]);
+
+    useEffect(() => {
+        return () => {
+            appDispatch(resetExecutionState());
+            appDispatch(clearWorkflowState());
+        };
+    }, []);
 
     useEffect(() => {
         if (id) {

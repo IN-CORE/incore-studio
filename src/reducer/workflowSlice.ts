@@ -156,6 +156,7 @@ const workflowSlice = createSlice({
             state.reactFlowWorkflow = initialReactFlowWorkflow;
             state.datawolfWorkflowID = null;
             state.currentWorkflow = null;
+            state.executions = [];
         },
         setSidePanelData: (state, action) => {
             state.sidePanelData = action.payload;

@@ -110,14 +110,16 @@ const ExecutionComponent: React.FC<{
     }, [reactFlowWorkflow]);
 
     React.useEffect(() => {
-        if (!create && currentExecution !== null) {
+        if (currentExecution !== null) {
             appDispatch(getWorkflow({ workflowID: currentExecution.workflowId, isExecution: true }));
-        } else if (create && wfID !== undefined) {
+        } else if (wfID !== undefined) {
             appDispatch(getWorkflow({ workflowID: wfID, isExecution: true }));
         }
 
         return () => {
             appDispatch(clearWorkflowState());
+            setNodes([]);
+            setEdges([]);
         };
     }, []);
 
@@ -348,15 +350,17 @@ const ExecutionComponentWithLoadingAndErrorHandling = withLoading(ExecutionCompo
 const Execution: React.FC<{ create: boolean }> = ({ create }): JSX.Element => {
     const { exId } = useParams<{ exId: string; wfID: string }>();
     const appDispatch = useAppDispatch();
-    const currentExecution = useAppSelector((state) => state.execution.currentExecution);
     const loading = useAppSelector((state) => state.execution.loading);
     const error = useAppSelector((state) => state.execution.error);
 
     React.useEffect(() => {
-        if (!create && exId !== undefined && currentExecution === null) {
+        if (!create && exId !== undefined) {
             // Dispatch immediately on mount
             appDispatch(getExecutionById(exId));
         }
+        return () => {
+            appDispatch(resetExecutionState());
+        };
     }, []);
 
     return <ExecutionComponentWithLoadingAndErrorHandling create={create} isLoading={loading} error={error} />;

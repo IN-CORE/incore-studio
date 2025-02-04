@@ -138,10 +138,10 @@ const WorkflowEditor = (): JSX.Element => {
     }, [project]);
 
     React.useEffect(() => {
-        if (wfID !== workflowID) {
+        if (wfID) {
             appDispatch(getWorkflow({ workflowID: wfID }));
         }
-        if (project === null && id) {
+        if (id) {
             appDispatch(getProject(id));
         }
         appDispatch(getWorkflowTools());
@@ -155,6 +155,9 @@ const WorkflowEditor = (): JSX.Element => {
 
         window.addEventListener("beforeunload", handleBeforeUnload);
         return () => {
+            appDispatch(clearWorkflowState());
+            setNodes([]);
+            setEdges([]);
             window.removeEventListener("beforeunload", handleBeforeUnload);
         };
     }, []);
