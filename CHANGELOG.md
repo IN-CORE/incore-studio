@@ -8,10 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Changed
+
 - Show warning message on execution page when refresh [#69](https://github.com/IN-CORE/incore-studio/issues/69)
 - Improve "add from service" modal. [#66](https://github.com/IN-CORE/incore-studio/issues/66)
 
 ### Added
+
+- Support to automatically add the result datasets to project. [#70](https://github.com/IN-CORE/incore-studio/issues/70)
 - Autosave feature on Workflow-editor [#72](https://github.com/IN-CORE/incore-studio/issues/72)
 - Checks on the workflow-editor to prevent the user to make edits on finalized workflow. [#73](https://github.com/IN-CORE/incore-studio/issues/73)
 

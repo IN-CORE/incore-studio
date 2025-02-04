@@ -90,12 +90,15 @@ const ExecutionComponent: React.FC<{
     }, [navigate, location.pathname]);
 
     useExecutionTemplate(wfID);
-    if (currentExecution !== null) {
-        useExecutionPolling(currentExecution.id, 10000);
-    }
+    useExecutionPolling(currentExecution ? currentExecution.id : null, 10000);
 
     const handleBackClick = () => {
-        setSaveExecutionModalConfirmation(true);
+        if (create) {
+            setSaveExecutionModalConfirmation(true);
+        } else {
+            appDispatch(resetExecutionState());
+            navigate(`/project/${id}/workflows/${wfID}`);
+        }
     };
 
     React.useEffect(() => {

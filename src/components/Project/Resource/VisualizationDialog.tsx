@@ -17,7 +17,7 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import { useAppDispatch } from "@app/store/hooks";
-import { createProjectVisualization } from "@app/reducer/projectSlice";
+import { createProjectVisualization, getProjectVisualizations } from "@app/reducer/projectSlice";
 import config from "@app/app.config";
 
 interface VisualizationDialogProps {
@@ -40,6 +40,11 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
     const [description, setDescription] = useState("");
     const [boundingBox, setBoundingBox] = useState("");
     const [styleName, setStyleName] = useState("");
+
+    React.useEffect(() => {
+        // get all visualizations
+        appDispatch(getProjectVisualizations({ projectId, skip: 0, limit: 100000 }));
+    }, []);
 
     const appDispatch = useAppDispatch();
     const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
