@@ -16,7 +16,6 @@ import withLoading from "@app/components/hocs/withLoading";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import Workflow from "@app/components/Workflow";
 import { getWorkflow, clearWorkflowState } from "@app/reducer/workflowSlice";
 import { ReactSVG } from "react-svg";
@@ -226,90 +225,48 @@ const ExecutionComponent: React.FC<{
                         </Stack>
                     </Box>
                     <Box>
-                        <Stack direction="row" spacing={2}>
-                            {!create ? null : (
-                                <>
-                                    <Button
-                                        variant="outlined"
-                                        startDecorator={<RestartAltRoundedIcon />}
-                                        sx={{
-                                            borderColor: "primary.subtle",
-                                            color: "primary.subtle",
-                                            backgroundColor: "white"
+                        <Button
+                            variant="solid"
+                            disabled={
+                                create
+                                    ? !Object.values(executionParametersAndInputsChecked).every(
+                                          (value) => value === true
+                                      )
+                                    : false
+                            }
+                            startDecorator={
+                                create ? (
+                                    <ReactSVG
+                                        src="/executeIcon.svg"
+                                        style={{
+                                            display: "inline-block",
+                                            height: "1.2em", // Scale the icon to match the font size
+                                            width: "1.2em",
+                                            verticalAlign: "middle" // Ensures vertical alignment
                                         }}
-                                        // onClick={handleSaveClick}
-                                    >
-                                        Reset all inputs
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        startDecorator={<RestartAltRoundedIcon />}
-                                        sx={{
-                                            borderColor: "primary.subtle",
-                                            color: "primary.subtle",
-                                            backgroundColor: "white"
-                                        }}
-                                    >
-                                        Reset all parameters
-                                    </Button>
-                                </>
-                            )}
-                            <Button
-                                variant="solid"
-                                disabled={
-                                    create
-                                        ? !Object.values(executionParametersAndInputsChecked).every(
-                                              (value) => value === true
-                                          )
-                                        : false
+                                    />
+                                ) : (
+                                    <AddRoundedIcon sx={{ fontSize: "25px" }} />
+                                )
+                            }
+                            sx={{
+                                backgroundColor: "primary.main",
+                                border: "1px",
+                                display: "flex", // Ensures proper alignment within the button
+                                alignItems: "center", // Aligns text and icon vertically
+                                gap: "8px"
+                            }}
+                            onClick={() => {
+                                if (create) {
+                                    setOpenExecutionDialog(true);
+                                } else {
+                                    appDispatch(resetExecutionState());
+                                    navigate(`/project/${id}/workflows/${wfID}/execution/create`);
                                 }
-                                startDecorator={
-                                    create ? (
-                                        <ReactSVG
-                                            src="/executeIcon.svg"
-                                            style={{
-                                                display: "inline-block",
-                                                height: "1.2em", // Scale the icon to match the font size
-                                                width: "1.2em",
-                                                verticalAlign: "middle" // Ensures vertical alignment
-                                            }}
-                                        />
-                                    ) : (
-                                        <AddRoundedIcon sx={{ fontSize: "25px" }} />
-                                    )
-                                }
-                                sx={{
-                                    backgroundColor: "primary.main",
-                                    border: "1px",
-                                    display: "flex", // Ensures proper alignment within the button
-                                    alignItems: "center", // Aligns text and icon vertically
-                                    gap: "8px"
-                                }}
-                                onClick={() => {
-                                    if (create) {
-                                        setOpenExecutionDialog(true);
-                                    } else {
-                                        appDispatch(resetExecutionState());
-                                        navigate(`/project/${id}/workflows/${wfID}/execution/create`);
-                                    }
-                                }}
-                            >
-                                {create ? "Execute Workflow" : "Create new"}
-                            </Button>
-                        </Stack>
-                        {/* <Snackbar
-                                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                                    open={snackbarOpen}
-                                    onClose={() => {
-                                        setSnackbarOpen(false);
-                                        setSnackbarMessage("");
-                                    }}
-                                    variant="outlined"
-                                    color={snackbarColor}
-                                    autoHideDuration={2000}
-                                >
-                                    {snackbarMessage}
-                                </Snackbar> */}
+                            }}
+                        >
+                            {create ? "Execute Workflow" : "Create new"}
+                        </Button>
                     </Box>
                 </Stack>
             </Box>

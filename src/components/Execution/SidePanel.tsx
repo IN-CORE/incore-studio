@@ -28,6 +28,7 @@ import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 import AddIcon from "@mui/icons-material/Add";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import InsertChartOutlinedRoundedIcon from "@mui/icons-material/InsertChartOutlinedRounded";
+import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 
 import {
     updateCreateExecutionTemplateDatasetAndParams,
@@ -127,6 +128,14 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         setDatasetSelect(getInputDatasetInitialState());
         setParameters(getInitialParametersState());
     }, [sidePanelData, createExecution]);
+
+    const handleResetDatasets = () => {
+        setDatasetSelect(getInputDatasetInitialState());
+    };
+
+    const handleResetParameters = () => {
+        setParameters(getInitialParametersState());
+    };
 
     const updateParameter = (execFileEntryId: string, value: string) => {
         setParameters((prev) => {
@@ -340,21 +349,39 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         >
                             {sidePanelData.currentAnalysis.inputDatasets.length > 0 && (
                                 <Box mb={4}>
-                                    <Typography
-                                        level="h4"
-                                        sx={{
-                                            fontWeight: 590,
-                                            fontSize: "16px",
-                                            lineHeight: "24px",
-                                            paragraph: "28px",
-                                            color: "#172B4D",
-                                            letter: "5%",
-                                            textTransform: "uppercase",
-                                            mb: "10px"
-                                        }}
+                                    <Stack
+                                        direction="row"
+                                        spacing={2}
+                                        sx={{ justifyContent: "space-between", alignItems: "center", mb: "10px" }}
                                     >
-                                        Input Datasets
-                                    </Typography>
+                                        <Typography
+                                            level="h4"
+                                            sx={{
+                                                fontWeight: 590,
+                                                fontSize: "18px",
+                                                lineHeight: "24px",
+                                                paragraph: "28px",
+                                                color: "#172B4D",
+                                                letter: "5%",
+                                                textTransform: "uppercase",
+                                                mb: "10px"
+                                            }}
+                                        >
+                                            Input Datasets
+                                        </Typography>
+                                        <Button
+                                            variant="outlined"
+                                            startDecorator={<RestartAltRoundedIcon />}
+                                            sx={{
+                                                borderColor: "primary.subtle",
+                                                color: "primary.subtle",
+                                                backgroundColor: "white"
+                                            }}
+                                            onClick={handleResetDatasets}
+                                        >
+                                            Reset all datasets
+                                        </Button>
+                                    </Stack>
                                     <Stack direction="column" spacing={2}>
                                         {sidePanelData.currentAnalysis.inputDatasets.map((inputDataset) => (
                                             <Box key={inputDataset.execFileEntryId}>
@@ -425,8 +452,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                     inputDataset.label.includes("Hazard")
                                                                         ? "Hazard"
                                                                         : inputDataset.label.includes("DFR3")
-                                                                          ? "DFR3 Mapping"
-                                                                          : "Dataset"
+                                                                        ? "DFR3 Mapping"
+                                                                        : "Dataset"
                                                                 }`}
                                                                 name={inputDataset.execFileEntryId}
                                                                 required={
@@ -453,8 +480,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 {inputDataset.label.includes("Hazard")
                                                                     ? projectHazardOptions
                                                                     : inputDataset.label.includes("DFR3")
-                                                                      ? projectDFR3MappingOptions
-                                                                      : projectDatasetOptions}
+                                                                    ? projectDFR3MappingOptions
+                                                                    : projectDatasetOptions}
                                                             </Select>
                                                         </Box>
                                                         {createMode && (
@@ -464,12 +491,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         inputDataset.label.includes("Hazard")
                                                                             ? setOpenAddHazardFromServiceDialog(true)
                                                                             : inputDataset.label.includes("DFR3")
-                                                                              ? setOpenAddDFR3MappingFromServiceDialog(
-                                                                                    true
-                                                                                )
-                                                                              : setOpenAddDatasetFromServiceDialog(
-                                                                                    true
-                                                                                );
+                                                                            ? setOpenAddDFR3MappingFromServiceDialog(
+                                                                                  true
+                                                                              )
+                                                                            : setOpenAddDatasetFromServiceDialog(true);
                                                                     }}
                                                                 >
                                                                     <AddIcon />
@@ -485,21 +510,39 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                             )}
                             {sidePanelData.currentAnalysis.inputParameters.length > 0 && (
                                 <Box>
-                                    <Typography
-                                        level="h4"
-                                        sx={{
-                                            fontWeight: 590,
-                                            fontSize: "16px",
-                                            lineHeight: "24px",
-                                            paragraph: "28px",
-                                            color: "#172B4D",
-                                            letter: "5%",
-                                            textTransform: "uppercase",
-                                            mb: "10px"
-                                        }}
+                                    <Stack
+                                        direction="row"
+                                        spacing={2}
+                                        sx={{ justifyContent: "space-between", alignItems: "center", mb: "10px" }}
                                     >
-                                        Input Parameters
-                                    </Typography>
+                                        <Typography
+                                            level="h4"
+                                            sx={{
+                                                fontWeight: 590,
+                                                fontSize: "18px",
+                                                lineHeight: "24px",
+                                                paragraph: "28px",
+                                                color: "#172B4D",
+                                                letter: "5%",
+                                                textTransform: "uppercase",
+                                                mb: "10px"
+                                            }}
+                                        >
+                                            Input Parameters
+                                        </Typography>
+                                        <Button
+                                            variant="outlined"
+                                            startDecorator={<RestartAltRoundedIcon />}
+                                            sx={{
+                                                borderColor: "primary.subtle",
+                                                color: "primary.subtle",
+                                                backgroundColor: "white"
+                                            }}
+                                            onClick={handleResetParameters}
+                                        >
+                                            Reset all parameters
+                                        </Button>
+                                    </Stack>
                                     <Stack direction="column" spacing={2}>
                                         {sidePanelData.currentAnalysis.inputParameters.map((inputParameter) => (
                                             <Box key={inputParameter.execFileEntryId}>
