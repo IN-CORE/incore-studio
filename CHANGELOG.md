@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Alpha-2] - 02-04-2025
+
+### Added
+
+- Support to automatically add the result datasets to project. [#70](https://github.com/IN-CORE/incore-studio/issues/70)
+- Autosave feature on Workflow-editor [#72](https://github.com/IN-CORE/incore-studio/issues/72)
+- Checks on the workflow-editor to prevent the user to make edits on finalized workflow. [#73](https://github.com/IN-CORE/incore-studio/issues/73)
+- Search, filter and sort for project resources [#48](https://github.com/IN-CORE/incore-studio/issues/48)
+
+### Changed
+
+- Show warning message on execution page when refresh [#69](https://github.com/IN-CORE/incore-studio/issues/69)
+- Improve "add from service" modal. [#66](https://github.com/IN-CORE/incore-studio/issues/66)
+
+### Fixed
+
+- Stale state cleanup and ensure correctness of the state on page load through internal navigation [#79](https://github.com/IN-CORE/incore-studio/issues/79)
+
 ## [Alpha-1] - 01-09-2025
 
 ### Added

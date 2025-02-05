@@ -1,11 +1,13 @@
 import React from "react";
 import axios from "axios";
-import { getHeaders } from "@app/utils";
+import { getHeaders, getOutputDatasetIDsFromWorkflows } from "@app/utils";
 import config from "@app/app.config";
 
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "@app/store";
 import { setCreateExecutionTemplate, setCurrentExecution } from "@app/reducer/executionSlice";
+import { addDatasetToProject } from "@app/reducer/projectSlice";
+import { saveWorkflow } from "@app/reducer/workflowSlice";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
@@ -74,4 +76,89 @@ export const useExecutionPolling = (executionId: string | null, interval: number
         // cleanup
         return () => clearInterval(intervalId);
     }, [executionId, interval, appDispatch]);
+};
+
+const fetchDatasetsFromService = async (datasetIds: string[]): Promise<Dataset[]> => {
+    try {
+        const requests = datasetIds.map((id) =>
+            axios.get<Dataset>(`${config.dataService}/${id}`, { headers: getHeaders() })
+        );
+        const responses = await Promise.all(requests);
+
+        const datasets = responses.map((response) => response.data);
+        return datasets;
+    } catch (error) {
+        console.error("Error fetching datasets: ", error);
+        throw new Error("Error fetching datasets");
+    }
+};
+
+export const useOutputDatasetsSynchronizationPolling = (
+    projectWorkflows: Workflow[],
+    interval: number,
+    projectId: string | undefined
+) => {
+    const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
+    const appDispatch = useAppDispatch();
+
+    const fetchWorkflowFiles = async (wfids: string[]): Promise<DatawolfWorkflowFile[]> => {
+        try {
+            const requests = wfids.map((wfid) =>
+                axios.get<DatawolfWorkflowFile>(`${config.datawolfApi}/workflows/${wfid}`, { headers: getHeaders() })
+            );
+            const responses = await Promise.all(requests);
+
+            const wfFiles = responses.map((response) => response.data);
+            return wfFiles;
+        } catch (error) {
+            console.error("Error fetching workflow files: ", error);
+            throw new Error("Error fetching workflow files");
+        }
+    };
+
+    React.useEffect(() => {
+        if (projectWorkflows.length === 0 || !interval || projectId === undefined) return;
+
+        const fetchAndSync = async () => {
+            let wfids = projectWorkflows.map((wf) => wf.id);
+            // fetch all workflow files
+            try {
+                const wfFiles = await fetchWorkflowFiles(wfids);
+                const outputDatasetIDs = await getOutputDatasetIDsFromWorkflows(wfFiles);
+                let datasetIdsNotInProject = outputDatasetIDs.filter((id) => !projectDatasets.find((d) => d.id === id));
+                // filter out ids with "-"
+                datasetIdsNotInProject = datasetIdsNotInProject.filter((id) => !id.includes("-"));
+                if (datasetIdsNotInProject.length > 0) {
+                    const newDatasets = await fetchDatasetsFromService(datasetIdsNotInProject);
+                    appDispatch(addDatasetToProject({ projectId: projectId, datasets: newDatasets }));
+                }
+            } catch (error) {
+                console.error("Error fetching Dataset files: ", error);
+            }
+        };
+
+        fetchAndSync(); // initial fetch
+
+        const intervalId = setInterval(fetchAndSync, interval);
+
+        // cleanup
+        return () => clearInterval(intervalId);
+    }, [projectWorkflows, interval]);
+};
+
+export const useWorkflowAutoSave = (workflow: DatawolfWorkflowFile, workflowID: string | null, interval: number) => {
+    const appDispatch = useAppDispatch();
+
+    React.useEffect(() => {
+        if (workflowID === null || !interval) return;
+
+        const autoSaveWorkflow = () => {
+            appDispatch(saveWorkflow({ workflowID, workflow }));
+        };
+
+        const intervalId = setInterval(autoSaveWorkflow, interval);
+
+        // cleanup
+        return () => clearInterval(intervalId);
+    }, [workflow, workflowID, interval, appDispatch]);
 };

@@ -8,7 +8,6 @@ import {
     Box,
     Button,
     Divider,
-    Grid,
     IconButton,
     Input,
     Option,
@@ -25,9 +24,10 @@ import {
 } from "@mui/joy";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import StorageIcon from "@mui/icons-material/Storage";
-import BookmarkAddRoundedIcon from "@mui/icons-material/BookmarkAddRounded";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 import AddIcon from "@mui/icons-material/Add";
+import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import InsertChartOutlinedRoundedIcon from "@mui/icons-material/InsertChartOutlinedRounded";
 
 import {
     updateCreateExecutionTemplateDatasetAndParams,
@@ -38,11 +38,14 @@ import {
     addDatasetToProject,
     addDFR3MappingToProject,
     addHazardToProject,
-    getProject
+    getProject,
+    getProjectVisualizations
 } from "@app/reducer/projectSlice";
+import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
+import OutputFileDisplay from "./OutputFileDisplay";
 
 const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const appDispatch = useAppDispatch();
@@ -141,6 +144,15 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         appDispatch(clearSidePanelData());
     };
 
+    React.useEffect(() => {
+        if (id) {
+            // get all visualizations
+            appDispatch(getProjectVisualizations({ projectId: id, skip: 0, limit: 100000 }));
+        }
+    }, []);
+
+    const projectVisualizations = useAppSelector((state) => state.project.projectVisualizations);
+
     // Add dataset to project from service
     const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = React.useState(false);
     const addDatasetFunc = (projectId: string, resource: Dataset) => {
@@ -158,9 +170,15 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     // Add hazard to project from service
     const [openAddDFR3MappingFromServiceDialog, setOpenAddDFR3MappingFromServiceDialog] = React.useState(false);
     const addDFR3MappingFunc = (projectId: string, resource: DFR3Mapping) => {
-        console.log(resource);
         appDispatch(addDFR3MappingToProject({ projectId, dfr3Mappings: [resource] }));
         setOpenAddDFR3MappingFromServiceDialog(false);
+    };
+
+    // View visualization
+    const [selectedVisualization, setSelectedVisualization] = React.useState<Visualization>();
+    const [openVisualziationView, setOpenVisualziationView] = React.useState(true);
+    const handleCloseVisualziationView = () => {
+        setOpenVisualziationView(false);
     };
 
     const downloadFile = async (datasetId: string) => {
@@ -283,6 +301,9 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         </Tab>
                         <Tab variant="soft" sx={{ flexGrow: 1 }} disabled={createMode}>
                             Results
+                        </Tab>
+                        <Tab variant="soft" sx={{ flexGrow: 1 }} disabled={createMode}>
+                            Visualizations
                         </Tab>
                     </TabList>
 
@@ -581,58 +602,139 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                             <Stack direction="column" spacing={2}>
                                 {sidePanelData.currentAnalysis.outputDatasets.map((outputDataset) => (
                                     <Box key={outputDataset.execFileEntryId}>
-                                        <Stack direction="row" spacing={2} alignItems="center" mb={1}>
-                                            <StorageIcon
-                                                sx={{
-                                                    color: "#AB47BC",
-                                                    marginRight: "5px",
-                                                    pointerEvents: "none",
-                                                    fontSize: "15px"
-                                                }}
-                                            />
-                                            <Typography
-                                                level="h4"
-                                                sx={{
-                                                    fontWeight: 400,
-                                                    fontSize: "14px",
-                                                    lineHeight: "24px",
-                                                    paragraph: "28px",
-                                                    color: "#172B4D"
-                                                }}
-                                            >
-                                                {outputDataset.label}
-                                            </Typography>
-                                        </Stack>
-                                        <Grid container spacing={1} sx={{ flexGrow: 1 }}>
-                                            <Grid xs={10} component="div">
-                                                <Input
-                                                    disabled
-                                                    value={outputDataset.datasetId}
-                                                    variant="solid"
+                                        <Stack
+                                            direction="row"
+                                            spacing={2}
+                                            alignItems="center"
+                                            justifyContent="space-between"
+                                            mb={1}
+                                        >
+                                            <Stack direction="row" spacing={2} alignItems="center">
+                                                <StorageIcon
                                                     sx={{
-                                                        "&.Mui-disabled": {
-                                                            color: "#1E293B"
-                                                        }
+                                                        color: "#AB47BC",
+                                                        marginRight: "5px",
+                                                        pointerEvents: "none",
+                                                        fontSize: "15px"
                                                     }}
                                                 />
-                                            </Grid>
-                                            <Grid xs={1} component="div">
-                                                <Tooltip title="Add to Visualization" placement="bottom">
-                                                    <IconButton>
-                                                        <BookmarkAddRoundedIcon />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </Grid>
-                                            <Grid xs={1} component="div">
-                                                <Tooltip title="Download file" placement="bottom">
-                                                    <IconButton onClick={() => downloadFile(outputDataset.datasetId)}>
+                                                <Typography
+                                                    level="h4"
+                                                    sx={{
+                                                        fontWeight: 400,
+                                                        fontSize: "14px",
+                                                        lineHeight: "24px",
+                                                        paragraph: "28px",
+                                                        color: "#172B4D"
+                                                    }}
+                                                >
+                                                    {outputDataset.label}
+                                                </Typography>
+                                            </Stack>
+                                            <Box>
+                                                <Tooltip title="Download file" placement="top-start">
+                                                    <IconButton
+                                                        aria-label="Download file"
+                                                        onClick={() => downloadFile(outputDataset.datasetId)}
+                                                    >
                                                         <FileDownloadRoundedIcon />
                                                     </IconButton>
                                                 </Tooltip>
-                                            </Grid>
-                                        </Grid>
+                                            </Box>
+                                        </Stack>
+                                        <OutputFileDisplay datasetId={outputDataset.datasetId} projectId={id} />
                                     </Box>
                                 ))}
+                            </Stack>
+                        </Box>
+                    </TabPanel>
+                    <TabPanel value={2}>
+                        <Box>
+                            <Typography
+                                level="h4"
+                                sx={{
+                                    fontWeight: 590,
+                                    fontSize: "16px",
+                                    lineHeight: "24px",
+                                    paragraph: "28px",
+                                    color: "#172B4D",
+                                    letter: "5%",
+                                    textTransform: "uppercase",
+                                    mb: "5px"
+                                }}
+                            >
+                                Visualizations
+                            </Typography>
+                            <Typography
+                                level="h4"
+                                sx={{
+                                    fontWeight: 400,
+                                    fontSize: "12px",
+                                    lineHeight: "20px",
+                                    color: "#42526EB2",
+                                    mb: "10px"
+                                }}
+                            >
+                                All available visualizations in this project.
+                            </Typography>
+                            <Stack direction="column" spacing={2}>
+                                {projectVisualizations.length === 0 ? (
+                                    <Typography>No visualizations available</Typography>
+                                ) : (
+                                    projectVisualizations.map((visualization) => (
+                                        <Box key={visualization.id}>
+                                            <Stack
+                                                direction="row"
+                                                spacing={2}
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mb={1}
+                                            >
+                                                <Stack direction="row" spacing={2} alignItems="center">
+                                                    <InsertChartOutlinedRoundedIcon
+                                                        sx={{
+                                                            color: "#AB47BC",
+                                                            marginRight: "5px",
+                                                            pointerEvents: "none"
+                                                        }}
+                                                    />
+                                                    <Typography
+                                                        level="body-sm"
+                                                        sx={{
+                                                            fontWeight: 400,
+                                                            fontSize: "16px",
+                                                            lineHeight: "24px",
+                                                            paragraph: "28px",
+                                                            color: "#172B4D"
+                                                        }}
+                                                    >
+                                                        {visualization.name}
+                                                    </Typography>
+                                                </Stack>
+                                                <Box>
+                                                    <Tooltip title="View visualization" placement="top-start">
+                                                        <IconButton
+                                                            aria-label="View visualization"
+                                                            onClick={() => {
+                                                                setSelectedVisualization(visualization);
+                                                                setOpenVisualziationView(true);
+                                                            }}
+                                                        >
+                                                            <VisibilityRoundedIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </Box>
+                                            </Stack>
+                                            {selectedVisualization && (
+                                                <VisualizationView
+                                                    visualization={selectedVisualization}
+                                                    open={openVisualziationView}
+                                                    onClose={handleCloseVisualziationView}
+                                                />
+                                            )}
+                                        </Box>
+                                    ))
+                                )}
                             </Stack>
                         </Box>
                     </TabPanel>

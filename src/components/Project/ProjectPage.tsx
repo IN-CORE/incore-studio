@@ -19,7 +19,12 @@ import {
     addLayerToVisualization,
     addDatasetToProject,
     addHazardToProject,
-    addDFR3MappingToProject
+    addDFR3MappingToProject,
+    searchProjectDFR3Mappings,
+    searchProjectWorkflows,
+    searchProjectVisualizations,
+    searchProjectHazards,
+    searchProjectDatasets
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -29,7 +34,7 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
-import { useAppDispatch } from "@app/store/hooks";
+import { useAppDispatch, useOutputDatasetsSynchronizationPolling } from "@app/store/hooks";
 
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import WorkflowIcon from "@mui/icons-material/AccountTree";
@@ -95,6 +100,9 @@ const ProjectPage = (): JSX.Element => {
     const datasetPreviousPage = () => {
         setDatasetPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
     };
+
+    // Synchronize all generated output datasets with the project datasets.
+    useOutputDatasetsSynchronizationPolling(projectWorkflows, 600000, id);
 
     // Fetch projects when filters or pagination change (but not during search)
     useEffect(() => {
@@ -234,6 +242,48 @@ const ProjectPage = (): JSX.Element => {
         setOpenAddDFR3MappingFromServiceDialog(false);
     };
 
+    // Search functions
+    const onSearchDFR3Mappings = (text: string) => {
+        if (id)
+            appDispatch(
+                searchProjectDFR3Mappings({ text, projectId: id, skip: (dfr3mappingPageNumber - 1) * 10, limit: 10 })
+            );
+    };
+
+    const onSearchWorkflows = (text: string) => {
+        if (id)
+            appDispatch(
+                searchProjectWorkflows({
+                    text,
+                    projectId: id,
+                    skip: (wfPageNumber - 1) * 10,
+                    limit: 10
+                })
+            );
+    };
+
+    const onSearchVis = (text: string) => {
+        if (id)
+            appDispatch(
+                searchProjectVisualizations({
+                    text,
+                    projectId: id,
+                    skip: (visPageNumber - 1) * 10,
+                    limit: 10
+                })
+            );
+    };
+
+    const onSearchHazards = (text: string) => {
+        if (id)
+            appDispatch(searchProjectHazards({ text, projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
+    };
+
+    const onSearchDatasets = (text: string) => {
+        if (id)
+            appDispatch(searchProjectDatasets({ text, projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
+    };
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -255,8 +305,9 @@ const ProjectPage = (): JSX.Element => {
                                     <ResourceFilterBar
                                         title="Workflows"
                                         icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
-                                        createLabel="Create New Workflow"
+                                        createLabel="Create Workflow"
                                         onCreateClick={onCreateWorkflowClick}
+                                        onSearch={onSearchWorkflows}
                                     />
                                     <CreateWorkflowDialog
                                         open={openCreateWorkflowDialog}
@@ -283,6 +334,7 @@ const ProjectPage = (): JSX.Element => {
                                         icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Add from Service"
                                         onCreateClick={() => setOpenAddHazardFromServiceDialog(true)}
+                                        onSearch={onSearchHazards}
                                     />
                                     <AddFromServiceDialog
                                         projectId={project.id}
@@ -313,8 +365,9 @@ const ProjectPage = (): JSX.Element => {
                                     <ResourceFilterBar
                                         title="Visualization"
                                         icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
-                                        createLabel="Create New Visualization"
+                                        createLabel="Create Visualization"
                                         onCreateClick={onCreateVisClick}
+                                        onSearch={onSearchVis}
                                     />
                                     <CreateVisualizationDialog
                                         projectId={project.id}
@@ -356,6 +409,7 @@ const ProjectPage = (): JSX.Element => {
                                         icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Add from Service"
                                         onCreateClick={() => setOpenAddDatasetFromServiceDialog(true)}
+                                        onSearch={onSearchDatasets}
                                     />
                                     <AddFromServiceDialog
                                         projectId={project.id}
@@ -390,6 +444,7 @@ const ProjectPage = (): JSX.Element => {
                                         icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Add from Service"
                                         onCreateClick={() => setOpenAddDFR3MappingFromServiceDialog(true)}
+                                        onSearch={onSearchDFR3Mappings}
                                     />
                                     <AddFromServiceDialog
                                         projectId={project.id}
