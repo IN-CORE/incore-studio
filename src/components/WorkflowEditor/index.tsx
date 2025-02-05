@@ -162,19 +162,6 @@ const WorkflowEditor = (): JSX.Element => {
         };
     }, []);
 
-    React.useEffect(() => {
-        const handlePopState = (event: PopStateEvent) => {
-            if (!window.confirm("You have unsaved changes. Do you really want to leave?")) {
-                event.preventDefault();
-            }
-        };
-
-        window.addEventListener("popstate", handlePopState);
-        return () => {
-            window.removeEventListener("popstate", handlePopState);
-        };
-    }, [navigate, location.pathname]);
-
     const handleBackClick = () => {
         if (isRecentSave()) {
             appDispatch(clearWorkflowState());
