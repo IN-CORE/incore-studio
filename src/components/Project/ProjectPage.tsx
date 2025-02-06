@@ -19,12 +19,7 @@ import {
     addLayerToVisualization,
     addDatasetToProject,
     addHazardToProject,
-    addDFR3MappingToProject,
-    searchProjectDFR3Mappings,
-    searchProjectWorkflows,
-    searchProjectVisualizations,
-    searchProjectHazards,
-    searchProjectDatasets
+    addDFR3MappingToProject
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -246,18 +241,23 @@ const ProjectPage = (): JSX.Element => {
     const onSearchDFR3Mappings = (text: string) => {
         if (id)
             appDispatch(
-                searchProjectDFR3Mappings({ text, projectId: id, skip: (dfr3mappingPageNumber - 1) * 10, limit: 10 })
+                getProjectDatasets({
+                    projectId: id,
+                    skip: (dfr3mappingPageNumber - 1) * 10,
+                    limit: 10,
+                    filters: text ? { text } : {}
+                })
             );
     };
 
     const onSearchWorkflows = (text: string) => {
         if (id)
             appDispatch(
-                searchProjectWorkflows({
-                    text,
+                getProjectWorkflows({
                     projectId: id,
                     skip: (wfPageNumber - 1) * 10,
-                    limit: 10
+                    limit: 10,
+                    filters: text ? { text } : {}
                 })
             );
     };
@@ -265,23 +265,37 @@ const ProjectPage = (): JSX.Element => {
     const onSearchVis = (text: string) => {
         if (id)
             appDispatch(
-                searchProjectVisualizations({
-                    text,
+                getProjectVisualizations({
                     projectId: id,
                     skip: (visPageNumber - 1) * 10,
-                    limit: 10
+                    limit: 10,
+                    filters: text ? { text } : {}
                 })
             );
     };
 
     const onSearchHazards = (text: string) => {
         if (id)
-            appDispatch(searchProjectHazards({ text, projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
+            appDispatch(
+                getProjectHazards({
+                    projectId: id,
+                    skip: (hazardPageNumber - 1) * 10,
+                    limit: 10,
+                    filters: text ? { text } : {}
+                })
+            );
     };
 
     const onSearchDatasets = (text: string) => {
         if (id)
-            appDispatch(searchProjectDatasets({ text, projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
+            appDispatch(
+                getProjectDatasets({
+                    projectId: id,
+                    skip: (datasetPageNumber - 1) * 10,
+                    limit: 10,
+                    filters: text ? { text } : {}
+                })
+            );
     };
 
     return (

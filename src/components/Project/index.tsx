@@ -5,7 +5,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
-import { getProjects, searchProjects } from "@app/reducer/projectSlice";
+import { getProjects } from "@app/reducer/projectSlice";
 import { useAuth } from "react-oidc-context";
 import { RootState } from "@app/store";
 import Snackbar from "@mui/joy/Snackbar";
@@ -26,6 +26,13 @@ const Project = (): JSX.Element => {
     // Filter states
     const [filters, setFilters] = useState({ name: "", creator: "", region: "" });
     const [showFilters, setShowFilters] = useState(false); // Show or hide filters
+    // Reset all filters and inputs
+    const resetFilters = () => {
+        setFilters({ name: "", creator: "", region: "" });
+        setNameInputValue(""); // Reset Name input
+        setCreatorInputValue(""); // Reset Creator input
+        setRegionInputValue(""); // Reset Region input
+    };
     const toggleFilters = () => {
         resetFilters(); // Reset filters when toggling
         setShowFilters((prev) => !prev); // Toggle filter visibility
@@ -48,15 +55,15 @@ const Project = (): JSX.Element => {
         }
 
         setPageNumber(1); // Reset to page 1 when filters change
-        resetSearch(); // Clear search term and set search mode to false
     };
 
-    // Reset all filters and inputs
-    const resetFilters = () => {
-        setFilters({ name: "", creator: "", region: "" });
-        setNameInputValue(""); // Reset Name input
-        setCreatorInputValue(""); // Reset Creator input
-        setRegionInputValue(""); // Reset Region input
+    // Search Box
+    const [searchTerm, setSearchTerm] = useState(""); // State to hold search term
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value); // Update the search term in state
+
+        // Reset to first page and reset filters
+        setPageNumber(1); // Reset to first page when a search is performed
     };
 
     // Pagination states
@@ -69,33 +76,20 @@ const Project = (): JSX.Element => {
         setPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
     };
 
-    // Search Box
-    const [searchTerm, setSearchTerm] = useState(""); // State to hold search term
-    const [isSearching, setIsSearching] = useState(false); // Track if we are in search mode
-
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value); // Update the search term in state
-
-        // Reset to first page and reset filters
-        setPageNumber(1); // Reset to first page when a search is performed
-        resetFilters(); // Clear all filters
-        setIsSearching(true); // Mark as searching
-    };
-
-    const resetSearch = () => {
-        setSearchTerm("");
-        setIsSearching(false);
-    };
-
     // Fetch projects when filters or pagination change (but not during search)
     useEffect(() => {
         const skip = (pageNumber - 1) * dataPerPage;
-        if (!isSearching) {
-            appDispatch(getProjects({ skip, limit: dataPerPage, ...filters }));
-        } else {
-            appDispatch(searchProjects({ text: searchTerm, skip, limit: dataPerPage }));
-        }
-    }, [pageNumber, filters, isSearching, deletedProjectId]);
+        appDispatch(
+            getProjects({
+                skip,
+                limit: dataPerPage,
+                filters: {
+                    ...filters,
+                    ...(searchTerm ? { text: searchTerm } : {}) // Add searchTerm if available
+                }
+            })
+        );
+    }, [pageNumber, filters, searchTerm, deletedProjectId]);
 
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);

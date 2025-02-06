@@ -5,10 +5,6 @@ import config from "@app/app.config";
 
 const PROJECT_API_URL = config.projectApi;
 
-type Kwargs = {
-    [key: string]: string | number | undefined;
-};
-
 const initialState: ProjectState = {
     projects: <Project[]>[],
     project: null,
@@ -42,7 +38,7 @@ export const getProjects = createAsyncThunk(
         filters?: Record<string, string | number>;
         sortBy?: string;
         order?: string;
-    } & Partial<Kwargs> = {}) => {
+    }) => {
         // Create a params object and filter out undefined or empty values
         const params: Record<string, string | number> = {
             skip,
