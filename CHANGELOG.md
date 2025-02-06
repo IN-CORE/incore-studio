@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Reset Parameters and input dataset buttons in Execution create step. [#68](https://github.com/IN-CORE/incore-studio/issues/68)
+
 ## [Alpha-2] - 02-04-2025
 
 ### Added
