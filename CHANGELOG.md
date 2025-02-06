@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [Alpha-2] - 02-04-2025
 
 ### Added
 
 - Support to automatically add the result datasets to project. [#70](https://github.com/IN-CORE/incore-studio/issues/70)
 - Autosave feature on Workflow-editor [#72](https://github.com/IN-CORE/incore-studio/issues/72)
 - Checks on the workflow-editor to prevent the user to make edits on finalized workflow. [#73](https://github.com/IN-CORE/incore-studio/issues/73)
+- Search, filter and sort for project resources [#48](https://github.com/IN-CORE/incore-studio/issues/48)
 
 ### Changed
 
@@ -44,7 +45,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Ability to fill out parameters and input datasets for execution [#61](https://github.com/IN-CORE/incore-studio/issues/61)
 - Display status of each execution steps [#39](https://github.com/IN-CORE/incore-studio/issues/39)
 - Modal to create a new workflow and add to project [#41](https://github.com/IN-CORE/incore-studio/issues/41)
-- Implement search, filter and sort for project resources [#48](https://github.com/IN-CORE/incore-studio/issues/48)
 
 ### Changed
 
