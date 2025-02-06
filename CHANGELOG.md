@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- Update how filter and searchbox works on homepage and project resource page [#44](https://github.com/IN-CORE/incore-studio/issues/44)
+
 ## [Alpha-2] - 02-04-2025
 
 ### Added
