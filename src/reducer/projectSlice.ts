@@ -5,6 +5,10 @@ import config from "@app/app.config";
 
 const PROJECT_API_URL = config.projectApi;
 
+type Kwargs = {
+    [key: string]: string | number | undefined;
+};
+
 const initialState: ProjectState = {
     projects: <Project[]>[],
     project: null,
@@ -27,29 +31,33 @@ const initialState: ProjectState = {
 export const getProjects = createAsyncThunk(
     "projects/getProjects",
     async ({
-        name,
-        creator,
-        region,
         skip = 0,
-        limit = 9
+        limit = 9,
+        filters = {},
+        sortBy,
+        order = "asc"
     }: {
-        name?: string;
-        creator?: string;
-        region?: string;
         skip?: number;
         limit?: number;
-    }) => {
+        filters?: Record<string, string | number>;
+        sortBy?: string;
+        order?: string;
+    } & Partial<Kwargs> = {}) => {
         // Create a params object and filter out undefined or empty values
-        const params: Record<string, string | number> = { skip, limit };
+        const params: Record<string, string | number> = {
+            skip,
+            limit,
+            ...Object.fromEntries(
+                Object.entries(filters).filter(
+                    ([, value]) => value !== undefined && value !== "" // Filter out empty and undefined values
+                )
+            )
+        };
 
-        if (name && name.trim() !== "") {
-            params.name = name;
-        }
-        if (creator && creator.trim() !== "") {
-            params.creator = creator;
-        }
-        if (region && region.trim() !== "") {
-            params.region = region;
+        // Add sorting parameters if provided
+        if (sortBy) {
+            params.sortBy = sortBy;
+            params.order = order;
         }
 
         const response = await axios.get(PROJECT_API_URL, {
@@ -61,134 +69,12 @@ export const getProjects = createAsyncThunk(
     }
 );
 
-export const searchProjects = createAsyncThunk(
-    "projects/searchProjects",
-    async ({ text, skip = 0, limit = 9 }: { text?: string; skip?: number; limit?: number }) => {
-        const params: Record<string, string | number | undefined> = { text, skip, limit };
-        const response = await axios.get(`${PROJECT_API_URL}/search`, {
-            headers: getHeaders(),
-            params
-        });
-        return response.data;
-    }
-);
-
 export const createProject = createAsyncThunk("projects/createProject", async ({ project }: { project: ProjectIn }) => {
     const response = await axios.post(`${PROJECT_API_URL}`, project, {
         headers: getHeaders()
     });
     return response.data;
 });
-
-export const searchProjectDatasets = createAsyncThunk(
-    "projects/searchProjectDatasets",
-    async ({
-        text,
-        projectId,
-        skip = 0,
-        limit = 9
-    }: {
-        text?: string;
-        projectId: string;
-        skip?: number;
-        limit?: number;
-    }) => {
-        const params: Record<string, string | number | undefined> = { text, skip, limit };
-        const response = await axios.get(`${PROJECT_API_URL}/${projectId}/datasets/search`, {
-            headers: getHeaders(),
-            params
-        });
-        return response.data;
-    }
-);
-
-export const searchProjectHazards = createAsyncThunk(
-    "projects/searchProjectHazards",
-    async ({
-        text,
-        projectId,
-        skip = 0,
-        limit = 9
-    }: {
-        text?: string;
-        projectId: string;
-        skip?: number;
-        limit?: number;
-    }) => {
-        const params: Record<string, string | number | undefined> = { text, skip, limit };
-        const response = await axios.get(`${PROJECT_API_URL}/${projectId}/hazards/search`, {
-            headers: getHeaders(),
-            params
-        });
-        return response.data;
-    }
-);
-
-export const searchProjectDFR3Mappings = createAsyncThunk(
-    "projects/searchProjectDFR3Mappings",
-    async ({
-        text,
-        projectId,
-        skip = 0,
-        limit = 9
-    }: {
-        text?: string;
-        projectId: string;
-        skip?: number;
-        limit?: number;
-    }) => {
-        const params: Record<string, string | number | undefined> = { text, skip, limit };
-        const response = await axios.get(`${PROJECT_API_URL}/${projectId}/dfr3mappings/search`, {
-            headers: getHeaders(),
-            params
-        });
-        return response.data;
-    }
-);
-
-export const searchProjectWorkflows = createAsyncThunk(
-    "projects/searchProjectWorkflows",
-    async ({
-        text,
-        projectId,
-        skip = 0,
-        limit = 9
-    }: {
-        text?: string;
-        projectId: string;
-        skip?: number;
-        limit?: number;
-    }) => {
-        const params: Record<string, string | number | undefined> = { text, skip, limit };
-        const response = await axios.get(`${PROJECT_API_URL}/${projectId}/workflows/search`, {
-            headers: getHeaders(),
-            params
-        });
-        return response.data;
-    }
-);
-
-export const searchProjectVisualizations = createAsyncThunk(
-    "projects/searchProjectVisualizations",
-    async ({
-        text,
-        projectId,
-        skip = 0,
-        limit = 9
-    }: {
-        text?: string;
-        projectId: string;
-        skip?: number;
-        limit?: number;
-    }) => {
-        const params: Record<string, string | number | undefined> = { text, skip, limit };
-        const response = await axios.get(`${PROJECT_API_URL}/${projectId}/visualizations/search`, {
-            headers: getHeaders(),
-            params
-        });
-        return response.data;
-    }
-);
 
 export const getProject = createAsyncThunk("projects/getProject", async (projectId: string) => {
     const response = await axios.get(`${PROJECT_API_URL}/${projectId}`, { headers: getHeaders() });
@@ -579,20 +465,6 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to load projects";
             })
-            // Handle SEARCH_PROJECTS
-            .addCase(searchProjects.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-                state.success = null;
-            })
-            .addCase(searchProjects.fulfilled, (state, action) => {
-                state.loading = false;
-                state.projects = action.payload;
-            })
-            .addCase(searchProjects.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || "Failed to search projects";
-            })
             // Handle CREATE_PROJECT
             .addCase(createProject.pending, (state) => {
                 state.loading = true;
@@ -639,20 +511,6 @@ const projectSlice = createSlice({
             .addCase(getProjectDatasets.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project datasets";
-            })
-            // Handle SEARCH_PROJECT_DATASETS
-            .addCase(searchProjectDatasets.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-                state.success = null;
-            })
-            .addCase(searchProjectDatasets.fulfilled, (state, action) => {
-                state.loading = false;
-                state.projectDatasets = action.payload;
-            })
-            .addCase(searchProjectDatasets.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || "Failed to search the project datasets";
             })
             // Handle ADD_DATASET_TO_PROJECT
             .addCase(addDatasetToProject.pending, (state) => {
@@ -732,20 +590,6 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to delete the project workflows";
             })
-            // Handle SEARCH_PROJECT_WORKFLOWS
-            .addCase(searchProjectWorkflows.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-                state.success = null;
-            })
-            .addCase(searchProjectWorkflows.fulfilled, (state, action) => {
-                state.loading = false;
-                state.projectWorkflows = action.payload;
-            })
-            .addCase(searchProjectWorkflows.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || "Failed to search the project workflows";
-            })
             // Handle GET_PROJECT_HAZARDS
             .addCase(getProjectHazards.pending, (state) => {
                 state.loading = true;
@@ -793,20 +637,6 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to delete the project hazards";
             })
-            // Handle SEARCH_PROJECT_HAZARDS
-            .addCase(searchProjectHazards.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-                state.success = null;
-            })
-            .addCase(searchProjectHazards.fulfilled, (state, action) => {
-                state.loading = false;
-                state.projectHazards = action.payload;
-            })
-            .addCase(searchProjectHazards.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || "Failed to search the project hazards";
-            })
             // Handle GET_PROJECT_DFR3_MAPPINGS
             .addCase(getProjectDRF3Mappings.pending, (state) => {
                 state.loading = true;
@@ -853,20 +683,6 @@ const projectSlice = createSlice({
             .addCase(deleteProjectDFR3Mappings.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to delete the project DFR3 Mappings";
-            })
-            // Handle SEARCH_PROJECT_DFR3_MAPPINGS
-            .addCase(searchProjectDFR3Mappings.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-                state.success = null;
-            })
-            .addCase(searchProjectDFR3Mappings.fulfilled, (state, action) => {
-                state.loading = false;
-                state.projectDFR3Mappings = action.payload;
-            })
-            .addCase(searchProjectDFR3Mappings.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || "Failed to search the project dfr3mappings";
             })
             // Handle GET_PROJECT_VISUALIZATIONS
             .addCase(getProjectVisualizations.pending, (state) => {
@@ -926,20 +742,6 @@ const projectSlice = createSlice({
             .addCase(addLayerToVisualization.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to create the project visualizations";
-            })
-            // Handle SEARCH_PROJECT_VISUALIZATIONS
-            .addCase(searchProjectVisualizations.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-                state.success = null;
-            })
-            .addCase(searchProjectVisualizations.fulfilled, (state, action) => {
-                state.loading = false;
-                state.projectVisualizations = action.payload;
-            })
-            .addCase(searchProjectVisualizations.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || "Failed to search the project visualizations";
             })
             // Handle DELETE_PROJECT
             .addCase(deleteProject.pending, (state) => {
