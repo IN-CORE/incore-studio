@@ -9,7 +9,6 @@ import {
     getProjectDatasets,
     deleteProjectDatasets,
     addLayerToVisualization,
-    getProjectVisualizations,
     addDatasetToProject
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
@@ -52,8 +51,6 @@ const DatasetPage = (): JSX.Element => {
     useEffect(() => {
         if (id) {
             appDispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
-            // TODO figure out how to get all visualizations
-            appDispatch(getProjectVisualizations({ projectId: id, skip: 0, limit: 10 }));
         }
     }, [id, datasetPageNumber, deletedDatasetIds]);
 

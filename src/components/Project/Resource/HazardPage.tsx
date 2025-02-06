@@ -9,8 +9,7 @@ import {
     addLayerToVisualization,
     deleteProjectHazards,
     getProject,
-    getProjectHazards,
-    getProjectVisualizations
+    getProjectHazards
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
@@ -52,8 +51,6 @@ const HazardPage = (): JSX.Element => {
     useEffect(() => {
         if (id) {
             appDispatch(getProjectHazards({ projectId: id, skip: (hazardPageNumber - 1) * 10, limit: 10 }));
-            // TODO figure out how to get all visualizations
-            appDispatch(getProjectVisualizations({ projectId: id, skip: 0, limit: 10 }));
         }
     }, [id, hazardPageNumber, deletedHazardIds]);
 
