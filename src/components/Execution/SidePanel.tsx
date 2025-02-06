@@ -369,18 +369,20 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                         >
                                             Input Datasets
                                         </Typography>
-                                        <Button
-                                            variant="outlined"
-                                            startDecorator={<RestartAltRoundedIcon />}
-                                            sx={{
-                                                borderColor: "primary.subtle",
-                                                color: "primary.subtle",
-                                                backgroundColor: "white"
-                                            }}
-                                            onClick={handleResetDatasets}
-                                        >
-                                            Reset all datasets
-                                        </Button>
+                                        {createMode && (
+                                            <Button
+                                                variant="outlined"
+                                                startDecorator={<RestartAltRoundedIcon />}
+                                                sx={{
+                                                    borderColor: "primary.subtle",
+                                                    color: "primary.subtle",
+                                                    backgroundColor: "white"
+                                                }}
+                                                onClick={handleResetDatasets}
+                                            >
+                                                Reset all datasets
+                                            </Button>
+                                        )}
                                     </Stack>
                                     <Stack direction="column" spacing={2}>
                                         {sidePanelData.currentAnalysis.inputDatasets.map((inputDataset) => (
@@ -452,8 +454,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                     inputDataset.label.includes("Hazard")
                                                                         ? "Hazard"
                                                                         : inputDataset.label.includes("DFR3")
-                                                                        ? "DFR3 Mapping"
-                                                                        : "Dataset"
+                                                                          ? "DFR3 Mapping"
+                                                                          : "Dataset"
                                                                 }`}
                                                                 name={inputDataset.execFileEntryId}
                                                                 required={
@@ -480,8 +482,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 {inputDataset.label.includes("Hazard")
                                                                     ? projectHazardOptions
                                                                     : inputDataset.label.includes("DFR3")
-                                                                    ? projectDFR3MappingOptions
-                                                                    : projectDatasetOptions}
+                                                                      ? projectDFR3MappingOptions
+                                                                      : projectDatasetOptions}
                                                             </Select>
                                                         </Box>
                                                         {createMode && (
@@ -491,10 +493,12 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         inputDataset.label.includes("Hazard")
                                                                             ? setOpenAddHazardFromServiceDialog(true)
                                                                             : inputDataset.label.includes("DFR3")
-                                                                            ? setOpenAddDFR3MappingFromServiceDialog(
-                                                                                  true
-                                                                              )
-                                                                            : setOpenAddDatasetFromServiceDialog(true);
+                                                                              ? setOpenAddDFR3MappingFromServiceDialog(
+                                                                                    true
+                                                                                )
+                                                                              : setOpenAddDatasetFromServiceDialog(
+                                                                                    true
+                                                                                );
                                                                     }}
                                                                 >
                                                                     <AddIcon />
@@ -530,18 +534,20 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                         >
                                             Input Parameters
                                         </Typography>
-                                        <Button
-                                            variant="outlined"
-                                            startDecorator={<RestartAltRoundedIcon />}
-                                            sx={{
-                                                borderColor: "primary.subtle",
-                                                color: "primary.subtle",
-                                                backgroundColor: "white"
-                                            }}
-                                            onClick={handleResetParameters}
-                                        >
-                                            Reset all parameters
-                                        </Button>
+                                        {createMode && (
+                                            <Button
+                                                variant="outlined"
+                                                startDecorator={<RestartAltRoundedIcon />}
+                                                sx={{
+                                                    borderColor: "primary.subtle",
+                                                    color: "primary.subtle",
+                                                    backgroundColor: "white"
+                                                }}
+                                                onClick={handleResetParameters}
+                                            >
+                                                Reset all parameters
+                                            </Button>
+                                        )}
                                     </Stack>
                                     <Stack direction="column" spacing={2}>
                                         {sidePanelData.currentAnalysis.inputParameters.map((inputParameter) => (
