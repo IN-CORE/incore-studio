@@ -5,12 +5,10 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 
 import { SvgIconProps } from "@mui/material";
-import Searchbox from "@app/components/Project/Resource/Searchbox";
-import FilterSortDropdown from "@app/components/Project/Resource/FilterSortDropdown";
+import SearchFilterSortDropdown from "@app/components/Project/Resource/SearchFilterSortDropdown";
 
 interface ResourceFilterBarProps {
     title: string;
-    onSearch?: (text: string) => void;
     onCreateClick?: () => void;
     sortOptions?: string[];
     filters?: Record<string, string[]>;
@@ -24,7 +22,6 @@ interface ResourceFilterBarProps {
 const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     title,
     icon,
-    onSearch,
     filters,
     sortOptions,
     onApply,
@@ -41,9 +38,8 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                 <Typography level="h4">{title}</Typography>
             </Box>
             <Box display="flex" alignItems="center">
-                {onSearch && <Searchbox onSearch={onSearch} />}
                 {onApply && sortOptions && filters && (
-                    <FilterSortDropdown sortOptions={sortOptions} filters={filters} onApply={onApply} />
+                    <SearchFilterSortDropdown sortOptions={sortOptions} filters={filters} onApply={onApply} />
                 )}
                 {onViewChangeClick && (
                     <ButtonGroup variant="soft" sx={{ ml: 1 }}>

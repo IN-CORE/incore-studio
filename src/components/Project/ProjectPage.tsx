@@ -237,67 +237,6 @@ const ProjectPage = (): JSX.Element => {
         setOpenAddDFR3MappingFromServiceDialog(false);
     };
 
-    // Search functions
-    const onSearchDFR3Mappings = (text: string) => {
-        if (id)
-            appDispatch(
-                getProjectDatasets({
-                    projectId: id,
-                    skip: (dfr3mappingPageNumber - 1) * 10,
-                    limit: 10,
-                    filters: text ? { text } : {}
-                })
-            );
-    };
-
-    const onSearchWorkflows = (text: string) => {
-        if (id)
-            appDispatch(
-                getProjectWorkflows({
-                    projectId: id,
-                    skip: (wfPageNumber - 1) * 10,
-                    limit: 10,
-                    filters: text ? { text } : {}
-                })
-            );
-    };
-
-    const onSearchVis = (text: string) => {
-        if (id)
-            appDispatch(
-                getProjectVisualizations({
-                    projectId: id,
-                    skip: (visPageNumber - 1) * 10,
-                    limit: 10,
-                    filters: text ? { text } : {}
-                })
-            );
-    };
-
-    const onSearchHazards = (text: string) => {
-        if (id)
-            appDispatch(
-                getProjectHazards({
-                    projectId: id,
-                    skip: (hazardPageNumber - 1) * 10,
-                    limit: 10,
-                    filters: text ? { text } : {}
-                })
-            );
-    };
-
-    const onSearchDatasets = (text: string) => {
-        if (id)
-            appDispatch(
-                getProjectDatasets({
-                    projectId: id,
-                    skip: (datasetPageNumber - 1) * 10,
-                    limit: 10,
-                    filters: text ? { text } : {}
-                })
-            );
-    };
-
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -321,7 +260,6 @@ const ProjectPage = (): JSX.Element => {
                                         icon={<WorkflowIcon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Create Workflow"
                                         onCreateClick={onCreateWorkflowClick}
-                                        onSearch={onSearchWorkflows}
                                     />
                                     <CreateWorkflowDialog
                                         open={openCreateWorkflowDialog}
@@ -348,7 +286,6 @@ const ProjectPage = (): JSX.Element => {
                                         icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Add from Service"
                                         onCreateClick={() => setOpenAddHazardFromServiceDialog(true)}
-                                        onSearch={onSearchHazards}
                                     />
                                     <AddFromServiceDialog
                                         projectId={project.id}
@@ -381,7 +318,6 @@ const ProjectPage = (): JSX.Element => {
                                         icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Create Visualization"
                                         onCreateClick={onCreateVisClick}
-                                        onSearch={onSearchVis}
                                     />
                                     <CreateVisualizationDialog
                                         projectId={project.id}
@@ -423,7 +359,6 @@ const ProjectPage = (): JSX.Element => {
                                         icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Add from Service"
                                         onCreateClick={() => setOpenAddDatasetFromServiceDialog(true)}
-                                        onSearch={onSearchDatasets}
                                     />
                                     <AddFromServiceDialog
                                         projectId={project.id}
@@ -458,7 +393,6 @@ const ProjectPage = (): JSX.Element => {
                                         icon={<DFR3Icon sx={{ verticalAlign: "middle" }} />}
                                         createLabel="Add from Service"
                                         onCreateClick={() => setOpenAddDFR3MappingFromServiceDialog(true)}
-                                        onSearch={onSearchDFR3Mappings}
                                     />
                                     <AddFromServiceDialog
                                         projectId={project.id}

@@ -60,7 +60,7 @@ const DatasetPage = (): JSX.Element => {
     const onCreateClick = () => {
         setOpenAddDatasetFromServiceDialog(true);
     };
-    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+    const onApply = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
         if (id) {
             const { filters, sortBy, order } = params;
 
@@ -77,6 +77,7 @@ const DatasetPage = (): JSX.Element => {
             );
         }
     };
+
     // Table view vs Card view
     const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
     const onViewChangeClick = () => {
@@ -160,9 +161,9 @@ const DatasetPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Datasets"
                                     icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
-                                    filters={{ type: [] }}
+                                    filters={{ type: [], format: [] }}
                                     sortOptions={["date", "type", "title", "id"]}
-                                    onApply={onApplyFilterSort}
+                                    onApply={onApply}
                                     onCreateClick={onCreateClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}

@@ -30,8 +30,8 @@ export const getProjects = createAsyncThunk(
         skip = 0,
         limit = 9,
         filters = {},
-        sortBy,
-        order = "asc"
+        sortBy = "date",
+        order = "desc"
     }: {
         skip?: number;
         limit?: number;
@@ -89,8 +89,8 @@ export const getProjectDatasets = createAsyncThunk(
         skip = 0,
         limit = 9,
         filters = {},
-        sortBy,
-        order = "asc"
+        sortBy = "date",
+        order = "desc"
     }: {
         projectId: string;
         skip?: number;
@@ -131,8 +131,8 @@ export const getProjectHazards = createAsyncThunk(
         skip = 0,
         limit = 9,
         filters = {},
-        sortBy,
-        order = "asc"
+        sortBy = "date",
+        order = "desc"
     }: {
         projectId: string;
         skip?: number;
@@ -173,8 +173,8 @@ export const getProjectDRF3Mappings = createAsyncThunk(
         skip = 0,
         limit = 9,
         filters = {},
-        sortBy,
-        order = "asc"
+        sortBy = "date",
+        order = "desc"
     }: {
         projectId: string;
         skip?: number;
@@ -215,8 +215,8 @@ export const getProjectWorkflows = createAsyncThunk(
         skip = 0,
         limit = 9,
         filters = {},
-        sortBy,
-        order = "asc"
+        sortBy = "date",
+        order = "desc"
     }: {
         projectId: string;
         skip?: number;
@@ -257,8 +257,8 @@ export const getProjectVisualizations = createAsyncThunk(
         skip = 0,
         limit = 9,
         filters = {},
-        sortBy,
-        order = "asc"
+        sortBy = "date",
+        order = "desc"
     }: {
         projectId: string;
         skip?: number;

@@ -3,14 +3,15 @@ import { Button, Box, FormControl, FormLabel, Select, Option, Autocomplete, Shee
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SortIcon from "@mui/icons-material/Sort";
 import { breakCamelCaseAndCapitalize } from "@app/utils";
+import Searchbox from "@app/components/Project/Resource/Searchbox";
 
-type FilterSortDropdownProps = {
+type SearchFilterSortDropdownProps = {
     filters: Record<string, string[]>; // Filters: key-value pairs
     sortOptions: string[]; // Options for sorting fields
     onApply: (params: { filters: Record<string, string>; sortBy: string; order: string }) => void; // Callback to send filter and sort data
 };
 
-const FilterSortDropdown: React.FC<FilterSortDropdownProps> = ({ filters, sortOptions, onApply }) => {
+const SearchFilterSortDropdown: React.FC<SearchFilterSortDropdownProps> = ({ filters, sortOptions, onApply }) => {
     const [selectedFilters, setSelectedFilters] = React.useState<Record<string, string>>({});
     const [sortBy, setSortBy] = React.useState<string>("");
     const [order, setOrder] = React.useState<string>("");
@@ -37,6 +38,10 @@ const FilterSortDropdown: React.FC<FilterSortDropdownProps> = ({ filters, sortOp
         triggerApply(selectedFilters, sortBy, newOrder);
     };
 
+    const handleSearchChange = (text: string) => {
+        triggerApply({ ...selectedFilters, text }, sortBy, order);
+    };
+
     const triggerApply = (newFilters: Record<string, string>, newSortBy: string, newOrder: string) => {
         onApply({ filters: newFilters, sortBy: newSortBy, order: newOrder });
     };
@@ -45,6 +50,8 @@ const FilterSortDropdown: React.FC<FilterSortDropdownProps> = ({ filters, sortOp
 
     return (
         <Box display="flex" gap={1}>
+            {/* Search Box */}
+            <Searchbox onSearch={handleSearchChange} />
             {/* Filter Button */}
             <Box position="relative">
                 <Button
@@ -164,4 +171,4 @@ const FilterSortDropdown: React.FC<FilterSortDropdownProps> = ({ filters, sortOp
     );
 };
 
-export default FilterSortDropdown;
+export default SearchFilterSortDropdown;
