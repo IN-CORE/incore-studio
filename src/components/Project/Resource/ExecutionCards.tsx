@@ -5,6 +5,7 @@ import { Alert, Grid, Link, Box, Stack, Card, CardContent, Chip, Typography, But
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import AccessTimeFilledRoundedIcon from "@mui/icons-material/AccessTimeFilledRounded";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { parseDateTime } from "@app/utils";
@@ -119,7 +120,13 @@ const ExecutionCardsComponent: React.FC<{
                                                     {execution.title}
                                                 </Link>
                                             </Typography>
-                                            <CheckCircleRoundedIcon sx={{ color: checkColors[chipColor] }} />
+                                            {["FAILED", "ABORTED", "UNKNOWN", "UNDEFINED"].indexOf(status) >= 0 ? (
+                                                <ErrorOutlineRoundedIcon sx={{ color: checkColors[chipColor] }} />
+                                            ) : ["RUNNING", "QUEUED", "WAITING"].indexOf(status) >= 0 ? (
+                                                <AccessTimeFilledRoundedIcon sx={{ color: checkColors[chipColor] }} />
+                                            ) : (
+                                                <CheckCircleRoundedIcon sx={{ color: checkColors[chipColor] }} />
+                                            )}
                                         </Stack>
                                         <Typography level="body-sm">
                                             {execution.description || "Description not provided"}

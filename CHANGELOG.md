@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Issue where there were discrepancies in reporting wrong status color and icon of an execution [#94](https://github.com/IN-CORE/incore-studio/issues/94)
+
 ## [Alpha-2] - 02-04-2025
 
 ### Added
