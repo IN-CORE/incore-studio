@@ -259,6 +259,7 @@ export function toSingular(disaster: string): string {
 export const extractStatus = (executionItem: DatawolfExecutionFile | null): string => {
     if (executionItem !== null && executionItem.stepState !== undefined) {
         const statusArr = Object.values(executionItem.stepState);
+        const datasetStatusArr = Object.values(executionItem.datasets);
         // WAITING, QUEUED, RUNNING, FINISHED, ABORTED, FAILED, UNKNOWN
         // if failed or aborted, return failed | aborted
         // else if atleast one running, return running
@@ -273,6 +274,7 @@ export const extractStatus = (executionItem: DatawolfExecutionFile | null): stri
         if (statusArr.indexOf("QUEUED") >= 0) return "QUEUED";
         if (statusArr.indexOf("WAITING") >= 0) return "WAITING";
         if (statusArr.indexOf("UNKNOWN") >= 0) return "UNKNOWN";
+        if (datasetStatusArr.indexOf("ERROR") >= 0) return "FAILED";
         if (statusArr.every((status) => status === "FINISHED")) return "FINISHED";
     }
     return "UNDEFINED";
