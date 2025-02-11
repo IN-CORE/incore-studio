@@ -9,7 +9,6 @@ import {
     getProjectDatasets,
     deleteProjectDatasets,
     addLayerToVisualization,
-    getProjectVisualizations,
     addDatasetToProject
 } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
@@ -52,15 +51,13 @@ const DatasetPage = (): JSX.Element => {
     useEffect(() => {
         if (id) {
             appDispatch(getProjectDatasets({ projectId: id, skip: (datasetPageNumber - 1) * 10, limit: 10 }));
-            // TODO figure out how to get all visualizations
-            appDispatch(getProjectVisualizations({ projectId: id, skip: 0, limit: 10 }));
         }
     }, [id, datasetPageNumber, deletedDatasetIds]);
 
     const onCreateClick = () => {
         setOpenAddDatasetFromServiceDialog(true);
     };
-    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+    const onApply = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
         if (id) {
             const { filters, sortBy, order } = params;
 
@@ -77,6 +74,7 @@ const DatasetPage = (): JSX.Element => {
             );
         }
     };
+
     // Table view vs Card view
     const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
     const onViewChangeClick = () => {
@@ -160,9 +158,9 @@ const DatasetPage = (): JSX.Element => {
                                 <ResourceFilterBar
                                     title="Datasets"
                                     icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
-                                    filters={{ type: [] }}
+                                    filters={{ type: [], format: [] }}
                                     sortOptions={["date", "type", "title", "id"]}
-                                    onApply={onApplyFilterSort}
+                                    onApply={onApply}
                                     onCreateClick={onCreateClick}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
