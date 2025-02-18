@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Reset Parameters and input dataset buttons in Execution create step. [#68](https://github.com/IN-CORE/incore-studio/issues/68)
+
+### Changed
+
+- Update how filter and searchbox works on homepage and project resource page [#44](https://github.com/IN-CORE/incore-studio/issues/44)
+
 ### Fixed
 
 - Issue where there were discrepancies in reporting wrong status color and icon of an execution [#94](https://github.com/IN-CORE/incore-studio/issues/94)

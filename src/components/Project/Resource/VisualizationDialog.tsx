@@ -43,8 +43,8 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
 
     React.useEffect(() => {
         // get all visualizations
-        appDispatch(getProjectVisualizations({ projectId, skip: 0, limit: 100000 }));
-    }, []);
+        if (open) appDispatch(getProjectVisualizations({ projectId, skip: 0, limit: 100000 }));
+    }, [open]);
 
     const appDispatch = useAppDispatch();
     const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
