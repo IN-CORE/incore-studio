@@ -1,6 +1,13 @@
+import { createTheme } from "@mui/material/styles";
 import { extendTheme } from "@mui/joy/styles";
 
-export const themeOptions = {
+const materialTheme = createTheme({
+    typography: {
+        fontFamily: "Open Sans, sans-serif"
+    }
+});
+
+const joyThemeOptions = {
     breakpoints: {
         values: {
             xs: 0,
@@ -65,4 +72,7 @@ export const themeOptions = {
 };
 
 // @ts-ignore
-export const theme = extendTheme(themeOptions);
+export const theme = extendTheme(joyThemeOptions);
+
+// @ts-ignore
+theme.typography.pxToRem = materialTheme.typography.pxToRem;

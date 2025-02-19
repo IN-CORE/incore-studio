@@ -1,0 +1,26 @@
+{
+	"floodType": {
+		"ui:widget": "hidden",
+		"classNames": "hidden-widget"
+	},
+	"hazardDatasets": {
+		"ui:options": {
+			"orderable": false
+		},
+		"items": {
+			"hazardType": {
+				"ui:widget": "hidden",
+				"classNames": "hidden-widget"
+			},
+			"file": {
+				"ui:options": { "accept": [".tif", ".tiff"] }
+			},
+			"floodParameters": {
+				"model": {
+					"ui:widget": "hidden",
+					"classNames": "hidden-widget"
+				}
+			}
+		}
+	}
+}

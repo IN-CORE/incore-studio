@@ -395,3 +395,206 @@ export function breakCamelCaseAndCapitalize(camelCaseString: string): string {
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
         .join(" "); // Join the words back into a phrase
 }
+
+declare const defaultMapConfig: { HAZARD_BOUNDS: [number, number, number, number] };
+
+export function dataURItoFile(dataURI: string, filename = "hurricane-raster.tif"): File {
+    if (!dataURI.includes(",")) {
+        throw new Error("Invalid Data URI format");
+    }
+
+    const mimeMatch = dataURI.match(/:(.*?);/);
+    if (!mimeMatch) {
+        throw new Error("MIME type not found in Data URI");
+    }
+
+    const mime = mimeMatch[1];
+    const binary = atob(dataURI.split(",")[1]);
+    const array = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i += 1) {
+        // Use i += 1 instead of i++
+        array[i] = binary.charCodeAt(i);
+    }
+
+    const blob = new Blob([array], { type: mime });
+    return new File([blob], filename, { type: mime, lastModified: Date.now() });
+}
+
+export function getHazardTypePlural(hazardType: string): string {
+    return hazardType.match(/\b(o|s|sh|ch|x|z)\b$/) ? `${hazardType}es` : `${hazardType}s`;
+}
+
+export function round(value: number, decimals: number): number {
+    return Number(value.toFixed(decimals));
+}
+
+export async function createModelTornado(
+    name: string,
+    description: string,
+    rating: number,
+    startLat: number,
+    startLon: number,
+    endLat: number,
+    endLon: number
+): Promise<any> {
+    const endpoint = `${config.hazardServiceBase}/tornadoes`;
+    const formData = new FormData();
+    const tornadoMetadata: TornadoMetadata = {
+        tornadoType: "model",
+        name,
+        description,
+        tornadoModel: "MeanWidthTornado",
+        tornadoParameters: {
+            efRating: rating,
+            startLatitude: startLat,
+            startLongitude: startLon,
+            endLatitude: [endLat],
+            endLongitude: [endLon],
+            windSpeedMethod: "1"
+        }
+    };
+    formData.append("tornado", JSON.stringify(tornadoMetadata));
+
+    try {
+        const response = await axios.post(endpoint, formData, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
+export async function createRasterTornado(name: string, description: string, files: File[]): Promise<any> {
+    const endpoint = `${config.hazardServiceBase}/tornadoes`;
+    const formData = new FormData();
+
+    const tornadoMetadata: TornadoMetadata = {
+        tornadoType: "dataset",
+        name,
+        description
+    };
+    formData.append("tornado", JSON.stringify(tornadoMetadata));
+
+    files.forEach((file) => {
+        formData.append("file", file);
+    });
+
+    try {
+        const response = await axios.post(endpoint, formData, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
+export async function getHazardMetadata(hazardType: string, hazardId: string): Promise<any> {
+    const hazardTypePlural = getHazardTypePlural(hazardType);
+    const endpoint = `${config.hazardServiceBase}/${hazardTypePlural}/${hazardId}`;
+
+    try {
+        const response = await axios.get(endpoint, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
+export async function createModelEarthquake(
+    name: string,
+    description: string,
+    lat: number,
+    lon: number,
+    magnitude: number,
+    depth: number,
+    demandType: string,
+    demandUnits: string,
+    attenuations: string,
+    faultTypeMap?: any,
+    mapConfig: { HAZARD_BOUNDS: [number, number, number, number] } = defaultMapConfig
+): Promise<any> {
+    const endpoint = `${config.hazardServiceBase}/earthquakes`;
+    const formData = new FormData();
+
+    const eqMetadata: EarthquakeMetadata = {
+        name,
+        description,
+        eqType: "model",
+        attenuations: { [attenuations]: 1.0 },
+        eqParameters: {
+            srcLatitude: lat,
+            srcLongitude: lon,
+            magnitude,
+            depth
+        },
+        visualizationParameters: {
+            demandType,
+            demandUnits,
+            minX: round(mapConfig.HAZARD_BOUNDS[0], 3),
+            minY: round(mapConfig.HAZARD_BOUNDS[1], 3),
+            maxX: round(mapConfig.HAZARD_BOUNDS[2], 3),
+            maxY: round(mapConfig.HAZARD_BOUNDS[3], 3),
+            numPoints: "1025",
+            amplifyHazard: "true"
+        }
+    };
+
+    if (faultTypeMap) {
+        eqMetadata.eqParameters.faultTypeMap = { [attenuations]: faultTypeMap };
+    }
+
+    formData.append("earthquake", JSON.stringify(eqMetadata));
+
+    try {
+        const response = await axios.post(endpoint, formData, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
+export async function createRjfsDatasetHazards(formData: any, hazardType: string): Promise<any> {
+    const endpoint = `${config.hazardServiceBase}/${hazardType}`;
+    const dataUrls: { dataurl: string; filename: string }[] = [];
+    const payload = new FormData();
+
+    formData.hazardDatasets.forEach((hazardDataset: any) => {
+        dataUrls.push({
+            dataurl: hazardDataset.file,
+            filename: `${hazardDataset.demandType}-raster.tif`
+        });
+        delete hazardDataset.file;
+    });
+
+    dataUrls.forEach((dataurl) => {
+        payload.append("file", dataURItoFile(dataurl.dataurl, dataurl.filename));
+    });
+
+    payload.append(hazardType.slice(0, -1), JSON.stringify(formData));
+
+    try {
+        const response = await axios.post(endpoint, formData, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
