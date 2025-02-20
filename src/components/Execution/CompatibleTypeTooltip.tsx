@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Box, Typography, List, ListItem } from "@mui/joy";
+import { Box, Typography, List, ListItem, Stack } from "@mui/joy";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 
 interface CompatibleTypeTooltipProps {
@@ -18,11 +18,20 @@ const CompatibleTypeTooltip: React.FC<CompatibleTypeTooltipProps> = ({ compatibl
                 p: 1
             }}
         >
-            <Typography textColor="grey" sx={{ fontSize: "sm" }}>
-                Compatible Types for the Input
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1, width: "100%", mt: 1 }}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                 <CheckRoundedIcon color="success" />
+                <Typography sx={{ fontSize: "md" }}>Compatible Datatypes</Typography>
+            </Stack>
+            <Box
+                sx={{
+                    display: "flex",
+                    gap: 1,
+                    width: "100%",
+                    maxHeight: "300px",
+                    overflow: "auto",
+                    scrollbarWidth: "thin"
+                }}
+            >
                 <List marker="disc">
                     {compatibleTypes.map((type) => {
                         return <ListItem key={type}>{type}</ListItem>;

@@ -192,6 +192,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     open: true,
                     currentAnalysis: {
                         name: data.label,
+                        depGName: data.name,
                         id,
                         inputDatasets: getInputDatasets(),
                         inputParameters: getInputParameters(),
