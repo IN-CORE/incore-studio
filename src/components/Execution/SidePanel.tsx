@@ -29,6 +29,7 @@ import AddIcon from "@mui/icons-material/Add";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import InsertChartOutlinedRoundedIcon from "@mui/icons-material/InsertChartOutlinedRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 import {
     updateCreateExecutionTemplateDatasetAndParams,
@@ -43,6 +44,7 @@ import {
     getProjectVisualizations
 } from "@app/reducer/projectSlice";
 import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
+import CompatibleTypeTooltip from "./CompatibleTypeTooltip";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
@@ -58,6 +60,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const projectDataset = useAppSelector((state) => state.project.projectDatasets);
     const projectHazard = useAppSelector((state) => state.project.projectHazards);
     const projectDFR3Mapping = useAppSelector((state) => state.project.projectDFR3Mappings);
+    const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
 
     const createExecution = useAppSelector((state) => state.execution.createExecution);
 
@@ -99,21 +102,21 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         } else {
             setProjectDatasetOptions(
                 projectDataset.map((dataset) => (
-                    <Option key={dataset.id} value={dataset.id}>
+                    <Option key={`${dataset.id}|${dataset.dataType}`} value={dataset.id}>
                         {dataset.title}
                     </Option>
                 ))
             );
             setProjectHazardOptions(
                 projectHazard.map((hazard) => (
-                    <Option key={hazard.id} value={hazard.id}>
+                    <Option value={`${hazard.id}|${hazard.type}`} key={hazard.id}>
                         {hazard.name}
                     </Option>
                 ))
             );
             setProjectDFR3MappingOptions(
                 projectDFR3Mapping.map((dfr3Mapping) => (
-                    <Option key={dfr3Mapping.id} value={dfr3Mapping.id}>
+                    <Option value={`${dfr3Mapping.id}|${dfr3Mapping.hazardType}`} key={dfr3Mapping.id}>
                         {dfr3Mapping.name}
                     </Option>
                 ))
@@ -123,6 +126,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
 
     const [datasetSelect, setDatasetSelect] = React.useState<{ [key: string]: string }>(getInputDatasetInitialState());
     const [parameters, setParameters] = React.useState<{ [key: string]: string }>(getInitialParametersState());
+    const [selectedHazardType, setSelectedHazardType] = React.useState<string | null>(null);
+    const [selectedDFR3HazardType, setSelectedDFR3HazardType] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         setDatasetSelect(getInputDatasetInitialState());
@@ -387,45 +392,78 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                     <Stack direction="column" spacing={2}>
                                         {sidePanelData.currentAnalysis.inputDatasets.map((inputDataset) => (
                                             <Box key={inputDataset.execFileEntryId}>
-                                                {inputDataset.required ? (
-                                                    <Typography
-                                                        level="h4"
-                                                        component="label"
-                                                        htmlFor={`${inputDataset.label}-select`}
-                                                        sx={{
-                                                            display: "block",
-                                                            mb: 1,
-                                                            fontWeight: 400,
-                                                            fontSize: "14px",
-                                                            lineHeight: "24px",
-                                                            paragraph: "28px",
-                                                            color: "#172B4D"
-                                                        }}
-                                                    >
-                                                        {inputDataset.label}
+                                                <Stack
+                                                    direction="row"
+                                                    spacing={2}
+                                                    alignItems="center"
+                                                    justifyContent="space-between"
+                                                    mb={1}
+                                                >
+                                                    {inputDataset.required ? (
                                                         <Typography
-                                                            component="span"
-                                                            sx={{ color: "red", marginLeft: 0.5 }}
+                                                            level="h4"
+                                                            component="label"
+                                                            htmlFor={`${inputDataset.label}-select`}
+                                                            sx={{
+                                                                display: "block",
+                                                                mb: 1,
+                                                                fontWeight: 400,
+                                                                fontSize: "14px",
+                                                                lineHeight: "24px",
+                                                                paragraph: "28px",
+                                                                color: "#172B4D"
+                                                            }}
                                                         >
-                                                            *
+                                                            {inputDataset.label}
+                                                            <Typography
+                                                                component="span"
+                                                                sx={{ color: "red", marginLeft: 0.5 }}
+                                                            >
+                                                                *
+                                                            </Typography>
                                                         </Typography>
-                                                    </Typography>
-                                                ) : (
-                                                    <Typography
-                                                        level="h4"
-                                                        sx={{
-                                                            display: "block",
-                                                            mb: 1,
-                                                            fontWeight: 400,
-                                                            fontSize: "14px",
-                                                            lineHeight: "24px",
-                                                            paragraph: "28px",
-                                                            color: "#172B4D"
-                                                        }}
-                                                    >
-                                                        {inputDataset.label}
-                                                    </Typography>
-                                                )}
+                                                    ) : (
+                                                        <Typography
+                                                            level="h4"
+                                                            sx={{
+                                                                display: "block",
+                                                                mb: 1,
+                                                                fontWeight: 400,
+                                                                fontSize: "14px",
+                                                                lineHeight: "24px",
+                                                                paragraph: "28px",
+                                                                color: "#172B4D"
+                                                            }}
+                                                        >
+                                                            {inputDataset.label}
+                                                        </Typography>
+                                                    )}
+                                                    {dependencyGraph &&
+                                                        dependencyGraph[sidePanelData.currentAnalysis.depGName] &&
+                                                        dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs[
+                                                            inputDataset.label
+                                                        ] &&
+                                                        dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs[
+                                                            inputDataset.label
+                                                        ].length > 0 && (
+                                                            <Tooltip
+                                                                title={
+                                                                    <CompatibleTypeTooltip
+                                                                        compatibleTypes={
+                                                                            dependencyGraph[
+                                                                                sidePanelData.currentAnalysis.depGName
+                                                                            ].inputs[inputDataset.label]
+                                                                        }
+                                                                    />
+                                                                }
+                                                                placement="right"
+                                                            >
+                                                                <IconButton>
+                                                                    <InfoRoundedIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        )}
+                                                </Stack>
                                                 {inputDataset.fromExisting !== null ? (
                                                     <Input
                                                         disabled
@@ -454,8 +492,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                     inputDataset.label.includes("Hazard")
                                                                         ? "Hazard"
                                                                         : inputDataset.label.includes("DFR3")
-                                                                          ? "DFR3 Mapping"
-                                                                          : "Dataset"
+                                                                        ? "DFR3 Mapping"
+                                                                        : "Dataset"
                                                                 }`}
                                                                 name={inputDataset.execFileEntryId}
                                                                 required={
@@ -467,11 +505,33 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                     _e: React.SyntheticEvent | null,
                                                                     value: string | null
                                                                 ) => {
-                                                                    // add logic to handle dataset, hazard and dfr3 selections
-                                                                    updateDatasetSelect(
-                                                                        inputDataset.execFileEntryId,
-                                                                        value ?? ""
-                                                                    );
+                                                                    // add hazards dfr3 and datasets as datasets. When submitting, we split out the datasets from hazards and dfr3mappings
+                                                                    if (inputDataset.label.includes("Hazard")) {
+                                                                        const [id, type] = value?.split("|") ?? [
+                                                                            "",
+                                                                            ""
+                                                                        ];
+                                                                        setSelectedHazardType(type);
+                                                                        updateDatasetSelect(
+                                                                            inputDataset.execFileEntryId,
+                                                                            id
+                                                                        );
+                                                                    } else if (inputDataset.label.includes("DFR3")) {
+                                                                        const [id, type] = value?.split("|") ?? [
+                                                                            "",
+                                                                            ""
+                                                                        ];
+                                                                        setSelectedDFR3HazardType(type);
+                                                                        updateDatasetSelect(
+                                                                            inputDataset.execFileEntryId,
+                                                                            id
+                                                                        );
+                                                                    } else {
+                                                                        updateDatasetSelect(
+                                                                            inputDataset.execFileEntryId,
+                                                                            value ?? ""
+                                                                        );
+                                                                    }
                                                                 }}
                                                             >
                                                                 {!createMode && (
@@ -482,8 +542,31 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 {inputDataset.label.includes("Hazard")
                                                                     ? projectHazardOptions
                                                                     : inputDataset.label.includes("DFR3")
-                                                                      ? projectDFR3MappingOptions
-                                                                      : projectDatasetOptions}
+                                                                    ? projectDFR3MappingOptions
+                                                                    : projectDatasetOptions?.filter(
+                                                                          (option: JSX.Element) => {
+                                                                              if (
+                                                                                  dependencyGraph &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ] &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label] &&
+                                                                                  option.key
+                                                                              ) {
+                                                                                  return dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label].includes(
+                                                                                      option.key.split("|")[1]
+                                                                                  ); // show datasets that are compatible with the input
+                                                                              }
+                                                                              return true; // if the property is not found, show all datasets
+                                                                          }
+                                                                      )}
                                                             </Select>
                                                         </Box>
                                                         {createMode && (
@@ -493,12 +576,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         inputDataset.label.includes("Hazard")
                                                                             ? setOpenAddHazardFromServiceDialog(true)
                                                                             : inputDataset.label.includes("DFR3")
-                                                                              ? setOpenAddDFR3MappingFromServiceDialog(
-                                                                                    true
-                                                                                )
-                                                                              : setOpenAddDatasetFromServiceDialog(
-                                                                                    true
-                                                                                );
+                                                                            ? setOpenAddDFR3MappingFromServiceDialog(
+                                                                                  true
+                                                                              )
+                                                                            : setOpenAddDatasetFromServiceDialog(true);
                                                                     }}
                                                                 >
                                                                     <AddIcon />
@@ -620,9 +701,17 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                             )}
                             {createMode && (
                                 <Box mt={4}>
+                                    {/* Check if the hazardtypes match when the user clicks submit. if they dont then show some error message */}
+                                    {selectedHazardType !== selectedDFR3HazardType && (
+                                        <Typography color="danger" sx={{ mb: 2 }}>
+                                            The selected hazard types do not match for DFR3 Mapping and Hazard. Please
+                                            ensure they are the same.
+                                        </Typography>
+                                    )}
                                     <Button
                                         type="submit"
                                         variant="solid"
+                                        disabled={selectedHazardType !== selectedDFR3HazardType}
                                         sx={{ backgroundColor: "primary.main", color: "white" }}
                                     >
                                         Save this configuration
