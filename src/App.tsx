@@ -3,10 +3,9 @@ import React, { StrictMode, Suspense, FC, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { CssVarsProvider } from "@mui/joy/styles";
+
 import { AuthProvider, useAuth } from "react-oidc-context";
 
-import CssBaseline from "@mui/joy/CssBaseline";
 import "@fontsource/inter";
 import "@xyflow/react/dist/style.css";
 
@@ -21,6 +20,17 @@ import Loading from "@app/components/Loading";
 import "@app/styles/main.scss";
 
 import store from "@app/store";
+
+// Mui and Joy theme side by side
+import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy/styles";
+import {
+    extendTheme as materialExtendTheme,
+    CssVarsProvider as MaterialCssVarsProvider,
+    THEME_ID as MATERIAL_THEME_ID
+} from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+
+const materialTheme = materialExtendTheme();
 
 const basename = process.env.NODE_ENV === "production" ? "/studio" : "";
 
@@ -62,17 +72,19 @@ const App: FC = () => {
     return (
         <StrictMode>
             <Router basename={basename}>
-                <CssVarsProvider theme={theme}>
-                    <CssBaseline />
-                    <Navbar />
-                    <Suspense fallback={<Loading />}>
-                        <Routes>
-                            {Object.entries(routes).map(([path, props]) => (
-                                <Route key={path} path={path} {...props} />
-                            ))}
-                        </Routes>
-                    </Suspense>
-                </CssVarsProvider>
+                <MaterialCssVarsProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
+                    <JoyCssVarsProvider theme={theme}>
+                        <CssBaseline />
+                        <Navbar />
+                        <Suspense fallback={<Loading />}>
+                            <Routes>
+                                {Object.entries(routes).map(([path, props]) => (
+                                    <Route key={path} path={path} {...props} />
+                                ))}
+                            </Routes>
+                        </Suspense>
+                    </JoyCssVarsProvider>
+                </MaterialCssVarsProvider>
             </Router>
         </StrictMode>
     );
