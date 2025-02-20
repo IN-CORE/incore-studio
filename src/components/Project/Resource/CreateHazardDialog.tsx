@@ -69,6 +69,12 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({
         }
     };
 
+    const handleLayerUpdate = (layerId: string) => {
+        if (hazardType && hazardLayers[hazardType]) {
+            setActiveLayers([{ ...hazardLayers[hazardType], layerId }]);
+        }
+    };
+
     // Clear Layers on Map
     const handleClearAllLayers = () => {
         setActiveLayers([]);
@@ -117,7 +123,13 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({
                                 {/* Tab Content */}
                                 {hazardType === "earthquakes" && (
                                     <>
-                                        <DatasetEarthquake index={0} onAddClick={onAddClick} projectId={projectId} />
+                                        <DatasetEarthquake
+                                            index={0}
+                                            onAddClick={onAddClick}
+                                            projectId={projectId}
+                                            onClose={onClose}
+                                            handleLayerUpdate={handleLayerUpdate}
+                                        />
                                         <ModelEarthquake index={1} />
                                     </>
                                 )}
