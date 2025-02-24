@@ -15,17 +15,12 @@ import { useAppDispatch } from "@app/store/hooks";
 interface DatasetEarthquakeProps {
     index: number;
     projectId: string;
-    onClose: () => void;
     handleLayerUpdate: (hazardType: string) => void;
 }
 
-export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({
-    index,
-    projectId,
-    onClose,
-    handleLayerUpdate
-}) => {
+export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, projectId, handleLayerUpdate }) => {
     const [loading, setLoading] = useState<boolean>(false);
+    const [formKey, setFormKey] = useState<number>(0);
 
     const appDispatch = useAppDispatch();
 
@@ -47,7 +42,8 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({
             console.error("Error saving earthquake dataset:", error);
         } finally {
             setLoading(false);
-            onClose();
+            // Reset form by updating the formKey
+            setFormKey((prevKey) => prevKey + 1);
         }
     };
 
@@ -57,6 +53,7 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({
                 <Skeleton variant="rectangular" width="100%" height={200} className="rounded-md" />
             ) : (
                 <Form
+                    key={formKey}
                     schema={DatasetEqSchema}
                     uiSchema={DatasetEqUiSchema}
                     widgets={widgets}

@@ -42,11 +42,11 @@ interface CreateHazardDialogProps {
 
 // Hazard Layer Mapping
 const hazardLayers: Record<string, HazardLayer> = {
-    earthquakes: { workspace: "geoserver", layerId: "earthquakes", styleName: "earthquake-style" },
-    floods: { workspace: "geoserver", layerId: "floods", styleName: "flood-style" },
-    hurricanes: { workspace: "geoserver", layerId: "hurricanes", styleName: "hurricane-style" },
-    tornadoes: { workspace: "geoserver", layerId: "tornadoes", styleName: "tornado-style" },
-    tsunamis: { workspace: "geoserver", layerId: "tsunamis", styleName: "tsunami-style" }
+    earthquakes: { workspace: "geoserver", layerId: "earthquakes" },
+    floods: { workspace: "geoserver", layerId: "floods" },
+    hurricanes: { workspace: "geoserver", layerId: "hurricanes" },
+    tornadoes: { workspace: "geoserver", layerId: "tornadoes" },
+    tsunamis: { workspace: "geoserver", layerId: "tsunamis" }
 };
 
 export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, onClose, projectId, resourceType }) => {
@@ -74,7 +74,15 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
     };
 
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal
+            open={open}
+            onClose={() => {
+                // close modal and clear map layers
+                onClose();
+                handleClearAllLayers();
+                setHazardType("");
+            }}
+        >
             <ModalDialog sx={{ backgroundColor: "#fff", width: "80em", maxWidth: "90vw" }}>
                 <ModalClose sx={{ zIndex: 20 }} />
                 <Box sx={{ maxWidth: "100%", padding: "3%", overflow: "auto" }}>
@@ -119,7 +127,6 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                         <DatasetEarthquake
                                             index={0}
                                             projectId={projectId}
-                                            onClose={onClose}
                                             handleLayerUpdate={handleLayerUpdate}
                                         />
                                         <ModelEarthquake index={1} />
@@ -131,9 +138,27 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                         <ModelTornado index={1} />
                                     </>
                                 )}
-                                {hazardType === "hurricanes" && <DatasetHurricane index={0} />}
-                                {hazardType === "floods" && <DatasetFlood index={0} />}
-                                {hazardType === "tsunamis" && <DatasetTsunami index={0} />}
+                                {hazardType === "hurricanes" && (
+                                    <DatasetHurricane
+                                        index={0}
+                                        projectId={projectId}
+                                        handleLayerUpdate={handleLayerUpdate}
+                                    />
+                                )}
+                                {hazardType === "floods" && (
+                                    <DatasetFlood
+                                        index={0}
+                                        projectId={projectId}
+                                        handleLayerUpdate={handleLayerUpdate}
+                                    />
+                                )}
+                                {hazardType === "tsunamis" && (
+                                    <DatasetTsunami
+                                        index={0}
+                                        projectId={projectId}
+                                        handleLayerUpdate={handleLayerUpdate}
+                                    />
+                                )}
                             </Tabs>
                         </Grid>
 
