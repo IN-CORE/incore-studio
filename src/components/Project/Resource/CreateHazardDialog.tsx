@@ -42,11 +42,11 @@ interface CreateHazardDialogProps {
 
 // Hazard Layer Mapping
 const hazardLayers: Record<string, HazardLayer> = {
-    earthquakes: { workspace: "geoserver", layerId: "earthquakes" },
-    floods: { workspace: "geoserver", layerId: "floods" },
-    hurricanes: { workspace: "geoserver", layerId: "hurricanes" },
-    tornadoes: { workspace: "geoserver", layerId: "tornadoes" },
-    tsunamis: { workspace: "geoserver", layerId: "tsunamis" }
+    earthquakes: { workspace: "incore", layerId: "earthquakes" },
+    floods: { workspace: "incore", layerId: "floods" },
+    hurricanes: { workspace: "incore", layerId: "hurricanes" },
+    tornadoes: { workspace: "incore", layerId: "tornadoes" },
+    tsunamis: { workspace: "incore", layerId: "tsunamis" }
 };
 
 export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, onClose, projectId, resourceType }) => {
