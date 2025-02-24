@@ -139,11 +139,6 @@ const HazardPage = (): JSX.Element => {
 
     // Create new hazard
     const [openCreateHazardDialog, setOpenCreateHazardDialog] = useState(false);
-    const createHazardFunc = (projectId: string, resource: Hazard) => {
-        // TODO write new slicer!
-        appDispatch(addHazardToProject({ projectId, hazards: [resource] }));
-        setOpenCreateHazardDialog(false);
-    };
 
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
@@ -193,7 +188,6 @@ const HazardPage = (): JSX.Element => {
                                     onClose={() => {
                                         setOpenCreateHazardDialog(false);
                                     }}
-                                    onAddClick={createHazardFunc}
                                 />
                                 {isTableView ? (
                                     <ResourceTable

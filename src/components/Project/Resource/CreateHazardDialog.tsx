@@ -38,7 +38,6 @@ interface CreateHazardDialogProps {
     resourceType: string;
     open: boolean;
     onClose: () => void;
-    onAddClick?: any;
 }
 
 // Hazard Layer Mapping
@@ -50,13 +49,7 @@ const hazardLayers: Record<string, HazardLayer> = {
     tsunamis: { workspace: "geoserver", layerId: "tsunamis", styleName: "tsunami-style" }
 };
 
-export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({
-    open,
-    onClose,
-    projectId,
-    resourceType,
-    onAddClick
-}) => {
+export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, onClose, projectId, resourceType }) => {
     const [hazardType, setHazardType] = useState<string>("");
     const [activeLayers, setActiveLayers] = useState<HazardLayer[]>([]);
     const [mapDialogOpen, setMapDialogOpen] = useState<boolean>(false);
@@ -125,7 +118,6 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({
                                     <>
                                         <DatasetEarthquake
                                             index={0}
-                                            onAddClick={onAddClick}
                                             projectId={projectId}
                                             onClose={onClose}
                                             handleLayerUpdate={handleLayerUpdate}

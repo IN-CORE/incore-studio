@@ -588,7 +588,7 @@ export async function createRjfsDatasetHazards(formData: any, hazardType: string
     payload.append(hazardType.slice(0, -1), JSON.stringify(formData));
 
     try {
-        const response = await axios.post(endpoint, formData, {
+        const response = await axios.post(endpoint, payload, {
             headers: getHeaders()
         });
 

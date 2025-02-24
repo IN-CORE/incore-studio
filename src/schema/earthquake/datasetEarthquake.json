@@ -4,13 +4,11 @@
 	"properties": {
 		"name": {
 			"type": "string",
-			"title": "Name",
-			"required": true
+			"title": "Name"
 		},
 		"description": {
 			"type": "string",
-			"title": "Description",
-			"required": true
+			"title": "Description"
 		},
 		"eqType": {
 			"type": "string",

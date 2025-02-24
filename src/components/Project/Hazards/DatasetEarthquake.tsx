@@ -8,14 +8,13 @@ import DatasetEqUiSchema from "@app/schema/earthquake/datasetEarthquakeUi.json";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { createRjfsDatasetHazards } from "@app/utils";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
-import validator from "@rjsf/validator-ajv6";
+import validator from "@rjsf/validator-ajv8";
 import { useAppDispatch } from "@app/store/hooks";
 
 // Define props type
 interface DatasetEarthquakeProps {
     index: number;
     projectId: string;
-    onAddClick: (data: any) => void;
     onClose: () => void;
     handleLayerUpdate: (hazardType: string) => void;
 }
@@ -23,7 +22,6 @@ interface DatasetEarthquakeProps {
 export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({
     index,
     projectId,
-    onAddClick,
     onClose,
     handleLayerUpdate
 }) => {
@@ -66,7 +64,7 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({
                     onSubmit={({ formData }) => onSave(formData)}
                 >
                     <Box className="inputGroup">
-                        <Button variant="solid" type="submit" onClick={onAddClick}>
+                        <Button variant="solid" type="submit">
                             Save
                         </Button>
                     </Box>
