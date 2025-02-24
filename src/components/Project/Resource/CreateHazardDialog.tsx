@@ -19,7 +19,7 @@ import {
 import { MapComponent } from "@app/components/Map/MapComponent";
 import { DatasetEarthquake } from "@app/components/Project/Hazards/DatasetEarthquake";
 import { ModelEarthquake } from "@app/components/Project/Hazards/ModelEarthquake";
-import { RasterTornado } from "@app/components/Project/Hazards/RasterTornado";
+import { DatasetTornado } from "@app/components/Project/Hazards/DatasetTornado";
 import { ModelTornado } from "@app/components/Project/Hazards/ModelTornado";
 import { DatasetHurricane } from "@app/components/Project/Hazards/DatasetHurricane";
 import { DatasetFlood } from "@app/components/Project/Hazards/DatasetFlood";
@@ -134,7 +134,11 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                 )}
                                 {hazardType === "tornadoes" && (
                                     <>
-                                        <RasterTornado index={0} />
+                                        <DatasetTornado
+                                            index={0}
+                                            projectId={projectId}
+                                            handleLayerUpdate={handleLayerUpdate}
+                                        />
                                         <ModelTornado index={1} />
                                     </>
                                 )}

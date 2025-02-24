@@ -1,0 +1,26 @@
+{
+	"tornadoType": {
+		"ui:widget": "hidden",
+		"classNames": "hidden-widget"
+	},
+	"name": {
+		"classNames": "required-field"
+	},
+	"description": {
+		"classNames": "required-field"
+	},
+	"hazardDatasets": {
+		"ui:options": {
+			"orderable": false
+		},
+		"items": {
+			"hazardType": {
+				"ui:widget": "hidden",
+				"classNames": "hidden-widget"
+			},
+			"file": {
+				"ui:options": { "accept": [".tif", ".tiff", ".zip"] }
+			}
+		}
+	}
+}
