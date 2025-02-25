@@ -15,7 +15,7 @@ import { useAppDispatch } from "@app/store/hooks";
 interface DatasetEarthquakeProps {
     index: number;
     projectId: string;
-    handleLayerUpdate: (hazardType: string) => void;
+    handleLayerUpdate: (hazardId: string) => void;
 }
 
 export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, projectId, handleLayerUpdate }) => {

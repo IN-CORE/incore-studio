@@ -16,7 +16,7 @@ import {
     Tab,
     Container
 } from "@mui/joy";
-import { MapComponent } from "@app/components/Map/MapComponent";
+import {MapComponent, MapComponentWithDrawing} from "@app/components/Map/MapComponent";
 import { DatasetEarthquake } from "@app/components/Project/Hazards/DatasetEarthquake";
 import { ModelEarthquake } from "@app/components/Project/Hazards/ModelEarthquake";
 import { DatasetTornado } from "@app/components/Project/Hazards/DatasetTornado";
@@ -53,6 +53,15 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
     const [hazardType, setHazardType] = useState<string>("");
     const [activeLayers, setActiveLayers] = useState<HazardLayer[]>([]);
     const [mapDialogOpen, setMapDialogOpen] = useState<boolean>(false);
+
+    // for drawing tornado path
+	// const [startCoord, setStartCoord] = useState([]);
+	// const [endCoord, setEndCoord] = useState([]);
+
+	// for draw eq epicenter
+    const [srcCoord, setSrcCoord] = useState<[number, number]>([0, 0]);
+    const [enableEdit, setEnableEdit] = React.useState(false); // directly edit in the child component geolocation
+
 
     // Handle Hazard Selection
     const handleHazardChange = (_: any, newValue: string | null) => {
@@ -129,7 +138,13 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                             projectId={projectId}
                                             handleLayerUpdate={handleLayerUpdate}
                                         />
-                                        <ModelEarthquake index={1} />
+                                        <ModelEarthquake index={1}
+                                                         projectId={projectId}
+                                                         handleLayerUpdate={handleLayerUpdate}
+                                                         srcCoord={srcCoord}
+                                                         setSrcCoord={setSrcCoord}
+                                                         enableEdit={enableEdit}
+                                                         setEnableEdit={setEnableEdit}/>
                                     </>
                                 )}
                                 {hazardType === "tornadoes" && (
@@ -200,6 +215,14 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
 
                                 {/* Map Component */}
                                 <MapComponent layers={activeLayers} width={600} height={500} />
+                                <MapComponentWithDrawing width={600}
+                                                         height={500}
+                                                         selectedHazardType={hazardType}
+                                                         enableSrcEdit={true}
+                                                         // setStartCoord={setStartCoord}
+                                                         // setEndCoord={setEndCoord}
+                                                         setSrcCoord={setSrcCoord}
+                                />
                             </Container>
                         </Grid>
                     </Grid>

@@ -514,8 +514,8 @@ export async function getHazardMetadata(hazardType: string, hazardId: string): P
 export async function createModelEarthquake(
     name: string,
     description: string,
-    lat: number,
-    lon: number,
+    lat: number| string,
+    lon: number | string,
     magnitude: number,
     depth: number,
     demandType: string,
@@ -524,6 +524,10 @@ export async function createModelEarthquake(
     faultTypeMap?: any,
     mapConfig: { HAZARD_BOUNDS: [number, number, number, number] } = defaultMapConfig
 ): Promise<any> {
+
+    const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
+    const latNum = typeof lat === "number" ? lat : parseFloat(lat);
+
     const endpoint = `${config.hazardServiceBase}/earthquakes`;
     const formData = new FormData();
 
@@ -533,8 +537,8 @@ export async function createModelEarthquake(
         eqType: "model",
         attenuations: { [attenuations]: 1.0 },
         eqParameters: {
-            srcLatitude: lat,
-            srcLongitude: lon,
+            srcLatitude: latNum,
+            srcLongitude: lonNum,
             magnitude,
             depth
         },
@@ -598,3 +602,68 @@ export async function createRjfsDatasetHazards(formData: any, hazardType: string
         return {};
     }
 }
+
+/**
+ * Converts a Web Mercator coordinate ([x, y]) to geographic coordinates ([lon, lat]).
+ * @param flatCoord - A tuple of [x, y] in Web Mercator (EPSG:3857).
+ * @returns A tuple of [lon, lat] in degrees (EPSG:4326).
+ */
+export function flatCoordToLonLat(flatCoord: [number, number]): [number, number] {
+  const [x, y] = flatCoord;
+  const lon = x * 180 / 20037508.34;
+  const lat = (2 * Math.atan(Math.exp(y * Math.PI / 20037508.34)) - Math.PI / 2) * 180 / Math.PI;
+  return [lon, lat];
+}
+
+/**
+ * Converts geographic coordinates ([lon, lat]) in degrees to a Web Mercator coordinate.
+ * @param lon - Longitude in degrees.
+ * @param lat - Latitude in degrees.
+ * @returns A tuple of [x, y] in Web Mercator (EPSG:3857).
+ */
+export function lonLatToFlatCoord(lon: string|number, lat: string|number): [number, number] {
+    const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
+  const latNum = typeof lat === "number" ? lat : parseFloat(lat);
+  const x = lonNum * 20037508.34 / 180;
+  const y = Math.log(Math.tan((90 + latNum) * Math.PI / 360)) * 20037508.34 / 180;
+  return [x, y];
+}
+
+export function roundToScale(num: number, scale: number): number {
+  if (!num.toString().includes("e")) {
+    return Number(
+      `${Math.round(Number(`${num}e+${scale}`))}e-${scale}`
+    );
+  } else {
+    const arr = num.toString().split("e");
+    let sig = "";
+    if (Number(arr[1]) + scale > 0) {
+      sig = "+";
+    }
+    return Number(
+      `${Math.round(
+        Number(`${Number(arr[0])}e${sig}${Number(arr[1]) + scale}`)
+      )}e-${scale}`
+    );
+  }
+}
+
+export const validateCoord = (
+  lon: number | string,
+  lat: number | string,
+  boundingBox: [number, number, number, number]
+): boolean => {
+  const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
+  const latNum = typeof lat === "number" ? lat : parseFloat(lat);
+
+  if (isNaN(lonNum) || isNaN(latNum)) {
+    return false;
+  }
+
+  return (
+    lonNum > boundingBox[0] &&
+    lonNum < boundingBox[2] &&
+    latNum > boundingBox[1] &&
+    latNum < boundingBox[3]
+  );
+};
