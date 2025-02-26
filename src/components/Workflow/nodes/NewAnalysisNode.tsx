@@ -18,6 +18,7 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 
 import { useShallow } from "zustand/react/shallow";
 
+import ConfirmationDialog from "@app/components/ConfirmationDialog";
 import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { setSidePanelData } from "@app/reducer/workflowSlice";
@@ -218,6 +219,8 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
         }
     };
 
+    const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = React.useState(false);
+
     // Function to calculate positions (percentage) based on the number of handles
     const calculateHandlePosition = (index: number, total: number) => {
         return (index + 1) * (100 / (total + 1));
@@ -304,6 +307,14 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                     </Box>
                 </Handle>
             ))}
+            <ConfirmationDialog
+                open={confirmDeleteModalOpen}
+                onClose={() => setConfirmDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                confirmationDialogTitle="Confirm Delete?"
+                confirmationDialogText="This action will remove the analysis node and all its connections."
+                confirmationDialogAction="Remove Analysis"
+            />
             {data.isExecution ? NodeHeading : zoom > 1 && NodeHeading}
             <Stack direction="column" spacing={4} sx={{ my: "6px", height: "100%", width: "100%" }}>
                 <Box
@@ -359,7 +370,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                                 placement="right"
                                 sx={{ color: "#172B4D" }}
                             >
-                                <IconButton variant="plain" onClick={handleDelete}>
+                                <IconButton variant="plain" onClick={() => setConfirmDeleteModalOpen(true)}>
                                     <CancelRoundedIcon />
                                 </IconButton>
                             </Tooltip>
