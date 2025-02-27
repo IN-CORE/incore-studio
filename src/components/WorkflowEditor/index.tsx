@@ -8,13 +8,8 @@ import {
     Card,
     CardContent,
     CardActions,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Divider,
     IconButton,
     Modal,
-    ModalDialog,
     ModalClose,
     Sheet,
     Stack,
@@ -24,7 +19,6 @@ import {
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
-import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import Snackbar from "@mui/joy/Snackbar";
 
 import { useShallow } from "zustand/react/shallow";
@@ -33,6 +27,7 @@ import AddAnalysisModal from "@app/components/AddAnalysisModal";
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import Workflow from "@app/components/Workflow";
 import Loading from "@app/components/Loading";
+import ConfirmationDialog from "@app/components/ConfirmationDialog";
 import { useAppDispatch, useAppSelector, useWorkflowAutoSave } from "@app/store/hooks";
 import {
     getWorkflow,
@@ -412,43 +407,18 @@ const WorkflowEditor = (): JSX.Element => {
                             </Typography>
                         </Sheet>
                     </Modal>
-                    <Modal
+                    <ConfirmationDialog
                         open={saveWorkflowModalConfirmation}
-                        onClose={(_event: React.MouseEvent<HTMLButtonElement>) => {
-                            setSaveWorkflowModalConfirmation(false);
+                        onClose={() => setSaveWorkflowModalConfirmation(false)}
+                        onConfirm={() => {
+                            appDispatch(clearWorkflowState());
+                            navigate(-1);
                         }}
-                        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-                    >
-                        <ModalDialog variant="outlined" role="alertdialog">
-                            <DialogTitle sx={{ fontWeight: "lg" }}>
-                                <WarningRoundedIcon />
-                                Save Changes Before Leaving?
-                            </DialogTitle>
-                            <Divider />
-                            <DialogContent>
-                                Your changes may not be saved. Do you want to save them before leaving?
-                            </DialogContent>
-                            <DialogActions>
-                                <Button
-                                    variant="solid"
-                                    color="danger"
-                                    onClick={() => {
-                                        appDispatch(clearWorkflowState());
-                                        navigate(-1);
-                                    }}
-                                >
-                                    Discard changes
-                                </Button>
-                                <Button
-                                    variant="plain"
-                                    color="neutral"
-                                    onClick={() => setSaveWorkflowModalConfirmation(false)}
-                                >
-                                    Cancel
-                                </Button>
-                            </DialogActions>
-                        </ModalDialog>
-                    </Modal>
+                        confirmationDialogTitle="Save Changes Before Leaving?"
+                        confirmationDialogText="Your changes may not be saved. Do you want to save them before leaving?"
+                        confirmationDialogAction="Discard changes"
+                    />
+
                     {nodes.length === 0 ? (
                         <Box
                             sx={{
