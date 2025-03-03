@@ -473,33 +473,6 @@ export async function createModelTornado(
     }
 }
 
-export async function createRasterTornado(name: string, description: string, files: File[]): Promise<any> {
-    const endpoint = `${config.hazardServiceBase}/tornadoes`;
-    const formData = new FormData();
-
-    const tornadoMetadata: TornadoMetadata = {
-        tornadoType: "dataset",
-        name,
-        description
-    };
-    formData.append("tornado", JSON.stringify(tornadoMetadata));
-
-    files.forEach((file) => {
-        formData.append("file", file);
-    });
-
-    try {
-        const response = await axios.post(endpoint, formData, {
-            headers: getHeaders()
-        });
-
-        return response.data;
-    } catch (error) {
-        console.error("Error in API request:", error);
-        return {};
-    }
-}
-
 export async function getHazardMetadata(hazardType: string, hazardId: string): Promise<any> {
     const hazardTypePlural = getHazardTypePlural(hazardType);
     const endpoint = `${config.hazardServiceBase}/${hazardTypePlural}/${hazardId}`;

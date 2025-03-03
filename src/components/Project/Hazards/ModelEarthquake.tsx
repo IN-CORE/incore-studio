@@ -54,7 +54,7 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
         border: "none",
         backgroundColor: "#FFFFFF",
         fontStyle: "italic",
-        width: "80px"
+        maxWidth: "10em"
     };
 
     const srcLatLabelSx = { fontSize: "14px", color: "#D63649" };
@@ -243,7 +243,9 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                     </Box>
                 )}
                 <Box sx={{ mb: 2 }}>
-                    <FormLabel sx={{ fontSize: "1rem" }}>Draw Earthquake Epicenter</FormLabel>
+                    <FormLabel sx={{ fontSize: "1rem" }} required>
+                        Earthquake Epicenter
+                    </FormLabel>
                     {coordLat !== null && coordLon !== null && !validCoord && (
                         <Typography level="body-sm" color="danger">
                             Coordinate not valid or outside of the bounding box.
