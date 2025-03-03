@@ -143,7 +143,11 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                             projectId={projectId}
                                             handleLayerUpdate={handleLayerUpdate}
                                         />
-                                        <ModelTornado index={1} />
+                                        <ModelTornado
+                                            index={1}
+                                            projectId={projectId}
+                                            handleLayerUpdate={handleLayerUpdate}
+                                        />
                                     </>
                                 )}
                                 {hazardType === "hurricanes" && (

@@ -381,7 +381,7 @@ interface ExecutionState {
 }
 
 interface TornadoParameters {
-    efRating: number;
+    efRating: string;
     startLatitude: number;
     startLongitude: number;
     endLatitude: number[];

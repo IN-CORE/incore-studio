@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, FormLabel, Input, Select, Option, TabPanel, Typography } from "@mui/joy";
 import CircularProgress from "@mui/joy/CircularProgress";
-import { createModelEarthquake, flatCoordToLonLat, lonLatToFlatCoord, roundToScale, validateCoord } from "@app/utils/";
+import { createModelEarthquake, validateCoord } from "@app/utils/";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
 import config from "@app/app.config";
@@ -27,7 +27,6 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
     const [disabled, setDisabled] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
     const [validCoord, setValidCoord] = useState<boolean>(true);
-    const [srcCoord, setSrcCoord] = useState<[number, number]>([0, 0]);
 
     const appDispatch = useAppDispatch();
 
@@ -69,29 +68,6 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
             setDisabled(true);
         }
     }, [name, description, coordLat, coordLon, magnitude, depth, validCoord]);
-
-    // Update coordinates from parent srcCoord when not editing
-    useEffect(() => {
-        if (srcCoord && srcCoord.length > 0) {
-            const [flatLon, flatLat] = flatCoordToLonLat(srcCoord);
-            const lat = roundToScale(flatLat, 3);
-            const lon = roundToScale(flatLon, 3);
-            if (validateCoord(lon, lat, config.VALID_MAP_BOUNDS as [number, number, number, number])) {
-                setCoordLat(lat);
-                setCoordLon(lon);
-                setValidCoord(true);
-            } else {
-                setValidCoord(false);
-            }
-        }
-    }, [srcCoord]);
-
-    // When in edit mode, update parent coordinates based on changes
-    useEffect(() => {
-        if (coordLat && coordLon) {
-            setSrcCoord(lonLatToFlatCoord(coordLon, coordLat));
-        }
-    }, [coordLat, coordLon, setSrcCoord]);
 
     // Save handler: call the API, update layers/lists, and reset the form
     const onSave = async () => {

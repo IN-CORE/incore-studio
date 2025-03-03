@@ -432,12 +432,17 @@ export function round(value: number, decimals: number): number {
 export async function createModelTornado(
     name: string,
     description: string,
-    rating: number,
-    startLat: number,
-    startLon: number,
-    endLat: number,
-    endLon: number
+    rating: string,
+    startLat: number | string,
+    startLon: number | string,
+    endLat: number | string,
+    endLon: number | string
 ): Promise<any> {
+    const startLatNum = typeof startLat === "number" ? startLat : parseFloat(startLat);
+    const startLonNum = typeof startLon === "number" ? startLon : parseFloat(startLon);
+    const endLatNum = typeof endLat === "number" ? endLat : parseFloat(endLat);
+    const endLonNum = typeof endLon === "number" ? endLon : parseFloat(endLon);
+
     const endpoint = `${config.hazardServiceBase}/tornadoes`;
     const formData = new FormData();
     const tornadoMetadata: TornadoMetadata = {
@@ -447,10 +452,10 @@ export async function createModelTornado(
         tornadoModel: "MeanWidthTornado",
         tornadoParameters: {
             efRating: rating,
-            startLatitude: startLat,
-            startLongitude: startLon,
-            endLatitude: [endLat],
-            endLongitude: [endLon],
+            startLatitude: startLatNum,
+            startLongitude: startLonNum,
+            endLatitude: [endLatNum],
+            endLongitude: [endLonNum],
             windSpeedMethod: "1"
         }
     };
