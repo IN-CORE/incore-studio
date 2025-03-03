@@ -60,7 +60,7 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, pro
                     validator={validator}
                     onSubmit={({ formData }) => onSave(formData)}
                 >
-                    <Box className="inputGroup">
+                    <Box>
                         <Button variant="solid" type="submit">
                             Save
                         </Button>

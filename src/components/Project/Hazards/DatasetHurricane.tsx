@@ -59,7 +59,7 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
                     validator={validator}
                     onSubmit={({ formData }) => onSave(formData)}
                 >
-                    <Box className="inputGroup">
+                    <Box>
                         <Button variant="solid" type="submit">
                             Save
                         </Button>

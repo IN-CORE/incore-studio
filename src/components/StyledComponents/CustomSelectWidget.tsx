@@ -12,7 +12,7 @@ interface CustomSelectWidgetProps {
 
 export const CustomSelectWidget: React.FC<CustomSelectWidgetProps> = ({ schema, onChange }) => {
     return (
-        <Box sx={{ marginTop: "10px" }}>
+        <Box>
             <Typography>{schema.title}</Typography>
             <Select
                 id="select"

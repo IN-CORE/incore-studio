@@ -514,17 +514,15 @@ export async function getHazardMetadata(hazardType: string, hazardId: string): P
 export async function createModelEarthquake(
     name: string,
     description: string,
-    lat: number| string,
+    lat: number | string,
     lon: number | string,
     magnitude: number,
     depth: number,
     demandType: string,
     demandUnits: string,
     attenuations: string,
-    faultTypeMap?: any,
-    mapConfig: { HAZARD_BOUNDS: [number, number, number, number] } = defaultMapConfig
+    faultTypeMap?: any
 ): Promise<any> {
-
     const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
     const latNum = typeof lat === "number" ? lat : parseFloat(lat);
 
@@ -545,10 +543,10 @@ export async function createModelEarthquake(
         visualizationParameters: {
             demandType,
             demandUnits,
-            minX: round(mapConfig.HAZARD_BOUNDS[0], 3),
-            minY: round(mapConfig.HAZARD_BOUNDS[1], 3),
-            maxX: round(mapConfig.HAZARD_BOUNDS[2], 3),
-            maxY: round(mapConfig.HAZARD_BOUNDS[3], 3),
+            minX: round(latNum - 1, 3),
+            minY: round(lonNum - 1, 3),
+            maxX: round(latNum + 1, 3),
+            maxY: round(lonNum + 1, 3),
             numPoints: "1025",
             amplifyHazard: "true"
         }
@@ -609,10 +607,10 @@ export async function createRjfsDatasetHazards(formData: any, hazardType: string
  * @returns A tuple of [lon, lat] in degrees (EPSG:4326).
  */
 export function flatCoordToLonLat(flatCoord: [number, number]): [number, number] {
-  const [x, y] = flatCoord;
-  const lon = x * 180 / 20037508.34;
-  const lat = (2 * Math.atan(Math.exp(y * Math.PI / 20037508.34)) - Math.PI / 2) * 180 / Math.PI;
-  return [lon, lat];
+    const [x, y] = flatCoord;
+    const lon = (x * 180) / 20037508.34;
+    const lat = ((2 * Math.atan(Math.exp((y * Math.PI) / 20037508.34)) - Math.PI / 2) * 180) / Math.PI;
+    return [lon, lat];
 }
 
 /**
@@ -621,49 +619,37 @@ export function flatCoordToLonLat(flatCoord: [number, number]): [number, number]
  * @param lat - Latitude in degrees.
  * @returns A tuple of [x, y] in Web Mercator (EPSG:3857).
  */
-export function lonLatToFlatCoord(lon: string|number, lat: string|number): [number, number] {
+export function lonLatToFlatCoord(lon: string | number, lat: string | number): [number, number] {
     const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
-  const latNum = typeof lat === "number" ? lat : parseFloat(lat);
-  const x = lonNum * 20037508.34 / 180;
-  const y = Math.log(Math.tan((90 + latNum) * Math.PI / 360)) * 20037508.34 / 180;
-  return [x, y];
+    const latNum = typeof lat === "number" ? lat : parseFloat(lat);
+    const x = (lonNum * 20037508.34) / 180;
+    const y = (Math.log(Math.tan(((90 + latNum) * Math.PI) / 360)) * 20037508.34) / 180;
+    return [x, y];
 }
 
 export function roundToScale(num: number, scale: number): number {
-  if (!num.toString().includes("e")) {
-    return Number(
-      `${Math.round(Number(`${num}e+${scale}`))}e-${scale}`
-    );
-  } else {
+    if (!num.toString().includes("e")) {
+        return Number(`${Math.round(Number(`${num}e+${scale}`))}e-${scale}`);
+    }
     const arr = num.toString().split("e");
     let sig = "";
     if (Number(arr[1]) + scale > 0) {
-      sig = "+";
+        sig = "+";
     }
-    return Number(
-      `${Math.round(
-        Number(`${Number(arr[0])}e${sig}${Number(arr[1]) + scale}`)
-      )}e-${scale}`
-    );
-  }
+    return Number(`${Math.round(Number(`${Number(arr[0])}e${sig}${Number(arr[1]) + scale}`))}e-${scale}`);
 }
 
 export const validateCoord = (
-  lon: number | string,
-  lat: number | string,
-  boundingBox: [number, number, number, number]
+    lon: number | string,
+    lat: number | string,
+    boundingBox: [number, number, number, number]
 ): boolean => {
-  const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
-  const latNum = typeof lat === "number" ? lat : parseFloat(lat);
+    const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
+    const latNum = typeof lat === "number" ? lat : parseFloat(lat);
 
-  if (isNaN(lonNum) || isNaN(latNum)) {
-    return false;
-  }
+    if (Number.isNaN(lonNum) || Number.isNaN(latNum)) {
+        return false;
+    }
 
-  return (
-    lonNum > boundingBox[0] &&
-    lonNum < boundingBox[2] &&
-    latNum > boundingBox[1] &&
-    latNum < boundingBox[3]
-  );
+    return lonNum > boundingBox[0] && lonNum < boundingBox[2] && latNum > boundingBox[1] && latNum < boundingBox[3];
 };

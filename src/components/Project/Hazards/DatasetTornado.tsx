@@ -59,7 +59,7 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
                     validator={validator}
                     onSubmit={({ formData }) => onSave(formData)}
                 >
-                    <Box className="inputGroup">
+                    <Box>
                         <Button variant="solid" type="submit">
                             Save
                         </Button>

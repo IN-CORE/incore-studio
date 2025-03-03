@@ -16,7 +16,7 @@ import {
     Tab,
     Container
 } from "@mui/joy";
-import {MapComponent, MapComponentWithDrawing} from "@app/components/Map/MapComponent";
+import { MapComponent } from "@app/components/Map/MapComponent";
 import { DatasetEarthquake } from "@app/components/Project/Hazards/DatasetEarthquake";
 import { ModelEarthquake } from "@app/components/Project/Hazards/ModelEarthquake";
 import { DatasetTornado } from "@app/components/Project/Hazards/DatasetTornado";
@@ -24,8 +24,8 @@ import { ModelTornado } from "@app/components/Project/Hazards/ModelTornado";
 import { DatasetHurricane } from "@app/components/Project/Hazards/DatasetHurricane";
 import { DatasetFlood } from "@app/components/Project/Hazards/DatasetFlood";
 import { DatasetTsunami } from "@app/components/Project/Hazards/DatasetTsunami";
-import { TornadoMapDrawPrompt } from "@app/components/Map/TornadoMapDrawPrompt";
-import { EqMapDrawPrompt } from "@app/components/Map/EqMapDrawPrompt";
+// import { TornadoMapDrawPrompt } from "@app/components/Map/TornadoMapDrawPrompt";
+// import { EqMapDrawPrompt } from "@app/components/Map/EqMapDrawPrompt";
 
 interface HazardLayer {
     workspace: string;
@@ -52,16 +52,7 @@ const hazardLayers: Record<string, HazardLayer> = {
 export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, onClose, projectId, resourceType }) => {
     const [hazardType, setHazardType] = useState<string>("");
     const [activeLayers, setActiveLayers] = useState<HazardLayer[]>([]);
-    const [mapDialogOpen, setMapDialogOpen] = useState<boolean>(false);
-
-    // for drawing tornado path
-	// const [startCoord, setStartCoord] = useState([]);
-	// const [endCoord, setEndCoord] = useState([]);
-
-	// for draw eq epicenter
-    const [srcCoord, setSrcCoord] = useState<[number, number]>([0, 0]);
-    const [enableEdit, setEnableEdit] = React.useState(false); // directly edit in the child component geolocation
-
+    // const [mapDialogOpen, setMapDialogOpen] = useState<boolean>(false);
 
     // Handle Hazard Selection
     const handleHazardChange = (_: any, newValue: string | null) => {
@@ -138,13 +129,11 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                             projectId={projectId}
                                             handleLayerUpdate={handleLayerUpdate}
                                         />
-                                        <ModelEarthquake index={1}
-                                                         projectId={projectId}
-                                                         handleLayerUpdate={handleLayerUpdate}
-                                                         srcCoord={srcCoord}
-                                                         setSrcCoord={setSrcCoord}
-                                                         enableEdit={enableEdit}
-                                                         setEnableEdit={setEnableEdit}/>
+                                        <ModelEarthquake
+                                            index={1}
+                                            projectId={projectId}
+                                            handleLayerUpdate={handleLayerUpdate}
+                                        />
                                     </>
                                 )}
                                 {hazardType === "tornadoes" && (
@@ -199,30 +188,22 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                     Clear All
                                 </Button>
 
-                                {/* Map Draw Prompts */}
-                                {hazardType === "tornadoes" && (
-                                    <TornadoMapDrawPrompt
-                                        mapDialogOpen={mapDialogOpen}
-                                        handleMapDialogClose={() => setMapDialogOpen(false)}
-                                    />
-                                )}
-                                {hazardType === "earthquakes" && (
-                                    <EqMapDrawPrompt
-                                        mapDialogOpen={mapDialogOpen}
-                                        handleMapDialogClose={() => setMapDialogOpen(false)}
-                                    />
-                                )}
+                                {/* /!* Map Draw Prompts *!/ */}
+                                {/* {hazardType === "tornadoes" && ( */}
+                                {/*    <TornadoMapDrawPrompt */}
+                                {/*        mapDialogOpen={mapDialogOpen} */}
+                                {/*        handleMapDialogClose={() => setMapDialogOpen(false)} */}
+                                {/*    /> */}
+                                {/* )} */}
+                                {/* {hazardType === "earthquakes" && ( */}
+                                {/*    <EqMapDrawPrompt */}
+                                {/*        mapDialogOpen={mapDialogOpen} */}
+                                {/*        handleMapDialogClose={() => setMapDialogOpen(false)} */}
+                                {/*    /> */}
+                                {/* )} */}
 
                                 {/* Map Component */}
                                 <MapComponent layers={activeLayers} width={600} height={500} />
-                                <MapComponentWithDrawing width={600}
-                                                         height={500}
-                                                         selectedHazardType={hazardType}
-                                                         enableSrcEdit={true}
-                                                         // setStartCoord={setStartCoord}
-                                                         // setEndCoord={setEndCoord}
-                                                         setSrcCoord={setSrcCoord}
-                                />
                             </Container>
                         </Grid>
                     </Grid>
