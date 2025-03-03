@@ -1,7 +1,19 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 
-import { Box, Button, CircularProgress, Typography, Container, Divider, Grid, Stack, Sheet, Tooltip } from "@mui/joy";
+import {
+    Box,
+    Button,
+    CircularProgress,
+    Typography,
+    Container,
+    Divider,
+    Grid,
+    Stack,
+    Sheet,
+    Tooltip,
+    Snackbar
+} from "@mui/joy";
 
 import {
     useAppDispatch,
@@ -11,12 +23,20 @@ import {
     useUserUsageStats,
     useHazardStats
 } from "@app/store/hooks";
-import { getProject } from "@app/reducer/projectSlice";
+import {
+    getProject,
+    addDatasetToProject,
+    addHazardToProject,
+    addDFR3MappingToProject
+} from "@app/reducer/projectSlice";
 import withLoading from "@app/components/hocs/withLoading";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
+import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
+import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflow";
+import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 import DashboardItemTitleBar from "@app/components/Project/Resource/DashboardItemTitleBar";
 import Tally from "@app/components/Project/Resource/Tally";
 
@@ -29,8 +49,13 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 const ProjectDashboardComponent: React.FC = (): JSX.Element => {
+    const appDispatch = useAppDispatch();
+
     const project = useAppSelector((state) => state.project.project);
     const projectWorkflows = useAppSelector((state) => state.project.projectWorkflows);
+    const success = useAppSelector((state) => state.project.success);
+    const error = useAppSelector((state) => state.project.error);
+
     const { workflowCount, executionCount } = useWorkflowAndExecutionCount(projectWorkflows);
     const [visCounts, setVisCounts] = React.useState<{ tables: number; charts: number; map: number }>({
         tables: 0,
@@ -39,14 +64,6 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
     });
 
     const { hazardStats, hazardCounts } = useHazardStats(project ? project.hazards : []);
-    const hazardList = [
-        { label: "Earthquake", key: "earthquake" },
-        { label: "Tornado", key: "tornado" },
-        { label: "Hurricane", key: "hurricane" },
-        { label: "Hurricane WindField", key: "hurricaneWF" },
-        { label: "Flood", key: "flood" },
-        { label: "Tsunami", key: "tsunami" }
-    ];
     const userUsageStats = useUserUsageStats();
     const usageRingSize = "100px";
 
@@ -88,6 +105,63 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
             setVisCounts(visCounts);
         }
     }, [project]);
+
+    // create visualization
+    const [openCreateVisDialog, setOpenCreateVisDialog] = React.useState(false);
+    const handleCloseCreateVisDialog = () => {
+        setOpenCreateVisDialog(false);
+    };
+    const onCreateVisClick = () => {
+        setOpenCreateVisDialog(true);
+    };
+
+    // create workflow
+    const [openCreateWorkflowDialog, setOpenCreateWorkflowDialog] = React.useState(false);
+    const handleCloseCreateWorkflowDialog = () => {
+        setOpenCreateWorkflowDialog(false);
+    };
+    const onCreateWorkflowClick = () => {
+        setOpenCreateWorkflowDialog(true);
+    };
+
+    // snackbar
+    const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
+    const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
+
+    React.useEffect(() => {
+        if (error) {
+            setSnackbarMessage(`Error: ${error}`);
+            setSnackbarColor("danger");
+            setSnackbarOpen(true);
+        } else if (success) {
+            setSnackbarMessage(success);
+            setSnackbarColor("success");
+            setSnackbarOpen(true);
+        }
+    }, [success, error]);
+
+    // Add resources to project
+    // Add dataset to project from service
+    const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = React.useState(false);
+    const addDatasetFunc = (projectId: string, resource: Dataset) => {
+        appDispatch(addDatasetToProject({ projectId, datasets: [resource] }));
+        setOpenAddDatasetFromServiceDialog(false);
+    };
+
+    // Add hazard to project from service
+    const [openAddHazardFromServiceDialog, setOpenAddHazardFromServiceDialog] = React.useState(false);
+    const addHazardFunc = (projectId: string, resource: Hazard) => {
+        appDispatch(addHazardToProject({ projectId, hazards: [resource] }));
+        setOpenAddHazardFromServiceDialog(false);
+    };
+
+    // Add hazard to project from service
+    const [openAddDFR3MappingFromServiceDialog, setOpenAddDFR3MappingFromServiceDialog] = React.useState(false);
+    const addDFR3MappingFunc = (projectId: string, resource: DFR3Mapping) => {
+        appDispatch(addDFR3MappingToProject({ projectId, dfr3Mappings: [resource] }));
+        setOpenAddDFR3MappingFromServiceDialog(false);
+    };
 
     if (!project) {
         return <Typography level="h3">Project not found</Typography>;
@@ -132,11 +206,16 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                         variant="solid"
                                         fullWidth
                                         sx={{ backgroundColor: "primary.main", height: "60px" }}
+                                        onClick={onCreateWorkflowClick}
                                     >
                                         Create Workflow
                                     </Button>
                                 </Box>
                             </Stack>
+                            <CreateWorkflowDialog
+                                open={openCreateWorkflowDialog}
+                                onClose={handleCloseCreateWorkflowDialog}
+                            />
                         </Box>
                         <Box sx={{ width: "100%" }}>
                             <DashboardItemTitleBar
@@ -160,11 +239,17 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                         variant="solid"
                                         fullWidth
                                         sx={{ backgroundColor: "primary.main", height: "60px" }}
+                                        onClick={onCreateVisClick}
                                     >
                                         Create Visualization
                                     </Button>
                                 </Box>
                             </Stack>
+                            <CreateVisualizationDialog
+                                projectId={project.id}
+                                open={openCreateVisDialog}
+                                onClose={handleCloseCreateVisDialog}
+                            />
                         </Box>
                     </Stack>
                     <Divider sx={{ my: 5 }} />
@@ -180,6 +265,12 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 title="Hazards"
                                 link={`/project/${project.id}/hazards`}
                                 icon={<HazardIcon sx={{ color: "black" }} />}
+                                optionsList={[
+                                    {
+                                        label: "Add Hazard From Service",
+                                        onClick: () => setOpenAddHazardFromServiceDialog(true)
+                                    }
+                                ]}
                             />
                             <Grid container spacing={5} sx={{ mt: 2 }}>
                                 <Grid sm={6}>
@@ -282,7 +373,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     >
                                         <Stack sx={{ width: "100%" }} spacing={3} direction="column">
                                             <Typography level="title-lg">Hazard Count By Types</Typography>
-                                            {hazardList.map((hazard, index) => (
+                                            {hazardCounts.map((hazard, index) => (
                                                 <Stack
                                                     direction="row"
                                                     justifyContent="space-between"
@@ -290,21 +381,34 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                     key={index}
                                                 >
                                                     <Typography level="title-md">{hazard.label}</Typography>
-                                                    <Typography level="body-md">
-                                                        {hazardCounts[hazard.key as keyof typeof hazardCounts]}
-                                                    </Typography>
+                                                    <Typography level="body-md">{hazard.value}</Typography>
                                                 </Stack>
                                             ))}
                                         </Stack>
                                     </Sheet>
                                 </Grid>
                             </Grid>
+                            <AddFromServiceDialog
+                                projectId={project.id}
+                                resourceType="hazard"
+                                open={openAddHazardFromServiceDialog}
+                                onClose={() => {
+                                    setOpenAddHazardFromServiceDialog(false);
+                                }}
+                                onAddClick={addHazardFunc}
+                            />
                         </Box>
                         <Box sx={{ width: "100%" }}>
                             <DashboardItemTitleBar
                                 title="Datasets"
                                 link={`/project/${project.id}/datasets`}
                                 icon={<DatasetIcon sx={{ color: "black" }} />}
+                                optionsList={[
+                                    {
+                                        label: "Add Dataset From Service",
+                                        onClick: () => setOpenAddDatasetFromServiceDialog(true)
+                                    }
+                                ]}
                             />
                             <Grid container spacing={5} sx={{ mt: 2 }}>
                                 <Grid sm={6}>
@@ -419,6 +523,15 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     </Sheet>
                                 </Grid>
                             </Grid>
+                            <AddFromServiceDialog
+                                projectId={project.id}
+                                resourceType="dataset"
+                                open={openAddDatasetFromServiceDialog}
+                                onClose={() => {
+                                    setOpenAddDatasetFromServiceDialog(false);
+                                }}
+                                onAddClick={addDatasetFunc}
+                            />
                         </Box>
                     </Stack>
                     <Divider sx={{ my: 5 }} />
@@ -433,6 +546,12 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 title="DFR3 Mappings"
                                 link={`/project/${project.id}/dfr3mappings`}
                                 icon={<DFR3Icon sx={{ color: "black" }} />}
+                                optionsList={[
+                                    {
+                                        label: "Add DFR3 Mappings From Service",
+                                        onClick: () => setOpenAddDFR3MappingFromServiceDialog(true)
+                                    }
+                                ]}
                             />
                             <Grid container spacing={5} sx={{ mt: 2 }}>
                                 <Grid sm={6}>
@@ -512,10 +631,32 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     />
                                 </Grid>
                             </Grid>
+                            <AddFromServiceDialog
+                                projectId={project.id}
+                                resourceType="DFR3 Mapping"
+                                open={openAddDFR3MappingFromServiceDialog}
+                                onClose={() => {
+                                    setOpenAddDFR3MappingFromServiceDialog(false);
+                                }}
+                                onAddClick={addDFR3MappingFunc}
+                            />
                         </Box>
                     </Stack>
                 </Grid>
             </Grid>
+            <Snackbar
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                open={snackbarOpen}
+                onClose={() => {
+                    setSnackbarOpen(false);
+                    setSnackbarMessage("");
+                }}
+                variant="outlined"
+                color={snackbarColor}
+                autoHideDuration={2000}
+            >
+                {snackbarMessage}
+            </Snackbar>
         </>
     );
 };

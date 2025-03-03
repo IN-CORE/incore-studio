@@ -257,14 +257,12 @@ export const useUserUsageStats = () => {
 
 export const useHazardStats = (projectHazards: Hazard[]) => {
     const [hazardStats, setHazardStats] = React.useState<{ model: number; dataset: number }>({ model: 0, dataset: 0 });
-    const [hazardCounts, setHazardCounts] = React.useState<{
-        earthquake: number;
-        hurricane: number;
-        tornado: number;
-        flood: number;
-        tsunami: number;
-        hurricaneWF: number;
-    }>({ earthquake: 0, hurricane: 0, tornado: 0, flood: 0, tsunami: 0, hurricaneWF: 0 });
+    const [hazardCounts, setHazardCounts] = React.useState<
+        {
+            label: string;
+            value: number;
+        }[]
+    >([]);
 
     React.useEffect(() => {
         let modelCount = 0;
@@ -327,14 +325,16 @@ export const useHazardStats = (projectHazards: Hazard[]) => {
             }
             console.log({ model: modelCount, dataset: datasetCount });
             setHazardStats({ model: modelCount, dataset: datasetCount });
-            setHazardCounts({
-                earthquake: earthquakeCount,
-                hurricane: hurricaneCount,
-                tornado: tornadoCount,
-                flood: floodCount,
-                tsunami: tsunamiCount,
-                hurricaneWF: hurricaneWFCount
-            });
+            setHazardCounts(
+                [
+                    { label: "Earthquake", value: earthquakeCount },
+                    { label: "Hurricane", value: hurricaneCount },
+                    { label: "Tornado", value: tornadoCount },
+                    { label: "Flood", value: floodCount },
+                    { label: "Tsunami", value: tsunamiCount },
+                    { label: "Hurricane Windfield", value: hurricaneWFCount }
+                ].sort((a, b) => b.value - a.value)
+            );
         };
         if (projectHazards.length > 0) {
             fetchStats();

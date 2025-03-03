@@ -1,7 +1,7 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { Box, IconButton, Link, Typography } from "@mui/joy";
+import { Box, Dropdown, IconButton, Link, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
 import { SvgIconProps } from "@mui/material";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 
@@ -25,9 +25,21 @@ const DashboardItemTitleBar: React.FC<DashboardItemTitleBarProps> = ({ title, op
                 </Link>
             </Box>
             {optionsList && (
-                <IconButton size="sm">
-                    <MoreVertRoundedIcon />
-                </IconButton>
+                <Dropdown>
+                    <MenuButton
+                        slots={{ root: IconButton }}
+                        slotProps={{ root: { variant: "outlined", color: "neutral" } }}
+                    >
+                        <MoreVertRoundedIcon />
+                    </MenuButton>
+                    <Menu>
+                        {optionsList.map((option, index) => (
+                            <MenuItem key={index} onClick={option.onClick}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                </Dropdown>
             )}
         </Box>
     );
