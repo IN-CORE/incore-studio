@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, FormLabel, Input, Select, Option, TabPanel, Typography } from "@mui/joy";
-import CircularProgress from "@mui/joy/CircularProgress";
 import { createModelEarthquake, validateCoord } from "@app/utils/";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
@@ -98,30 +97,6 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
 
     return (
         <TabPanel value={index}>
-            {/* Loading overlay */}
-            {loading && (
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: "rgba(255,255,255,0.8)",
-                        zIndex: 10,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center"
-                    }}
-                >
-                    <CircularProgress />
-                    <Typography level="body-md" sx={{ mt: 1 }}>
-                        Saving...
-                    </Typography>
-                </Box>
-            )}
-
             <Box component="form" sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Box sx={{ mb: 2 }}>
                     <FormLabel required sx={{ fontSize: "1rem" }}>

@@ -5,7 +5,7 @@ import { CustomTextInput } from "@app/components/StyledComponents/CustomTextWidg
 import { CustomSelectWidget } from "@app/components/StyledComponents/CustomSelectWidget";
 import { createRjfsDatasetHazards } from "@app/utils";
 import { addHazardToProject } from "@app/reducer/projectSlice";
-import { Box, Button, Skeleton, TabPanel } from "@mui/joy";
+import { Box, Button, TabPanel } from "@mui/joy";
 import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/flood/datasetFlood.json";
 import DatasetFloodUiSchema from "@app/schema/flood/datasetFloodUi.json";
@@ -48,9 +48,7 @@ export const DatasetFlood: React.FC<DatasetFloodProps> = ({ index, projectId, ha
 
     return (
         <TabPanel value={index}>
-            {loading ? (
-                <Skeleton variant="rectangular" width="100%" height={200} className="rounded-md" />
-            ) : (
+            <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}
                     schema={DatasetFloodSchema}
@@ -65,7 +63,7 @@ export const DatasetFlood: React.FC<DatasetFloodProps> = ({ index, projectId, ha
                         </Button>
                     </Box>
                 </Form>
-            )}
+            </Box>
         </TabPanel>
     );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Skeleton, TabPanel } from "@mui/joy";
+import { Box, Button, TabPanel } from "@mui/joy";
 import Form from "@rjsf/mui";
 import { CustomSelectWidget } from "@app/components/StyledComponents/CustomSelectWidget";
 import { CustomTextInput } from "@app/components/StyledComponents/CustomTextWidget";
@@ -49,9 +49,7 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, pro
 
     return (
         <TabPanel value={index}>
-            {loading ? (
-                <Skeleton variant="rectangular" width="100%" height={200} className="rounded-md" />
-            ) : (
+            <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}
                     schema={DatasetEqSchema}
@@ -66,7 +64,7 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, pro
                         </Button>
                     </Box>
                 </Form>
-            )}
+            </Box>
         </TabPanel>
     );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Skeleton, TabPanel } from "@mui/joy";
+import { Box, Button, TabPanel } from "@mui/joy";
 import { useAppDispatch } from "@app/store/hooks";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
 import { CustomTextInput } from "@app/components/StyledComponents/CustomTextWidget";
@@ -48,9 +48,7 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
 
     return (
         <TabPanel value={index}>
-            {loading ? (
-                <Skeleton variant="rectangular" width="100%" height={200} className="rounded-md" />
-            ) : (
+            <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}
                     schema={DatasetFloodSchema}
@@ -65,7 +63,7 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
                         </Button>
                     </Box>
                 </Form>
-            )}
+            </Box>
         </TabPanel>
     );
 };

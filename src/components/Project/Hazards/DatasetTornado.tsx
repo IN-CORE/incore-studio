@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TabPanel, Box, Button, Skeleton } from "@mui/joy";
+import { TabPanel, Box, Button } from "@mui/joy";
 import { useAppDispatch } from "@app/store/hooks";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
 import { CustomTextInput } from "@app/components/StyledComponents/CustomTextWidget";
@@ -48,9 +48,7 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
 
     return (
         <TabPanel value={index}>
-            {loading ? (
-                <Skeleton variant="rectangular" width="100%" height={200} className="rounded-md" />
-            ) : (
+            <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}
                     schema={DatasetFloodSchema}
@@ -65,7 +63,7 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
                         </Button>
                     </Box>
                 </Form>
-            )}
+            </Box>
         </TabPanel>
     );
 };
