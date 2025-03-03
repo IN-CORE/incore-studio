@@ -93,6 +93,21 @@ const fetchDatasetsFromService = async (datasetIds: string[]): Promise<Dataset[]
     }
 };
 
+const fetchWorkflowFiles = async (wfids: string[]): Promise<DatawolfWorkflowFile[]> => {
+    try {
+        const requests = wfids.map((wfid) =>
+            axios.get<DatawolfWorkflowFile>(`${config.datawolfApi}/workflows/${wfid}`, { headers: getHeaders() })
+        );
+        const responses = await Promise.all(requests);
+
+        const wfFiles = responses.map((response) => response.data);
+        return wfFiles;
+    } catch (error) {
+        console.error("Error fetching workflow files: ", error);
+        throw new Error("Error fetching workflow files");
+    }
+};
+
 export const useOutputDatasetsSynchronizationPolling = (
     projectWorkflows: Workflow[],
     interval: number,
@@ -100,21 +115,6 @@ export const useOutputDatasetsSynchronizationPolling = (
 ) => {
     const projectDatasets = useSelector((state: RootState) => state.project.projectDatasets);
     const appDispatch = useAppDispatch();
-
-    const fetchWorkflowFiles = async (wfids: string[]): Promise<DatawolfWorkflowFile[]> => {
-        try {
-            const requests = wfids.map((wfid) =>
-                axios.get<DatawolfWorkflowFile>(`${config.datawolfApi}/workflows/${wfid}`, { headers: getHeaders() })
-            );
-            const responses = await Promise.all(requests);
-
-            const wfFiles = responses.map((response) => response.data);
-            return wfFiles;
-        } catch (error) {
-            console.error("Error fetching workflow files: ", error);
-            throw new Error("Error fetching workflow files");
-        }
-    };
 
     React.useEffect(() => {
         if (projectWorkflows.length === 0 || !interval || projectId === undefined) return;
@@ -144,6 +144,231 @@ export const useOutputDatasetsSynchronizationPolling = (
         // cleanup
         return () => clearInterval(intervalId);
     }, [projectWorkflows, interval]);
+};
+
+export const useUserUsageStats = () => {
+    const [usageStats, setUsageStats] = React.useState<UserSpaceUsage>({
+        hazards: {
+            entities: {
+                text: "",
+                value: 0
+            },
+            disk: {
+                text: "",
+                value: 0
+            }
+        },
+        datasets: {
+            entities: {
+                text: "",
+                value: 0
+            },
+            disk: {
+                text: "",
+                value: 0
+            }
+        },
+        dfr3: {
+            entities: {
+                text: "",
+                value: 0
+            }
+        }
+    });
+
+    const getSimplifiedVal = (val: number) => {
+        return parseFloat(Math.round(val).toFixed(2));
+    };
+
+    const getValue = (current: number, total: number) => {
+        return total !== 0 ? getSimplifiedVal((current * 100) / total) : 0;
+    };
+
+    React.useEffect(() => {
+        const fetchUsageStats = async () => {
+            try {
+                const uris = [`${config.spaceApi}/usage`, `${config.spaceApi}/allocations`];
+                const requests = uris.map((uri) => axios.get<SpaceUsageResponse>(uri, { headers: getHeaders() }));
+                const responses = await Promise.all(requests);
+
+                const usage = responses[0].data;
+                const allocations = responses[1].data;
+
+                let usageValue = {
+                    hazards: {
+                        entities: {
+                            text: `${usage["total_number_of_hazards"] ?? 0}\n/\n${
+                                allocations["total_number_of_hazards"] ?? 0
+                            }`,
+                            value: getValue(
+                                usage["total_number_of_hazards"] ?? 0,
+                                allocations["total_number_of_hazards"] ?? 0
+                            )
+                        },
+                        disk: {
+                            text: `${usage["total_file_size_of_hazard_datasets"]}\n of\n ${allocations["total_file_size_of_hazard_datasets"]}`,
+                            value: getValue(
+                                usage["total_file_size_of_hazard_datasets_byte"] ?? 0,
+                                allocations["total_file_size_of_hazard_datasets_byte"] ?? 0
+                            )
+                        }
+                    },
+                    datasets: {
+                        entities: {
+                            text: `${usage["total_number_of_datasets"] ?? 0}\n/\n${
+                                allocations["total_number_of_datasets"] ?? 0
+                            }`,
+                            value: getValue(
+                                usage["total_number_of_datasets"] ?? 0,
+                                allocations["total_number_of_datasets"] ?? 0
+                            )
+                        },
+                        disk: {
+                            text: `${usage["total_file_size_of_datasets"]}\n of\n ${allocations["total_file_size_of_datasets"]}`,
+                            value: getValue(
+                                usage["total_file_size_of_datasets_byte"] ?? 0,
+                                allocations["total_file_size_of_datasets_byte"] ?? 0
+                            )
+                        }
+                    },
+                    dfr3: {
+                        entities: {
+                            text: `${usage["total_number_of_dfr3"] ?? 0}\n/\n${
+                                allocations["total_number_of_dfr3"] ?? 0
+                            }`,
+                            value: getValue(
+                                usage["total_number_of_dfr3"] ?? 0,
+                                allocations["total_number_of_dfr3"] ?? 0
+                            )
+                        }
+                    }
+                };
+
+                setUsageStats(usageValue);
+            } catch (error) {
+                console.error("Error fetching user usage stats: ", error);
+            }
+        };
+        fetchUsageStats();
+    }, []);
+
+    return usageStats;
+};
+
+export const useHazardStats = (projectHazards: Hazard[]) => {
+    const [hazardStats, setHazardStats] = React.useState<{ model: number; dataset: number }>({ model: 0, dataset: 0 });
+    const [hazardCounts, setHazardCounts] = React.useState<{
+        earthquake: number;
+        hurricane: number;
+        tornado: number;
+        flood: number;
+        tsunami: number;
+        hurricaneWF: number;
+    }>({ earthquake: 0, hurricane: 0, tornado: 0, flood: 0, tsunami: 0, hurricaneWF: 0 });
+
+    React.useEffect(() => {
+        let modelCount = 0;
+        let datasetCount = 0;
+        let earthquakeCount = 0;
+        let hurricaneCount = 0;
+        let tornadoCount = 0;
+        let floodCount = 0;
+        let tsunamiCount = 0;
+        let hurricaneWFCount = 0;
+        const fetchStats = async () => {
+            for (let hazard of projectHazards) {
+                if (hazard.type === "earthquake") {
+                    earthquakeCount++;
+                    try {
+                        const response = await axios.get(`${config.earthquakeApi}/${hazard.id}`, {
+                            headers: getHeaders()
+                        });
+                        if (response.data) {
+                            console.log(response.data);
+                            if (response.data["eqType"] === "dataset") {
+                                datasetCount = datasetCount + 1;
+                            } else {
+                                modelCount++;
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error fetching earthquake data: ", error);
+                    }
+                } else if (hazard.type === "tornado") {
+                    tornadoCount++;
+                    try {
+                        const response = await axios.get(`${config.tornadoApi}/${hazard.id}`, {
+                            headers: getHeaders()
+                        });
+                        if (response.data) {
+                            console.log(response.data["tornadoType"] === "dataset");
+                            if (response.data["tornadoType"] === "dataset") {
+                                datasetCount = datasetCount + 1;
+                            } else {
+                                modelCount++;
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error fetching tornado data: ", error);
+                    }
+                } else if (hazard.type === "hurricane") {
+                    hurricaneCount++;
+                    datasetCount = datasetCount + 1;
+                } else if (hazard.type === "flood") {
+                    floodCount++;
+                    datasetCount = datasetCount + 1;
+                } else if (hazard.type === "tsunami") {
+                    tsunamiCount++;
+                    datasetCount = datasetCount + 1;
+                } else if (hazard.type === "hurricaneWindfield") {
+                    hurricaneWFCount++;
+                    datasetCount = datasetCount + 1;
+                }
+            }
+            console.log({ model: modelCount, dataset: datasetCount });
+            setHazardStats({ model: modelCount, dataset: datasetCount });
+            setHazardCounts({
+                earthquake: earthquakeCount,
+                hurricane: hurricaneCount,
+                tornado: tornadoCount,
+                flood: floodCount,
+                tsunami: tsunamiCount,
+                hurricaneWF: hurricaneWFCount
+            });
+        };
+        if (projectHazards.length > 0) {
+            fetchStats();
+        }
+    }, [projectHazards]);
+
+    return { hazardStats, hazardCounts };
+};
+
+export const useWorkflowAndExecutionCount = (projectWorkflows: Workflow[]) => {
+    const [workflowCount, setWorkflowCount] = React.useState<number>(0);
+    const [executionCount, setExecutionCount] = React.useState<number>(0);
+
+    React.useEffect(() => {
+        setWorkflowCount(projectWorkflows.length);
+        const wfIds = projectWorkflows.map((wf) => wf.id);
+        const fetchExecutionCount = async () => {
+            try {
+                const requests = wfIds.map((id) =>
+                    axios.get<DatawolfExecutionFile[]>(`${config.datawolfApi}/executions/${id}`, {
+                        headers: getHeaders()
+                    })
+                );
+                const responses = await Promise.all(requests);
+                const executionCount = responses.reduce((acc, response) => acc + response.data.length, 0);
+                setExecutionCount(executionCount);
+            } catch (error) {
+                console.error("Error fetching execution count: ", error);
+            }
+        };
+        fetchExecutionCount();
+    }, [projectWorkflows]);
+
+    return { workflowCount, executionCount };
 };
 
 export const useWorkflowAutoSave = (workflow: DatawolfWorkflowFile, workflowID: string | null, interval: number) => {

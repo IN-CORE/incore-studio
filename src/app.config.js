@@ -6,6 +6,13 @@ config.slackInvitationLink = "https://bit.ly/in-core";
 config.tosURL = `${hostname}/doc/incore/termsofservice.html`;
 config.hostname = hostname;
 config.projectApi = `${hostname}/project/api/projects`;
+config.spaceApi = `${hostname}/space/api`;
+config.hazardApi = `${hostname}/hazard/api`;
+config.earthquakeApi = `${config.hazardApi}/earthquakes`;
+config.floodApi = `${config.hazardApi}/floods`;
+config.hurricaneWindfieldApi = `${config.hazardApi}/hurricaneWindfields`;
+config.tornadoApi = `${config.hazardApi}/tornadoes`;
+config.tsunamiApi = `${config.hazardApi}/tsunamis`;
 config.datawolfApi = `${hostname}/datawolf`;
 config.keycloakConfig = {
     authority: `${hostname}/auth/realms/In-core`,
