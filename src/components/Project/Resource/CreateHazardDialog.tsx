@@ -24,8 +24,6 @@ import { ModelTornado } from "@app/components/Project/Hazards/ModelTornado";
 import { DatasetHurricane } from "@app/components/Project/Hazards/DatasetHurricane";
 import { DatasetFlood } from "@app/components/Project/Hazards/DatasetFlood";
 import { DatasetTsunami } from "@app/components/Project/Hazards/DatasetTsunami";
-// import { TornadoMapDrawPrompt } from "@app/components/Map/TornadoMapDrawPrompt";
-// import { EqMapDrawPrompt } from "@app/components/Map/EqMapDrawPrompt";
 
 interface HazardLayer {
     workspace: string;
@@ -42,23 +40,21 @@ interface CreateHazardDialogProps {
 
 // Hazard Layer Mapping
 const hazardLayers: Record<string, HazardLayer> = {
-    earthquakes: { workspace: "incore", layerId: "earthquakes" },
-    floods: { workspace: "incore", layerId: "floods" },
-    hurricanes: { workspace: "incore", layerId: "hurricanes" },
-    tornadoes: { workspace: "incore", layerId: "tornadoes" },
-    tsunamis: { workspace: "incore", layerId: "tsunamis" }
+    earthquakes: { workspace: "incore", layerId: "" },
+    floods: { workspace: "incore", layerId: "" },
+    hurricanes: { workspace: "incore", layerId: "" },
+    tornadoes: { workspace: "incore", layerId: "" },
+    tsunamis: { workspace: "incore", layerId: "" }
 };
 
 export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, onClose, projectId, resourceType }) => {
     const [hazardType, setHazardType] = useState<string>("");
     const [activeLayers, setActiveLayers] = useState<HazardLayer[]>([]);
-    // const [mapDialogOpen, setMapDialogOpen] = useState<boolean>(false);
 
     // Handle Hazard Selection
     const handleHazardChange = (_: any, newValue: string | null) => {
         if (newValue) {
             setHazardType(newValue);
-            setActiveLayers([hazardLayers[newValue]]);
         }
     };
 
@@ -191,20 +187,6 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                 >
                                     Clear All
                                 </Button>
-
-                                {/* /!* Map Draw Prompts *!/ */}
-                                {/* {hazardType === "tornadoes" && ( */}
-                                {/*    <TornadoMapDrawPrompt */}
-                                {/*        mapDialogOpen={mapDialogOpen} */}
-                                {/*        handleMapDialogClose={() => setMapDialogOpen(false)} */}
-                                {/*    /> */}
-                                {/* )} */}
-                                {/* {hazardType === "earthquakes" && ( */}
-                                {/*    <EqMapDrawPrompt */}
-                                {/*        mapDialogOpen={mapDialogOpen} */}
-                                {/*        handleMapDialogClose={() => setMapDialogOpen(false)} */}
-                                {/*    /> */}
-                                {/* )} */}
 
                                 {/* Map Component */}
                                 <MapComponent layers={activeLayers} width={600} height={500} />

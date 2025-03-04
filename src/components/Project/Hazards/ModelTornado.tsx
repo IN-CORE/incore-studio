@@ -25,7 +25,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
     const [disabled, setDisabled] = useState(true);
     const [loading, setLoading] = useState(false);
     const [validStartCoord, setValidStartCoord] = useState(true);
-    const [validEndCoord, setValidEndCoord] = useState(true);
+    const [validEndCoord, setValidEndCoord] = useState(false);
 
     const labelStyles = {
         start: { color: "#96B712", fontSize: "14px" },

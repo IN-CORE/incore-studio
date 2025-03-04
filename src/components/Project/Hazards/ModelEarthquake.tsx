@@ -25,7 +25,7 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
     const [faultTypeMap, setFaultTypeMap] = useState("Strike-Slip");
     const [disabled, setDisabled] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
-    const [validCoord, setValidCoord] = useState<boolean>(true);
+    const [validCoord, setValidCoord] = useState<boolean>(false);
 
     const appDispatch = useAppDispatch();
 
