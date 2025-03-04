@@ -18,16 +18,12 @@ import {
 import { useShallow } from "zustand/react/shallow";
 
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
-import {
-    getExecutionById,
-    resetExecutionState,
-    setExecutionSidePanelCheckStatus
-    // updateExecutionSidePanelCheckStatus
-} from "@app/reducer/executionSlice";
+import { getExecutionById, resetExecutionState, setExecutionSidePanelCheckStatus } from "@app/reducer/executionSlice";
 import { useAppDispatch, useAppSelector, useExecutionTemplate, useExecutionPolling } from "@app/store/hooks";
 import withLoading from "@app/components/hocs/withLoading";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
+import ConfirmationDialog from "@app/components/ConfirmationDialog";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import Workflow from "@app/components/Workflow";
 import { getWorkflow, clearWorkflowState } from "@app/reducer/workflowSlice";
@@ -58,7 +54,6 @@ const ExecutionComponent: React.FC<{
     const { setNodes, setEdges } = useStore(useShallow(selector));
 
     const sidePanelData = useAppSelector((state) => state.execution.sidePanelData);
-    // const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
     const currentExecution = useAppSelector((state) => state.execution.currentExecution);
     const reactFlowWorkflow = useAppSelector((state) => state.workflow.reactFlowWorkflow);
     const workflowLoading = useAppSelector((state) => state.workflow.workflowLoading);
@@ -147,44 +142,17 @@ const ExecutionComponent: React.FC<{
                                     </IconButton>
                                 </Tooltip>
                             </Box>
-                            <Modal
+                            <ConfirmationDialog
                                 open={saveExecutionModalConfirmation}
-                                onClose={(_event: React.MouseEvent<HTMLButtonElement>) => {
-                                    setSaveExecutionModalConfirmation(false);
+                                onClose={() => setSaveExecutionModalConfirmation(false)}
+                                onConfirm={() => {
+                                    appDispatch(resetExecutionState());
+                                    navigate(`/project/${id}/workflows/${wfID}`);
                                 }}
-                                sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-                            >
-                                <ModalDialog variant="outlined" role="alertdialog">
-                                    <DialogTitle sx={{ fontWeight: "lg" }}>
-                                        <WarningRoundedIcon />
-                                        Save Changes Before Leaving?
-                                    </DialogTitle>
-                                    <Divider />
-                                    <DialogContent>
-                                        You have unsaved changes. If you leave this page without submitting, all
-                                        progress will be lost.
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button
-                                            variant="solid"
-                                            color="danger"
-                                            onClick={() => {
-                                                appDispatch(resetExecutionState());
-                                                navigate(`/project/${id}/workflows/${wfID}`);
-                                            }}
-                                        >
-                                            Leave
-                                        </Button>
-                                        <Button
-                                            variant="plain"
-                                            color="neutral"
-                                            onClick={() => setSaveExecutionModalConfirmation(false)}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </DialogActions>
-                                </ModalDialog>
-                            </Modal>
+                                confirmationDialogTitle="Save Changes Before Leaving?"
+                                confirmationDialogText="You have unsaved changes. If you leave this page without submitting, all progress will be lost."
+                                confirmationDialogAction="Leave"
+                            />
                             <Box>
                                 <Stack direction="row" spacing={2} alignItems="center">
                                     <Typography
