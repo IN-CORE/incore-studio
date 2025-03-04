@@ -233,7 +233,7 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                                 value={coordLat !== null ? coordLat : ""}
                                 onChange={(e) => setCoordLat(e.target.value)}
                                 type="number"
-                                placeholder={String(config.DEFAULT_MAP_CENTER[1])}
+                                placeholder={String(config.DEFAULT_MAP_CENTER[0])}
                                 sx={coordInputEditSx}
                             />
                         </Box>
@@ -243,7 +243,7 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                                 value={coordLon !== null ? coordLon : ""}
                                 onChange={(e) => setCoordLon(e.target.value)}
                                 type="number"
-                                placeholder={String(config.DEFAULT_MAP_CENTER[0])}
+                                placeholder={String(config.DEFAULT_MAP_CENTER[1])}
                                 sx={coordInputEditSx}
                             />
                         </Box>

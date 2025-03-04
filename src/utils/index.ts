@@ -521,10 +521,10 @@ export async function createModelEarthquake(
         visualizationParameters: {
             demandType,
             demandUnits,
-            minX: round(latNum - 1, 3),
-            minY: round(lonNum - 1, 3),
-            maxX: round(latNum + 1, 3),
-            maxY: round(lonNum + 1, 3),
+            minX: round(lonNum - 1, 3),
+            minY: round(latNum - 1, 3),
+            maxX: round(lonNum + 1, 3),
+            maxY: round(latNum + 1, 3),
             numPoints: "1025",
             amplifyHazard: "true"
         }

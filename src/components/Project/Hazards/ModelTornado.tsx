@@ -176,7 +176,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                                         type="number"
                                         value={lat ?? ""}
                                         onChange={(e) => setLat(e.target.value)}
-                                        placeholder={String(config.DEFAULT_MAP_CENTER[1])}
+                                        placeholder={String(config.DEFAULT_MAP_CENTER[0])}
                                     />
                                 </Box>
                                 <Box display="flex" alignItems="center">
@@ -188,7 +188,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                                         type="number"
                                         value={lon ?? ""}
                                         onChange={(e) => setLon(e.target.value)}
-                                        placeholder={String(config.DEFAULT_MAP_CENTER[0])}
+                                        placeholder={String(config.DEFAULT_MAP_CENTER[1])}
                                     />
                                 </Box>
                                 <Button
