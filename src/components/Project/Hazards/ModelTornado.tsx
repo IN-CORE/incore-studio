@@ -95,9 +95,9 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
             endLonCoord
         );
 
-        if (tornadoJson?.id) {
+        if (tornadoJson && tornadoJson.id) {
             dispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
-            handleLayerUpdate(tornadoJson);
+            handleLayerUpdate(tornadoJson.id);
             setName("");
             setDescription("");
             setStartLatCoord("");
