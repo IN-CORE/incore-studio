@@ -1,87 +1,81 @@
 {
-	"type": "object",
-	"required": ["name", "description"],
-	"properties": {
-		"name": {
-			"type": "string",
-			"title": "Name"
-		},
-		"description": {
-			"type": "string",
-			"title": "Description"
-		},
-		"hurricaneType": {
-			"type": "string",
-			"default": "dataset"
-		},
-		"hazardDatasets": {
-			"type": "array",
-			"title": "Hazard Datasets",
-			"items": {
-				"type": "object",
-				"required": ["demandType", "demandUnits", "file"],
-				"properties": {
-					"demandType": {
-						"type": "string",
-						"title": "Demand Type",
-						"enumNames": [
-							"Wave Height",
-							"Surge Level",
-							"Inundation Duration",
-							"Inundation Depth",
-							"Wave Period",
-							"Wave Direction",
-							"Water Velocity",
-							"Wind Velocity"
-						],
-						"enum": [
-							"waveHeight",
-							"surgeLevel",
-							"inundationDuration",
-							"innundationDepth",
-							"wavePeriod",
-							"waveDirection",
-							"waterVelocity",
-							"windVelocity"
-						],
-						"default": "waveHeight"
-					},
-					"demandUnits": {
-						"type": "string",
-						"title": "Demand Unit",
-						"enumNames": [
-							"Metre",
-							"Second",
-							"Hour",
-							"Degree",
-							"Metre per Second"
-						],
-						"enum": ["m", "s", "hr", "deg", "m/s"],
-						"default": "m"
-					},
-					"file": {
-						"type": "string",
-						"format": "data-url",
-						"title": "Single file"
-					},
-					"hazardType": {
-						"type": "string",
-						"default": "deterministic"
-					},
-					"hurricaneParameters": {
-						"title": "",
-						"type": "object",
-						"required": ["model"],
-						"properties": {
-							"model": {
-								"title": "Model",
-								"enum": ["Kriging", "ADCIRCSWAN"],
-								"default": "ADCIRCSWAN"
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+    "type": "object",
+    "required": ["name", "description"],
+    "properties": {
+        "name": {
+            "type": "string",
+            "title": "Name"
+        },
+        "description": {
+            "type": "string",
+            "title": "Description"
+        },
+        "hurricaneType": {
+            "type": "string",
+            "default": "dataset"
+        },
+        "hazardDatasets": {
+            "type": "array",
+            "title": "Hazard Datasets",
+            "items": {
+                "type": "object",
+                "required": ["demandType", "demandUnits", "file"],
+                "properties": {
+                    "demandType": {
+                        "type": "string",
+                        "title": "Demand Type",
+                        "enumNames": [
+                            "Wave Height",
+                            "Surge Level",
+                            "Inundation Duration",
+                            "Inundation Depth",
+                            "Wave Period",
+                            "Wave Direction",
+                            "Water Velocity",
+                            "Wind Velocity"
+                        ],
+                        "enum": [
+                            "waveHeight",
+                            "surgeLevel",
+                            "inundationDuration",
+                            "innundationDepth",
+                            "wavePeriod",
+                            "waveDirection",
+                            "waterVelocity",
+                            "windVelocity"
+                        ],
+                        "default": "waveHeight"
+                    },
+                    "demandUnits": {
+                        "type": "string",
+                        "title": "Demand Unit",
+                        "enumNames": ["Metre", "Second", "Hour", "Degree", "Metre per Second"],
+                        "enum": ["m", "s", "hr", "deg", "m/s"],
+                        "default": "m"
+                    },
+                    "file": {
+                        "type": "string",
+                        "format": "data-url",
+                        "title": "Single file"
+                    },
+                    "hazardType": {
+                        "type": "string",
+                        "default": "deterministic"
+                    },
+                    "hurricaneParameters": {
+                        "title": "",
+                        "type": "object",
+                        "required": ["model"],
+                        "properties": {
+                            "model": {
+                                "title": "Model",
+                                "enum": ["Kriging", "ADCIRCSWAN"],
+                                "default": "ADCIRCSWAN"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

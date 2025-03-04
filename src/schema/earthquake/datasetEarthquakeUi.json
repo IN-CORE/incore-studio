@@ -1,36 +1,36 @@
 {
-	"eqType": {
-		"ui:widget": "hidden",
-		"classNames": "hidden-widget"
-	},
-	"name": {
-		"classNames": "required-field"
-	},
-	"description": {
-		"classNames": "required-field"
-	},
-	"hazardDatasets": {
-		"ui:options": {
-			"orderable": false
-		},
-		"items": {
-			"hazardType": {
-				"ui:widget": "hidden",
-				"classNames": "hidden-widget"
-			},
-			"file": {
-				"ui:options": { "accept": [".tif", ".tiff"] }
-			},
-			"eqParameters": {
-				"magnitude": {
-					"ui:widget": "hidden",
-					"classNames": "hidden-widget"
-				},
-				"depth": {
-					"ui:widget": "hidden",
-					"classNames": "hidden-widget"
-				}
-			}
-		}
-	}
+    "eqType": {
+        "ui:widget": "hidden",
+        "classNames": "hidden-widget"
+    },
+    "name": {
+        "classNames": "required-field"
+    },
+    "description": {
+        "classNames": "required-field"
+    },
+    "hazardDatasets": {
+        "ui:options": {
+            "orderable": false
+        },
+        "items": {
+            "hazardType": {
+                "ui:widget": "hidden",
+                "classNames": "hidden-widget"
+            },
+            "file": {
+                "ui:options": { "accept": [".tif", ".tiff"] }
+            },
+            "eqParameters": {
+                "magnitude": {
+                    "ui:widget": "hidden",
+                    "classNames": "hidden-widget"
+                },
+                "depth": {
+                    "ui:widget": "hidden",
+                    "classNames": "hidden-widget"
+                }
+            }
+        }
+    }
 }

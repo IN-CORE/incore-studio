@@ -1,91 +1,73 @@
 {
-	"type": "object",
-	"required": ["name", "description"],
-	"properties": {
-		"name": {
-			"type": "string",
-			"title": "Name"
-		},
-		"description": {
-			"type": "string",
-			"title": "Description"
-		},
-		"eqType": {
-			"type": "string",
-			"default": "dataset"
-		},
-		"hazardDatasets": {
-			"type": "array",
-			"title": "Hazard Datasets",
-			"items": {
-				"type": "object",
-				"required": ["period", "demandType", "demandUnits", "file"],
-				"properties": {
-					"period": {
-						"type": "number",
-						"title": "Period",
-						"default": 0.0
-					},
-					"demandType": {
-						"type": "string",
-						"title": "Demand Type",
-						"enumNames": ["PGA", "PGV", "PGD", "SA", "SD", "SV"],
-						"enum": ["PGA", "PGV", "PGD", "SA", "SD", "SV"],
-						"default": "PGA"
-					},
-					"demandUnits": {
-						"type": "string",
-						"title": "Demand Unit",
-						"enumNames": [
-							"g",
-							"in/sec^2",
-							"m/sec^2",
-							"in/sec",
-							"cm/sec",
-							"in",
-							"ft",
-							"m"
-						],
-						"enum": [
-							"g",
-							"in/sec^2",
-							"m/sec^2",
-							"in/sec",
-							"cm/sec",
-							"in",
-							"ft",
-							"m"
-						],
-						"default": "g"
-					},
-					"file": {
-						"type": "string",
-						"format": "data-url",
-						"title": "Single file"
-					},
-					"hazardType": {
-						"type": "string",
-						"default": "deterministic"
-					},
-					"eqParameters": {
-						"title": "",
-						"type": "object",
-						"required": ["magnitude", "depth"],
-						"properties": {
-							"magnitude": {
-								"type": "number",
-								"title": "Magnitude",
-								"default": 7.9
-							},
-							"depth": {
-								"type": "number",
-								"title": "Depth",
-								"default": 10
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+    "type": "object",
+    "required": ["name", "description"],
+    "properties": {
+        "name": {
+            "type": "string",
+            "title": "Name"
+        },
+        "description": {
+            "type": "string",
+            "title": "Description"
+        },
+        "eqType": {
+            "type": "string",
+            "default": "dataset"
+        },
+        "hazardDatasets": {
+            "type": "array",
+            "title": "Hazard Datasets",
+            "items": {
+                "type": "object",
+                "required": ["period", "demandType", "demandUnits", "file"],
+                "properties": {
+                    "period": {
+                        "type": "number",
+                        "title": "Period",
+                        "default": 0.0
+                    },
+                    "demandType": {
+                        "type": "string",
+                        "title": "Demand Type",
+                        "enumNames": ["PGA", "PGV", "PGD", "SA", "SD", "SV"],
+                        "enum": ["PGA", "PGV", "PGD", "SA", "SD", "SV"],
+                        "default": "PGA"
+                    },
+                    "demandUnits": {
+                        "type": "string",
+                        "title": "Demand Unit",
+                        "enumNames": ["g", "in/sec^2", "m/sec^2", "in/sec", "cm/sec", "in", "ft", "m"],
+                        "enum": ["g", "in/sec^2", "m/sec^2", "in/sec", "cm/sec", "in", "ft", "m"],
+                        "default": "g"
+                    },
+                    "file": {
+                        "type": "string",
+                        "format": "data-url",
+                        "title": "Single file"
+                    },
+                    "hazardType": {
+                        "type": "string",
+                        "default": "deterministic"
+                    },
+                    "eqParameters": {
+                        "title": "",
+                        "type": "object",
+                        "required": ["magnitude", "depth"],
+                        "properties": {
+                            "magnitude": {
+                                "type": "number",
+                                "title": "Magnitude",
+                                "default": 7.9
+                            },
+                            "depth": {
+                                "type": "number",
+                                "title": "Depth",
+                                "default": 10
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

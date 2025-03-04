@@ -1,62 +1,62 @@
 {
-	"type": "object",
-	"required": ["name", "description"],
-	"properties": {
-		"name": {
-			"type": "string",
-			"title": "Name"
-		},
-		"description": {
-			"type": "string",
-			"title": "Description"
-		},
-		"floodType": {
-			"type": "string",
-			"default": "dataset"
-		},
-		"hazardDatasets": {
-			"type": "array",
-			"title": "Hazard Datasets",
-			"items": {
-				"type": "object",
-				"required": ["demandType", "demandUnits", "file"],
-				"properties": {
-					"demandType": {
-						"type": "string",
-						"title": "Demand Type",
-						"enumNames": ["Inundation Depth", "water Surface Elevation"],
-						"enum": ["inundationDepth", "waterSurfaceElevation"],
-						"default": "inundationDepth"
-					},
-					"demandUnits": {
-						"type": "string",
-						"title": "Demand Unit",
-						"enumNames": ["Feet", "Metre"],
-						"enum": ["ft", "m"],
-						"default": "ft"
-					},
-					"file": {
-						"type": "string",
-						"format": "data-url",
-						"title": "Single file"
-					},
-					"hazardType": {
-						"type": "string",
-						"default": "deterministic"
-					},
-					"floodParameters": {
-						"title": "",
-						"type": "object",
-						"required": ["model"],
-						"properties": {
-							"model": {
-								"enum": ["riverine flooding"],
-								"default": "riverine flooding"
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+    "type": "object",
+    "required": ["name", "description"],
+    "properties": {
+        "name": {
+            "type": "string",
+            "title": "Name"
+        },
+        "description": {
+            "type": "string",
+            "title": "Description"
+        },
+        "floodType": {
+            "type": "string",
+            "default": "dataset"
+        },
+        "hazardDatasets": {
+            "type": "array",
+            "title": "Hazard Datasets",
+            "items": {
+                "type": "object",
+                "required": ["demandType", "demandUnits", "file"],
+                "properties": {
+                    "demandType": {
+                        "type": "string",
+                        "title": "Demand Type",
+                        "enumNames": ["Inundation Depth", "water Surface Elevation"],
+                        "enum": ["inundationDepth", "waterSurfaceElevation"],
+                        "default": "inundationDepth"
+                    },
+                    "demandUnits": {
+                        "type": "string",
+                        "title": "Demand Unit",
+                        "enumNames": ["Feet", "Metre"],
+                        "enum": ["ft", "m"],
+                        "default": "ft"
+                    },
+                    "file": {
+                        "type": "string",
+                        "format": "data-url",
+                        "title": "Single file"
+                    },
+                    "hazardType": {
+                        "type": "string",
+                        "default": "deterministic"
+                    },
+                    "floodParameters": {
+                        "title": "",
+                        "type": "object",
+                        "required": ["model"],
+                        "properties": {
+                            "model": {
+                                "enum": ["riverine flooding"],
+                                "default": "riverine flooding"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

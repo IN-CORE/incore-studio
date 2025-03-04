@@ -1,26 +1,26 @@
 {
-	"hurricaneType": {
-		"ui:widget": "hidden",
-		"classNames": "hidden-widget"
-	},
-	"hazardDatasets": {
-		"ui:options": {
-			"orderable": false
-		},
-		"items": {
-			"hazardType": {
-				"ui:widget": "hidden",
-				"classNames": "hidden-widget"
-			},
-			"file": {
-				"ui:options": { "accept": [".tif", ".tiff"] }
-			},
-			"hurricaneParameters": {
-				"model": {
-					"ui:widget": "hidden",
-					"classNames": "hidden-widget"
-				}
-			}
-		}
-	}
+    "hurricaneType": {
+        "ui:widget": "hidden",
+        "classNames": "hidden-widget"
+    },
+    "hazardDatasets": {
+        "ui:options": {
+            "orderable": false
+        },
+        "items": {
+            "hazardType": {
+                "ui:widget": "hidden",
+                "classNames": "hidden-widget"
+            },
+            "file": {
+                "ui:options": { "accept": [".tif", ".tiff"] }
+            },
+            "hurricaneParameters": {
+                "model": {
+                    "ui:widget": "hidden",
+                    "classNames": "hidden-widget"
+                }
+            }
+        }
+    }
 }

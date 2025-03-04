@@ -24,6 +24,7 @@ import { ModelTornado } from "@app/components/Project/Hazards/ModelTornado";
 import { DatasetHurricane } from "@app/components/Project/Hazards/DatasetHurricane";
 import { DatasetFlood } from "@app/components/Project/Hazards/DatasetFlood";
 import { DatasetTsunami } from "@app/components/Project/Hazards/DatasetTsunami";
+import config from "@app/app.config";
 
 interface HazardLayer {
     workspace: string;
@@ -60,7 +61,20 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
 
     const handleLayerUpdate = (layerId: string) => {
         if (hazardType && hazardLayers[hazardType]) {
-            setActiveLayers([{ ...hazardLayers[hazardType], layerId }]);
+            let styleName = ""; // Default empty style
+
+            // Check if hazardType exists in config.defaultLayerStyles
+            // @ts-ignore
+            if (config?.defaultLayerStyles[hazardType]) {
+                // @ts-ignore
+                styleName = config.defaultLayerStyles[hazardType]; // Direct mapping
+            } else if (hazardType === "hurricane") {
+                // TODO fixme Use the first available hurricane style
+                const hurricaneStyles = Object.values(config.defaultLayerStyles.MapUtil.hurricane);
+                styleName = hurricaneStyles.length > 0 ? hurricaneStyles[0] : "";
+            }
+
+            setActiveLayers([{ ...hazardLayers[hazardType], layerId, styleName }]);
         }
     };
 
