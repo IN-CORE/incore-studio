@@ -1,6 +1,6 @@
 import { extendTheme } from "@mui/joy/styles";
 
-const joyThemeOptions = {
+export const themeOptions = {
     breakpoints: {
         values: {
             xs: 0,
@@ -65,4 +65,4 @@ const joyThemeOptions = {
 };
 
 // @ts-ignore
-export const theme = extendTheme(joyThemeOptions);
+export const theme = extendTheme(themeOptions);

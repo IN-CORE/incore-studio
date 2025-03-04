@@ -11,7 +11,7 @@ import "@xyflow/react/dist/style.css";
 
 import config from "@app/app.config";
 import routes from "@app/routes";
-import { theme } from "@app/theme";
+import { theme as joyTheme } from "@app/theme";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getDependencyGraph } from "@app/reducer/workflowSlice";
 import Navbar from "@app/components/Navbar";
@@ -24,13 +24,16 @@ import store from "@app/store";
 // Mui and Joy theme side by side
 import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy/styles";
 import {
-    extendTheme as materialExtendTheme,
-    CssVarsProvider as MaterialCssVarsProvider,
-    THEME_ID as MATERIAL_THEME_ID
+    ThemeProvider as MaterialThemeProvider,
+    THEME_ID as MATERIAL_THEME_ID,
+    createTheme as muiCreateTheme
 } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-
-const materialTheme = materialExtendTheme();
+// Minimal MUI theme (empty but valid)
+const materialTheme = muiCreateTheme({
+    typography: {}, // No typography styles
+    palette: {}, // No color styles
+    components: {} // No component styles
+});
 
 const basename = process.env.NODE_ENV === "production" ? "/studio" : "";
 
@@ -72,9 +75,8 @@ const App: FC = () => {
     return (
         <StrictMode>
             <Router basename={basename}>
-                <MaterialCssVarsProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
-                    <JoyCssVarsProvider theme={theme}>
-                        <CssBaseline />
+                <MaterialThemeProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
+                    <JoyCssVarsProvider theme={joyTheme}>
                         <Navbar />
                         <Suspense fallback={<Loading />}>
                             <Routes>
@@ -84,7 +86,7 @@ const App: FC = () => {
                             </Routes>
                         </Suspense>
                     </JoyCssVarsProvider>
-                </MaterialCssVarsProvider>
+                </MaterialThemeProvider>
             </Router>
         </StrictMode>
     );
