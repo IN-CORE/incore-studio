@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Reset Parameters and input dataset buttons in Execution create step. [#68](https://github.com/IN-CORE/incore-studio/issues/68)
 - Confirmation dialogs on Edges and Analyses removal in workflow editor. [#49](https://github.com/IN-CORE/incore-studio/issues/49)
+- Information SidePanel for analysis to view more information. [#100](https://github.com/IN-CORE/incore-studio/issues/100)
 
 ### Changed
 
