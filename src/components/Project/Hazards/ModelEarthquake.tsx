@@ -221,7 +221,7 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                     <FormLabel sx={{ fontSize: "1rem" }} required>
                         Earthquake Epicenter
                     </FormLabel>
-                    {coordLat !== null && coordLon !== null && !validCoord && (
+                    {(coordLat !== "" || coordLon !== "") && !validCoord && (
                         <Typography level="body-sm" color="danger">
                             Coordinate not valid or outside of the bounding box.
                         </Typography>
@@ -231,7 +231,17 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                             <Typography sx={srcLatLabelSx}>Lat:</Typography>
                             <Input
                                 value={coordLat !== null ? coordLat : ""}
-                                onChange={(e) => setCoordLat(e.target.value)}
+                                onChange={(e) => {
+                                    const newLat = e.target.value;
+                                    setCoordLat(newLat);
+                                    setValidCoord(
+                                        validateCoord(
+                                            coordLon,
+                                            newLat,
+                                            config.VALID_MAP_BOUNDS as [number, number, number, number]
+                                        )
+                                    );
+                                }}
                                 type="number"
                                 placeholder={String(config.DEFAULT_MAP_CENTER[0])}
                                 sx={coordInputEditSx}
@@ -241,26 +251,22 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                             <Typography sx={srcLonLabelSx}>Lon:</Typography>
                             <Input
                                 value={coordLon !== null ? coordLon : ""}
-                                onChange={(e) => setCoordLon(e.target.value)}
+                                onChange={(e) => {
+                                    const newLon = e.target.value;
+                                    setCoordLon(newLon);
+                                    setValidCoord(
+                                        validateCoord(
+                                            newLon,
+                                            coordLat,
+                                            config.VALID_MAP_BOUNDS as [number, number, number, number]
+                                        )
+                                    );
+                                }}
                                 type="number"
                                 placeholder={String(config.DEFAULT_MAP_CENTER[1])}
                                 sx={coordInputEditSx}
                             />
                         </Box>
-                        <Button
-                            variant="plain"
-                            onClick={() => {
-                                setValidCoord(
-                                    validateCoord(
-                                        coordLon,
-                                        coordLat,
-                                        config.VALID_MAP_BOUNDS as [number, number, number, number]
-                                    )
-                                );
-                            }}
-                        >
-                            Validate
-                        </Button>
                     </Box>
                 </Box>
 

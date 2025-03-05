@@ -113,15 +113,21 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
         <TabPanel value={index}>
             <Box component="form" sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Box sx={{ mb: 2 }}>
-                    <FormLabel className="required-field">Name</FormLabel>
+                    <FormLabel className="required-field" sx={{ fontSize: "1rem" }}>
+                        Name
+                    </FormLabel>
                     <Input value={name} variant="outlined" onChange={(e) => setName(e.target.value)} />
                 </Box>
                 <Box sx={{ mb: 2 }}>
-                    <FormLabel className="required-field">Description</FormLabel>
+                    <FormLabel className="required-field" sx={{ fontSize: "1rem" }}>
+                        Description
+                    </FormLabel>
                     <Input value={description} variant="outlined" onChange={(e) => setDescription(e.target.value)} />
                 </Box>
                 <Box sx={{ mb: 2 }}>
-                    <FormLabel className="required-field">Rating</FormLabel>
+                    <FormLabel className="required-field" sx={{ fontSize: "1rem" }}>
+                        Rating
+                    </FormLabel>
                     <Select value={rating} onChange={(_, value) => setRating(value as string)}>
                         {["EF0", "EF1", "EF2", "EF3", "EF4", "EF5"].map((level) => (
                             <Option key={level} value={level}>
@@ -155,7 +161,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                             <FormLabel sx={{ fontSize: "1rem" }} required>
                                 Tornado Path {type} Coordinate
                             </FormLabel>
-                            {!isValid && (
+                            {(lat !== "" || lon !== "") && !isValid && (
                                 <span style={{ color: "red" }}>Coordinate not valid or outside the bounding box.</span>
                             )}
                             <Box
@@ -175,7 +181,17 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                                         sx={inputStyles}
                                         type="number"
                                         value={lat ?? ""}
-                                        onChange={(e) => setLat(e.target.value)}
+                                        onChange={(e) => {
+                                            const newLat = e.target.value;
+                                            setLat(newLat);
+                                            setValid(
+                                                validateCoord(
+                                                    lon,
+                                                    newLat,
+                                                    config.VALID_MAP_BOUNDS as [number, number, number, number]
+                                                )
+                                            );
+                                        }}
                                         placeholder={String(config.DEFAULT_MAP_CENTER[0])}
                                     />
                                 </Box>
@@ -187,24 +203,20 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                                         sx={inputStyles}
                                         type="number"
                                         value={lon ?? ""}
-                                        onChange={(e) => setLon(e.target.value)}
+                                        onChange={(e) => {
+                                            const newLon = e.target.value;
+                                            setLon(newLon);
+                                            setValid(
+                                                validateCoord(
+                                                    newLon,
+                                                    lat,
+                                                    config.VALID_MAP_BOUNDS as [number, number, number, number]
+                                                )
+                                            );
+                                        }}
                                         placeholder={String(config.DEFAULT_MAP_CENTER[1])}
                                     />
                                 </Box>
-                                <Button
-                                    variant="plain"
-                                    onClick={() => {
-                                        setValid(
-                                            validateCoord(
-                                                lat,
-                                                lon,
-                                                config.VALID_MAP_BOUNDS as [number, number, number, number]
-                                            )
-                                        );
-                                    }}
-                                >
-                                    Validate
-                                </Button>
                             </Box>
                         </Box>
                     ))}
