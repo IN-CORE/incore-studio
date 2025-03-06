@@ -379,3 +379,44 @@ interface ExecutionState {
     };
     createExecution: ExecutionCreate;
 }
+
+interface TornadoParameters {
+    efRating: string;
+    startLatitude: number;
+    startLongitude: number;
+    endLatitude: number[];
+    endLongitude: number[];
+    windSpeedMethod: string;
+}
+
+interface TornadoMetadata {
+    tornadoType: "model" | "dataset";
+    name: string;
+    description: string;
+    tornadoModel?: string;
+    tornadoParameters?: TornadoParameters;
+}
+
+interface EarthquakeMetadata {
+    name: string;
+    description: string;
+    eqType: "model";
+    attenuations: Record<string, number>;
+    eqParameters: {
+        srcLatitude: number;
+        srcLongitude: number;
+        magnitude: number;
+        depth: number;
+        faultTypeMap?: Record<string, any>;
+    };
+    visualizationParameters: {
+        demandType: string;
+        demandUnits: string;
+        minX: number;
+        minY: number;
+        maxX: number;
+        maxY: number;
+        numPoints: string;
+        amplifyHazard: string;
+    };
+}

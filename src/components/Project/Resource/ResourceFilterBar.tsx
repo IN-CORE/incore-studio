@@ -10,12 +10,14 @@ import SearchFilterSortDropdown from "@app/components/Project/Resource/SearchFil
 interface ResourceFilterBarProps {
     title: string;
     onCreateClick?: () => void;
+    createLabel?: string;
+    additionalCreateClick?: () => void;
+    addtionalCreateLabel?: string;
     sortOptions?: string[];
     filters?: Record<string, string[]>;
     onApply?: (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => void; // Callback to send filter and sort data
     onViewChangeClick?: () => void;
     isTableView?: boolean;
-    createLabel?: string;
     icon: React.ReactElement<SvgIconProps>;
 }
 
@@ -28,7 +30,9 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     onViewChangeClick,
     isTableView,
     onCreateClick,
-    createLabel = "Create Item" // Default label for the create button
+    additionalCreateClick,
+    createLabel = "Create Item", // Default label for the create button
+    addtionalCreateLabel = "Additional Create Item"
 }) => {
     return (
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -60,6 +64,17 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                 >
                     {createLabel}
                 </Button>
+                {additionalCreateClick && (
+                    <Button
+                        onClick={additionalCreateClick}
+                        variant="soft"
+                        startDecorator={<AddIcon />}
+                        color="neutral"
+                        sx={{ ml: 1 }}
+                    >
+                        {addtionalCreateLabel}
+                    </Button>
+                )}
             </Box>
         </Box>
     );

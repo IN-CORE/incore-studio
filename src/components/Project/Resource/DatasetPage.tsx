@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Container } from "@mui/joy";
-import { Grid } from "@mui/material";
+import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
