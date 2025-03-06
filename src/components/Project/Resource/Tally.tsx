@@ -10,16 +10,11 @@ interface TallyProps {
 
 const Tally: React.FC<TallyProps> = ({ title, tallyList, totalCount }) => {
     return (
-        <Sheet sx={{ p: 2, textAlign: "center", width: "100%" }} variant="outlined">
+        <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
             <Typography level="title-lg" sx={{ mb: 2 }}>
                 {`${title}${totalCount ? `: ${totalCount}` : ""}`}
             </Typography>
-            <Stack
-                direction={{ xs: "column", sm: "row" }}
-                spacing={3}
-                divider={<Divider orientation="vertical" />}
-                sx={{ width: "100%" }}
-            >
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={3} divider={<Divider orientation="vertical" />}>
                 {tallyList.map((tally, index) => (
                     <Box key={index} sx={{ width: "100%" }}>
                         <Typography level="title-md">{tally.label}</Typography>

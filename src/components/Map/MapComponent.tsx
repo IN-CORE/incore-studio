@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
-import Map, { Source, Layer, MapRef } from "react-map-gl/maplibre";
+import Map, { Source, Layer, MapRef, MapMouseEvent } from "react-map-gl/maplibre";
+
 import "maplibre-gl/dist/maplibre-gl.css";
+
 import config from "@app/app.config";
 import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Checkbox } from "@mui/joy";
 
@@ -17,11 +19,17 @@ export const MapComponent: React.FC<MapComponentProps> = ({
     zoom = 4,
     width = 800,
     height = 600,
-    boundingBox = [-125.0, 24.396308, -66.93457, 49.384358]
+    boundingBox = config.DEFAULT_MAP_BOUNDS
 }) => {
     const mapRef = useRef<MapRef>(null);
     const [uniqueLayers, setUniqueLayers] = useState<IncoreLayer[]>([]);
     const [activeLayers, setActiveLayers] = useState<{ [key: string]: boolean }>({});
+    const [mouseCoords, setMouseCoords] = useState<{ lat: number; lon: number } | null>(null);
+    // Handle mouse move to show coordinates
+    const handleMouseMove = (event: MapMouseEvent) => {
+        const { lng, lat } = event.lngLat;
+        setMouseCoords({ lat, lon: lng });
+    };
 
     // Deduplicate layers
     useEffect(() => {
@@ -72,7 +80,8 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                 }}
                 style={{ width: "100%", height: "100%" }}
                 mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-                maxBounds={boundingBox}
+                maxBounds={boundingBox as [number, number, number, number]}
+                onMouseMove={handleMouseMove}
             >
                 {/* Add unique WMS layers */}
                 {uniqueLayers.map((layer) => {
@@ -134,6 +143,27 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                     </AccordionDetails>
                 </Accordion>
             </Box>
+
+            {/* Mouse-over Coordinate Display */}
+            {mouseCoords && (
+                <Box
+                    sx={{
+                        position: "absolute",
+                        bottom: 10,
+                        left: 10,
+                        backgroundColor: "rgba(255, 255, 255, 0.8)",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        fontSize: "14px",
+                        boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+                        zIndex: 1
+                    }}
+                >
+                    <Typography level="body-sm">
+                        Lat: {mouseCoords.lat.toFixed(4)}, Lon: {mouseCoords.lon.toFixed(4)}
+                    </Typography>
+                </Box>
+            )}
         </div>
     );
 };

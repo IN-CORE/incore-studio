@@ -3,16 +3,15 @@ import React, { StrictMode, Suspense, FC, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { CssVarsProvider } from "@mui/joy/styles";
+
 import { AuthProvider, useAuth } from "react-oidc-context";
 
-import CssBaseline from "@mui/joy/CssBaseline";
 import "@fontsource/inter";
 import "@xyflow/react/dist/style.css";
 
 import config from "@app/app.config";
 import routes from "@app/routes";
-import { theme } from "@app/theme";
+import { theme as joyTheme } from "@app/theme";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getDependencyGraph } from "@app/reducer/workflowSlice";
 import Navbar from "@app/components/Navbar";
@@ -21,6 +20,21 @@ import Loading from "@app/components/Loading";
 import "@app/styles/main.scss";
 
 import store from "@app/store";
+
+// Mui and Joy theme side by side
+import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy/styles";
+import {
+    ThemeProvider as MaterialThemeProvider,
+    THEME_ID as MATERIAL_THEME_ID,
+    createTheme as muiCreateTheme
+} from "@mui/material/styles";
+// Minimal MUI theme (empty but valid)
+const materialTheme = muiCreateTheme({
+    typography: {}, // No typography styles
+    palette: {}, // No color styles
+    components: {}, // No component styles
+    colorSchemes: {} // No color schemes
+});
 
 const basename = process.env.NODE_ENV === "production" ? "/studio" : "";
 
@@ -62,17 +76,18 @@ const App: FC = () => {
     return (
         <StrictMode>
             <Router basename={basename}>
-                <CssVarsProvider theme={theme}>
-                    <CssBaseline />
-                    <Navbar />
-                    <Suspense fallback={<Loading />}>
-                        <Routes>
-                            {Object.entries(routes).map(([path, props]) => (
-                                <Route key={path} path={path} {...props} />
-                            ))}
-                        </Routes>
-                    </Suspense>
-                </CssVarsProvider>
+                <MaterialThemeProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
+                    <JoyCssVarsProvider theme={joyTheme}>
+                        <Navbar />
+                        <Suspense fallback={<Loading />}>
+                            <Routes>
+                                {Object.entries(routes).map(([path, props]) => (
+                                    <Route key={path} path={path} {...props} />
+                                ))}
+                            </Routes>
+                        </Suspense>
+                    </JoyCssVarsProvider>
+                </MaterialThemeProvider>
             </Router>
         </StrictMode>
     );

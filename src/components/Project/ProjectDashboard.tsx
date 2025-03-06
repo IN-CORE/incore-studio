@@ -275,7 +275,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                             <Grid container spacing={5} sx={{ mt: 2 }}>
                                 <Grid sm={6}>
                                     <Stack spacing={3} direction="column">
-                                        <Sheet sx={{ p: 2, textAlign: "center", width: "100%" }} variant="outlined">
+                                        <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
                                             <Stack direction="row" spacing={2} sx={{ width: "100%", mb: 2 }}>
                                                 <Typography level="title-lg" sx={{ mb: 2 }}>
                                                     IN-CORE Service Usage
@@ -300,7 +300,6 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                             <Stack
                                                 direction={{ sm: "column", md: "row" }}
                                                 spacing={2}
-                                                // sx={{ width: "100%" }}
                                                 divider={<Divider orientation="vertical" />}
                                             >
                                                 <Box sx={{ width: "100%" }}>
@@ -367,10 +366,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     </Stack>
                                 </Grid>
                                 <Grid sm={6}>
-                                    <Sheet
-                                        sx={{ p: 2, textAlign: "center", width: "100%", height: "100%" }}
-                                        variant="outlined"
-                                    >
+                                    <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
                                         <Stack sx={{ width: "100%" }} spacing={3} direction="column">
                                             <Typography level="title-lg">Hazard Count By Types</Typography>
                                             {hazardCounts.map((hazard, index) => (
@@ -413,7 +409,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                             <Grid container spacing={5} sx={{ mt: 2 }}>
                                 <Grid sm={6}>
                                     <Stack spacing={3} direction="column">
-                                        <Sheet sx={{ p: 2, textAlign: "center", width: "100%" }} variant="outlined">
+                                        <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
                                             <Stack direction="row" spacing={2} sx={{ width: "100%", mb: 2 }}>
                                                 <Typography level="title-lg" sx={{ mb: 2 }}>
                                                     IN-CORE Service Usage
@@ -498,10 +494,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     </Stack>
                                 </Grid>
                                 <Grid sm={6}>
-                                    <Sheet
-                                        sx={{ p: 2, textAlign: "center", width: "100%", height: "100%" }}
-                                        variant="outlined"
-                                    >
+                                    <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
                                         <Stack
                                             sx={{ width: "100%", scrollBehavior: "smooth", overflow: "auto" }}
                                             spacing={3}
@@ -560,7 +553,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                         direction="column"
                                         sx={{ justifyContent: "center", textAlign: "center" }}
                                     >
-                                        <Sheet sx={{ p: 2, textAlign: "center", width: "100%" }} variant="outlined">
+                                        <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
                                             <Stack
                                                 direction="row"
                                                 spacing={2}

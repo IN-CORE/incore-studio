@@ -41,12 +41,11 @@ const Navbar: React.FC = () => {
                 justifyContent: "space-between",
                 bgcolor: "white",
                 color: "primary.main",
-                p: 2,
                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
                 position: "sticky",
                 top: 0,
                 height: "6vh",
-                width: "100%",
+
                 zIndex: 1001
             }}
         >
@@ -58,7 +57,7 @@ const Navbar: React.FC = () => {
                     level="h4"
                     textColor="primary.main"
                     fontWeight="lg"
-                    sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}
+                    sx={{ flexGrow: 1, display: "flex", alignItems: "center", ml: 4 }}
                 >
                     <Box
                         component="img"
@@ -73,7 +72,7 @@ const Navbar: React.FC = () => {
                 </Typography>
             </Link>
 
-            <div>
+            <div style={{ marginRight: "1em" }}>
                 <IconButton>
                     <FaBell className="icon" />
                 </IconButton>
