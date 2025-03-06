@@ -132,6 +132,9 @@ interface DependencyGraph {
         };
         pretty_name: string;
         tags: string[];
+        inputs: {
+            [key: string]: string[];
+        };
     };
 }
 
@@ -353,6 +356,7 @@ interface ExecutionState {
 
         currentAnalysis: {
             name: string;
+            depGName: string;
             id: string;
             inputDatasets: {
                 execFileEntryId: string;

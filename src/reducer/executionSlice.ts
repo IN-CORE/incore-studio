@@ -20,6 +20,7 @@ const initialState: ExecutionState = {
         open: false,
         currentAnalysis: {
             name: "",
+            depGName: "",
             id: "",
             inputDatasets: [],
             inputParameters: [],
@@ -71,6 +72,7 @@ const executionSlice = createSlice({
                 open: false,
                 currentAnalysis: {
                     name: "",
+                    depGName: "",
                     id: "",
                     inputDatasets: [],
                     inputParameters: [],
@@ -104,6 +106,7 @@ const executionSlice = createSlice({
                 open: false,
                 currentAnalysis: {
                     name: "",
+                    depGName: "",
                     id: "",
                     inputDatasets: [],
                     inputParameters: [],
