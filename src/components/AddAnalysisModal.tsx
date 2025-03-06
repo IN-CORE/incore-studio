@@ -25,6 +25,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAppSelector } from "@app/store/hooks";
+import Loading from "./Loading";
 import { getNodeFromToolV2 } from "@app/components/Workflow/workflowUtils";
 import useStore, { type ReactFlowAppState } from "./Workflow/reactFlowStore";
 
@@ -165,6 +166,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                         </ListItem>
                                     ))}
                             </List>
+                            {datawolfTools.length === 0 && <Loading />}
                         </Box>
                     </Stack>
                 </CardContent>
