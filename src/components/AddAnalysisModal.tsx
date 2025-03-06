@@ -46,7 +46,6 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
     const { addNodes } = useStore(useShallow(selector));
     const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
     const datawolfTools = useAppSelector((state) => state.workflow.datawolfTools);
-    // const loading = useAppSelector((state) => state.workflow.loading);
 
     const clearItems = () => {
         setSelectedAnalysis("");
