@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Container } from "@mui/joy";
-import { Grid } from "@mui/material";
+import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
@@ -24,6 +23,7 @@ import { useAppDispatch } from "@app/store/hooks";
 import HazardIcon from "@mui/icons-material/Storm";
 import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
+import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazardDialog";
 
 const HazardPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -72,8 +72,12 @@ const HazardPage = (): JSX.Element => {
         }
     };
 
-    const onCreateClick = () => {
+    const onAddHazard = () => {
         setOpenAddHazardFromServiceDialog(true);
+    };
+
+    const onCreateHazard = () => {
+        setOpenCreateHazardDialog(true);
     };
 
     // Table view vs Card view
@@ -132,6 +136,9 @@ const HazardPage = (): JSX.Element => {
         setOpenAddHazardFromServiceDialog(false);
     };
 
+    // Create new hazard
+    const [openCreateHazardDialog, setOpenCreateHazardDialog] = useState(false);
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -157,10 +164,12 @@ const HazardPage = (): JSX.Element => {
                                     filters={{ type: ["earthquake", "tsunami", "hurricane", "tornado", "flood"] }}
                                     sortOptions={["date", "type", "name", "id"]}
                                     onApply={onApplyFilterSort}
-                                    onCreateClick={onCreateClick}
+                                    onCreateClick={onAddHazard}
+                                    additionalCreateClick={onCreateHazard}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"
+                                    addtionalCreateLabel="Create Hazard"
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}
@@ -170,6 +179,14 @@ const HazardPage = (): JSX.Element => {
                                         setOpenAddHazardFromServiceDialog(false);
                                     }}
                                     onAddClick={addHazardFunc}
+                                />
+                                <CreateHazardDialog
+                                    projectId={project.id}
+                                    resourceType="hazard"
+                                    open={openCreateHazardDialog}
+                                    onClose={() => {
+                                        setOpenCreateHazardDialog(false);
+                                    }}
                                 />
                                 {isTableView ? (
                                     <ResourceTable

@@ -395,3 +395,239 @@ export function breakCamelCaseAndCapitalize(camelCaseString: string): string {
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
         .join(" "); // Join the words back into a phrase
 }
+
+declare const defaultMapConfig: { HAZARD_BOUNDS: [number, number, number, number] };
+
+export function dataURItoFile(dataURI: string, filename = "hurricane-raster.tif"): File {
+    if (!dataURI.includes(",")) {
+        throw new Error("Invalid Data URI format");
+    }
+
+    const mimeMatch = dataURI.match(/:(.*?);/);
+    if (!mimeMatch) {
+        throw new Error("MIME type not found in Data URI");
+    }
+
+    const mime = mimeMatch[1];
+    const binary = atob(dataURI.split(",")[1]);
+    const array = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i += 1) {
+        // Use i += 1 instead of i++
+        array[i] = binary.charCodeAt(i);
+    }
+
+    const blob = new Blob([array], { type: mime });
+    return new File([blob], filename, { type: mime, lastModified: Date.now() });
+}
+
+export function getHazardTypePlural(hazardType: string): string {
+    return hazardType.match(/\b(o|s|sh|ch|x|z)\b$/) ? `${hazardType}es` : `${hazardType}s`;
+}
+
+export function round(value: number, decimals: number): number {
+    return Number(value.toFixed(decimals));
+}
+
+export async function createModelTornado(
+    name: string,
+    description: string,
+    rating: string,
+    startLat: number | string,
+    startLon: number | string,
+    endLat: number | string,
+    endLon: number | string
+): Promise<any> {
+    const startLatNum = typeof startLat === "number" ? startLat : parseFloat(startLat);
+    const startLonNum = typeof startLon === "number" ? startLon : parseFloat(startLon);
+    const endLatNum = typeof endLat === "number" ? endLat : parseFloat(endLat);
+    const endLonNum = typeof endLon === "number" ? endLon : parseFloat(endLon);
+
+    const endpoint = `${config.hazardServiceBase}/tornadoes`;
+    const formData = new FormData();
+    const tornadoMetadata: TornadoMetadata = {
+        tornadoType: "model",
+        name,
+        description,
+        tornadoModel: "MeanWidthTornado",
+        tornadoParameters: {
+            efRating: rating,
+            startLatitude: startLatNum,
+            startLongitude: startLonNum,
+            endLatitude: [endLatNum],
+            endLongitude: [endLonNum],
+            windSpeedMethod: "1"
+        }
+    };
+    formData.append("tornado", JSON.stringify(tornadoMetadata));
+
+    try {
+        const response = await axios.post(endpoint, formData, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
+export async function getHazardMetadata(hazardType: string, hazardId: string): Promise<any> {
+    const hazardTypePlural = getHazardTypePlural(hazardType);
+    const endpoint = `${config.hazardServiceBase}/${hazardTypePlural}/${hazardId}`;
+
+    try {
+        const response = await axios.get(endpoint, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
+export async function createModelEarthquake(
+    name: string,
+    description: string,
+    lat: number | string,
+    lon: number | string,
+    magnitude: number,
+    depth: number,
+    demandType: string,
+    demandUnits: string,
+    attenuations: string,
+    faultTypeMap?: any
+): Promise<any> {
+    const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
+    const latNum = typeof lat === "number" ? lat : parseFloat(lat);
+
+    const endpoint = `${config.hazardServiceBase}/earthquakes`;
+    const formData = new FormData();
+
+    const eqMetadata: EarthquakeMetadata = {
+        name,
+        description,
+        eqType: "model",
+        attenuations: { [attenuations]: 1.0 },
+        eqParameters: {
+            srcLatitude: latNum,
+            srcLongitude: lonNum,
+            magnitude,
+            depth
+        },
+        visualizationParameters: {
+            demandType,
+            demandUnits,
+            minX: round(lonNum - 1, 3),
+            minY: round(latNum - 1, 3),
+            maxX: round(lonNum + 1, 3),
+            maxY: round(latNum + 1, 3),
+            numPoints: "1025",
+            amplifyHazard: "true"
+        }
+    };
+
+    if (faultTypeMap) {
+        eqMetadata.eqParameters.faultTypeMap = { [attenuations]: faultTypeMap };
+    }
+
+    formData.append("earthquake", JSON.stringify(eqMetadata));
+
+    try {
+        const response = await axios.post(endpoint, formData, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
+export async function createRjfsDatasetHazards(formData: any, hazardType: string): Promise<any> {
+    const endpoint = `${config.hazardServiceBase}/${hazardType}`;
+    const dataUrls: { dataurl: string; filename: string }[] = [];
+    const payload = new FormData();
+
+    formData.hazardDatasets.forEach((hazardDataset: any) => {
+        dataUrls.push({
+            dataurl: hazardDataset.file,
+            filename: `${hazardDataset.demandType}-raster.tif`
+        });
+        delete hazardDataset.file;
+    });
+
+    dataUrls.forEach((dataurl) => {
+        payload.append("file", dataURItoFile(dataurl.dataurl, dataurl.filename));
+    });
+
+    payload.append(hazardType.slice(0, -1), JSON.stringify(formData));
+
+    try {
+        const response = await axios.post(endpoint, payload, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
+/**
+ * Converts a Web Mercator coordinate ([x, y]) to geographic coordinates ([lon, lat]).
+ * @param flatCoord - A tuple of [x, y] in Web Mercator (EPSG:3857).
+ * @returns A tuple of [lon, lat] in degrees (EPSG:4326).
+ */
+export function flatCoordToLonLat(flatCoord: [number, number]): [number, number] {
+    const [x, y] = flatCoord;
+    const lon = (x * 180) / 20037508.34;
+    const lat = ((2 * Math.atan(Math.exp((y * Math.PI) / 20037508.34)) - Math.PI / 2) * 180) / Math.PI;
+    return [lon, lat];
+}
+
+/**
+ * Converts geographic coordinates ([lon, lat]) in degrees to a Web Mercator coordinate.
+ * @param lon - Longitude in degrees.
+ * @param lat - Latitude in degrees.
+ * @returns A tuple of [x, y] in Web Mercator (EPSG:3857).
+ */
+export function lonLatToFlatCoord(lon: string | number, lat: string | number): [number, number] {
+    const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
+    const latNum = typeof lat === "number" ? lat : parseFloat(lat);
+    const x = (lonNum * 20037508.34) / 180;
+    const y = (Math.log(Math.tan(((90 + latNum) * Math.PI) / 360)) * 20037508.34) / 180;
+    return [x, y];
+}
+
+export function roundToScale(num: number, scale: number): number {
+    if (!num.toString().includes("e")) {
+        return Number(`${Math.round(Number(`${num}e+${scale}`))}e-${scale}`);
+    }
+    const arr = num.toString().split("e");
+    let sig = "";
+    if (Number(arr[1]) + scale > 0) {
+        sig = "+";
+    }
+    return Number(`${Math.round(Number(`${Number(arr[0])}e${sig}${Number(arr[1]) + scale}`))}e-${scale}`);
+}
+
+export const validateCoord = (
+    lon: number | string,
+    lat: number | string,
+    boundingBox: [number, number, number, number]
+): boolean => {
+    const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
+    const latNum = typeof lat === "number" ? lat : parseFloat(lat);
+
+    if (Number.isNaN(lonNum) || Number.isNaN(latNum)) {
+        return false;
+    }
+
+    return lonNum > boundingBox[0] && lonNum < boundingBox[2] && latNum > boundingBox[1] && latNum < boundingBox[3];
+};
