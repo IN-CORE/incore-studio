@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Dataset type enforced when selecting datasets/hazards/dfr3 mappings based on the allowed input dataset type. [#81](https://github.com/IN-CORE/incore-studio/issues/81)
 - Upload hazard components to create hazard and add to project [#106](https://github.com/IN-CORE/incore-studio/issues/106)
 - Confirmation dialogs on Edges and Analyses removal in workflow editor. [#49](https://github.com/IN-CORE/incore-studio/issues/49)
+- Information SidePanel for analysis to view more information. [#100](https://github.com/IN-CORE/incore-studio/issues/100)
 
 ### Changed
 

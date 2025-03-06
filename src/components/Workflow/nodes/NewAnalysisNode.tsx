@@ -15,13 +15,19 @@ import StorageIcon from "@mui/icons-material/Storage";
 import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
 
 import { useShallow } from "zustand/react/shallow";
 
 import ConfirmationDialog from "@app/components/ConfirmationDialog";
 import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
-import { setSidePanelData } from "@app/reducer/workflowSlice";
+import {
+    setSidePanelData,
+    setInformationPanelData,
+    clearInformationPanelData,
+    clearSidePanelData
+} from "@app/reducer/workflowSlice";
 import { setExecutionSidePanelData } from "@app/reducer/executionSlice";
 import { theme } from "@app/theme";
 import { Progress } from "@app/components/Progress";
@@ -40,6 +46,8 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const updateNodeInternals = useUpdateNodeInternals();
     const appDispatch = useAppDispatch();
     const hoveredAnalysisID = useAppSelector((state) => state.workflow.hoveredAnalysis);
+    const informationPanelData = useAppSelector((state) => state.workflow.informationPanelData);
+    const sidePanelData = useAppSelector((state) => state.workflow.sidePanelData);
     // const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
     const currentExecution = useAppSelector((state) => state.execution.currentExecution);
     const executionParametersAndInputsChecked = useAppSelector(
@@ -327,11 +335,30 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         justifyContent: "space-between"
                     }}
                 >
-                    <Box>
+                    <Stack direction="row" spacing={2} alignItems="center">
                         <Typography level="h2" sx={{ fontWeight: 600, fontSize: zoom > 1 ? "20px" : "24px" }}>
                             {data.label}
                         </Typography>
-                    </Box>
+                        {!data.isExecution && (
+                            <Tooltip title="View Information" placement="right">
+                                <IconButton
+                                    onClick={() => {
+                                        if (sidePanelData.open) {
+                                            appDispatch(clearSidePanelData());
+                                        }
+                                        appDispatch(
+                                            setInformationPanelData({
+                                                open: true,
+                                                currentAnalysis: data.name
+                                            })
+                                        );
+                                    }}
+                                >
+                                    <HelpRoundedIcon sx={{ fontSize: "20px" }} />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                    </Stack>
                     {data.isExecution ? (
                         <Box sx={{ position: "absolute", right: "5px", top: "5px" }}>
                             <Tooltip
@@ -402,6 +429,9 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                             startDecorator={<AddRoundedIcon />}
                             fullWidth
                             onClick={() => {
+                                if (informationPanelData.open) {
+                                    appDispatch(clearInformationPanelData());
+                                }
                                 appDispatch(
                                     setSidePanelData({
                                         open: true,
@@ -425,6 +455,9 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                             startDecorator={<AddRoundedIcon />}
                             fullWidth
                             onClick={() => {
+                                if (informationPanelData.open) {
+                                    appDispatch(clearInformationPanelData());
+                                }
                                 appDispatch(
                                     setSidePanelData({
                                         open: true,

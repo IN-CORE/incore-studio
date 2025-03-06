@@ -132,6 +132,7 @@ interface DependencyGraph {
         };
         pretty_name: string;
         tags: string[];
+        manual: string;
         inputs: {
             [key: string]: string[];
         };
@@ -322,6 +323,10 @@ interface WorkflowState {
             name: string;
             id: string;
         };
+    };
+    informationPanelData: {
+        open: boolean;
+        currentAnalysis: string;
     };
     hoveredAnalysis: string | null;
     executions: DatawolfExecutionFile[];
