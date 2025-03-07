@@ -51,7 +51,6 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId, projec
     };
     const handleAddVisualization = (visualizationId: string) => {
         if (selectedDataset && projectId) {
-            console.log("Adding to Visualization...");
             setSnackbarMessage("Adding to Visualization...");
             setSnackbarColor("warning");
             setSnackbarOpen(true);
@@ -94,8 +93,8 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId, projec
                         dataset === null
                             ? datasetId
                             : dataset.fileDescriptors !== undefined && dataset.fileDescriptors.length > 0
-                              ? dataset.fileDescriptors[0].filename
-                              : datasetId
+                            ? dataset.fileDescriptors[0].filename
+                            : datasetId
                     }
                     variant="outlined"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => e.preventDefault()}

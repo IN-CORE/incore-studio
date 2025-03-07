@@ -282,7 +282,6 @@ export const useHazardStats = (projectHazards: Hazard[]) => {
                             headers: getHeaders()
                         });
                         if (response.data) {
-                            console.log(response.data);
                             if (response.data["eqType"] === "dataset") {
                                 datasetCount = datasetCount + 1;
                             } else {
@@ -299,7 +298,6 @@ export const useHazardStats = (projectHazards: Hazard[]) => {
                             headers: getHeaders()
                         });
                         if (response.data) {
-                            console.log(response.data["tornadoType"] === "dataset");
                             if (response.data["tornadoType"] === "dataset") {
                                 datasetCount = datasetCount + 1;
                             } else {
@@ -323,7 +321,6 @@ export const useHazardStats = (projectHazards: Hazard[]) => {
                     datasetCount = datasetCount + 1;
                 }
             }
-            console.log({ model: modelCount, dataset: datasetCount });
             setHazardStats({ model: modelCount, dataset: datasetCount });
             setHazardCounts(
                 [
