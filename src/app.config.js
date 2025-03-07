@@ -7,13 +7,19 @@ config.tosURL = `${hostname}/doc/incore/termsofservice.html`;
 config.hostname = hostname;
 config.docBaseLink = `${hostname}/doc/incore/analyses`;
 config.projectApi = `${hostname}/project/api/projects`;
+config.spaceApi = `${hostname}/space/api`;
+config.hazardApi = `${hostname}/hazard/api`;
+config.earthquakeApi = `${config.hazardApi}/earthquakes`;
+config.floodApi = `${config.hazardApi}/floods`;
+config.hurricaneWindfieldApi = `${config.hazardApi}/hurricaneWindfields`;
+config.tornadoApi = `${config.hazardApi}/tornadoes`;
+config.tsunamiApi = `${config.hazardApi}/tsunamis`;
 config.datawolfApi = `${hostname}/datawolf`;
 config.keycloakConfig = {
     authority: `${hostname}/auth/realms/In-core`,
     client_id: "react-auth"
 };
 config.dataService = `${hostname}/data/api/datasets`;
-config.hazardServiceBase = `${hostname}/hazard/api`;
 config.semanticService = `${hostname}/semantics/api/types`;
 
 // TODO replace this with dynamically pulling from GeoServer

@@ -32,7 +32,8 @@ import {
 const materialTheme = muiCreateTheme({
     typography: {}, // No typography styles
     palette: {}, // No color styles
-    components: {} // No component styles
+    components: {}, // No component styles
+    colorSchemes: {} // No color schemes
 });
 
 const basename = process.env.NODE_ENV === "production" ? "/studio" : "";

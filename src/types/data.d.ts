@@ -318,7 +318,7 @@ interface WorkflowState {
     dependencyGraph: DependencyGraph | null;
     sidePanelData: {
         open: boolean;
-        type: "previous" | "next" | "";
+        type: previous | next | "";
         currentAnalysis: {
             name: string;
             id: string;
@@ -387,6 +387,50 @@ interface ExecutionState {
         };
     };
     createExecution: ExecutionCreate;
+}
+
+interface SpaceUsageResponse {
+    service: number[] | null;
+    incoreLab: { [key: string]: number[] } | null;
+    group: string | null;
+    user: string | null;
+    total_number_of_datasets: number;
+    total_number_of_hazards: number;
+    total_number_of_hazard_datasets: number;
+    total_number_of_dfr3: number;
+    total_file_size_of_datasets_byte: number;
+    total_file_size_of_hazard_datasets_byte: number;
+    total_file_size_of_datasets: number;
+    total_file_size_of_hazard_datasets: null;
+}
+
+interface UserSpaceUsage {
+    hazards: {
+        entities: {
+            text: string;
+            value: number;
+        };
+        disk: {
+            text: string;
+            value: number;
+        };
+    };
+    datasets: {
+        entities: {
+            text: string;
+            value: number;
+        };
+        disk: {
+            text: string;
+            value: number;
+        };
+    };
+    dfr3: {
+        entities: {
+            text: string;
+            value: number;
+        };
+    };
 }
 
 interface TornadoParameters {

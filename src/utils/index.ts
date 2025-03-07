@@ -443,7 +443,7 @@ export async function createModelTornado(
     const endLatNum = typeof endLat === "number" ? endLat : parseFloat(endLat);
     const endLonNum = typeof endLon === "number" ? endLon : parseFloat(endLon);
 
-    const endpoint = `${config.hazardServiceBase}/tornadoes`;
+    const endpoint = `${config.hazardApi}/tornadoes`;
     const formData = new FormData();
     const tornadoMetadata: TornadoMetadata = {
         tornadoType: "model",
@@ -475,7 +475,7 @@ export async function createModelTornado(
 
 export async function getHazardMetadata(hazardType: string, hazardId: string): Promise<any> {
     const hazardTypePlural = getHazardTypePlural(hazardType);
-    const endpoint = `${config.hazardServiceBase}/${hazardTypePlural}/${hazardId}`;
+    const endpoint = `${config.hazardApi}/${hazardTypePlural}/${hazardId}`;
 
     try {
         const response = await axios.get(endpoint, {
@@ -504,7 +504,7 @@ export async function createModelEarthquake(
     const lonNum = typeof lon === "number" ? lon : parseFloat(lon);
     const latNum = typeof lat === "number" ? lat : parseFloat(lat);
 
-    const endpoint = `${config.hazardServiceBase}/earthquakes`;
+    const endpoint = `${config.hazardApi}/earthquakes`;
     const formData = new FormData();
 
     const eqMetadata: EarthquakeMetadata = {
@@ -549,7 +549,7 @@ export async function createModelEarthquake(
 }
 
 export async function createRjfsDatasetHazards(formData: any, hazardType: string): Promise<any> {
-    const endpoint = `${config.hazardServiceBase}/${hazardType}`;
+    const endpoint = `${config.hazardApi}/${hazardType}`;
     const dataUrls: { dataurl: string; filename: string }[] = [];
     const payload = new FormData();
 

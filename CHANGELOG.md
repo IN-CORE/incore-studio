@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Update how filter and searchbox works on homepage and project resource page [#44](https://github.com/IN-CORE/incore-studio/issues/44)
+- Project Dashboard page [#99](https://github.com/IN-CORE/incore-studio/issues/99)
 
 ### Fixed
 
