@@ -39,7 +39,8 @@ import {
 import { finalizeWorkflow, getProject } from "@app/reducer/projectSlice";
 import { createWorkflowFileFromNodesAndEdgesV2 } from "@app/components/Workflow/workflowUtils";
 import InvalidWorkflowFilePage from "@app/components/InvalidWorkflowFilePage";
-import SidePanel from "./SidePanel";
+import SidePanel from "@app/components/WorkflowEditor/SidePanel";
+import InformationPanel from "@app/components/WorkflowEditor/InformationPanel";
 import FinalizeWorkflowDialog from "@app/components/FinalizeWorkflowDialog";
 
 const selector = (state: ReactFlowAppState) => ({
@@ -72,6 +73,7 @@ const WorkflowEditor = (): JSX.Element => {
     const saveWorkflowError = useAppSelector((state) => state.workflow.saveWorkflowError);
     const saveWorkflowSuccess = useAppSelector((state) => state.workflow.saveWorkflowSuccess);
     const sidePanelData = useAppSelector((state) => state.workflow.sidePanelData);
+    const informationPanelData = useAppSelector((state) => state.workflow.informationPanelData);
 
     const [selectAnalysisModalOpen, setSelectAnalysisModalOpen] = React.useState<boolean>(false);
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
@@ -484,7 +486,7 @@ const WorkflowEditor = (): JSX.Element => {
                         </Box>
                     ) : (
                         <Box sx={{ display: "flex", flexGrow: 1, position: "relative" }}>
-                            <Workflow sidePanelOpen={sidePanelData.open} />
+                            <Workflow sidePanelOpen={sidePanelData.open || informationPanelData.open} />
                             {sidePanelData.open && (
                                 <Box
                                     sx={{
@@ -495,6 +497,18 @@ const WorkflowEditor = (): JSX.Element => {
                                     }}
                                 >
                                     <SidePanel />
+                                </Box>
+                            )}
+                            {informationPanelData.open && (
+                                <Box
+                                    sx={{
+                                        width: "25vw",
+                                        borderLeft: "1px solid black",
+                                        backgroundColor: "white",
+                                        padding: 0
+                                    }}
+                                >
+                                    <InformationPanel />
                                 </Box>
                             )}
                             <AddAnalysisModal

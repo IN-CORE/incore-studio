@@ -35,6 +35,10 @@ const initialState: WorkflowState = {
             id: ""
         }
     },
+    informationPanelData: {
+        open: false,
+        currentAnalysis: ""
+    },
     hoveredAnalysis: null,
     executions: [],
     loading: false,
@@ -169,6 +173,15 @@ const workflowSlice = createSlice({
                     name: "",
                     id: ""
                 }
+            };
+        },
+        setInformationPanelData: (state, action) => {
+            state.informationPanelData = action.payload;
+        },
+        clearInformationPanelData: (state) => {
+            state.informationPanelData = {
+                open: false,
+                currentAnalysis: ""
             };
         },
         setHoveredAnalysis: (state, action) => {
@@ -308,6 +321,8 @@ export const {
     clearWorkflowState,
     setSidePanelData,
     clearSidePanelData,
+    setInformationPanelData,
+    clearInformationPanelData,
     setHoveredAnalysis,
     clearHoveredAnalysis,
     raiseWorkflowError

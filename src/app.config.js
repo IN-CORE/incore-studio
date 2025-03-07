@@ -5,6 +5,7 @@ config.mailingList = "incore-dev@lists.illinois.edu";
 config.slackInvitationLink = "https://bit.ly/in-core";
 config.tosURL = `${hostname}/doc/incore/termsofservice.html`;
 config.hostname = hostname;
+config.docBaseLink = `${hostname}/doc/incore/analyses`;
 config.projectApi = `${hostname}/project/api/projects`;
 config.spaceApi = `${hostname}/space/api`;
 config.hazardApi = `${hostname}/hazard/api`;
