@@ -82,12 +82,15 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                     zoom
                 }}
                 transformRequest={(url) => {
-                    return {
-                        url,
-                        headers: {
-                            Authorization: `Bearer ${auth.user?.access_token}`
-                        }
-                    };
+                    if (url.startsWith(`${config.hostname}/geoserver`)) {
+                        return {
+                            url,
+                            headers: {
+                                Authorization: `Bearer ${auth.user?.access_token}`
+                            }
+                        };
+                    }
+                    return { url };
                 }}
                 style={{ width: "100%", height: "100%" }}
                 maxBounds={boundingBox as [number, number, number, number]}
