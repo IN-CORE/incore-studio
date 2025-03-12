@@ -548,6 +548,32 @@ export async function createModelEarthquake(
     }
 }
 
+export async function createDatasetTornado(name: string, description: string, files: File[]) {
+    const endpoint = `${config.hazardApi}/tornadoes`;
+    const payload = new FormData();
+
+    const tornadoMetadata = {
+        tornadoType: "dataset",
+        name,
+        description
+    };
+    payload.append("tornado", JSON.stringify(tornadoMetadata));
+    files.forEach((file: File) => {
+        payload.append("file", file);
+    });
+
+    try {
+        const response = await axios.post(endpoint, payload, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
 export async function createRjfsDatasetHazards(formData: any, hazardType: string): Promise<any> {
     const endpoint = `${config.hazardApi}/${hazardType}`;
     const dataUrls: { dataurl: string; filename: string }[] = [];

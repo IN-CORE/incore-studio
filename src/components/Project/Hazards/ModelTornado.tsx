@@ -119,19 +119,19 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
         <TabPanel value={index}>
             <Box component="form" sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Box sx={{ mb: 2 }}>
-                    <FormLabel className="required-field" sx={{ fontSize: "1rem" }}>
+                    <FormLabel required sx={{ fontSize: "1rem" }}>
                         Name
                     </FormLabel>
                     <Input value={name} variant="outlined" onChange={(e) => setName(e.target.value)} />
                 </Box>
                 <Box sx={{ mb: 2 }}>
-                    <FormLabel className="required-field" sx={{ fontSize: "1rem" }}>
+                    <FormLabel required sx={{ fontSize: "1rem" }}>
                         Description
                     </FormLabel>
                     <Input value={description} variant="outlined" onChange={(e) => setDescription(e.target.value)} />
                 </Box>
                 <Box sx={{ mb: 2 }}>
-                    <FormLabel className="required-field" sx={{ fontSize: "1rem" }}>
+                    <FormLabel required sx={{ fontSize: "1rem" }}>
                         Rating
                     </FormLabel>
                     <Select value={rating} onChange={(_, value) => setRating(value as string)}>
@@ -180,7 +180,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                                 }}
                             >
                                 <Box display="flex" alignItems="center">
-                                    <FormLabel sx={i === 0 ? labelStyles.start : labelStyles.end}>
+                                    <FormLabel required sx={i === 0 ? labelStyles.start : labelStyles.end}>
                                         {type} Lat:
                                     </FormLabel>
                                     <Input
@@ -202,7 +202,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                                     />
                                 </Box>
                                 <Box display="flex" alignItems="center">
-                                    <FormLabel sx={i === 0 ? labelStyles.start : labelStyles.end}>
+                                    <FormLabel required sx={i === 0 ? labelStyles.start : labelStyles.end}>
                                         {type} Lon:
                                     </FormLabel>
                                     <Input
