@@ -90,10 +90,17 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                     };
                 }}
                 style={{ width: "100%", height: "100%" }}
-                mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
                 maxBounds={boundingBox as [number, number, number, number]}
                 onMouseMove={handleMouseMove}
             >
+                {/* Carto Basemap as Raster Source */}
+                <Source
+                    type="raster"
+                    tiles={["https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png"]}
+                    tileSize={256}
+                >
+                    <Layer type="raster" />
+                </Source>
                 {/* Add unique WMS layers */}
                 {uniqueLayers.map((layer) => {
                     const layerName = `${layer.workspace}:${layer.layerId}`;
