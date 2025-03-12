@@ -10,11 +10,12 @@ import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/tornado/datasetTornado.json";
 import DatasetFloodUiSchema from "@app/schema/tornado/datasetTornadoUi.json";
 import validator from "@rjsf/validator-ajv8";
+import config from "@app/app.config";
 
 interface DatasetTornadoProps {
     index: number;
     projectId: string;
-    handleLayerUpdate: (hazardType: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
 export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId, handleLayerUpdate }) => {
@@ -35,7 +36,13 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
             const tornadoJson = await createRjfsDatasetHazards(formData, "tornadoes");
             if (tornadoJson && tornadoJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
-                handleLayerUpdate(tornadoJson.id);
+                handleLayerUpdate(
+                    tornadoJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                        workspace: "incore",
+                        layerId: dataset.datasetId,
+                        styleName: config.defaultLayerStyles.MapUtil.tornado
+                    }))
+                );
             }
         } catch (error) {
             console.error("Error saving tornado dataset:", error);

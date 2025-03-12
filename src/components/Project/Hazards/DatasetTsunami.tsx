@@ -10,11 +10,12 @@ import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/tsunami/datasetTsunami.json";
 import DatasetFloodUiSchema from "@app/schema/tsunami/datasetTsunamiUi.json";
 import validator from "@rjsf/validator-ajv8";
+import config from "@app/app.config";
 
 interface DatasetTsunamiProps {
     index: number;
     projectId: string;
-    handleLayerUpdate: (hazardType: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
 export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ index, projectId, handleLayerUpdate }) => {
@@ -35,7 +36,13 @@ export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ index, projectId
             const tsunamiJson = await createRjfsDatasetHazards(formData, "tsunamis");
             if (tsunamiJson && tsunamiJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [tsunamiJson] }));
-                handleLayerUpdate(tsunamiJson.id);
+                handleLayerUpdate(
+                    tsunamiJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                        workspace: "incore",
+                        layerId: dataset.datasetId,
+                        styleName: config.defaultLayerStyles.MapUtil.tsunami
+                    }))
+                );
             }
         } catch (error) {
             console.error("Error saving tsunami dataset:", error);

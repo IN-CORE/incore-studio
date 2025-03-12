@@ -10,11 +10,12 @@ import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/flood/datasetFlood.json";
 import DatasetFloodUiSchema from "@app/schema/flood/datasetFloodUi.json";
 import validator from "@rjsf/validator-ajv8";
+import config from "@app/app.config";
 
 interface DatasetFloodProps {
     index: number;
     projectId: string;
-    handleLayerUpdate: (hazardType: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
 export const DatasetFlood: React.FC<DatasetFloodProps> = ({ index, projectId, handleLayerUpdate }) => {
@@ -35,7 +36,13 @@ export const DatasetFlood: React.FC<DatasetFloodProps> = ({ index, projectId, ha
             const floodJson = await createRjfsDatasetHazards(formData, "floods");
             if (floodJson && floodJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [floodJson] }));
-                handleLayerUpdate(floodJson.id);
+                handleLayerUpdate(
+                    floodJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                        workspace: "incore",
+                        layerId: dataset.datasetId,
+                        styleName: config.defaultLayerStyles.MapUtil.flood
+                    }))
+                );
             }
         } catch (error) {
             console.error("Error saving flood dataset:", error);

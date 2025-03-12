@@ -9,7 +9,7 @@ import { useAppDispatch } from "@app/store/hooks";
 interface ModelTornadoProps {
     index: number;
     projectId: string;
-    handleLayerUpdate: (hazardId: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
 export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, handleLayerUpdate }) => {
@@ -97,7 +97,13 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
 
         if (tornadoJson && tornadoJson.id) {
             dispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
-            handleLayerUpdate(tornadoJson.id);
+            handleLayerUpdate(
+                tornadoJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                    workspace: "incore",
+                    layerId: dataset.datasetId,
+                    styleName: config.defaultLayerStyles.MapUtil.tornado
+                }))
+            );
             setName("");
             setDescription("");
             setStartLatCoord("");
@@ -156,7 +162,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                             isValid: validEndCoord,
                             setValid: setValidEndCoord
                         }
-                    ].map(({ type, lat, lon, setLat, setLon, isValid, setValid }, index) => (
+                    ].map(({ type, lat, lon, setLat, setLon, isValid, setValid }, i) => (
                         <Box key={type} sx={{ mb: 2 }}>
                             <FormLabel sx={{ fontSize: "1rem" }} required>
                                 Tornado Path {type} Coordinate
@@ -174,7 +180,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                                 }}
                             >
                                 <Box display="flex" alignItems="center">
-                                    <FormLabel sx={index === 0 ? labelStyles.start : labelStyles.end}>
+                                    <FormLabel sx={i === 0 ? labelStyles.start : labelStyles.end}>
                                         {type} Lat:
                                     </FormLabel>
                                     <Input
@@ -196,7 +202,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                                     />
                                 </Box>
                                 <Box display="flex" alignItems="center">
-                                    <FormLabel sx={index === 0 ? labelStyles.start : labelStyles.end}>
+                                    <FormLabel sx={i === 0 ? labelStyles.start : labelStyles.end}>
                                         {type} Lon:
                                     </FormLabel>
                                     <Input

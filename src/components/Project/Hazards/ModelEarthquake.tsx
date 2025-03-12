@@ -8,7 +8,7 @@ import config from "@app/app.config";
 interface ModelEarthquakeProps {
     index: number;
     projectId: string;
-    handleLayerUpdate: (hazardType: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
 export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, projectId, handleLayerUpdate }) => {
@@ -85,7 +85,13 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
         );
         if (eqJson && eqJson.id) {
             appDispatch(addHazardToProject({ projectId, hazards: [eqJson] }));
-            handleLayerUpdate(eqJson.id);
+            handleLayerUpdate(
+                eqJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                    workspace: "incore",
+                    layerId: dataset.datasetId,
+                    styleName: config.defaultLayerStyles.MapUtil.earthquake
+                }))
+            );
             // Reset form fields
             setName("");
             setDescription("");

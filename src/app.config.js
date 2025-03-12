@@ -62,8 +62,8 @@ config.defaultLayerStyles = {
             waterVelocity: "incore:hurricane-water-velocity",
             windVelocity: "incore:hurricane-wind"
         },
-        tsunami: {},
-        floods: {}
+        tsunami: "",
+        flood: ""
     }
 };
 

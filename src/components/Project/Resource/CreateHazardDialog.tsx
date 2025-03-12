@@ -24,13 +24,6 @@ import { ModelTornado } from "@app/components/Project/Hazards/ModelTornado";
 import { DatasetHurricane } from "@app/components/Project/Hazards/DatasetHurricane";
 import { DatasetFlood } from "@app/components/Project/Hazards/DatasetFlood";
 import { DatasetTsunami } from "@app/components/Project/Hazards/DatasetTsunami";
-import config from "@app/app.config";
-
-interface HazardLayer {
-    workspace: string;
-    layerId: string;
-    styleName?: string;
-}
 
 interface CreateHazardDialogProps {
     projectId: string;
@@ -39,18 +32,9 @@ interface CreateHazardDialogProps {
     onClose: () => void;
 }
 
-// Hazard Layer Mapping
-const hazardLayers: Record<string, HazardLayer> = {
-    earthquakes: { workspace: "incore", layerId: "" },
-    floods: { workspace: "incore", layerId: "" },
-    hurricanes: { workspace: "incore", layerId: "" },
-    tornadoes: { workspace: "incore", layerId: "" },
-    tsunamis: { workspace: "incore", layerId: "" }
-};
-
 export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, onClose, projectId, resourceType }) => {
     const [hazardType, setHazardType] = useState<string>("");
-    const [activeLayers, setActiveLayers] = useState<HazardLayer[]>([]);
+    const [activeLayers, setActiveLayers] = useState<IncoreLayer[]>([]);
 
     // Handle Hazard Selection
     const handleHazardChange = (_: any, newValue: string | null) => {
@@ -59,23 +43,8 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
         }
     };
 
-    const handleLayerUpdate = (layerId: string) => {
-        if (hazardType && hazardLayers[hazardType]) {
-            let styleName = ""; // Default empty style
-
-            // Check if hazardType exists in config.defaultLayerStyles
-            // @ts-ignore
-            if (config?.defaultLayerStyles[hazardType]) {
-                // @ts-ignore
-                styleName = config.defaultLayerStyles[hazardType]; // Direct mapping
-            } else if (hazardType === "hurricane") {
-                // TODO fixme Use the first available hurricane style
-                const hurricaneStyles = Object.values(config.defaultLayerStyles.MapUtil.hurricane);
-                styleName = hurricaneStyles.length > 0 ? hurricaneStyles[0] : "";
-            }
-
-            setActiveLayers([{ ...hazardLayers[hazardType], layerId, styleName }]);
-        }
+    const handleLayerUpdate = (layers: IncoreLayer[]) => {
+        setActiveLayers(layers);
     };
 
     // Clear Layers on Map
