@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Alpha-3] - 03-10-2025
+
+### Added
+
+- Reset Parameters and input dataset buttons in Execution create step. [#68](https://github.com/IN-CORE/incore-studio/issues/68)
+- Dataset type enforced when selecting datasets/hazards/dfr3 mappings based on the allowed input dataset type. [#81](https://github.com/IN-CORE/incore-studio/issues/81)
+- Upload hazard components to create hazard and add to project [#106](https://github.com/IN-CORE/incore-studio/issues/106)
+- Confirmation dialogs on Edges and Analyses removal in workflow editor. [#49](https://github.com/IN-CORE/incore-studio/issues/49)
+- Information SidePanel for analysis to view more information. [#100](https://github.com/IN-CORE/incore-studio/issues/100)
+
+### Changed
+
+- Update how filter and searchbox works on homepage and project resource page [#44](https://github.com/IN-CORE/incore-studio/issues/44)
+- Project Dashboard page [#99](https://github.com/IN-CORE/incore-studio/issues/99)
+
+### Fixed
+
+- Issue where there were discrepancies in reporting wrong status color and icon of an execution [#94](https://github.com/IN-CORE/incore-studio/issues/94)
+
 ## [Alpha-2] - 02-04-2025
 
 ### Added

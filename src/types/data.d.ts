@@ -132,6 +132,10 @@ interface DependencyGraph {
         };
         pretty_name: string;
         tags: string[];
+        manual: string;
+        inputs: {
+            [key: string]: string[];
+        };
     };
 }
 
@@ -314,11 +318,15 @@ interface WorkflowState {
     dependencyGraph: DependencyGraph | null;
     sidePanelData: {
         open: boolean;
-        type: "previous" | "next" | "";
+        type: previous | next | "";
         currentAnalysis: {
             name: string;
             id: string;
         };
+    };
+    informationPanelData: {
+        open: boolean;
+        currentAnalysis: string;
     };
     hoveredAnalysis: string | null;
     executions: DatawolfExecutionFile[];
@@ -353,6 +361,7 @@ interface ExecutionState {
 
         currentAnalysis: {
             name: string;
+            depGName: string;
             id: string;
             inputDatasets: {
                 execFileEntryId: string;
@@ -378,4 +387,89 @@ interface ExecutionState {
         };
     };
     createExecution: ExecutionCreate;
+}
+
+interface SpaceUsageResponse {
+    service: number[] | null;
+    incoreLab: { [key: string]: number[] } | null;
+    group: string | null;
+    user: string | null;
+    total_number_of_datasets: number;
+    total_number_of_hazards: number;
+    total_number_of_hazard_datasets: number;
+    total_number_of_dfr3: number;
+    total_file_size_of_datasets_byte: number;
+    total_file_size_of_hazard_datasets_byte: number;
+    total_file_size_of_datasets: number;
+    total_file_size_of_hazard_datasets: null;
+}
+
+interface UserSpaceUsage {
+    hazards: {
+        entities: {
+            text: string;
+            value: number;
+        };
+        disk: {
+            text: string;
+            value: number;
+        };
+    };
+    datasets: {
+        entities: {
+            text: string;
+            value: number;
+        };
+        disk: {
+            text: string;
+            value: number;
+        };
+    };
+    dfr3: {
+        entities: {
+            text: string;
+            value: number;
+        };
+    };
+}
+
+interface TornadoParameters {
+    efRating: string;
+    startLatitude: number;
+    startLongitude: number;
+    endLatitude: number[];
+    endLongitude: number[];
+    windSpeedMethod: string;
+}
+
+interface TornadoMetadata {
+    tornadoType: "model" | "dataset";
+    name: string;
+    description: string;
+    tornadoModel?: string;
+    tornadoParameters?: TornadoParameters;
+}
+
+interface EarthquakeMetadata {
+    name: string;
+    description: string;
+    eqType: "model";
+    attenuations: Record<string, number>;
+    eqParameters: {
+        srcLatitude: number;
+        srcLongitude: number;
+        magnitude: number;
+        depth: number;
+        faultTypeMap?: Record<string, any>;
+    };
+    visualizationParameters: {
+        demandType: string;
+        demandUnits: string;
+        minX: number;
+        minY: number;
+        maxX: number;
+        maxY: number;
+        numPoints: string;
+        amplifyHazard: string;
+    };
 }

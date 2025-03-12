@@ -9,9 +9,9 @@ import {
     IconButton,
     Menu,
     MenuButton,
-    MenuItem
+    MenuItem,
+    Grid
 } from "@mui/joy";
-import { Grid } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import React, { useState } from "react";
 import { parseDateTime } from "@app/utils";
@@ -94,6 +94,20 @@ export const ResourceCards: React.FC<{
 
     return (
         <Grid container spacing={3}>
+            <VisualizationDialog
+                projectId={projectId}
+                open={openVisDialog}
+                onClose={handleCloseVisDialog}
+                onAddVisualization={handleAddVisualization}
+            />
+            <IncoreDialog
+                open={openDeleteDialog}
+                onClose={handleCloseDialog}
+                onAction={handleDelete}
+                message="Are you sure you want to delete this item? This action cannot be undone."
+                dialogTitle="Confirm Deletion"
+                actionButtonName="Delete"
+            />
             {resources.map((resource) => (
                 <Grid
                     key={resource.id}
@@ -167,20 +181,6 @@ export const ResourceCards: React.FC<{
                                 </MenuItem>
                             </Menu>
                         </Dropdown>
-                        <VisualizationDialog
-                            projectId={projectId}
-                            open={openVisDialog}
-                            onClose={handleCloseVisDialog}
-                            onAddVisualization={handleAddVisualization}
-                        />
-                        <IncoreDialog
-                            open={openDeleteDialog}
-                            onClose={handleCloseDialog}
-                            onAction={handleDelete}
-                            message="Are you sure you want to delete this item? This action cannot be undone."
-                            dialogTitle="Confirm Deletion"
-                            actionButtonName="Delete"
-                        />
                         <CardContent>
                             {isHazard(resource) ? (
                                 <MapThumbnail />

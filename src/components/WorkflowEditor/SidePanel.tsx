@@ -340,7 +340,7 @@ const SidePanel = () => {
             sx={{
                 backgroundColor: "white",
                 padding: 0,
-                maxHeight: "86vh",
+                maxHeight: "90vh",
                 display: "flex",
                 flexDirection: "column"
             }}

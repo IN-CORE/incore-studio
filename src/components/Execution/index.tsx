@@ -5,23 +5,16 @@ import { Box, Button, Typography, Stack, Tooltip, IconButton } from "@mui/joy";
 import { useShallow } from "zustand/react/shallow";
 
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
-import {
-    getExecutionById,
-    resetExecutionState,
-    setExecutionSidePanelCheckStatus
-    // updateExecutionSidePanelCheckStatus
-} from "@app/reducer/executionSlice";
+import { getExecutionById, resetExecutionState, setExecutionSidePanelCheckStatus } from "@app/reducer/executionSlice";
 import { useAppDispatch, useAppSelector, useExecutionTemplate, useExecutionPolling } from "@app/store/hooks";
 import withLoading from "@app/components/hocs/withLoading";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
+import ConfirmationDialog from "@app/components/ConfirmationDialog";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import Workflow from "@app/components/Workflow";
 import { getWorkflow, clearWorkflowState } from "@app/reducer/workflowSlice";
 import { ReactSVG } from "react-svg";
-import { DialogActions, DialogContent, DialogTitle, Divider, Modal, ModalDialog } from "@mui/material";
-import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import CreateExecutionDialog from "./CreateExecutionDialog";
 
 import SidePanel from "./SidePanel";
@@ -47,7 +40,6 @@ const ExecutionComponent: React.FC<{
     const { setNodes, setEdges } = useStore(useShallow(selector));
 
     const sidePanelData = useAppSelector((state) => state.execution.sidePanelData);
-    // const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
     const currentExecution = useAppSelector((state) => state.execution.currentExecution);
     const reactFlowWorkflow = useAppSelector((state) => state.workflow.reactFlowWorkflow);
     const workflowLoading = useAppSelector((state) => state.workflow.workflowLoading);
@@ -136,44 +128,17 @@ const ExecutionComponent: React.FC<{
                                     </IconButton>
                                 </Tooltip>
                             </Box>
-                            <Modal
+                            <ConfirmationDialog
                                 open={saveExecutionModalConfirmation}
-                                onClose={(_event: React.MouseEvent<HTMLButtonElement>) => {
-                                    setSaveExecutionModalConfirmation(false);
+                                onClose={() => setSaveExecutionModalConfirmation(false)}
+                                onConfirm={() => {
+                                    appDispatch(resetExecutionState());
+                                    navigate(`/project/${id}/workflows/${wfID}`);
                                 }}
-                                sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-                            >
-                                <ModalDialog variant="outlined" role="alertdialog">
-                                    <DialogTitle sx={{ fontWeight: "lg" }}>
-                                        <WarningRoundedIcon />
-                                        Save Changes Before Leaving?
-                                    </DialogTitle>
-                                    <Divider />
-                                    <DialogContent>
-                                        You have unsaved changes. If you leave this page without submitting, all
-                                        progress will be lost.
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button
-                                            variant="solid"
-                                            color="danger"
-                                            onClick={() => {
-                                                appDispatch(resetExecutionState());
-                                                navigate(`/project/${id}/workflows/${wfID}`);
-                                            }}
-                                        >
-                                            Leave
-                                        </Button>
-                                        <Button
-                                            variant="plain"
-                                            color="neutral"
-                                            onClick={() => setSaveExecutionModalConfirmation(false)}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </DialogActions>
-                                </ModalDialog>
-                            </Modal>
+                                confirmationDialogTitle="Save Changes Before Leaving?"
+                                confirmationDialogText="You have unsaved changes. If you leave this page without submitting, all progress will be lost."
+                                confirmationDialogAction="Leave"
+                            />
                             <Box>
                                 <Stack direction="row" spacing={2} alignItems="center">
                                     <Typography
@@ -226,90 +191,48 @@ const ExecutionComponent: React.FC<{
                         </Stack>
                     </Box>
                     <Box>
-                        <Stack direction="row" spacing={2}>
-                            {!create ? null : (
-                                <>
-                                    <Button
-                                        variant="outlined"
-                                        startDecorator={<RestartAltRoundedIcon />}
-                                        sx={{
-                                            borderColor: "primary.subtle",
-                                            color: "primary.subtle",
-                                            backgroundColor: "white"
+                        <Button
+                            variant="solid"
+                            disabled={
+                                create
+                                    ? !Object.values(executionParametersAndInputsChecked).every(
+                                          (value) => value === true
+                                      )
+                                    : false
+                            }
+                            startDecorator={
+                                create ? (
+                                    <ReactSVG
+                                        src="/executeIcon.svg"
+                                        style={{
+                                            display: "inline-block",
+                                            height: "1.2em", // Scale the icon to match the font size
+                                            width: "1.2em",
+                                            verticalAlign: "middle" // Ensures vertical alignment
                                         }}
-                                        // onClick={handleSaveClick}
-                                    >
-                                        Reset all inputs
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        startDecorator={<RestartAltRoundedIcon />}
-                                        sx={{
-                                            borderColor: "primary.subtle",
-                                            color: "primary.subtle",
-                                            backgroundColor: "white"
-                                        }}
-                                    >
-                                        Reset all parameters
-                                    </Button>
-                                </>
-                            )}
-                            <Button
-                                variant="solid"
-                                disabled={
-                                    create
-                                        ? !Object.values(executionParametersAndInputsChecked).every(
-                                              (value) => value === true
-                                          )
-                                        : false
+                                    />
+                                ) : (
+                                    <AddRoundedIcon sx={{ fontSize: "25px" }} />
+                                )
+                            }
+                            sx={{
+                                backgroundColor: "primary.main",
+                                border: "1px",
+                                display: "flex", // Ensures proper alignment within the button
+                                alignItems: "center", // Aligns text and icon vertically
+                                gap: "8px"
+                            }}
+                            onClick={() => {
+                                if (create) {
+                                    setOpenExecutionDialog(true);
+                                } else {
+                                    appDispatch(resetExecutionState());
+                                    navigate(`/project/${id}/workflows/${wfID}/execution/create`);
                                 }
-                                startDecorator={
-                                    create ? (
-                                        <ReactSVG
-                                            src="/executeIcon.svg"
-                                            style={{
-                                                display: "inline-block",
-                                                height: "1.2em", // Scale the icon to match the font size
-                                                width: "1.2em",
-                                                verticalAlign: "middle" // Ensures vertical alignment
-                                            }}
-                                        />
-                                    ) : (
-                                        <AddRoundedIcon sx={{ fontSize: "25px" }} />
-                                    )
-                                }
-                                sx={{
-                                    backgroundColor: "primary.main",
-                                    border: "1px",
-                                    display: "flex", // Ensures proper alignment within the button
-                                    alignItems: "center", // Aligns text and icon vertically
-                                    gap: "8px"
-                                }}
-                                onClick={() => {
-                                    if (create) {
-                                        setOpenExecutionDialog(true);
-                                    } else {
-                                        appDispatch(resetExecutionState());
-                                        navigate(`/project/${id}/workflows/${wfID}/execution/create`);
-                                    }
-                                }}
-                            >
-                                {create ? "Execute Workflow" : "Create new"}
-                            </Button>
-                        </Stack>
-                        {/* <Snackbar
-                                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                                    open={snackbarOpen}
-                                    onClose={() => {
-                                        setSnackbarOpen(false);
-                                        setSnackbarMessage("");
-                                    }}
-                                    variant="outlined"
-                                    color={snackbarColor}
-                                    autoHideDuration={2000}
-                                >
-                                    {snackbarMessage}
-                                </Snackbar> */}
+                            }}
+                        >
+                            {create ? "Execute Workflow" : "Create new"}
+                        </Button>
                     </Box>
                 </Stack>
             </Box>

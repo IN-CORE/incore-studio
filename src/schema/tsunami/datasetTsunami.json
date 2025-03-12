@@ -1,0 +1,63 @@
+{
+    "type": "object",
+    "required": ["name", "description"],
+    "properties": {
+        "name": {
+            "type": "string",
+            "title": "Name"
+        },
+        "description": {
+            "type": "string",
+            "title": "Description"
+        },
+        "tsunamiType": {
+            "type": "string",
+            "default": "dataset"
+        },
+        "hazardDatasets": {
+            "type": "array",
+            "title": "Hazard Datasets",
+            "items": {
+                "type": "object",
+                "required": ["hazardType", "demandType", "demandUnits", "file", "recurrenceInterval", "recurrenceUnit"],
+                "properties": {
+                    "demandType": {
+                        "type": "string",
+                        "title": "Demand Type",
+                        "enumNames": ["Maximum tsunami height", "Maximum water velocity", "Maximum momentum flux"],
+                        "enum": ["Hmax", "Vmax", "Mmax"],
+                        "default": "Hmax"
+                    },
+                    "demandUnits": {
+                        "type": "string",
+                        "title": "Demand Unit",
+                        "enumNames": ["ft", "m", "mph", "kph", "ft/s", "m/s", "m^3/s^2", "ft^3/s^2"],
+                        "enum": ["ft", "m", "mph", "kph", "ft/s", "m/s", "m^3/s^2", "ft^3/s^2"],
+                        "default": "ft"
+                    },
+                    "recurrenceInterval": {
+                        "type": "number",
+                        "title": "Recurrence Interval",
+                        "default": 100
+                    },
+                    "recurrenceUnit": {
+                        "type": "string",
+                        "title": "Recurrence Unit",
+                        "enumNames": ["years", "months", "days"],
+                        "enum": ["years", "months", "days"],
+                        "default": "years"
+                    },
+                    "file": {
+                        "type": "string",
+                        "format": "data-url",
+                        "title": "Single file"
+                    },
+                    "hazardType": {
+                        "type": "string",
+                        "default": "probabilistic"
+                    }
+                }
+            }
+        }
+    }
+}

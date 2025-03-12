@@ -5,33 +5,34 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 
 import { SvgIconProps } from "@mui/material";
-import Searchbox from "@app/components/Project/Resource/Searchbox";
-import FilterSortDropdown from "@app/components/Project/Resource/FilterSortDropdown";
+import SearchFilterSortDropdown from "@app/components/Project/Resource/SearchFilterSortDropdown";
 
 interface ResourceFilterBarProps {
     title: string;
-    onSearch?: (text: string) => void;
     onCreateClick?: () => void;
+    createLabel?: string;
+    additionalCreateClick?: () => void;
+    addtionalCreateLabel?: string;
     sortOptions?: string[];
     filters?: Record<string, string[]>;
     onApply?: (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => void; // Callback to send filter and sort data
     onViewChangeClick?: () => void;
     isTableView?: boolean;
-    createLabel?: string;
     icon: React.ReactElement<SvgIconProps>;
 }
 
 const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     title,
     icon,
-    onSearch,
     filters,
     sortOptions,
     onApply,
     onViewChangeClick,
     isTableView,
     onCreateClick,
-    createLabel = "Create Item" // Default label for the create button
+    additionalCreateClick,
+    createLabel = "Create Item", // Default label for the create button
+    addtionalCreateLabel = "Additional Create Item"
 }) => {
     return (
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -41,9 +42,8 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                 <Typography level="h4">{title}</Typography>
             </Box>
             <Box display="flex" alignItems="center">
-                {onSearch && <Searchbox onSearch={onSearch} />}
                 {onApply && sortOptions && filters && (
-                    <FilterSortDropdown sortOptions={sortOptions} filters={filters} onApply={onApply} />
+                    <SearchFilterSortDropdown sortOptions={sortOptions} filters={filters} onApply={onApply} />
                 )}
                 {onViewChangeClick && (
                     <ButtonGroup variant="soft" sx={{ ml: 1 }}>
@@ -64,6 +64,17 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                 >
                     {createLabel}
                 </Button>
+                {additionalCreateClick && (
+                    <Button
+                        onClick={additionalCreateClick}
+                        variant="soft"
+                        startDecorator={<AddIcon />}
+                        color="neutral"
+                        sx={{ ml: 1 }}
+                    >
+                        {addtionalCreateLabel}
+                    </Button>
+                )}
             </Box>
         </Box>
     );

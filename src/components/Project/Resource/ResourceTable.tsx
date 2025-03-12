@@ -153,42 +153,44 @@ export const ResourceTable = ({
                             </MenuItem>
                         </Menu>
                     </Dropdown>
-                    <VisualizationDialog
-                        projectId={projectId}
-                        open={openVisDialog}
-                        onClose={handleCloseVisDialog}
-                        onAddVisualization={handleAddVisualization}
-                    />
-                    <IncoreDialog
-                        open={openDeleteDialog}
-                        onClose={handleCloseDialog}
-                        onAction={handleDelete}
-                        message="Are you sure you want to delete this item? This action cannot be undone."
-                        dialogTitle="Confirm Deletion"
-                        actionButtonName="Delete"
-                    />
                 </td>
             </>
         );
     };
 
     return (
-        <Table>
-            <thead>
-                <tr>
-                    {columns.map((column) => (
-                        <th key={column} style={{ backgroundColor: "white" }}>
-                            {formatHeaderName(column)}
-                        </th>
+        <>
+            <VisualizationDialog
+                projectId={projectId}
+                open={openVisDialog}
+                onClose={handleCloseVisDialog}
+                onAddVisualization={handleAddVisualization}
+            />
+            <IncoreDialog
+                open={openDeleteDialog}
+                onClose={handleCloseDialog}
+                onAction={handleDelete}
+                message="Are you sure you want to delete this item? This action cannot be undone."
+                dialogTitle="Confirm Deletion"
+                actionButtonName="Delete"
+            />
+            <Table>
+                <thead>
+                    <tr>
+                        {columns.map((column) => (
+                            <th key={column} style={{ backgroundColor: "white" }}>
+                                {formatHeaderName(column)}
+                            </th>
+                        ))}
+                        <th style={{ backgroundColor: "white", textAlign: "right", width: "10%" }}>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.map((resource) => (
+                        <tr key={resource.id}>{renderRow(resource)}</tr>
                     ))}
-                    <th style={{ backgroundColor: "white", textAlign: "right", width: "10%" }}>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {data.map((resource) => (
-                    <tr key={resource.id}>{renderRow(resource)}</tr>
-                ))}
-            </tbody>
-        </Table>
+                </tbody>
+            </Table>
+        </>
     );
 };

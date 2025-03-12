@@ -4,6 +4,7 @@ import { Box, IconButton, Tooltip } from "@mui/joy";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { useShallow } from "zustand/react/shallow";
+import ConfirmationDialog from "@app/components/ConfirmationDialog";
 import useStore, { type ReactFlowAppState } from "../reactFlowStore";
 const selector = (state: ReactFlowAppState) => ({
     edges: state.edges,
@@ -32,9 +33,11 @@ export default function DeletableEdge({
         targetPosition
     });
 
-    const onEdgeClick = () => {
+    const onEdgeDelete = () => {
         setEdges(edges.filter((edge) => edge.id !== id));
     };
+
+    const [openDeleteConfirmationModal, setOpenDeleteConfirmationModal] = React.useState(false);
 
     return (
         <>
@@ -60,7 +63,7 @@ export default function DeletableEdge({
                 >
                     <Tooltip title="Remove">
                         <IconButton
-                            onClick={onEdgeClick}
+                            onClick={() => setOpenDeleteConfirmationModal(true)}
                             sx={{
                                 "background": "#eee",
                                 "cursor": "pointer",
@@ -75,6 +78,14 @@ export default function DeletableEdge({
                         </IconButton>
                     </Tooltip>
                 </Box>
+                <ConfirmationDialog
+                    open={openDeleteConfirmationModal}
+                    onClose={() => setOpenDeleteConfirmationModal(false)}
+                    onConfirm={onEdgeDelete}
+                    confirmationDialogTitle="Delete Edge?"
+                    confirmationDialogText="Are you sure you want to delete this edge?"
+                    confirmationDialogAction="Delete"
+                />
             </EdgeLabelRenderer>
         </>
     );

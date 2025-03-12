@@ -11,7 +11,7 @@ module.exports = {
         extensions: [".ts", ".tsx", ".js", ".jsx"],
         alias: {
             "@app": path.resolve(__dirname, "src/"),
-            "@mui/material": "@mui/joy",
+            // "@mui/material": "@mui/joy",
             "mapbox-gl": "maplibre-gl"
         }
     },

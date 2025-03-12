@@ -1,0 +1,43 @@
+{
+    "type": "object",
+    "required": ["name", "description"],
+    "properties": {
+        "name": {
+            "type": "string",
+            "title": "Name"
+        },
+        "description": {
+            "type": "string",
+            "title": "Description"
+        },
+        "hazardDatasets": {
+            "type": "array",
+            "title": "Hazard Datasets",
+            "items": {
+                "type": "object",
+                "required": ["demandType", "demandUnits", "file"],
+                "properties": {
+                    "demandType": {
+                        "type": "string",
+                        "title": "Demand Type",
+                        "enumNames": ["Wind Speed"],
+                        "enum": ["wind"],
+                        "default": "wind"
+                    },
+                    "demandUnits": {
+                        "type": "string",
+                        "title": "Demand Unit",
+                        "enumNames": ["Miles per Hour", "Metre per Second"],
+                        "enum": ["mph", "mps"],
+                        "default": "mph"
+                    },
+                    "file": {
+                        "type": "string",
+                        "format": "data-url",
+                        "title": "Single file"
+                    }
+                }
+            }
+        }
+    }
+}

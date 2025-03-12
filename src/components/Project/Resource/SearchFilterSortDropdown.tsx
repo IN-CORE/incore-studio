@@ -3,48 +3,58 @@ import { Button, Box, FormControl, FormLabel, Select, Option, Autocomplete, Shee
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SortIcon from "@mui/icons-material/Sort";
 import { breakCamelCaseAndCapitalize } from "@app/utils";
+import Searchbox from "@app/components/Project/Resource/Searchbox";
 
-type FilterSortDropdownProps = {
+type SearchFilterSortDropdownProps = {
     filters: Record<string, string[]>; // Filters: key-value pairs
     sortOptions: string[]; // Options for sorting fields
     onApply: (params: { filters: Record<string, string>; sortBy: string; order: string }) => void; // Callback to send filter and sort data
 };
 
-const FilterSortDropdown: React.FC<FilterSortDropdownProps> = ({ filters, sortOptions, onApply }) => {
+const SearchFilterSortDropdown: React.FC<SearchFilterSortDropdownProps> = ({ filters, sortOptions, onApply }) => {
     const [selectedFilters, setSelectedFilters] = React.useState<Record<string, string>>({});
+    const [searchText, setSearchText] = React.useState<string>(""); // Search text
     const [sortBy, setSortBy] = React.useState<string>("");
     const [order, setOrder] = React.useState<string>("");
 
     const [showFilterDropdown, setShowFilterDropdown] = React.useState(false);
     const [showSortDropdown, setShowSortDropdown] = React.useState(false);
 
+    const handleSearchChange = (text: string) => {
+        setSearchText(text);
+        triggerApply(selectedFilters, text, sortBy, order);
+    };
+
     // Handle filter change
     const handleFilterChange = (filterName: string, value: string) => {
         setSelectedFilters((prev) => {
             const updatedFilters = { ...prev, [filterName]: value };
-            triggerApply(updatedFilters, sortBy, order);
+            triggerApply(updatedFilters, searchText, sortBy, order);
             return updatedFilters;
         });
     };
 
     const handleSortChange = (newSortBy: string) => {
         setSortBy(newSortBy);
-        triggerApply(selectedFilters, newSortBy, order);
+        triggerApply(selectedFilters, searchText, newSortBy, order);
     };
 
     const handleSortOrderChange = (newOrder: string) => {
         setOrder(newOrder);
-        triggerApply(selectedFilters, sortBy, newOrder);
+        triggerApply(selectedFilters, searchText, sortBy, newOrder);
     };
 
-    const triggerApply = (newFilters: Record<string, string>, newSortBy: string, newOrder: string) => {
-        onApply({ filters: newFilters, sortBy: newSortBy, order: newOrder });
+    const triggerApply = (newFilters: Record<string, string>, newText: string, newSortBy: string, newOrder: string) => {
+        const filters = { ...newFilters, ...(newText && { text: newText }) }; // Add 'text' only if non-empty
+        onApply({ filters, sortBy: newSortBy, order: newOrder });
     };
 
     const isAnyFilterApplied = Object.values(selectedFilters).some((value) => value.toString().trim() !== "");
 
     return (
         <Box display="flex" gap={1}>
+            {/* Search Box */}
+            <Searchbox onSearch={handleSearchChange} />
             {/* Filter Button */}
             <Box position="relative">
                 <Button
@@ -164,4 +174,4 @@ const FilterSortDropdown: React.FC<FilterSortDropdownProps> = ({ filters, sortOp
     );
 };
 
-export default FilterSortDropdown;
+export default SearchFilterSortDropdown;
