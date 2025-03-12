@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import Map, { Source, Layer, MapRef, MapMouseEvent } from "react-map-gl/maplibre";
+import { useAuth } from "react-oidc-context";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -21,6 +22,8 @@ export const MapComponent: React.FC<MapComponentProps> = ({
     height = 600,
     boundingBox = config.DEFAULT_MAP_BOUNDS
 }) => {
+    const auth = useAuth();
+
     const mapRef = useRef<MapRef>(null);
     const [uniqueLayers, setUniqueLayers] = useState<IncoreLayer[]>([]);
     const [activeLayers, setActiveLayers] = useState<{ [key: string]: boolean }>({});
@@ -77,6 +80,14 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                     longitude: (boundingBox[0] + boundingBox[2]) / 2,
                     latitude: (boundingBox[1] + boundingBox[3]) / 2,
                     zoom
+                }}
+                transformRequest={(url) => {
+                    return {
+                        url,
+                        headers: {
+                            Authorization: `Bearer ${auth.user?.access_token}`
+                        }
+                    };
                 }}
                 style={{ width: "100%", height: "100%" }}
                 mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
