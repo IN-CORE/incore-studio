@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Hide map provider info icon [#114](https://github.com/IN-CORE/incore-studio/issues/114)
+
 ## [Alpha-3] - 03-10-2025
 
 ### Added
@@ -19,7 +23,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Update how filter and searchbox works on homepage and project resource page [#44](https://github.com/IN-CORE/incore-studio/issues/44)
 - Project Dashboard page [#99](https://github.com/IN-CORE/incore-studio/issues/99)
-- Hide map provider info icon [#114](https://github.com/IN-CORE/incore-studio/issues/114)
 
 ### Fixed
 
