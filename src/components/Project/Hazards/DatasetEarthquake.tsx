@@ -35,7 +35,7 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, pro
         try {
             const eqJson = await createRjfsDatasetHazards(formData, "earthquakes");
             if (eqJson && eqJson.id) {
-                appDispatch(addHazardToProject({ projectId, hazards: [eqJson] }));
+                appDispatch(addHazardToProject({ projectId, hazards: [{ ...eqJson, type: "earthquake" }] }));
                 handleLayerUpdate(eqJson.id);
             }
         } catch (error) {

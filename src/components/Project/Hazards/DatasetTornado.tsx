@@ -34,7 +34,7 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
         try {
             const tornadoJson = await createRjfsDatasetHazards(formData, "tornadoes");
             if (tornadoJson && tornadoJson.id) {
-                appDispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
+                appDispatch(addHazardToProject({ projectId, hazards: [{ ...tornadoJson, type: "tornado" }] }));
                 handleLayerUpdate(tornadoJson.id);
             }
         } catch (error) {

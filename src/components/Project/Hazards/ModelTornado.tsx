@@ -96,7 +96,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
         );
 
         if (tornadoJson && tornadoJson.id) {
-            dispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
+            dispatch(addHazardToProject({ projectId, hazards: [{ ...tornadoJson, type: "tornado" }] }));
             handleLayerUpdate(tornadoJson.id);
             setName("");
             setDescription("");
