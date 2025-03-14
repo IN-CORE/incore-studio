@@ -40,11 +40,7 @@ export const DatasetFlood: React.FC<DatasetFloodProps> = ({ index, projectId, ha
                     floodJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",
                         layerId: dataset.datasetId,
-                        styleName:
-                            // TODO type check
-                            // @ts-ignore
-                            config.defaultLayerStyles.MapUtil.flood?.[dataset.demandType] ??
-                            config.defaultLayerStyles.MapUtil.flood.inundationDepth
+                        styleName: config.defaultLayerStyles.MapUtil.flood
                     }))
                 );
             }
