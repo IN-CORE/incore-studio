@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Visual feedback of results tab to show execution still running and avoid N/A in output fields [#96](https://github.com/IN-CORE/incore-studio/issues/96)
+
 ## [Alpha-3] - 03-10-2025
 
 ### Added
