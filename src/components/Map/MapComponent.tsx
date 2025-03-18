@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Map, { Source, Layer, MapRef, MapMouseEvent } from "react-map-gl/maplibre";
 
 import "maplibre-gl/dist/maplibre-gl.css";
+import { MaplibreTerradrawControl } from "@watergis/maplibre-gl-terradraw";
 
 import config from "@app/app.config";
 import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Checkbox } from "@mui/joy";
@@ -25,6 +26,26 @@ export const MapComponent: React.FC<MapComponentProps> = ({
     const [uniqueLayers, setUniqueLayers] = useState<IncoreLayer[]>([]);
     const [activeLayers, setActiveLayers] = useState<{ [key: string]: boolean }>({});
     const [mouseCoords, setMouseCoords] = useState<{ lat: number; lon: number } | null>(null);
+    const [drawnPoint, setDrawnPoint] = useState<{ lat: number; lon: number } | null>(null);
+
+    useEffect(() => {
+        if (mapRef.current) {
+            const mapInstance = mapRef.current.getMap();
+            const draw = new MaplibreTerradrawControl({
+                modes: ["render", "point", "linestring", "select", "delete-selection", "delete"],
+                open: true
+            });
+            mapInstance.addControl(draw, "top-left");
+
+            mapInstance.on("draw:created", (geoJson) => {
+                if (geoJson.geometry.type === "Point") {
+                    const [lon, lat] = geoJson.geometry.coordinates;
+                    setDrawnPoint({ lat, lon });
+                }
+            });
+        }
+    }, []);
+
     // Handle mouse move to show coordinates
     const handleMouseMove = (event: MapMouseEvent) => {
         const { lng, lat } = event.lngLat;
@@ -143,6 +164,27 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                     </AccordionDetails>
                 </Accordion>
             </Box>
+
+            {/* Display Drawn Point Coordinates */}
+            {drawnPoint && (
+                <Box
+                    sx={{
+                        position: "absolute",
+                        bottom: 50,
+                        left: 10,
+                        backgroundColor: "rgba(255, 255, 255, 0.8)",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        fontSize: "14px",
+                        boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+                        zIndex: 1
+                    }}
+                >
+                    <Typography level="body-sm">
+                        Drawn Point - Lat: {drawnPoint.lat.toFixed(4)}, Lon: {drawnPoint.lon.toFixed(4)}
+                    </Typography>
+                </Box>
+            )}
 
             {/* Mouse-over Coordinate Display */}
             {mouseCoords && (
