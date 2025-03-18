@@ -208,7 +208,7 @@ const HazardPage = (): JSX.Element => {
                                 <Box mt={4} display="flex" justifyContent="center">
                                     <Pagination
                                         pageNumber={hazardPageNumber}
-                                        data={projectHazards}
+                                        dataLength={projectHazards.length}
                                         dataPerPage={10}
                                         previous={hazardPreviousPage}
                                         next={hazardNextPage}

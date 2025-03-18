@@ -5,13 +5,13 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 interface PaginationProps {
     pageNumber: number;
-    data: any[];
+    dataLength: number;
     dataPerPage: number;
     previous: () => void;
     next: () => void;
 }
 
-export const Pagination: React.FC<PaginationProps> = ({ pageNumber, data, dataPerPage, previous, next }) => {
+export const Pagination: React.FC<PaginationProps> = ({ pageNumber, dataLength, dataPerPage, previous, next }) => {
     return (
         <div style={{ textAlign: "center", margin: "1em" }}>
             <ButtonGroup size="sm">
@@ -19,7 +19,7 @@ export const Pagination: React.FC<PaginationProps> = ({ pageNumber, data, dataPe
                     <ChevronLeftIcon fontSize="small" />
                 </Button>
                 <Button disabled>{pageNumber}</Button>
-                <Button disabled={data.length < dataPerPage} onClick={next}>
+                <Button disabled={dataLength < dataPerPage} onClick={next}>
                     <ChevronRightIcon fontSize="small" />
                 </Button>
             </ButtonGroup>

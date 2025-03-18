@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Visualzation pagination in Execution side panel and select existing visualizations in the dialog dropdown [#95](https://github.com/IN-CORE/incore-studio/issues/95)
+
 ## [Alpha-3] - 03-10-2025
 
 ### Added
