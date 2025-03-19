@@ -40,7 +40,8 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                                 workspace: layer.workspace,
                                 layerId: layer.layerId,
                                 styleName: layer.styleName
-                            }))
+                            })
+                        )
                     )
                 ).map(async (layerString) => {
                     const layer = JSON.parse(layerString);
