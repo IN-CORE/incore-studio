@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- Allow user to add a region not present in the dropdown [#127](https://github.com/IN-CORE/incore-studio/issues/127)
+
 ## [Alpha-3] - 03-10-2025
 
 ### Added
