@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Upload dataset modal that uploads dataset to IN-CORE [#128](https://github.com/IN-CORE/incore-studio/issues/128)
+
 ## [Alpha-3] - 03-10-2025
 
 ### Added

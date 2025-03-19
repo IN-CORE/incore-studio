@@ -18,6 +18,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { addDatasetToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
 import { createDataset } from "@app/utils";
+import config from "@app/app.config";
 
 interface CreateDatasetDialogProps {
     projectId: string;
@@ -131,6 +132,24 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                         <FormLabel required sx={{ fontSize: "1rem" }}>
                             Dataset Type
                         </FormLabel>
+                        <Typography
+                            component="a"
+                            href={`${config.hostname}/SemanticViewer`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{
+                                fontSize: "0.875rem",
+                                fontWeight: "lighter",
+                                color: "primary.main",
+                                textDecoration: "underline",
+                                cursor: "pointer",
+                                fontStyle: "italic"
+                            }}
+                            mt={1}
+                            mb={1}
+                        >
+                            Explore Dataset Types
+                        </Typography>
                         <Input
                             value={datasetType}
                             variant="outlined"
