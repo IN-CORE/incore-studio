@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, FormLabel, Input, Select, Option, TabPanel, Typography } from "@mui/joy";
-import { createModelEarthquake, validateCoord } from "@app/utils/";
+import { createModelEarthquake, getLayerBoundingBox, validateCoord } from "@app/utils/";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
 import config from "@app/app.config";
@@ -89,7 +89,8 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                 eqJson.hazardDatasets.map((dataset: HazardDataset) => ({
                     workspace: "incore",
                     layerId: dataset.datasetId,
-                    styleName: config.defaultLayerStyles.MapUtil.earthquake
+                    styleName: config.defaultLayerStyles.MapUtil.earthquake,
+                    boundingBox: getLayerBoundingBox(dataset.datasetId)
                 }))
             );
             // Reset form fields

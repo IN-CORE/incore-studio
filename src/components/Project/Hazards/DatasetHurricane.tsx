@@ -4,7 +4,7 @@ import { useAppDispatch } from "@app/store/hooks";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
 import { CustomTextInput } from "@app/components/StyledComponents/CustomTextWidget";
 import { CustomSelectWidget } from "@app/components/StyledComponents/CustomSelectWidget";
-import { createRjfsDatasetHazards } from "@app/utils";
+import { createRjfsDatasetHazards, getLayerBoundingBox } from "@app/utils";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/hurricane/datasetHurricane.json";
@@ -45,7 +45,8 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
                             // TODO type check
                             // @ts-ignore
                             config.defaultLayerStyles.MapUtil.hurricane?.[dataset.demandType] ??
-                            config.defaultLayerStyles.MapUtil.hurricane.inundationDepth
+                            config.defaultLayerStyles.MapUtil.hurricane.inundationDepth,
+                        boundingBox: getLayerBoundingBox(dataset.datasetId)
                     }))
                 );
             }

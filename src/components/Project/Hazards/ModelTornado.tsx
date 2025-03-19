@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, FormLabel, Select, Option, TabPanel, Input } from "@mui/joy";
-import { validateCoord, createModelTornado } from "@app/utils/";
+import { validateCoord, createModelTornado, getLayerBoundingBox } from "@app/utils/";
 import config from "@app/app.config";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
@@ -101,7 +101,8 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                 tornadoJson.hazardDatasets.map((dataset: HazardDataset) => ({
                     workspace: "incore",
                     layerId: dataset.datasetId,
-                    styleName: config.defaultLayerStyles.MapUtil.tornado
+                    styleName: config.defaultLayerStyles.MapUtil.tornado,
+                    boundingBox: getLayerBoundingBox(dataset.datasetId)
                 }))
             );
             setName("");

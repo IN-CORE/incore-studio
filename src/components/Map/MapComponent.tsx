@@ -44,7 +44,8 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                               JSON.stringify({
                                   workspace: layer.workspace,
                                   layerId: layer.layerId,
-                                  styleName: layer.styleName
+                                  styleName: layer.styleName,
+                                  boundingBox: layer?.boundingBox
                               })
                           )
                       )
@@ -62,6 +63,24 @@ export const MapComponent: React.FC<MapComponentProps> = ({
         setActiveLayers(initialActiveLayers);
     }, [layers]);
 
+    const [mapViewState, setMapViewState] = useState({
+        longitude: (boundingBox[0] + boundingBox[2]) / 2,
+        latitude: (boundingBox[1] + boundingBox[3]) / 2,
+        zoom
+    });
+
+    // Update initial view state when uniqueLayers is populated
+    useEffect(() => {
+        if (uniqueLayers.length > 0 && uniqueLayers[0]?.boundingBox) {
+            const firstLayerBoundingBox = uniqueLayers[0].boundingBox;
+            setMapViewState({
+                longitude: (firstLayerBoundingBox[0] + firstLayerBoundingBox[2]) / 2,
+                latitude: (firstLayerBoundingBox[1] + firstLayerBoundingBox[3]) / 2,
+                zoom
+            });
+        }
+    }, [uniqueLayers]);
+
     // Toggle visibility of a layer
     const toggleLayer = (layerId: string) => {
         if (!mapRef.current) return;
@@ -76,11 +95,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
         <div style={{ position: "relative", width, height }}>
             <Map
                 ref={mapRef}
-                initialViewState={{
-                    longitude: (boundingBox[0] + boundingBox[2]) / 2,
-                    latitude: (boundingBox[1] + boundingBox[3]) / 2,
-                    zoom
-                }}
+                initialViewState={mapViewState}
                 transformRequest={(url) => {
                     if (url.startsWith(`${config.hostname}/geoserver`)) {
                         return {
@@ -93,7 +108,6 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                     return { url };
                 }}
                 style={{ width: "100%", height: "100%" }}
-                maxBounds={boundingBox as [number, number, number, number]}
                 onMouseMove={handleMouseMove}
             >
                 {/* Carto Basemap as Raster Source */}

@@ -6,7 +6,7 @@ import { CustomTextInput } from "@app/components/StyledComponents/CustomTextWidg
 import DatasetEqSchema from "@app/schema/earthquake/datasetEarthquake.json";
 import DatasetEqUiSchema from "@app/schema/earthquake/datasetEarthquakeUi.json";
 import { addHazardToProject } from "@app/reducer/projectSlice";
-import { createRjfsDatasetHazards } from "@app/utils";
+import { createRjfsDatasetHazards, getLayerBoundingBox } from "@app/utils";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useAppDispatch } from "@app/store/hooks";
@@ -42,7 +42,8 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, pro
                     eqJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",
                         layerId: dataset.datasetId,
-                        styleName: config.defaultLayerStyles.MapUtil.earthquake
+                        styleName: config.defaultLayerStyles.MapUtil.earthquake,
+                        boundingBox: getLayerBoundingBox(dataset.datasetId)
                     }))
                 );
             }

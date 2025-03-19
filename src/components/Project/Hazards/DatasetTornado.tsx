@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, TabPanel, FormLabel, Input, List, ListItem, IconButton, Button } from "@mui/joy";
-import { createDatasetTornado } from "@app/utils";
+import { createDatasetTornado, getLayerBoundingBox } from "@app/utils";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
 import config from "@app/app.config";
@@ -50,7 +50,8 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
                     tornadoJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",
                         layerId: dataset.datasetId,
-                        styleName: config.defaultLayerStyles.MapUtil.tornado
+                        styleName: config.defaultLayerStyles.MapUtil.tornado,
+                        boundingBox: getLayerBoundingBox(dataset.datasetId)
                     }))
                 );
                 setFiles([]);
