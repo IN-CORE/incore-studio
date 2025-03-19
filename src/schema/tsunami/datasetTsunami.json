@@ -25,7 +25,7 @@
                         "type": "string",
                         "title": "Demand Type",
                         "enumNames": ["Maximum tsunami height", "Maximum water velocity", "Maximum momentum flux"],
-                        "enum": ["hmax", "vmax", "mmax"],
+                        "enum": ["Hmax", "Vmax", "Mmax"],
                         "default": "Hmax"
                     },
                     "demandUnits": {
