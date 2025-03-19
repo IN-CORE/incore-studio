@@ -75,20 +75,22 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
     };
 
     return (
-        <Modal
-            open={open}
-            onClose={() => {
-                onClose();
-            }}
-        >
-            <ModalDialog sx={{ backgroundColor: "#fff", width: "80em", maxWidth: "90vw" }}>
+        <Modal open={open} onClose={onClose}>
+            <ModalDialog size="lg" sx={{ backgroundColor: "#fff" }}>
                 <ModalClose sx={{ zIndex: 20 }} />
-                <Box sx={{ opacity: loading ? 0.5 : 1 }}>
-                    <Box sx={{ maxWidth: "100%", padding: "3%", overflow: "auto" }}>
-                        <Typography level="h4" sx={{ mb: 2, textTransform: "capitalize" }}>
-                            Create Dataset
-                        </Typography>
-                    </Box>
+                <Box
+                    sx={{
+                        width: 600,
+                        maxWidth: "100%",
+                        padding: 2,
+                        borderRadius: "md",
+                        opacity: loading ? 0.5 : 1
+                    }}
+                >
+                    <Typography level="h4" sx={{ mb: 1 }}>
+                        Create Dataset
+                    </Typography>
+
                     {/* Name Input */}
                     <Box sx={{ mb: 2 }}>
                         <FormLabel required sx={{ fontSize: "1rem" }}>
@@ -112,10 +114,10 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                     {/* DataType Input */}
                     <Box sx={{ mb: 2 }}>
                         <FormLabel required sx={{ fontSize: "1rem" }}>
-                            Data Type
+                            Dataset Type
                         </FormLabel>
                         <Input
-                            value={description}
+                            value={datasetType}
                             variant="outlined"
                             onChange={(e) => setDatasetType(e.target.value)}
                         />
