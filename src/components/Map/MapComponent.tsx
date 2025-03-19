@@ -5,6 +5,7 @@ import { useAuth } from "react-oidc-context";
 import "maplibre-gl/dist/maplibre-gl.css";
 import config from "@app/app.config";
 import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Checkbox } from "@mui/joy";
+import { getLayerBoundingBox } from "@app/utils";
 
 interface MapComponentProps {
     layers: IncoreLayer[];
@@ -26,50 +27,54 @@ export const MapComponent: React.FC<MapComponentProps> = ({
     const [uniqueLayers, setUniqueLayers] = useState<IncoreLayer[]>([]);
     const [activeLayers, setActiveLayers] = useState<{ [key: string]: boolean }>({});
 
-    // Deduplicate layers
+    // Fetch bounding boxes and deduplicate layers
     useEffect(() => {
-        const uniqueLayers =
-            layers.length > 0
-                ? Array.from(
-                      new Set(
-                          layers.map((layer) => {
-                              const layerData: {
-                                  workspace: string;
-                                  layerId: string;
-                                  styleName?: string;
-                                  boundingBox?: [number, number, number, number];
-                              } = {
-                                  workspace: layer.workspace,
-                                  layerId: layer.layerId,
-                                  styleName: layer.styleName
-                              };
+        const fetchBoundingBoxes = async () => {
+            if (layers.length === 0) return;
 
-                              if (Array.isArray(layer.boundingBox) && layer.boundingBox.length === 4) {
-                                  layerData.boundingBox = layer.boundingBox;
-                              }
+            const uniqueLayers = await Promise.all(
+                Array.from(
+                    new Set(
+                        layers.map((layer) =>
+                            JSON.stringify({
+                                workspace: layer.workspace,
+                                layerId: layer.layerId,
+                                styleName: layer.styleName
+                            }))
+                    )
+                ).map(async (layerString) => {
+                    const layer = JSON.parse(layerString);
 
-                              return JSON.stringify(layerData);
-                          })
-                      )
-                  ).map((layerString) => JSON.parse(layerString))
-                : [];
+                    // Fetch bounding box asynchronously
+                    try {
+                        layer.boundingBox = await getLayerBoundingBox(layer.layerId);
+                    } catch (error) {
+                        console.warn(`Failed to fetch bounding box for ${layer.layerId}`, error);
+                    }
 
-        setUniqueLayers(uniqueLayers);
+                    return layer;
+                })
+            );
 
-        // Initialize activeLayers (set first layer to active by default)
-        const initialActiveLayers = uniqueLayers.reduce(
-            (acc, layer) => {
-                acc[layer.layerId] = false;
-                return acc;
-            },
-            {} as { [key: string]: boolean }
-        );
+            setUniqueLayers(uniqueLayers);
 
-        if (uniqueLayers[0]) {
-            initialActiveLayers[uniqueLayers[0].layerId] = true;
-        }
+            // Initialize activeLayers (set first layer to active by default)
+            const initialActiveLayers = uniqueLayers.reduce(
+                (acc, layer) => {
+                    acc[layer.layerId] = false;
+                    return acc;
+                },
+                {} as { [key: string]: boolean }
+            );
 
-        setActiveLayers(initialActiveLayers);
+            if (uniqueLayers[0]) {
+                initialActiveLayers[uniqueLayers[0].layerId] = true;
+            }
+
+            setActiveLayers(initialActiveLayers);
+        };
+
+        fetchBoundingBoxes();
     }, [layers]);
 
     // Function to fly to a given bounding box

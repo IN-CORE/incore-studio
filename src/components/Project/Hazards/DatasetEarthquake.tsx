@@ -6,7 +6,7 @@ import { CustomTextInput } from "@app/components/StyledComponents/CustomTextWidg
 import DatasetEqSchema from "@app/schema/earthquake/datasetEarthquake.json";
 import DatasetEqUiSchema from "@app/schema/earthquake/datasetEarthquakeUi.json";
 import { addHazardToProject } from "@app/reducer/projectSlice";
-import { createRjfsDatasetHazards, getLayerBoundingBox } from "@app/utils";
+import { createRjfsDatasetHazards } from "@app/utils";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useAppDispatch } from "@app/store/hooks";
@@ -38,17 +38,13 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, pro
             if (eqJson && eqJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [eqJson] }));
 
-                // Collect all boundingBox promises inside an async function
-                const layerData = await Promise.all(
-                    eqJson.hazardDatasets.map(async (dataset: HazardDataset) => ({
+                handleLayerUpdate(
+                    eqJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",
                         layerId: dataset.datasetId,
-                        styleName: config.defaultLayerStyles.MapUtil.earthquake,
-                        boundingBox: await getLayerBoundingBox(dataset.datasetId)
+                        styleName: config.defaultLayerStyles.MapUtil.earthquake
                     }))
                 );
-
-                handleLayerUpdate(layerData);
             }
         } catch (error) {
             console.error("Error saving earthquake dataset:", error);

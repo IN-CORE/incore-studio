@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, FormLabel, Input, Select, Option, TabPanel, Typography } from "@mui/joy";
-import { createModelEarthquake, getLayerBoundingBox, validateCoord } from "@app/utils/";
+import { createModelEarthquake, validateCoord } from "@app/utils/";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
 import config from "@app/app.config";
@@ -85,19 +85,13 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
         );
         if (eqJson && eqJson.id) {
             appDispatch(addHazardToProject({ projectId, hazards: [eqJson] }));
-
-            // Collect all boundingBox promises inside an async function
-            const layerData = await Promise.all(
-                eqJson.hazardDatasets.map(async (dataset: HazardDataset) => ({
+            handleLayerUpdate(
+                eqJson.hazardDatasets.map((dataset: HazardDataset) => ({
                     workspace: "incore",
                     layerId: dataset.datasetId,
-                    styleName: config.defaultLayerStyles.MapUtil.earthquake,
-                    boundingBox: await getLayerBoundingBox(dataset.datasetId)
+                    styleName: config.defaultLayerStyles.MapUtil.earthquake
                 }))
             );
-
-            handleLayerUpdate(layerData);
-
             // Reset form fields
             setName("");
             setDescription("");

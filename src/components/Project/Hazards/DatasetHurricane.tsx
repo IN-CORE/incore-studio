@@ -4,7 +4,7 @@ import { useAppDispatch } from "@app/store/hooks";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
 import { CustomTextInput } from "@app/components/StyledComponents/CustomTextWidget";
 import { CustomSelectWidget } from "@app/components/StyledComponents/CustomSelectWidget";
-import { createRjfsDatasetHazards, getLayerBoundingBox } from "@app/utils";
+import { createRjfsDatasetHazards } from "@app/utils";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/hurricane/datasetHurricane.json";
@@ -37,21 +37,17 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
             if (hurricaneJson && hurricaneJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [hurricaneJson] }));
 
-                // Collect all boundingBox promises inside an async function
-                const layerData = await Promise.all(
-                    hurricaneJson.hazardDatasets.map(async (dataset: HazardDataset) => ({
+                handleLayerUpdate(
+                    hurricaneJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",
                         layerId: dataset.datasetId,
                         styleName:
                             // TODO type check
                             // @ts-ignore
                             config.defaultLayerStyles.MapUtil.hurricane?.[dataset.demandType] ??
-                            config.defaultLayerStyles.MapUtil.hurricane.inundationDepth,
-                        boundingBox: await getLayerBoundingBox(dataset.datasetId)
+                            config.defaultLayerStyles.MapUtil.hurricane.inundationDepth
                     }))
                 );
-
-                handleLayerUpdate(layerData);
             }
         } catch (error) {
             console.error("Error saving hurricane dataset:", error);

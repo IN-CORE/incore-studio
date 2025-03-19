@@ -3,7 +3,7 @@ import { useAppDispatch } from "@app/store/hooks";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
 import { CustomTextInput } from "@app/components/StyledComponents/CustomTextWidget";
 import { CustomSelectWidget } from "@app/components/StyledComponents/CustomSelectWidget";
-import { createRjfsDatasetHazards, getLayerBoundingBox } from "@app/utils";
+import { createRjfsDatasetHazards } from "@app/utils";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { Box, Button, TabPanel } from "@mui/joy";
 import Form from "@rjsf/mui";
@@ -36,22 +36,17 @@ export const DatasetFlood: React.FC<DatasetFloodProps> = ({ index, projectId, ha
             const floodJson = await createRjfsDatasetHazards(formData, "floods");
             if (floodJson && floodJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [floodJson] }));
-
-                // Collect all boundingBox promises inside an async function
-                const layerData = await Promise.all(
-                    floodJson.hazardDatasets.map(async (dataset: HazardDataset) => ({
+                handleLayerUpdate(
+                    floodJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",
                         layerId: dataset.datasetId,
                         styleName:
                             // TODO type check
                             // @ts-ignore
                             config.defaultLayerStyles.MapUtil.flood?.[dataset.demandType] ??
-                            config.defaultLayerStyles.MapUtil.flood.inundationDepth,
-                        boundingBox: await getLayerBoundingBox(dataset.datasetId)
+                            config.defaultLayerStyles.MapUtil.flood.inundationDepth
                     }))
                 );
-
-                handleLayerUpdate(layerData);
             }
         } catch (error) {
             console.error("Error saving flood dataset:", error);

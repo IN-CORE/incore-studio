@@ -4,7 +4,7 @@ import { useAppDispatch } from "@app/store/hooks";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
 import { CustomTextInput } from "@app/components/StyledComponents/CustomTextWidget";
 import { CustomSelectWidget } from "@app/components/StyledComponents/CustomSelectWidget";
-import { createRjfsDatasetHazards, getLayerBoundingBox } from "@app/utils";
+import { createRjfsDatasetHazards } from "@app/utils";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/tsunami/datasetTsunami.json";
@@ -36,17 +36,13 @@ export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ index, projectId
             const tsunamiJson = await createRjfsDatasetHazards(formData, "tsunamis");
             if (tsunamiJson && tsunamiJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [tsunamiJson] }));
-                // Collect all boundingBox promises inside an async function
-                const layerData = await Promise.all(
-                    tsunamiJson.hazardDatasets.map(async (dataset: HazardDataset) => ({
+                handleLayerUpdate(
+                    tsunamiJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",
                         layerId: dataset.datasetId,
-                        styleName: config.defaultLayerStyles.MapUtil.tsunami,
-                        boundingBox: await getLayerBoundingBox(dataset.datasetId)
+                        styleName: config.defaultLayerStyles.MapUtil.tsunami
                     }))
                 );
-
-                handleLayerUpdate(layerData);
             }
         } catch (error) {
             console.error("Error saving tsunami dataset:", error);
