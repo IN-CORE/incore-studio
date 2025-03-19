@@ -31,12 +31,21 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
     const onFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             setFiles(Array.from(event.target.files));
+            event.target.value = ""; // Reset input so the same file can be added again
         }
     };
 
     // Handle file deletion
     const onDeleteClick = (filename: string) => {
-        setFiles((prevFiles) => prevFiles.filter((file) => file.name !== filename));
+        setFiles((prevFiles) => {
+            const updatedFiles = prevFiles.filter((file) => file.name !== filename);
+
+            if (updatedFiles.length === 0 && fileInputRef.current) {
+                fileInputRef.current.value = ""; // Reset input if all files are deleted
+            }
+
+            return updatedFiles;
+        });
     };
 
     // Handle form submission
@@ -116,7 +125,11 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
                     )}
 
                     {/* Button to trigger file input */}
-                    <Button variant="plain" onClick={() => fileInputRef.current?.click()} sx={{ float: "right" }}>
+                    <Button
+                        variant="plain"
+                        onClick={() => fileInputRef.current?.click()}
+                        sx={{ marginLeft: "auto", marginRight: 0, display: "block" }}
+                    >
                         Select Files
                     </Button>
                 </Box>
