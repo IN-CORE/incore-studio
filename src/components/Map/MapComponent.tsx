@@ -1,9 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
-import Map, { Source, Layer, MapRef, MapMouseEvent } from "react-map-gl/maplibre";
+import Map, { Source, Layer, MapRef } from "react-map-gl/maplibre";
 import { useAuth } from "react-oidc-context";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-
 import config from "@app/app.config";
 import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Checkbox } from "@mui/joy";
 
@@ -23,16 +22,9 @@ export const MapComponent: React.FC<MapComponentProps> = ({
     boundingBox = config.DEFAULT_MAP_BOUNDS
 }) => {
     const auth = useAuth();
-
     const mapRef = useRef<MapRef>(null);
     const [uniqueLayers, setUniqueLayers] = useState<IncoreLayer[]>([]);
     const [activeLayers, setActiveLayers] = useState<{ [key: string]: boolean }>({});
-    const [mouseCoords, setMouseCoords] = useState<{ lat: number; lon: number } | null>(null);
-    // Handle mouse move to show coordinates
-    const handleMouseMove = (event: MapMouseEvent) => {
-        const { lng, lat } = event.lngLat;
-        setMouseCoords({ lat, lon: lng });
-    };
 
     // Deduplicate layers
     useEffect(() => {
@@ -40,62 +32,105 @@ export const MapComponent: React.FC<MapComponentProps> = ({
             layers.length > 0
                 ? Array.from(
                       new Set(
-                          layers.map((layer) =>
-                              JSON.stringify({
+                          layers.map((layer) => {
+                              const layerData: {
+                                  workspace: string;
+                                  layerId: string;
+                                  styleName?: string;
+                                  boundingBox?: [number, number, number, number];
+                              } = {
                                   workspace: layer.workspace,
                                   layerId: layer.layerId,
-                                  styleName: layer.styleName,
-                                  boundingBox: layer?.boundingBox
-                              })
-                          )
+                                  styleName: layer.styleName
+                              };
+
+                              if (Array.isArray(layer.boundingBox) && layer.boundingBox.length === 4) {
+                                  layerData.boundingBox = layer.boundingBox;
+                              }
+
+                              return JSON.stringify(layerData);
+                          })
                       )
                   ).map((layerString) => JSON.parse(layerString))
                 : [];
 
         setUniqueLayers(uniqueLayers);
 
-        // Initialize the activeLayers state to set each layer's visibility to false (hidden)
-        const initialActiveLayers = uniqueLayers.reduce((acc, layer) => {
-            const layerId = layer?.layerId;
-            return { ...acc, [layerId]: false };
-        }, {});
-        initialActiveLayers[uniqueLayers[0]?.layerId] = true; // Set the first layer to visible by default
+        // Initialize activeLayers (set first layer to active by default)
+        const initialActiveLayers = uniqueLayers.reduce(
+            (acc, layer) => {
+                acc[layer.layerId] = false;
+                return acc;
+            },
+            {} as { [key: string]: boolean }
+        );
+
+        if (uniqueLayers[0]) {
+            initialActiveLayers[uniqueLayers[0].layerId] = true;
+        }
+
         setActiveLayers(initialActiveLayers);
     }, [layers]);
 
-    const [mapViewState, setMapViewState] = useState({
-        longitude: (boundingBox[0] + boundingBox[2]) / 2,
-        latitude: (boundingBox[1] + boundingBox[3]) / 2,
-        zoom
-    });
+    // Function to fly to a given bounding box
+    const flyToBoundingBox = (bbox: [number, number, number, number]) => {
+        if (!mapRef.current || !Array.isArray(boundingBox) || boundingBox.length !== 4) {
+            console.error("Invalid bounding box provided", boundingBox);
+            return;
+        }
+        const [minLng, minLat, maxLng, maxLat] = bbox;
+        mapRef.current.getMap().fitBounds(
+            [
+                [minLng, minLat], // Southwest corner
+                [maxLng, maxLat] // Northeast corner
+            ],
+            {
+                padding: 20,
+                animate: true,
+                duration: 1000
+            }
+        );
+    };
 
-    // Update initial view state when uniqueLayers is populated
+    // Effect to fly to the active layer's bounding box
     useEffect(() => {
+        if (!mapRef.current) return;
         if (uniqueLayers.length > 0 && uniqueLayers[0]?.boundingBox) {
-            const firstLayerBoundingBox = uniqueLayers[0].boundingBox;
-            setMapViewState({
-                longitude: (firstLayerBoundingBox[0] + firstLayerBoundingBox[2]) / 2,
-                latitude: (firstLayerBoundingBox[1] + firstLayerBoundingBox[3]) / 2,
-                zoom
-            });
+            flyToBoundingBox(uniqueLayers[0].boundingBox);
+        } else {
+            flyToBoundingBox(boundingBox as [number, number, number, number]);
         }
     }, [uniqueLayers]);
 
-    // Toggle visibility of a layer
+    // Toggle layer visibility and update active layer state
     const toggleLayer = (layerId: string) => {
         if (!mapRef.current) return;
 
+        setActiveLayers((prev) => {
+            const newActiveLayers = { ...prev, [layerId]: !prev[layerId] };
+
+            // Fly to the bounding box of the newly activated layer
+            const activeLayer = uniqueLayers.find((layer) => layer.layerId === layerId);
+            if (activeLayer?.boundingBox && newActiveLayers[layerId]) {
+                flyToBoundingBox(activeLayer.boundingBox);
+            }
+
+            return newActiveLayers;
+        });
+
         const visibility = activeLayers[layerId] ? "none" : "visible";
         mapRef.current.getMap().setLayoutProperty(layerId, "visibility", visibility);
-
-        setActiveLayers((prev) => ({ ...prev, [layerId]: !prev[layerId] }));
     };
 
     return (
         <div style={{ position: "relative", width, height }}>
             <Map
                 ref={mapRef}
-                initialViewState={mapViewState}
+                initialViewState={{
+                    longitude: (boundingBox[0] + boundingBox[2]) / 2,
+                    latitude: (boundingBox[1] + boundingBox[3]) / 2,
+                    zoom
+                }}
                 transformRequest={(url) => {
                     if (url.startsWith(`${config.hostname}/geoserver`)) {
                         return {
@@ -108,9 +143,8 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                     return { url };
                 }}
                 style={{ width: "100%", height: "100%" }}
-                onMouseMove={handleMouseMove}
             >
-                {/* Carto Basemap as Raster Source */}
+                {/* Carto Basemap */}
                 <Source
                     type="raster"
                     tiles={["https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png"]}
@@ -118,6 +152,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                 >
                     <Layer type="raster" />
                 </Source>
+
                 {/* Add unique WMS layers */}
                 {uniqueLayers.map((layer) => {
                     const layerName = `${layer.workspace}:${layer.layerId}`;
@@ -146,13 +181,12 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                 })}
             </Map>
 
-            {/* Layer Switcher Control */}
+            {/* Layer Switcher */}
             <Box
                 sx={{
                     position: "absolute",
                     top: 10,
                     left: 10,
-                    width: "fit-content",
                     zIndex: 1,
                     padding: 2,
                     backgroundColor: "#fff",
@@ -178,27 +212,6 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                     </AccordionDetails>
                 </Accordion>
             </Box>
-
-            {/* Mouse-over Coordinate Display */}
-            {mouseCoords && (
-                <Box
-                    sx={{
-                        position: "absolute",
-                        bottom: 10,
-                        left: 10,
-                        backgroundColor: "rgba(255, 255, 255, 0.8)",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                        fontSize: "14px",
-                        boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
-                        zIndex: 1
-                    }}
-                >
-                    <Typography level="body-sm">
-                        Lat: {mouseCoords.lat.toFixed(4)}, Lon: {mouseCoords.lon.toFixed(4)}
-                    </Typography>
-                </Box>
-            )}
         </div>
     );
 };

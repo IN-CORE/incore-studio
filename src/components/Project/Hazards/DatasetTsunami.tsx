@@ -36,14 +36,17 @@ export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ index, projectId
             const tsunamiJson = await createRjfsDatasetHazards(formData, "tsunamis");
             if (tsunamiJson && tsunamiJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [tsunamiJson] }));
-                handleLayerUpdate(
-                    tsunamiJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                // Collect all boundingBox promises inside an async function
+                const layerData = await Promise.all(
+                    tsunamiJson.hazardDatasets.map(async (dataset: HazardDataset) => ({
                         workspace: "incore",
                         layerId: dataset.datasetId,
                         styleName: config.defaultLayerStyles.MapUtil.tsunami,
-                        boundingBox: getLayerBoundingBox(dataset.datasetId)
+                        boundingBox: await getLayerBoundingBox(dataset.datasetId)
                     }))
                 );
+
+                handleLayerUpdate(layerData);
             }
         } catch (error) {
             console.error("Error saving tsunami dataset:", error);

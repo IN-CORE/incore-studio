@@ -85,14 +85,19 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
         );
         if (eqJson && eqJson.id) {
             appDispatch(addHazardToProject({ projectId, hazards: [eqJson] }));
-            handleLayerUpdate(
-                eqJson.hazardDatasets.map((dataset: HazardDataset) => ({
+
+            // Collect all boundingBox promises inside an async function
+            const layerData = await Promise.all(
+                eqJson.hazardDatasets.map(async (dataset: HazardDataset) => ({
                     workspace: "incore",
                     layerId: dataset.datasetId,
                     styleName: config.defaultLayerStyles.MapUtil.earthquake,
-                    boundingBox: getLayerBoundingBox(dataset.datasetId)
+                    boundingBox: await getLayerBoundingBox(dataset.datasetId)
                 }))
             );
+
+            handleLayerUpdate(layerData);
+
             // Reset form fields
             setName("");
             setDescription("");

@@ -37,8 +37,9 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
             if (hurricaneJson && hurricaneJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [hurricaneJson] }));
 
-                handleLayerUpdate(
-                    hurricaneJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                // Collect all boundingBox promises inside an async function
+                const layerData = await Promise.all(
+                    hurricaneJson.hazardDatasets.map(async (dataset: HazardDataset) => ({
                         workspace: "incore",
                         layerId: dataset.datasetId,
                         styleName:
@@ -46,9 +47,11 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
                             // @ts-ignore
                             config.defaultLayerStyles.MapUtil.hurricane?.[dataset.demandType] ??
                             config.defaultLayerStyles.MapUtil.hurricane.inundationDepth,
-                        boundingBox: getLayerBoundingBox(dataset.datasetId)
+                        boundingBox: await getLayerBoundingBox(dataset.datasetId)
                     }))
                 );
+
+                handleLayerUpdate(layerData);
             }
         } catch (error) {
             console.error("Error saving hurricane dataset:", error);

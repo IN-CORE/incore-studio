@@ -46,14 +46,19 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
             const tornadoJson = await createDatasetTornado(name, description, files);
             if (tornadoJson && tornadoJson.id) {
                 dispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
-                handleLayerUpdate(
-                    tornadoJson.hazardDatasets.map((dataset: HazardDataset) => ({
+
+                // Collect all boundingBox promises inside an async function
+                const layerData = await Promise.all(
+                    tornadoJson.hazardDatasets.map(async (dataset: HazardDataset) => ({
                         workspace: "incore",
                         layerId: dataset.datasetId,
                         styleName: config.defaultLayerStyles.MapUtil.tornado,
-                        boundingBox: getLayerBoundingBox(dataset.datasetId)
+                        boundingBox: await getLayerBoundingBox(dataset.datasetId)
                     }))
                 );
+
+                handleLayerUpdate(layerData);
+
                 setFiles([]);
                 setName("");
                 setDescription("");
