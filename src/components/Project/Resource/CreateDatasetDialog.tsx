@@ -42,16 +42,24 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
         setDisabled(!(title && description && datasetType && files.length > 0));
     }, [title, description, datasetType, files]);
 
-    // Handle file input change (manual file selection)
     const onFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             setFiles(Array.from(event.target.files));
+            event.target.value = ""; // Reset input so the same file can be added again
         }
     };
 
     // Handle file deletion
     const onDeleteClick = (filename: string) => {
-        setFiles((prevFiles) => prevFiles.filter((file) => file.name !== filename));
+        setFiles((prevFiles) => {
+            const updatedFiles = prevFiles.filter((file) => file.name !== filename);
+
+            if (updatedFiles.length === 0 && fileInputRef.current) {
+                fileInputRef.current.value = ""; // Reset input if all files are deleted
+            }
+
+            return updatedFiles;
+        });
     };
 
     // Handle form submission
@@ -67,6 +75,7 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                 setDatasetType("");
             }
             setLoading(false);
+            onClose();
         } catch (error) {
             console.error("Error saving tornado dataset:", error);
         } finally {
@@ -96,7 +105,12 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                         <FormLabel required sx={{ fontSize: "1rem" }}>
                             Title
                         </FormLabel>
-                        <Input value={title} variant="outlined" onChange={(e) => setTitle(e.target.value)} />
+                        <Input
+                            value={title}
+                            variant="outlined"
+                            placeholder="Dataset Title"
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
                     </Box>
 
                     {/* Description Input */}
@@ -107,6 +121,7 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                         <Input
                             value={description}
                             variant="outlined"
+                            placeholder="Dataset Description"
                             onChange={(e) => setDescription(e.target.value)}
                         />
                     </Box>
@@ -119,6 +134,7 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                         <Input
                             value={datasetType}
                             variant="outlined"
+                            placeholder="Dataset Type"
                             onChange={(e) => setDatasetType(e.target.value)}
                         />
                     </Box>
@@ -171,9 +187,11 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                                 ))}
                             </List>
                         )}
-
-                        {/* Button to trigger file input */}
-                        <Button variant="plain" onClick={() => fileInputRef.current?.click()} sx={{ float: "right" }}>
+                        <Button
+                            variant="plain"
+                            onClick={() => fileInputRef.current?.click()}
+                            sx={{ marginLeft: "auto", marginRight: 0, display: "block" }}
+                        >
                             Select Files
                         </Button>
                     </Box>
