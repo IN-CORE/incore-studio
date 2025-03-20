@@ -16,7 +16,8 @@ import {
     Tab,
     Container
 } from "@mui/joy";
-import { MapComponent } from "@app/components/Map/MapComponent";
+import maplibregl, { LngLatLike, GeoJSONSource, Marker } from "maplibre-gl";
+
 import { DatasetEarthquake } from "@app/components/Project/Hazards/DatasetEarthquake";
 import { ModelEarthquake } from "@app/components/Project/Hazards/ModelEarthquake";
 import { DatasetTornado } from "@app/components/Project/Hazards/DatasetTornado";
@@ -24,13 +25,8 @@ import { ModelTornado } from "@app/components/Project/Hazards/ModelTornado";
 import { DatasetHurricane } from "@app/components/Project/Hazards/DatasetHurricane";
 import { DatasetFlood } from "@app/components/Project/Hazards/DatasetFlood";
 import { DatasetTsunami } from "@app/components/Project/Hazards/DatasetTsunami";
+import SimpleMap from "@app/components/Map/SimpleMap";
 import config from "@app/app.config";
-
-interface HazardLayer {
-    workspace: string;
-    layerId: string;
-    styleName?: string;
-}
 
 interface CreateHazardDialogProps {
     projectId: string;
@@ -40,7 +36,7 @@ interface CreateHazardDialogProps {
 }
 
 // Hazard Layer Mapping
-const hazardLayers: Record<string, HazardLayer> = {
+const hazardLayers: Record<string, IncoreLayer> = {
     earthquakes: { workspace: "incore", layerId: "" },
     floods: { workspace: "incore", layerId: "" },
     hurricanes: { workspace: "incore", layerId: "" },
@@ -50,7 +46,110 @@ const hazardLayers: Record<string, HazardLayer> = {
 
 export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, onClose, projectId, resourceType }) => {
     const [hazardType, setHazardType] = useState<string>("");
-    const [activeLayers, setActiveLayers] = useState<HazardLayer[]>([]);
+    const [activeLayers, setActiveLayers] = useState<IncoreLayer[]>([]);
+    const [points, setPoints] = useState<LngLatLike[]>([]);
+    const [markers, setMarkers] = useState<Marker[]>([]);
+    const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
+    const [lineDrawn, setLineDrawn] = useState<boolean>(false);
+    console.log("points", points); // do something with points
+
+    const onMapLoad = (map: maplibregl.Map) => {
+        setMapInstance(map);
+
+        map.on("click", (event) => {
+            setPoints((prevPoints) => {
+                if (prevPoints.length >= 2 || lineDrawn) {
+                    return prevPoints;
+                }
+                const newPoint: LngLatLike = [event.lngLat.lng, event.lngLat.lat];
+
+                if (prevPoints.length === 1) {
+                    // @ts-ignore
+                    const [prevLng, prevLat] = prevPoints[0];
+                    const distance = Math.sqrt((prevLng - newPoint[0]) ** 2 + (prevLat - newPoint[1]) ** 2);
+                    if (distance < 0.00001) {
+                        console.log("Points are too close. Select a different location.");
+                        return prevPoints;
+                    }
+                }
+
+                const marker = new maplibregl.Marker({ color: "blue" }).setLngLat(newPoint).addTo(map);
+
+                setMarkers((prevMarkers) => [...prevMarkers, marker]);
+
+                const updatedPoints = [...prevPoints, newPoint];
+                if (updatedPoints.length === 2) {
+                    drawLine(updatedPoints[0], updatedPoints[1], map);
+                }
+                return updatedPoints;
+            });
+        });
+    };
+
+    // Function to draw a line between the selected points
+    const drawLine = (point1: LngLatLike, point2: LngLatLike, map: maplibregl.Map) => {
+        const source = map.getSource("drawn-line") as GeoJSONSource;
+
+        if (source) {
+            source.setData({
+                type: "FeatureCollection",
+                features: [
+                    {
+                        type: "Feature",
+                        geometry: {
+                            type: "LineString",
+                            coordinates: [point1 as number[], point2 as number[]]
+                        },
+                        properties: {}
+                    }
+                ]
+            });
+        } else {
+            map.addSource("drawn-line", {
+                type: "geojson",
+                data: {
+                    type: "FeatureCollection",
+                    features: [
+                        {
+                            type: "Feature",
+                            geometry: {
+                                type: "LineString",
+                                coordinates: [point1 as number[], point2 as number[]]
+                            },
+                            properties: {}
+                        }
+                    ]
+                }
+            });
+            map.addLayer({
+                id: "drawn-line-layer",
+                type: "line",
+                source: "drawn-line",
+                paint: {
+                    "line-color": "#ff0000",
+                    "line-width": 3
+                }
+            });
+        }
+
+        setLineDrawn(true);
+    };
+
+    // Function to reset the points and remove the line
+    const resetDrawing = () => {
+        setPoints([]);
+        setLineDrawn(false);
+        // Remove markers from map
+        markers.forEach((marker) => marker.remove());
+        setMarkers([]);
+
+        if (mapInstance?.getSource("drawn-line")) {
+            (mapInstance.getSource("drawn-line") as GeoJSONSource).setData({
+                type: "FeatureCollection",
+                features: []
+            });
+        }
+    };
 
     // Handle Hazard Selection
     const handleHazardChange = (_: any, newValue: string | null) => {
@@ -203,7 +302,38 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                 </Button>
 
                                 {/* Map Component */}
-                                <MapComponent layers={activeLayers} width={600} height={500} />
+                                <Box sx={{ width: "600px", height: "500px" }}>
+                                    <SimpleMap
+                                        mapOptions={{
+                                            minZoom: 1,
+                                            style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+                                        }}
+                                        navigation
+                                        initialBounds={
+                                            config.DEFAULT_MAP_BOUNDS.length === 4
+                                                ? (config.DEFAULT_MAP_BOUNDS as [number, number, number, number])
+                                                : undefined
+                                        }
+                                        layers={activeLayers}
+                                        onLoad={onMapLoad}
+                                    />
+                                    {lineDrawn && (
+                                        <Button
+                                            variant="solid"
+                                            color="danger"
+                                            onClick={resetDrawing}
+                                            sx={{
+                                                position: "absolute",
+                                                bottom: 10,
+                                                left: 50,
+                                                padding: "10px",
+                                                fontSize: "14px"
+                                            }}
+                                        >
+                                            Reset
+                                        </Button>
+                                    )}
+                                </Box>
                             </Container>
                         </Grid>
                     </Grid>
