@@ -7,7 +7,7 @@ import config from "@app/app.config";
 import { LngLatLike } from "maplibre-gl";
 
 interface ModelEarthquakeProps {
-    index: number;
+    value: string;
     projectId: string;
     handleLayerUpdate: (hazardType: string) => void;
     points: LngLatLike[];
@@ -15,7 +15,7 @@ interface ModelEarthquakeProps {
 }
 
 export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({
-    index,
+    value,
     projectId,
     handleLayerUpdate,
     points,
@@ -142,7 +142,7 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box component="form" sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Box sx={{ mb: 2 }}>
                     <FormLabel required sx={{ fontSize: "1rem" }}>

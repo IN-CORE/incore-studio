@@ -7,7 +7,7 @@ import { useAppDispatch } from "@app/store/hooks";
 import { LngLatLike } from "maplibre-gl";
 
 interface ModelTornadoProps {
-    index: number;
+    value: string;
     projectId: string;
     handleLayerUpdate: (hazardId: string) => void;
     points: LngLatLike[];
@@ -15,7 +15,7 @@ interface ModelTornadoProps {
 }
 
 export const ModelTornado: React.FC<ModelTornadoProps> = ({
-    index,
+    value,
     projectId,
     handleLayerUpdate,
     points,
@@ -164,7 +164,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box component="form" sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Box sx={{ mb: 2 }}>
                     <FormLabel required sx={{ fontSize: "1rem" }}>

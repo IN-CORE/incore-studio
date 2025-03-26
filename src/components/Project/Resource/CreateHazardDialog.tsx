@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
     Modal,
     ModalDialog,
@@ -27,6 +27,8 @@ import { DatasetFlood } from "@app/components/Project/Hazards/DatasetFlood";
 import { DatasetTsunami } from "@app/components/Project/Hazards/DatasetTsunami";
 import SimpleMap from "@app/components/Map/SimpleMap";
 import config from "@app/app.config";
+import { TornadoMapDrawPrompt } from "@app/components/Map/TornadoMapDrawPrompt";
+import { EqMapDrawPrompt } from "@app/components/Map/EqMapDrawPrompt";
 
 interface CreateHazardDialogProps {
     projectId: string;
@@ -44,6 +46,9 @@ const hazardLayers: Record<string, IncoreLayer> = {
     tsunamis: { workspace: "incore", layerId: "" }
 };
 
+const TAB_DATASET_HAZARD = "dataset-based";
+const TAB_MODEL_HAZARD = "model-based";
+
 export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, onClose, projectId, resourceType }) => {
     const [hazardType, setHazardType] = useState<string>("");
     const hazardTypeRef = useRef<string>(""); // mutable hazard type needed for map listener
@@ -52,7 +57,24 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
     const [points, setPoints] = useState<LngLatLike[]>([]);
     const [markers, setMarkers] = useState<Marker[]>([]);
     const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
+    const [mapDialogOpen, setMapDialogOpen] = React.useState(false); // map prompt
     const [drawn, setDrawn] = useState<boolean>(false);
+
+    // When Switching Tab, open map prompt
+    const [currTabIndex, setCurrTabIndex] = useState<string>(TAB_DATASET_HAZARD);
+    const currTabIndexRef = useRef<string>(TAB_DATASET_HAZARD); // mutable tab index needed for map listener
+    useEffect(() => {
+        // setup prompt
+        if (
+            (hazardType === "tornadoes" && currTabIndex === TAB_MODEL_HAZARD) ||
+            (hazardType === "earthquakes" && currTabIndex === TAB_MODEL_HAZARD)
+        ) {
+            setMapDialogOpen(true);
+        } else {
+            resetDrawing();
+            setMapDialogOpen(false);
+        }
+    }, [hazardType, currTabIndex]);
 
     // Function to draw a single point (used for earthquakes)
     const drawPoint = (point: LngLatLike, map: maplibregl.Map) => {
@@ -112,7 +134,6 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
 
     // Function to reset the points and remove the line
     const resetDrawing = () => {
-        setPoints([]);
         setDrawn(false);
         // Remove markers from map
         markers.forEach((marker) => marker.remove());
@@ -131,7 +152,8 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
 
         map.on("click", (event) => {
             const currentHazardType = hazardTypeRef.current;
-            if (currentHazardType === "tornadoes") {
+            const currentTabIndex = currTabIndexRef.current;
+            if (currentHazardType === "tornadoes" && currentTabIndex === TAB_MODEL_HAZARD) {
                 setPoints((prevPoints) => {
                     if (prevPoints.length >= 2 || drawn) {
                         return prevPoints;
@@ -158,9 +180,9 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                     }
                     return updatedPoints;
                 });
-            } else if (currentHazardType === "earthquakes") {
+            } else if (currentHazardType === "earthquakes" && currentTabIndex === TAB_MODEL_HAZARD) {
                 setPoints((prevPoints) => {
-                    // EQ should only has 1 point
+                    // EQ should only have 1 point
                     if (prevPoints.length >= 1 || drawn) {
                         return prevPoints;
                     }
@@ -246,10 +268,17 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                             </Box>
 
                             {/* Tabs for Dataset Upload & Model Creation */}
-                            <Tabs defaultValue={0}>
+                            <Tabs
+                                value={currTabIndex}
+                                onChange={(_, val) => {
+                                    setCurrTabIndex(val as string);
+                                    currTabIndexRef.current = val as string; // keep ref in sync
+                                }}
+                            >
                                 <TabList>
-                                    <Tab>Upload a Hazard Dataset</Tab>
+                                    <Tab value={TAB_DATASET_HAZARD}>Upload a Hazard Dataset</Tab>
                                     <Tab
+                                        value={TAB_MODEL_HAZARD}
                                         sx={{
                                             display: ["tornadoes", "earthquakes"].includes(hazardType)
                                                 ? "block"
@@ -263,12 +292,12 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                 {hazardType === "earthquakes" && (
                                     <>
                                         <DatasetEarthquake
-                                            index={0}
+                                            value={TAB_DATASET_HAZARD}
                                             projectId={projectId}
                                             handleLayerUpdate={handleLayerUpdate}
                                         />
                                         <ModelEarthquake
-                                            index={1}
+                                            value={TAB_MODEL_HAZARD}
                                             projectId={projectId}
                                             handleLayerUpdate={handleLayerUpdate}
                                             setPoints={setPoints}
@@ -279,12 +308,12 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                 {hazardType === "tornadoes" && (
                                     <>
                                         <DatasetTornado
-                                            index={0}
+                                            value={TAB_DATASET_HAZARD}
                                             projectId={projectId}
                                             handleLayerUpdate={handleLayerUpdate}
                                         />
                                         <ModelTornado
-                                            index={1}
+                                            value={TAB_MODEL_HAZARD}
                                             projectId={projectId}
                                             handleLayerUpdate={handleLayerUpdate}
                                             setPoints={setPoints}
@@ -294,21 +323,21 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                 )}
                                 {hazardType === "hurricanes" && (
                                     <DatasetHurricane
-                                        index={0}
+                                        value={TAB_DATASET_HAZARD}
                                         projectId={projectId}
                                         handleLayerUpdate={handleLayerUpdate}
                                     />
                                 )}
                                 {hazardType === "floods" && (
                                     <DatasetFlood
-                                        index={0}
+                                        value={TAB_DATASET_HAZARD}
                                         projectId={projectId}
                                         handleLayerUpdate={handleLayerUpdate}
                                     />
                                 )}
                                 {hazardType === "tsunamis" && (
                                     <DatasetTsunami
-                                        index={0}
+                                        value={TAB_DATASET_HAZARD}
                                         projectId={projectId}
                                         handleLayerUpdate={handleLayerUpdate}
                                     />
@@ -365,6 +394,23 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                         >
                                             Reset
                                         </Button>
+                                    )}
+                                    {hazardType === "tornadoes" && currTabIndex === TAB_MODEL_HAZARD ? (
+                                        <TornadoMapDrawPrompt
+                                            mapDialogOpen={mapDialogOpen}
+                                            handleMapDialogClose={() => {
+                                                setMapDialogOpen(false);
+                                            }}
+                                        />
+                                    ) : hazardType === "earthquakes" && currTabIndex === TAB_MODEL_HAZARD ? (
+                                        <EqMapDrawPrompt
+                                            mapDialogOpen={mapDialogOpen}
+                                            handleMapDialogClose={() => {
+                                                setMapDialogOpen(false);
+                                            }}
+                                        />
+                                    ) : (
+                                        <></>
                                     )}
                                 </Box>
                             </Container>

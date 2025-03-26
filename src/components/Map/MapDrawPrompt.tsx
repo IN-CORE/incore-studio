@@ -24,16 +24,19 @@ export const MapDrawPrompt: React.FC<MapDrawPromptProps> = ({
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
-                maxWidth: "400px",
-                padding: "3em",
+                width: "40%",
+                padding: "2em",
                 zIndex: 3000,
+                backgroundColor: "#fff",
                 display: mapDialogOpen ? "inherit" : "none"
             }}
         >
-            <Typography sx={{ color: "#00619D" }}>{promptTitle}</Typography>
-            <Typography sx={{ padding: "1em 0" }}>{promptText}</Typography>
-            <Box sx={{ margin: "auto", textAlign: "center", padding: "2em" }}>{promptElem}</Box>
-            <Button onClick={handleMapDialogClose}>Got It</Button>
+            <Typography sx={{ color: "#00619D", fontSize: "12px" }}>{promptTitle}</Typography>
+            <Typography sx={{ padding: "1em 0", fontSize: "12px" }}>{promptText}</Typography>
+            <Box sx={{ margin: "auto", textAlign: "center", padding: "1em", fontSize: "12px" }}>{promptElem}</Box>
+            <Button onClick={handleMapDialogClose} size="sm" sx={{ display: "block", margin: "auto" }}>
+                Got It
+            </Button>
         </Card>
     );
 };
