@@ -73,8 +73,10 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
             (hazardType === "earthquakes" && currTabIndex === TAB_MODEL_HAZARD)
         ) {
             setMapDialogOpen(true);
+            if (mapInstance) mapInstance.getCanvas().style.cursor = "crosshair";
         } else {
             setMapDialogOpen(false);
+            if (mapInstance) mapInstance.getCanvas().style.cursor = "pointer";
         }
     }, [hazardType, currTabIndex]);
 
