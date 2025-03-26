@@ -14,8 +14,8 @@ export const TornadoMapDrawPrompt: React.FC<TornadoMapDrawPromptProps> = ({ mapD
             <Box display="flex" flexDirection="column">
                 <span
                     style={{
-                        height: "2em",
-                        width: "2em",
+                        height: "1.5em",
+                        width: "1.5em",
                         backgroundColor: "#96B712",
                         borderRadius: "50%",
                         display: "block",

@@ -64,6 +64,8 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
     const [currTabIndex, setCurrTabIndex] = useState<string>(TAB_DATASET_HAZARD);
     const currTabIndexRef = useRef<string>(TAB_DATASET_HAZARD); // mutable tab index needed for map listener
     useEffect(() => {
+        resetDrawing();
+
         // setup prompt
         if (
             (hazardType === "tornadoes" && currTabIndex === TAB_MODEL_HAZARD) ||
@@ -71,14 +73,25 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
         ) {
             setMapDialogOpen(true);
         } else {
-            resetDrawing();
             setMapDialogOpen(false);
         }
     }, [hazardType, currTabIndex]);
 
     // Function to draw a single point (used for earthquakes)
     const drawPoint = (point: LngLatLike, map: maplibregl.Map) => {
-        const marker = new maplibregl.Marker({ color: "red" }).setLngLat(point).addTo(map);
+        const el = document.createElement("span");
+
+        Object.assign(el.style, {
+            height: "2em",
+            width: "2em",
+            backgroundColor: "#D63649",
+            borderRadius: "50%",
+            display: "block",
+            margin: "auto"
+        });
+
+        const marker = new maplibregl.Marker({ element: el }).setLngLat(point).addTo(map);
+
         setMarkers((prevMarkers) => [...prevMarkers, marker]);
         setDrawn(true);
     };
@@ -123,8 +136,9 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                 type: "line",
                 source: "drawn-line",
                 paint: {
-                    "line-color": "#ff0000",
-                    "line-width": 3
+                    "line-color": "#979797",
+                    "line-width": 2,
+                    "line-dasharray": [2, 2]
                 }
             });
         }
@@ -135,6 +149,7 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
     // Function to reset the points and remove the line
     const resetDrawing = () => {
         setDrawn(false);
+        setPoints([]);
         // Remove markers from map
         markers.forEach((marker) => marker.remove());
         setMarkers([]);
@@ -158,11 +173,11 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                     if (prevPoints.length >= 2 || drawn) {
                         return prevPoints;
                     }
+
                     const newPoint: LngLatLike = [event.lngLat.lng, event.lngLat.lat];
 
                     if (prevPoints.length === 1) {
-                        // @ts-ignore
-                        const [prevLng, prevLat] = prevPoints[0];
+                        const [prevLng, prevLat] = prevPoints[0] as number[];
                         const distance = Math.sqrt((prevLng - newPoint[0]) ** 2 + (prevLat - newPoint[1]) ** 2);
                         if (distance < 0.00001) {
                             console.log("Points are too close. Select a different location.");
@@ -170,14 +185,51 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                         }
                     }
 
-                    const marker = new maplibregl.Marker({ color: "blue" }).setLngLat(newPoint).addTo(map);
+                    const updatedPoints = [...prevPoints, newPoint];
 
+                    // === Marker Creation ===
+                    let newMarkerEl = document.createElement("div");
+
+                    if (updatedPoints.length === 1) {
+                        // First marker (green dot)
+                        Object.assign(newMarkerEl.style, {
+                            height: "1.5em",
+                            width: "1.5em",
+                            backgroundColor: "#96B712",
+                            borderRadius: "50%",
+                            display: "block",
+                            margin: "auto"
+                        });
+                    }
+
+                    if (updatedPoints.length === 2) {
+                        // Second marker (red dot + label)
+                        const wrapper = document.createElement("div");
+                        wrapper.style.display = "flex";
+                        wrapper.style.flexDirection = "column";
+                        wrapper.style.alignItems = "center";
+
+                        Object.assign(newMarkerEl.style, {
+                            height: "1.5em",
+                            width: "1.5em",
+                            backgroundColor: "#D63649",
+                            borderRadius: "50%",
+                            display: "block",
+                            margin: "auto"
+                        });
+
+                        wrapper.appendChild(newMarkerEl);
+                        newMarkerEl = wrapper; // Use the wrapper as marker element
+                    }
+
+                    const marker = new maplibregl.Marker({ element: newMarkerEl }).setLngLat(newPoint).addTo(map);
                     setMarkers((prevMarkers) => [...prevMarkers, marker]);
 
-                    const updatedPoints = [...prevPoints, newPoint];
+                    // Draw line once both points are selected
                     if (updatedPoints.length === 2) {
                         drawLine(updatedPoints[0], updatedPoints[1], map);
                     }
+
                     return updatedPoints;
                 });
             } else if (currentHazardType === "earthquakes" && currentTabIndex === TAB_MODEL_HAZARD) {
@@ -204,7 +256,6 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
     const handleHazardChange = (_: any, newValue: string | null) => {
         if (newValue) {
             setHazardType(newValue);
-            resetDrawing();
             hazardTypeRef.current = newValue; // keep ref in sync
         }
     };
@@ -255,7 +306,7 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                         <Grid sm={6}>
                             {/* Select Hazard Type */}
                             <Box>
-                                <FormControl required sx={{ marginBottom: "1em" }}>
+                                <FormControl required sx={{ marginBottom: "1.5em" }}>
                                     <FormLabel>Select {resourceType} Type</FormLabel>
                                     <Select placeholder="Choose..." value={hazardType} onChange={handleHazardChange}>
                                         <Option value="earthquakes">Earthquake</Option>
