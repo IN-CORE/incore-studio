@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
     Modal,
     ModalDialog,
@@ -46,44 +46,20 @@ const hazardLayers: Record<string, IncoreLayer> = {
 
 export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, onClose, projectId, resourceType }) => {
     const [hazardType, setHazardType] = useState<string>("");
+    const hazardTypeRef = useRef<string>(""); // mutable hazard type needed for map listener
+
     const [activeLayers, setActiveLayers] = useState<IncoreLayer[]>([]);
     const [points, setPoints] = useState<LngLatLike[]>([]);
     const [markers, setMarkers] = useState<Marker[]>([]);
     const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
-    const [lineDrawn, setLineDrawn] = useState<boolean>(false);
+    const [drawn, setDrawn] = useState<boolean>(false);
     console.log("points", points); // do something with points
 
-    const onMapLoad = (map: maplibregl.Map) => {
-        setMapInstance(map);
-
-        map.on("click", (event) => {
-            setPoints((prevPoints) => {
-                if (prevPoints.length >= 2 || lineDrawn) {
-                    return prevPoints;
-                }
-                const newPoint: LngLatLike = [event.lngLat.lng, event.lngLat.lat];
-
-                if (prevPoints.length === 1) {
-                    // @ts-ignore
-                    const [prevLng, prevLat] = prevPoints[0];
-                    const distance = Math.sqrt((prevLng - newPoint[0]) ** 2 + (prevLat - newPoint[1]) ** 2);
-                    if (distance < 0.00001) {
-                        console.log("Points are too close. Select a different location.");
-                        return prevPoints;
-                    }
-                }
-
-                const marker = new maplibregl.Marker({ color: "blue" }).setLngLat(newPoint).addTo(map);
-
-                setMarkers((prevMarkers) => [...prevMarkers, marker]);
-
-                const updatedPoints = [...prevPoints, newPoint];
-                if (updatedPoints.length === 2) {
-                    drawLine(updatedPoints[0], updatedPoints[1], map);
-                }
-                return updatedPoints;
-            });
-        });
+    // Function to draw a single point (used for earthquakes)
+    const drawPoint = (point: LngLatLike, map: maplibregl.Map) => {
+        const marker = new maplibregl.Marker({ color: "red" }).setLngLat(point).addTo(map);
+        setMarkers((prevMarkers) => [...prevMarkers, marker]);
+        setDrawn(true);
     };
 
     // Function to draw a line between the selected points
@@ -132,13 +108,13 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
             });
         }
 
-        setLineDrawn(true);
+        setDrawn(true);
     };
 
     // Function to reset the points and remove the line
     const resetDrawing = () => {
         setPoints([]);
-        setLineDrawn(false);
+        setDrawn(false);
         // Remove markers from map
         markers.forEach((marker) => marker.remove());
         setMarkers([]);
@@ -151,10 +127,60 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
         }
     };
 
+    const onMapLoad = (map: maplibregl.Map) => {
+        setMapInstance(map);
+
+        map.on("click", (event) => {
+            const currentHazardType = hazardTypeRef.current;
+            if (currentHazardType === "tornadoes") {
+                setPoints((prevPoints) => {
+                    if (prevPoints.length >= 2 || drawn) {
+                        return prevPoints;
+                    }
+                    const newPoint: LngLatLike = [event.lngLat.lng, event.lngLat.lat];
+
+                    if (prevPoints.length === 1) {
+                        // @ts-ignore
+                        const [prevLng, prevLat] = prevPoints[0];
+                        const distance = Math.sqrt((prevLng - newPoint[0]) ** 2 + (prevLat - newPoint[1]) ** 2);
+                        if (distance < 0.00001) {
+                            console.log("Points are too close. Select a different location.");
+                            return prevPoints;
+                        }
+                    }
+
+                    const marker = new maplibregl.Marker({ color: "blue" }).setLngLat(newPoint).addTo(map);
+
+                    setMarkers((prevMarkers) => [...prevMarkers, marker]);
+
+                    const updatedPoints = [...prevPoints, newPoint];
+                    if (updatedPoints.length === 2) {
+                        drawLine(updatedPoints[0], updatedPoints[1], map);
+                    }
+                    return updatedPoints;
+                });
+            } else if (currentHazardType === "earthquakes") {
+                setPoints((prevPoints) => {
+                    // EQ should only has 1 point
+                    if (prevPoints.length >= 1 || drawn) {
+                        return prevPoints;
+                    }
+                    const newPoint: LngLatLike = [event.lngLat.lng, event.lngLat.lat];
+                    const updatedPoints = [...prevPoints, newPoint];
+                    if (updatedPoints.length === 1) {
+                        drawPoint(updatedPoints[0], map);
+                    }
+                    return updatedPoints;
+                });
+            }
+        });
+    };
     // Handle Hazard Selection
     const handleHazardChange = (_: any, newValue: string | null) => {
         if (newValue) {
             setHazardType(newValue);
+            resetDrawing();
+            hazardTypeRef.current = newValue; // keep ref in sync
         }
     };
 
@@ -167,7 +193,7 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
             if (config?.defaultLayerStyles[hazardType]) {
                 // @ts-ignore
                 styleName = config.defaultLayerStyles[hazardType]; // Direct mapping
-            } else if (hazardType === "hurricane") {
+            } else if (hazardType === "hurricanes") {
                 // TODO fixme Use the first available hurricane style
                 const hurricaneStyles = Object.values(config.defaultLayerStyles.MapUtil.hurricane);
                 styleName = hurricaneStyles.length > 0 ? hurricaneStyles[0] : "";
@@ -317,7 +343,7 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                         layers={activeLayers}
                                         onLoad={onMapLoad}
                                     />
-                                    {lineDrawn && (
+                                    {drawn && (
                                         <Button
                                             variant="solid"
                                             color="danger"
