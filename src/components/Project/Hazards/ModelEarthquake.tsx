@@ -4,15 +4,23 @@ import { createModelEarthquake, validateCoord } from "@app/utils/";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
 import config from "@app/app.config";
+import { LngLatLike } from "maplibre-gl";
 
 interface ModelEarthquakeProps {
     index: number;
     projectId: string;
     handleLayerUpdate: (hazardType: string) => void;
+    points: LngLatLike[];
+    setPoints: (points: LngLatLike[]) => void;
 }
 
-export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, projectId, handleLayerUpdate }) => {
-    // Local state for form fields
+export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({
+    index,
+    projectId,
+    handleLayerUpdate,
+    points,
+    setPoints
+}) => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [coordLat, setCoordLat] = useState<string | number>("");
@@ -29,14 +37,12 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
 
     const appDispatch = useAppDispatch();
 
-    // Inline sx styles for coordinate inputs and labels
     const coordBoxSx = {
         width: "100%",
         height: "41px",
         fontSize: "15px",
         fontWeight: 500,
         lineHeight: "18px",
-        letterSpacing: 0,
         border: "1px solid rgba(0, 0, 0, 0.23)",
         borderRadius: "4px",
         textAlign: "center",
@@ -59,18 +65,54 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
     const srcLatLabelSx = { fontSize: "14px", color: "#D63649" };
     const srcLonLabelSx = { fontSize: "14px", color: "#96B712" };
 
-    // Enable the Save button when required fields are set and editing is off
+    // ✨ Autofill coords when `points` change
     useEffect(() => {
-        if (name && description && coordLat && coordLon && magnitude && depth && validCoord) {
-            setDisabled(false);
-        } else {
-            setDisabled(true);
+        if (points.length === 1) {
+            const [lng, lat] = points[0] as number[];
+            setCoordLat(lat);
+            setCoordLon(lng);
+            setValidCoord(validateCoord(lng, lat, config.VALID_MAP_BOUNDS as [number, number, number, number]));
         }
+    }, [points]);
+
+    // Enable/disable save button
+    useEffect(() => {
+        setDisabled(!(name && description && coordLat && coordLon && magnitude && depth && validCoord));
     }, [name, description, coordLat, coordLon, magnitude, depth, validCoord]);
 
-    // Save handler: call the API, update layers/lists, and reset the form
+    const onChangeLat = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newLat = e.target.value;
+        setCoordLat(newLat);
+
+        const latNum = parseFloat(newLat);
+        const lonNum = parseFloat(coordLon as string);
+
+        const isValid = validateCoord(lonNum, latNum, config.VALID_MAP_BOUNDS as [number, number, number, number]);
+        setValidCoord(isValid);
+
+        if (!isNaN(latNum) && !isNaN(lonNum)) {
+            setPoints([[lonNum, latNum]]);
+        }
+    };
+
+    const onChangeLon = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newLon = e.target.value;
+        setCoordLon(newLon);
+
+        const lonNum = parseFloat(newLon);
+        const latNum = parseFloat(coordLat as string);
+
+        const isValid = validateCoord(lonNum, latNum, config.VALID_MAP_BOUNDS as [number, number, number, number]);
+        setValidCoord(isValid);
+
+        if (!isNaN(latNum) && !isNaN(lonNum)) {
+            setPoints([[lonNum, latNum]]);
+        }
+    };
+
     const onSave = async () => {
         setLoading(true);
+
         const eqJson = await createModelEarthquake(
             name,
             description,
@@ -83,15 +125,19 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
             attenuations,
             faultTypeMap
         );
+
         if (eqJson && eqJson.id) {
             appDispatch(addHazardToProject({ projectId, hazards: [eqJson] }));
             handleLayerUpdate(eqJson.id);
-            // Reset form fields
+
+            // Clear form + point
             setName("");
             setDescription("");
             setCoordLat("");
             setCoordLon("");
+            setPoints([]); // 🔄 Clear point
         }
+
         setLoading(false);
     };
 
@@ -217,6 +263,7 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                         </Select>
                     </Box>
                 )}
+                {/* Coordinate fields and onChange are aware of state and points */}
                 <Box sx={{ mb: 2 }}>
                     <FormLabel sx={{ fontSize: "1rem" }} required>
                         Earthquake Epicenter
@@ -226,22 +273,12 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                             Coordinate not valid or outside of the bounding box.
                         </Typography>
                     )}
-                    <Box sx={{ ...coordBoxSx, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <Box sx={{ ...coordBoxSx, justifyContent: "space-between" }}>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                             <Typography sx={srcLatLabelSx}>Lat:</Typography>
                             <Input
-                                value={coordLat !== null ? coordLat : ""}
-                                onChange={(e) => {
-                                    const newLat = e.target.value;
-                                    setCoordLat(newLat);
-                                    setValidCoord(
-                                        validateCoord(
-                                            coordLon,
-                                            newLat,
-                                            config.VALID_MAP_BOUNDS as [number, number, number, number]
-                                        )
-                                    );
-                                }}
+                                value={coordLat}
+                                onChange={onChangeLat}
                                 type="number"
                                 placeholder={String(config.DEFAULT_MAP_CENTER[0])}
                                 sx={coordInputEditSx}
@@ -250,18 +287,8 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                             <Typography sx={srcLonLabelSx}>Lon:</Typography>
                             <Input
-                                value={coordLon !== null ? coordLon : ""}
-                                onChange={(e) => {
-                                    const newLon = e.target.value;
-                                    setCoordLon(newLon);
-                                    setValidCoord(
-                                        validateCoord(
-                                            newLon,
-                                            coordLat,
-                                            config.VALID_MAP_BOUNDS as [number, number, number, number]
-                                        )
-                                    );
-                                }}
+                                value={coordLon}
+                                onChange={onChangeLon}
                                 type="number"
                                 placeholder={String(config.DEFAULT_MAP_CENTER[1])}
                                 sx={coordInputEditSx}
@@ -270,6 +297,7 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({ index, project
                     </Box>
                 </Box>
 
+                {/* rest of your inputs... */}
                 <Box sx={{ mt: 3 }}>
                     <Button onClick={onSave} disabled={disabled || !validCoord} variant="solid">
                         Save

@@ -53,7 +53,6 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
     const [markers, setMarkers] = useState<Marker[]>([]);
     const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
     const [drawn, setDrawn] = useState<boolean>(false);
-    console.log("points", points); // do something with points
 
     // Function to draw a single point (used for earthquakes)
     const drawPoint = (point: LngLatLike, map: maplibregl.Map) => {
@@ -175,6 +174,10 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
             }
         });
     };
+
+    // TODO: Redraw when `points` change
+    // Easy for EQ; hard for tornado which has start/end points that can be changed
+
     // Handle Hazard Selection
     const handleHazardChange = (_: any, newValue: string | null) => {
         if (newValue) {
@@ -268,6 +271,8 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                             index={1}
                                             projectId={projectId}
                                             handleLayerUpdate={handleLayerUpdate}
+                                            setPoints={setPoints}
+                                            points={points}
                                         />
                                     </>
                                 )}
@@ -282,6 +287,8 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                                             index={1}
                                             projectId={projectId}
                                             handleLayerUpdate={handleLayerUpdate}
+                                            setPoints={setPoints}
+                                            points={points}
                                         />
                                     </>
                                 )}
