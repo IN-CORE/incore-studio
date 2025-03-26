@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Drawing capability to the map. [#115](https://github.com/IN-CORE/incore-studio/issues/115)
 
+### Changed
+
+- Allow user to add a region not present in the dropdown [#127](https://github.com/IN-CORE/incore-studio/issues/127)
+
 ## [Alpha-3] - 03-10-2025
 
 ### Added
