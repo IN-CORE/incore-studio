@@ -143,7 +143,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
     }, [success, error]);
 
     // Add resources to project
-    // Create hazard
+    // Create dataset
     const [openCreateDatasetDialog, setOpenCreateDatasetDialog] = React.useState(false);
     // Add dataset to project from service
     const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = React.useState(false);
@@ -408,7 +408,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                         onClick: () => setOpenAddDatasetFromServiceDialog(true)
                                     },
                                     {
-                                        label: "Create Dataset",
+                                        label: "Upload Dataset",
                                         onClick: () => setOpenCreateDatasetDialog(true)
                                     }
                                 ]}

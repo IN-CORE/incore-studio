@@ -170,7 +170,7 @@ const DatasetPage = (): JSX.Element => {
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"
-                                    addtionalCreateLabel="Create Dataset"
+                                    addtionalCreateLabel="Upload Dataset"
                                     additionalCreateClick={onCreateDataset}
                                 />
                                 <AddFromServiceDialog

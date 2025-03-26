@@ -98,7 +98,7 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                     }}
                 >
                     <Typography level="h4" sx={{ mb: 1 }}>
-                        Create Dataset
+                        Upload Dataset
                     </Typography>
 
                     {/* Name Input */}
