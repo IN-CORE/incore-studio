@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Drawing capability to the map. [#115](https://github.com/IN-CORE/incore-studio/issues/115)
+- Upload dataset modal that uploads dataset to IN-CORE [#128](https://github.com/IN-CORE/incore-studio/issues/128)
 
 ### Changed
 

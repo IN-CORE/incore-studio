@@ -9,6 +9,7 @@ config.docBaseLink = `${hostname}/doc/incore/analyses`;
 config.projectApi = `${hostname}/project/api/projects`;
 config.spaceApi = `${hostname}/space/api`;
 config.hazardApi = `${hostname}/hazard/api`;
+config.dataApi = `${hostname}/data/api`;
 config.earthquakeApi = `${config.hazardApi}/earthquakes`;
 config.floodApi = `${config.hazardApi}/floods`;
 config.hurricaneWindfieldApi = `${config.hazardApi}/hurricaneWindfields`;
