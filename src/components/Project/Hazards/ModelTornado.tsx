@@ -66,7 +66,6 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
         justifyContent: "space-between"
     };
 
-    // ✅ Populate form when 2 points are provided from map
     useEffect(() => {
         if (points.length === 2) {
             const [start, end] = points;
@@ -89,7 +88,6 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
         }
     }, [points]);
 
-    // ✅ Enable Save button only when valid
     useEffect(() => {
         setDisabled(
             !(
@@ -227,6 +225,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
                                     sx={inputStyles}
                                     type="number"
                                     value={lat ?? ""}
+                                    placeholder={String(config.DEFAULT_MAP_CENTER[0])}
                                     onChange={(e) => {
                                         const newLat = e.target.value;
                                         setLat(newLat);
@@ -257,6 +256,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
                                     sx={inputStyles}
                                     type="number"
                                     value={lon ?? ""}
+                                    placeholder={String(config.DEFAULT_MAP_CENTER[1])}
                                     onChange={(e) => {
                                         const newLon = e.target.value;
                                         setLon(newLon);

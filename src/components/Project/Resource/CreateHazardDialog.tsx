@@ -29,6 +29,7 @@ import SimpleMap from "@app/components/Map/SimpleMap";
 import config from "@app/app.config";
 import { TornadoMapDrawPrompt } from "@app/components/Map/TornadoMapDrawPrompt";
 import { EqMapDrawPrompt } from "@app/components/Map/EqMapDrawPrompt";
+import { round } from "@app/utils";
 
 interface CreateHazardDialogProps {
     projectId: string;
@@ -174,7 +175,7 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                         return prevPoints;
                     }
 
-                    const newPoint: LngLatLike = [event.lngLat.lng, event.lngLat.lat];
+                    const newPoint: LngLatLike = [round(event.lngLat.lng, 4), round(event.lngLat.lat, 4)];
 
                     if (prevPoints.length === 1) {
                         const [prevLng, prevLat] = prevPoints[0] as number[];
@@ -238,7 +239,7 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
                     if (prevPoints.length >= 1 || drawn) {
                         return prevPoints;
                     }
-                    const newPoint: LngLatLike = [event.lngLat.lng, event.lngLat.lat];
+                    const newPoint: LngLatLike = [round(event.lngLat.lng, 4), round(event.lngLat.lat, 4)];
                     const updatedPoints = [...prevPoints, newPoint];
                     if (updatedPoints.length === 1) {
                         drawPoint(updatedPoints[0], map);
