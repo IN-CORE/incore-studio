@@ -47,6 +47,7 @@ import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazardDialog";
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 
 const ProjectDashboardComponent: React.FC = (): JSX.Element => {
@@ -159,6 +160,9 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
         setOpenAddHazardFromServiceDialog(false);
     };
 
+    // Create hazard
+    const [openCreateHazardDialog, setOpenCreateHazardDialog] = React.useState(false);
+
     // Add hazard to project from service
     const [openAddDFR3MappingFromServiceDialog, setOpenAddDFR3MappingFromServiceDialog] = React.useState(false);
     const addDFR3MappingFunc = (projectId: string, resource: DFR3Mapping) => {
@@ -270,8 +274,12 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 icon={<HazardIcon sx={{ color: "black" }} />}
                                 optionsList={[
                                     {
-                                        label: "Add Hazard From Service",
+                                        label: "Add Existing Hazard",
                                         onClick: () => setOpenAddHazardFromServiceDialog(true)
+                                    },
+                                    {
+                                        label: "Create New Hazard",
+                                        onClick: () => setOpenCreateHazardDialog(true)
                                     }
                                 ]}
                             />
@@ -395,6 +403,14 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     setOpenAddHazardFromServiceDialog(false);
                                 }}
                                 onAddClick={addHazardFunc}
+                            />
+                            <CreateHazardDialog
+                                projectId={project.id}
+                                resourceType="hazard"
+                                open={openCreateHazardDialog}
+                                onClose={() => {
+                                    setOpenCreateHazardDialog(false);
+                                }}
                             />
                         </Box>
                         <Box sx={{ width: "100%" }}>

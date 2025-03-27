@@ -127,7 +127,7 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({
         );
 
         if (eqJson && eqJson.id) {
-            appDispatch(addHazardToProject({ projectId, hazards: [eqJson] }));
+            appDispatch(addHazardToProject({ projectId, hazards: [{ ...eqJson, type: "earthquake" }] }));
             handleLayerUpdate(eqJson.id);
 
             // Clear form + point

@@ -167,7 +167,7 @@ const HazardPage = (): JSX.Element => {
                                     onCreateClick={onAddHazard}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
-                                    createLabel="Add from Service"
+                                    createLabel="Add Existing Hazard"
                                     addtionalCreateLabel="Create Hazard"
                                     additionalCreateClick={onCreateHazard}
                                 />

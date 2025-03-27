@@ -145,8 +145,8 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
             endLonCoord
         );
 
-        if (tornadoJson?.id) {
-            dispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
+        if (tornadoJson && tornadoJson.id) {
+            dispatch(addHazardToProject({ projectId, hazards: [{ ...tornadoJson, type: "tornado" }] }));
             handleLayerUpdate(tornadoJson.id);
 
             setName("");
