@@ -43,7 +43,11 @@ const Searchbox: React.FC<SearchboxProps> = ({ onSearch }) => {
             {isExpanded && (
                 <Input
                     value={searchValue}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                        if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                            handleInputChange(e);
+                        }
+                    }}
                     placeholder="Search..."
                     autoFocus
                     sx={{

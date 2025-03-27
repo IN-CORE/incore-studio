@@ -5,6 +5,7 @@ import { addHazardToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
 import config from "@app/app.config";
 import { LngLatLike } from "maplibre-gl";
+import { handleBlur } from "@app/utils";
 
 interface ModelEarthquakeProps {
     value: string;
@@ -148,7 +149,17 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({
                     <FormLabel required sx={{ fontSize: "1rem" }}>
                         Name
                     </FormLabel>
-                    <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter name" fullWidth />
+                    <Input
+                        value={name}
+                        onBlur={() => handleBlur(name, setName)}
+                        onChange={(e) => {
+                            if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                setName(e.target.value);
+                            }
+                        }}
+                        placeholder="Enter name"
+                        fullWidth
+                    />
                 </Box>
                 <Box sx={{ mb: 2 }}>
                     <FormLabel required sx={{ fontSize: "1rem" }}>
@@ -156,7 +167,12 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({
                     </FormLabel>
                     <Input
                         value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        onChange={(e) => {
+                            // Only update the state if the new value is valid.
+                            if (/^(?!\\s+$)[A-Za-z0-9 _\\-\\(\\)\\$\\.,!\\?:;\'"]*$/.test(e.target.value)) {
+                                setDescription(e.target.value);
+                            }
+                        }}
                         placeholder="Enter description"
                         fullWidth
                     />

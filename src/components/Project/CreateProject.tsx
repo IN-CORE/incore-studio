@@ -5,6 +5,7 @@ import {
     Button,
     FormControl,
     FormLabel,
+    FormHelperText,
     Input,
     Modal,
     ModalClose,
@@ -16,6 +17,7 @@ import {
 import { createProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
 import { useNavigate } from "react-router-dom";
+import { handleBlur } from "@app/utils";
 
 interface CreateProjectDialogProps {
     open: boolean;
@@ -66,14 +68,34 @@ export const CreateProjectDialog = (props: CreateProjectDialogProps) => {
                     <Stack spacing={2} sx={{ mt: 2 }}>
                         <FormControl required>
                             <FormLabel>Name your project</FormLabel>
-                            <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+                            <Input
+                                placeholder="Name"
+                                value={name}
+                                onBlur={() => handleBlur(name, setName)}
+                                onChange={(e) => {
+                                    // Only update the state if the new value is valid.
+                                    if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                        setName(e.target.value);
+                                    }
+                                }}
+                            />
+                            <FormHelperText>
+                                Project name should only contain letters, numbers, spaces, underscores, and hyphens.
+                            </FormHelperText>
+                            <FormHelperText>e.g. Hurricane Harvey, Flood 2023, etc.</FormHelperText>
                         </FormControl>
                         <FormControl required>
                             <FormLabel>Set region</FormLabel>
                             <Input
                                 placeholder="Region e.g. MMSA, Seaside, Joplin, Galveston, etc"
                                 value={region}
-                                onChange={(e) => setRegion(e.target.value)}
+                                onBlur={() => handleBlur(region, setRegion)}
+                                onChange={(e) => {
+                                    // Only update the state if the new value is valid.
+                                    if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                        setRegion(e.target.value);
+                                    }
+                                }}
                             />
                         </FormControl>
                         <FormControl required>
@@ -82,7 +104,12 @@ export const CreateProjectDialog = (props: CreateProjectDialogProps) => {
                                 placeholder="Add description"
                                 minRows={5}
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={(e) => {
+                                    // Only update the state if the new value is valid.
+                                    if (/^(?!\\s+$)[A-Za-z0-9 _\\-\\(\\)\\$\\.,!\\?:;\'"]*$/.test(e.target.value)) {
+                                        setDescription(e.target.value);
+                                    }
+                                }}
                             />
                         </FormControl>
                     </Stack>

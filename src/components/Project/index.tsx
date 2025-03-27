@@ -194,7 +194,11 @@ const Project = (): JSX.Element => {
                             placeholder="Search"
                             sx={{ width: 400 }}
                             value={searchTerm}
-                            onChange={handleSearchChange}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                    handleSearchChange(e);
+                                }
+                            }}
                         />
                     </Box>
                 </Box>
