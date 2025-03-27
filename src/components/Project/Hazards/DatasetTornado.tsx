@@ -12,12 +12,12 @@ import DatasetFloodUiSchema from "@app/schema/tornado/datasetTornadoUi.json";
 import validator from "@rjsf/validator-ajv8";
 
 interface DatasetTornadoProps {
-    index: number;
+    value: string;
     projectId: string;
     handleLayerUpdate: (hazardType: string) => void;
 }
 
-export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId, handleLayerUpdate }) => {
+export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ value, projectId, handleLayerUpdate }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formKey, setFormKey] = useState<number>(0);
 
@@ -47,7 +47,7 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}

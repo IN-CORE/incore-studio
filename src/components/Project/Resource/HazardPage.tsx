@@ -165,11 +165,11 @@ const HazardPage = (): JSX.Element => {
                                     sortOptions={["date", "type", "name", "id"]}
                                     onApply={onApplyFilterSort}
                                     onCreateClick={onAddHazard}
-                                    additionalCreateClick={onCreateHazard}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add Existing Hazard"
                                     addtionalCreateLabel="Create Hazard"
+                                    additionalCreateClick={onCreateHazard}
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}

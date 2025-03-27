@@ -1,7 +1,8 @@
 import React from "react";
 import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
-import { MapComponent } from "@app/components/Map/MapComponent";
+import SimpleMap from "@app/components/Map/SimpleMap";
 import { parseDateTime } from "@app/utils";
+import config from "@app/app.config";
 
 interface VisualizationViewProps {
     visualization: Visualization;
@@ -27,14 +28,18 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                         </Typography>
                     )}
                 </Box>
-                <Box>
+                <Box sx={{ width: "800px", height: "500px" }}>
                     {visualization.layers && (
-                        <MapComponent
+                        <SimpleMap
                             layers={visualization.layers}
-                            width={800}
-                            height={500}
-                            {...(visualization.boundingBox &&
-                                visualization.boundingBox.length > 0 && { boundingBox: visualization.boundingBox })}
+                            mapOptions={{
+                                minZoom: 1
+                            }}
+                            navigation
+                            onLoad={() => {}}
+                            initialBounds={
+                                visualization.boundingBox ? visualization.boundingBox : config.DEFAULT_MAP_BOUNDS
+                            }
                         />
                     )}
                 </Box>
