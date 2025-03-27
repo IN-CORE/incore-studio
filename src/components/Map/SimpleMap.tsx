@@ -79,12 +79,6 @@ const SimpleMap = ({
             });
             mapRef.current = map;
         }
-
-        return () => {
-            if (mapRef.current) {
-                mapRef.current.remove();
-            }
-        };
     }, []);
 
     // **Effect to handle dynamic layers**
