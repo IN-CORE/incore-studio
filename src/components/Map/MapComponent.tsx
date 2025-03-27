@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
-import Map, { Source, Layer, MapRef, MapMouseEvent } from "react-map-gl/maplibre";
+import Map, { Source, Layer, MapRef } from "react-map-gl/maplibre";
 import { useAuth } from "react-oidc-context";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-
 import config from "@app/app.config";
 import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Checkbox } from "@mui/joy";
+import { getLayerBoundingBox } from "@app/utils";
 
 interface MapComponentProps {
     layers: IncoreLayer[];
@@ -23,53 +23,109 @@ export const MapComponent: React.FC<MapComponentProps> = ({
     boundingBox = config.DEFAULT_MAP_BOUNDS
 }) => {
     const auth = useAuth();
-
     const mapRef = useRef<MapRef>(null);
     const [uniqueLayers, setUniqueLayers] = useState<IncoreLayer[]>([]);
     const [activeLayers, setActiveLayers] = useState<{ [key: string]: boolean }>({});
-    const [mouseCoords, setMouseCoords] = useState<{ lat: number; lon: number } | null>(null);
-    // Handle mouse move to show coordinates
-    const handleMouseMove = (event: MapMouseEvent) => {
-        const { lng, lat } = event.lngLat;
-        setMouseCoords({ lat, lon: lng });
-    };
 
-    // Deduplicate layers
+    // Fetch bounding boxes and deduplicate layers
     useEffect(() => {
-        const uniqueLayers =
-            layers.length > 0
-                ? Array.from(
-                      new Set(
-                          layers.map((layer) =>
-                              JSON.stringify({
-                                  workspace: layer.workspace,
-                                  layerId: layer.layerId,
-                                  styleName: layer.styleName
-                              })
-                          )
-                      )
-                  ).map((layerString) => JSON.parse(layerString))
-                : [];
+        const fetchBoundingBoxes = async () => {
+            if (layers.length === 0) return;
 
-        setUniqueLayers(uniqueLayers);
+            const uniqueLayers = await Promise.all(
+                Array.from(
+                    new Set(
+                        layers.map((layer) =>
+                            JSON.stringify({
+                                workspace: layer.workspace,
+                                layerId: layer.layerId,
+                                styleName: layer.styleName
+                            })
+                        )
+                    )
+                ).map(async (layerString) => {
+                    const layer = JSON.parse(layerString);
 
-        // Initialize the activeLayers state to set each layer's visibility to false (hidden)
-        const initialActiveLayers = uniqueLayers.reduce((acc, layer) => {
-            const layerId = layer?.layerId;
-            return { ...acc, [layerId]: false };
-        }, {});
-        initialActiveLayers[uniqueLayers[0]?.layerId] = true; // Set the first layer to visible by default
-        setActiveLayers(initialActiveLayers);
+                    // Fetch bounding box asynchronously
+                    try {
+                        layer.boundingBox = await getLayerBoundingBox(layer.layerId);
+                    } catch (error) {
+                        console.warn(`Failed to fetch bounding box for ${layer.layerId}`, error);
+                    }
+
+                    return layer;
+                })
+            );
+
+            setUniqueLayers(uniqueLayers);
+
+            // Initialize activeLayers (set first layer to active by default)
+            const initialActiveLayers = uniqueLayers.reduce(
+                (acc, layer) => {
+                    acc[layer.layerId] = false;
+                    return acc;
+                },
+                {} as { [key: string]: boolean }
+            );
+
+            if (uniqueLayers[0]) {
+                initialActiveLayers[uniqueLayers[0].layerId] = true;
+            }
+
+            setActiveLayers(initialActiveLayers);
+        };
+
+        fetchBoundingBoxes();
     }, [layers]);
 
-    // Toggle visibility of a layer
+    // Function to fly to a given bounding box
+    const flyToBoundingBox = (bbox: [number, number, number, number]) => {
+        if (!mapRef.current || !Array.isArray(boundingBox) || boundingBox.length !== 4) {
+            console.error("Invalid bounding box provided", boundingBox);
+            return;
+        }
+        const [minLng, minLat, maxLng, maxLat] = bbox;
+        mapRef.current.getMap().fitBounds(
+            [
+                [minLng, minLat], // Southwest corner
+                [maxLng, maxLat] // Northeast corner
+            ],
+            {
+                padding: 20,
+                animate: true,
+                duration: 1000
+            }
+        );
+    };
+
+    // Effect to fly to the active layer's bounding box
+    useEffect(() => {
+        if (!mapRef.current) return;
+        if (uniqueLayers.length > 0 && uniqueLayers[0]?.boundingBox) {
+            flyToBoundingBox(uniqueLayers[0].boundingBox);
+        } else {
+            flyToBoundingBox(boundingBox as [number, number, number, number]);
+        }
+    }, [uniqueLayers]);
+
+    // Toggle layer visibility and update active layer state
     const toggleLayer = (layerId: string) => {
         if (!mapRef.current) return;
 
+        setActiveLayers((prev) => {
+            const newActiveLayers = { ...prev, [layerId]: !prev[layerId] };
+
+            // Fly to the bounding box of the newly activated layer
+            const activeLayer = uniqueLayers.find((layer) => layer.layerId === layerId);
+            if (activeLayer?.boundingBox && newActiveLayers[layerId]) {
+                flyToBoundingBox(activeLayer.boundingBox);
+            }
+
+            return newActiveLayers;
+        });
+
         const visibility = activeLayers[layerId] ? "none" : "visible";
         mapRef.current.getMap().setLayoutProperty(layerId, "visibility", visibility);
-
-        setActiveLayers((prev) => ({ ...prev, [layerId]: !prev[layerId] }));
     };
 
     return (
@@ -93,10 +149,8 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                     return { url };
                 }}
                 style={{ width: "100%", height: "100%" }}
-                maxBounds={boundingBox as [number, number, number, number]}
-                onMouseMove={handleMouseMove}
             >
-                {/* Carto Basemap as Raster Source */}
+                {/* Carto Basemap */}
                 <Source
                     type="raster"
                     tiles={["https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png"]}
@@ -104,6 +158,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                 >
                     <Layer type="raster" />
                 </Source>
+
                 {/* Add unique WMS layers */}
                 {uniqueLayers.map((layer) => {
                     const layerName = `${layer.workspace}:${layer.layerId}`;
@@ -132,13 +187,12 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                 })}
             </Map>
 
-            {/* Layer Switcher Control */}
+            {/* Layer Switcher */}
             <Box
                 sx={{
                     position: "absolute",
                     top: 10,
                     left: 10,
-                    width: "fit-content",
                     zIndex: 1,
                     padding: 2,
                     backgroundColor: "#fff",
@@ -164,27 +218,6 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                     </AccordionDetails>
                 </Accordion>
             </Box>
-
-            {/* Mouse-over Coordinate Display */}
-            {mouseCoords && (
-                <Box
-                    sx={{
-                        position: "absolute",
-                        bottom: 10,
-                        left: 10,
-                        backgroundColor: "rgba(255, 255, 255, 0.8)",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                        fontSize: "14px",
-                        boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
-                        zIndex: 1
-                    }}
-                >
-                    <Typography level="body-sm">
-                        Lat: {mouseCoords.lat.toFixed(4)}, Lon: {mouseCoords.lon.toFixed(4)}
-                    </Typography>
-                </Box>
-            )}
         </div>
     );
 };

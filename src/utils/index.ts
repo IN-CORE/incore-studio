@@ -657,3 +657,21 @@ export const validateCoord = (
 
     return lonNum > boundingBox[0] && lonNum < boundingBox[2] && latNum > boundingBox[1] && latNum < boundingBox[3];
 };
+
+export async function getLayerBoundingBox(datasetId: string): Promise<[number, number, number, number] | null> {
+    try {
+        const url = `${config.dataApi}/datasets/${datasetId}`;
+        const response = await axios.get<{ boundingBox?: [number, number, number, number] }>(url, {
+            headers: getHeaders()
+        });
+
+        if (response.data && response.data.boundingBox) {
+            return response.data.boundingBox;
+        }
+
+        return null;
+    } catch (error) {
+        console.error(`Error fetching dataset ${datasetId}:`, error);
+        return null;
+    }
+}

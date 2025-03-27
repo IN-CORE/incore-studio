@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Resolve map layer visibility issue when create new hazard [#113](https://github.com/IN-CORE/incore-studio/issues/113)
 
+### Changed
+- Get the layer bounding box and fly to the bound [#124](https://github.com/IN-CORE/incore-studio/issues/124)
+
 ## [Alpha-3] - 03-10-2025
 
 ### Added
