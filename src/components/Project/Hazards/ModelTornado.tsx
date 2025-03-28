@@ -146,7 +146,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
         );
 
         if (tornadoJson && tornadoJson.id) {
-            dispatch(addHazardToProject({ projectId, hazards: [{ ...tornadoJson, type: "tornado" }] }));
+            appDispatch(addHazardToProject({ projectId, hazards: [{ ...tornadoJson, type: "tornado" }] }));
             handleLayerUpdate(
                 tornadoJson.hazardDatasets.map((dataset: HazardDataset) => ({
                     workspace: "incore",

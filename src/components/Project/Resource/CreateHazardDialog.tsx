@@ -255,7 +255,7 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
     };
 
     const handleLayerUpdate = (layers: IncoreLayer[]) => {
-        setActiveLayers(layers);
+        setActiveLayers([...activeLayers, ...layers]);
     };
 
     // Clear Layers on Map

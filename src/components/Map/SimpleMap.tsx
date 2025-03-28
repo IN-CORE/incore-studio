@@ -165,10 +165,10 @@ const SimpleMap = ({
             }
         });
 
+        // TODO: Figuring out what this code is doing?
         // **Remove layers that no longer exist in props**
-
         existingLayers.forEach((layerId) => {
-            if (!layers.some((layer) => layer.layerId === layerId) && layerId.startsWith("incore-")) {
+            if (!layers.some((layer) => `incore-${layer.layerId}` === layerId) && layerId.startsWith("incore-")) {
                 map.removeLayer(layerId);
                 map.removeSource(layerId);
             }
@@ -281,9 +281,6 @@ const SimpleMap = ({
                     </AccordionDetails>
                 </Accordion>
             </Box>
-            {/* {layers.length > 0 && (
-
-            )} */}
         </Box>
     );
 };
