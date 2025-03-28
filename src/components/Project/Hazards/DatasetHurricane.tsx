@@ -35,8 +35,7 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ value, proje
         try {
             const hurricaneJson = await createRjfsDatasetHazards(formData, "hurricanes");
             if (hurricaneJson && hurricaneJson.id) {
-                appDispatch(addHazardToProject({ projectId, hazards: [hurricaneJson] }));
-
+                appDispatch(addHazardToProject({ projectId, hazards: [{ ...hurricaneJson, type: "hurricane" }] }));
                 handleLayerUpdate(
                     hurricaneJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",

@@ -35,7 +35,7 @@ export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ value, projectId
         try {
             const tsunamiJson = await createRjfsDatasetHazards(formData, "tsunamis");
             if (tsunamiJson && tsunamiJson.id) {
-                appDispatch(addHazardToProject({ projectId, hazards: [tsunamiJson] }));
+                appDispatch(addHazardToProject({ projectId, hazards: [{ ...tsunamiJson, type: "tsunami" }] }));
                 handleLayerUpdate(
                     tsunamiJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",

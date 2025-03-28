@@ -54,7 +54,7 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ value, projectId
         try {
             const tornadoJson = await createDatasetTornado(name, description, files);
             if (tornadoJson && tornadoJson.id) {
-                appDispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
+                appDispatch(addHazardToProject({ projectId, hazards: [{ ...tornadoJson, type: "tornado" }] }));
                 handleLayerUpdate(
                     tornadoJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",
