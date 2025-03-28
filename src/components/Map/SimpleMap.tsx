@@ -5,7 +5,7 @@ import { ZoomOutMap as ZoomOutMapIcon } from "@mui/icons-material";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import config from "@app/app.config";
-import { getLayerBoundingBox } from "@app/utils";
+import { getHeaders, getLayerBoundingBox } from "@app/utils";
 import { MapControl } from "./Control";
 import { IS_WEBGL_SUPPORTED } from "./utils";
 
@@ -64,7 +64,24 @@ const SimpleMap = ({
                 );
             }
 
-            const map = new maplibre.Map(mapInit as maplibregl.MapOptions);
+            const map = new maplibre.Map({
+                ...(mapInit as maplibregl.MapOptions),
+                transformRequest: (url) => {
+                    if (url.startsWith(`${config.hostname}/geoserver/`)) {
+                        try {
+                            return {
+                                url,
+                                headers: getHeaders()
+                            };
+                        } catch (err) {
+                            console.warn("Failed to apply transformRequest logic:", err);
+                            return { url };
+                        }
+                    }
+
+                    return { url }; //
+                }
+            });
 
             if (attribution) {
                 map.addControl(new maplibre.AttributionControl({ compact: true }), "bottom-right");
