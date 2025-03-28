@@ -13,12 +13,12 @@ import validator from "@rjsf/validator-ajv8";
 import config from "@app/app.config";
 
 interface DatasetTsunamiProps {
-    index: number;
+    value: string;
     projectId: string;
     handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
-export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ index, projectId, handleLayerUpdate }) => {
+export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ value, projectId, handleLayerUpdate }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formKey, setFormKey] = useState<number>(0);
 
@@ -54,7 +54,7 @@ export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ index, projectId
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}

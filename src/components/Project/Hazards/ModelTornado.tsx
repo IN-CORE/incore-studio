@@ -4,28 +4,38 @@ import { validateCoord, createModelTornado } from "@app/utils/";
 import config from "@app/app.config";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
+import { LngLatLike } from "maplibre-gl";
 
-// Define props type
 interface ModelTornadoProps {
-    index: number;
+    value: string;
     projectId: string;
     handleLayerUpdate: (layers: IncoreLayer[]) => void;
+    points: LngLatLike[];
+    setPoints: (points: LngLatLike[]) => void;
 }
 
-export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, handleLayerUpdate }) => {
-    const dispatch = useAppDispatch();
+export const ModelTornado: React.FC<ModelTornadoProps> = ({
+    value,
+    projectId,
+    handleLayerUpdate,
+    points,
+    setPoints
+}) => {
+    const appDispatch = useAppDispatch();
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [rating, setRating] = useState("EF3");
+
     const [startLatCoord, setStartLatCoord] = useState<string | number>("");
     const [startLonCoord, setStartLonCoord] = useState<string | number>("");
     const [endLatCoord, setEndLatCoord] = useState<string | number>("");
     const [endLonCoord, setEndLonCoord] = useState<string | number>("");
+
+    const [validStartCoord, setValidStartCoord] = useState(false);
+    const [validEndCoord, setValidEndCoord] = useState(false);
     const [disabled, setDisabled] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [validStartCoord, setValidStartCoord] = useState(true);
-    const [validEndCoord, setValidEndCoord] = useState(false);
 
     const labelStyles = {
         start: { color: "#96B712", fontSize: "14px" },
@@ -57,15 +67,37 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
     };
 
     useEffect(() => {
+        if (points.length === 2) {
+            const [start, end] = points;
+            const [startLon, startLat] = start as number[];
+            const [endLon, endLat] = end as number[];
+
+            setStartLatCoord(startLat);
+            setStartLonCoord(startLon);
+            setEndLatCoord(endLat);
+            setEndLonCoord(endLon);
+
+            const validStart = validateCoord(
+                startLon,
+                startLat,
+                config.VALID_MAP_BOUNDS as [number, number, number, number]
+            );
+            const validEnd = validateCoord(endLon, endLat, config.VALID_MAP_BOUNDS as [number, number, number, number]);
+            setValidStartCoord(validStart);
+            setValidEndCoord(validEnd);
+        }
+    }, [points]);
+
+    useEffect(() => {
         setDisabled(
             !(
                 name &&
                 description &&
+                rating &&
                 startLatCoord &&
                 startLonCoord &&
                 endLatCoord &&
                 endLonCoord &&
-                rating &&
                 validStartCoord &&
                 validEndCoord
             )
@@ -73,18 +105,36 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
     }, [
         name,
         description,
+        rating,
         startLatCoord,
         startLonCoord,
         endLatCoord,
         endLonCoord,
-        rating,
         validStartCoord,
         validEndCoord
     ]);
 
+    const updatePointsFromForm = (
+        newStartLat: string | number,
+        newStartLon: string | number,
+        newEndLat: string | number,
+        newEndLon: string | number
+    ) => {
+        const sLat = parseFloat(newStartLat as string);
+        const sLon = parseFloat(newStartLon as string);
+        const eLat = parseFloat(newEndLat as string);
+        const eLon = parseFloat(newEndLon as string);
+
+        if (!isNaN(sLat) && !isNaN(sLon) && !isNaN(eLat) && !isNaN(eLon)) {
+            setPoints([
+                [sLon, sLat],
+                [eLon, eLat]
+            ]);
+        }
+    };
+
     const onSave = async () => {
         setLoading(true);
-
         const tornadoJson = await createModelTornado(
             name,
             description,
@@ -96,7 +146,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
         );
 
         if (tornadoJson && tornadoJson.id) {
-            dispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
+            appDispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
             handleLayerUpdate(
                 tornadoJson.hazardDatasets.map((dataset: HazardDataset) => ({
                     workspace: "incore",
@@ -104,131 +154,142 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({ index, projectId, ha
                     styleName: config.defaultLayerStyles.MapUtil.tornado
                 }))
             );
+
             setName("");
             setDescription("");
             setStartLatCoord("");
             setStartLonCoord("");
             setEndLatCoord("");
             setEndLonCoord("");
+            setPoints([]);
         }
 
         setLoading(false);
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box component="form" sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Box sx={{ mb: 2 }}>
                     <FormLabel required sx={{ fontSize: "1rem" }}>
                         Name
                     </FormLabel>
-                    <Input value={name} variant="outlined" onChange={(e) => setName(e.target.value)} />
+                    <Input value={name} onChange={(e) => setName(e.target.value)} />
                 </Box>
                 <Box sx={{ mb: 2 }}>
                     <FormLabel required sx={{ fontSize: "1rem" }}>
                         Description
                     </FormLabel>
-                    <Input value={description} variant="outlined" onChange={(e) => setDescription(e.target.value)} />
+                    <Input value={description} onChange={(e) => setDescription(e.target.value)} />
                 </Box>
                 <Box sx={{ mb: 2 }}>
                     <FormLabel required sx={{ fontSize: "1rem" }}>
                         Rating
                     </FormLabel>
-                    <Select value={rating} onChange={(_, value) => setRating(value as string)}>
-                        {["EF0", "EF1", "EF2", "EF3", "EF4", "EF5"].map((level) => (
-                            <Option key={level} value={level}>
-                                {level}
+                    <Select value={rating} onChange={(_, val) => setRating(val as string)}>
+                        {["EF0", "EF1", "EF2", "EF3", "EF4", "EF5"].map((r) => (
+                            <Option key={r} value={r}>
+                                {r}
                             </Option>
                         ))}
                     </Select>
                 </Box>
-                <>
-                    {[
-                        {
-                            type: "Start",
-                            lat: startLatCoord,
-                            lon: startLonCoord,
-                            setLat: setStartLatCoord,
-                            setLon: setStartLonCoord,
-                            isValid: validStartCoord,
-                            setValid: setValidStartCoord
-                        },
-                        {
-                            type: "End",
-                            lat: endLatCoord,
-                            lon: endLonCoord,
-                            setLat: setEndLatCoord,
-                            setLon: setEndLonCoord,
-                            isValid: validEndCoord,
-                            setValid: setValidEndCoord
-                        }
-                    ].map(({ type, lat, lon, setLat, setLon, isValid, setValid }, i) => (
-                        <Box key={type} sx={{ mb: 2 }}>
-                            <FormLabel sx={{ fontSize: "1rem" }} required>
-                                Tornado Path {type} Coordinate
-                            </FormLabel>
-                            {(lat !== "" || lon !== "") && !isValid && (
-                                <span style={{ color: "red" }}>Coordinate not valid or outside the bounding box.</span>
-                            )}
-                            <Box
-                                key={type}
-                                sx={{
-                                    ...coordBoxSx,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between"
-                                }}
-                            >
-                                <Box display="flex" alignItems="center">
-                                    <FormLabel required sx={i === 0 ? labelStyles.start : labelStyles.end}>
-                                        {type} Lat:
-                                    </FormLabel>
-                                    <Input
-                                        sx={inputStyles}
-                                        type="number"
-                                        value={lat ?? ""}
-                                        onChange={(e) => {
-                                            const newLat = e.target.value;
-                                            setLat(newLat);
-                                            setValid(
-                                                validateCoord(
-                                                    lon,
-                                                    newLat,
-                                                    config.VALID_MAP_BOUNDS as [number, number, number, number]
-                                                )
-                                            );
-                                        }}
-                                        placeholder={String(config.DEFAULT_MAP_CENTER[0])}
-                                    />
-                                </Box>
-                                <Box display="flex" alignItems="center">
-                                    <FormLabel required sx={i === 0 ? labelStyles.start : labelStyles.end}>
-                                        {type} Lon:
-                                    </FormLabel>
-                                    <Input
-                                        sx={inputStyles}
-                                        type="number"
-                                        value={lon ?? ""}
-                                        onChange={(e) => {
-                                            const newLon = e.target.value;
-                                            setLon(newLon);
-                                            setValid(
-                                                validateCoord(
-                                                    newLon,
-                                                    lat,
-                                                    config.VALID_MAP_BOUNDS as [number, number, number, number]
-                                                )
-                                            );
-                                        }}
-                                        placeholder={String(config.DEFAULT_MAP_CENTER[1])}
-                                    />
-                                </Box>
+                {[
+                    {
+                        label: "Start",
+                        lat: startLatCoord,
+                        lon: startLonCoord,
+                        setLat: setStartLatCoord,
+                        setLon: setStartLonCoord,
+                        isValid: validStartCoord,
+                        setValid: setValidStartCoord
+                    },
+                    {
+                        label: "End",
+                        lat: endLatCoord,
+                        lon: endLonCoord,
+                        setLat: setEndLatCoord,
+                        setLon: setEndLonCoord,
+                        isValid: validEndCoord,
+                        setValid: setValidEndCoord
+                    }
+                ].map(({ label, lat, lon, setLat, setLon, isValid, setValid }, index) => (
+                    <Box key={label} sx={{ mb: 2 }}>
+                        <FormLabel required sx={{ fontSize: "1rem" }}>
+                            Tornado Path {label} Coordinate
+                        </FormLabel>
+                        {(lat !== "" || lon !== "") && !isValid && (
+                            <span style={{ color: "red" }}>Invalid or out-of-bounds coordinates.</span>
+                        )}
+                        <Box sx={coordBoxSx}>
+                            <Box display="flex" alignItems="center">
+                                <FormLabel sx={index === 0 ? labelStyles.start : labelStyles.end}>
+                                    {label} Lat:
+                                </FormLabel>
+                                <Input
+                                    sx={inputStyles}
+                                    type="number"
+                                    value={lat ?? ""}
+                                    placeholder={String(config.DEFAULT_MAP_CENTER[0])}
+                                    onChange={(e) => {
+                                        const newLat = e.target.value;
+                                        setLat(newLat);
+                                        const valid = validateCoord(
+                                            lon,
+                                            newLat,
+                                            config.VALID_MAP_BOUNDS as [number, number, number, number]
+                                        );
+                                        setValid(valid);
+
+                                        const updatedStartLat = label === "Start" ? newLat : startLatCoord;
+                                        const updatedEndLat = label === "End" ? newLat : endLatCoord;
+
+                                        updatePointsFromForm(
+                                            updatedStartLat,
+                                            startLonCoord,
+                                            updatedEndLat,
+                                            endLonCoord
+                                        );
+                                    }}
+                                />
+                            </Box>
+                            <Box display="flex" alignItems="center">
+                                <FormLabel sx={index === 0 ? labelStyles.start : labelStyles.end}>
+                                    {label} Lon:
+                                </FormLabel>
+                                <Input
+                                    sx={inputStyles}
+                                    type="number"
+                                    value={lon ?? ""}
+                                    placeholder={String(config.DEFAULT_MAP_CENTER[1])}
+                                    onChange={(e) => {
+                                        const newLon = e.target.value;
+                                        setLon(newLon);
+                                        const valid = validateCoord(
+                                            newLon,
+                                            lat,
+                                            config.VALID_MAP_BOUNDS as [number, number, number, number]
+                                        );
+                                        setValid(valid);
+
+                                        const updatedStartLon = label === "Start" ? newLon : startLonCoord;
+                                        const updatedEndLon = label === "End" ? newLon : endLonCoord;
+
+                                        updatePointsFromForm(
+                                            startLatCoord,
+                                            updatedStartLon,
+                                            endLatCoord,
+                                            updatedEndLon
+                                        );
+                                    }}
+                                />
                             </Box>
                         </Box>
-                    ))}
-                </>
+                    </Box>
+                ))}
+
                 <Box sx={{ mb: 2 }}>
-                    <Button variant="solid" onClick={onSave} disabled={disabled || !validStartCoord || !validEndCoord}>
+                    <Button variant="solid" onClick={onSave} disabled={disabled}>
                         Save
                     </Button>
                 </Box>

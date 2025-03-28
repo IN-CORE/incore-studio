@@ -1,9 +1,6 @@
 import React, { useState } from "react";
-// import { useAppDispatch } from "@app/store/hooks";
-// import { createProject } from "@app/reducer/projectSlice";
 
 import {
-    Autocomplete,
     Box,
     Button,
     FormControl,
@@ -73,14 +70,11 @@ export const CreateProjectDialog = (props: CreateProjectDialogProps) => {
                         </FormControl>
                         <FormControl required>
                             <FormLabel>Set region</FormLabel>
-                            <Autocomplete
-                                freeSolo
-                                placeholder="Region"
-                                options={["Galveston", "Joplin", "MMSA", "Seaside", "SLC"]}
-                                inputValue={region}
-                                onInputChange={(_, value) => setRegion(value)}
+                            <Input
+                                placeholder="Region e.g. MMSA, Seaside, Joplin, Galveston, etc"
+                                value={region}
+                                onChange={(e) => setRegion(e.target.value)}
                             />
-                            {/* <Input placeholder="Region" value={region} onChange={(e) => setRegion(e.target.value)} /> */}
                         </FormControl>
                         <FormControl required>
                             <FormLabel>Add description</FormLabel>

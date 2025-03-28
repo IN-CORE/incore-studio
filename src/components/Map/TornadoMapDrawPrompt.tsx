@@ -14,8 +14,8 @@ export const TornadoMapDrawPrompt: React.FC<TornadoMapDrawPromptProps> = ({ mapD
             <Box display="flex" flexDirection="column">
                 <span
                     style={{
-                        height: "2em",
-                        width: "2em",
+                        height: "1.5em",
+                        width: "1.5em",
                         backgroundColor: "#96B712",
                         borderRadius: "50%",
                         display: "block",
@@ -54,7 +54,7 @@ export const TornadoMapDrawPrompt: React.FC<TornadoMapDrawPromptProps> = ({ mapD
             mapDialogOpen={mapDialogOpen}
             handleMapDialogClose={handleMapDialogClose}
             promptTitle="Define Start and End"
-            promptText="Click and drag the circles below to define the start and stop positions of the tornado path that
+            promptText="Click to draw circles below to define the start and stop positions of the tornado path that
                        you are defining. The locations will automatically be entered into the form.
                        Alternatively, you can directly edit the coordinates."
             promptElem={promptElem}

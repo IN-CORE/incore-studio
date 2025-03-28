@@ -14,12 +14,12 @@ import config from "@app/app.config";
 
 // Define props type
 interface DatasetEarthquakeProps {
-    index: number;
+    value: string;
     projectId: string;
     handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
-export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, projectId, handleLayerUpdate }) => {
+export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ value, projectId, handleLayerUpdate }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formKey, setFormKey] = useState<number>(0);
 
@@ -56,7 +56,7 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, pro
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}

@@ -7,13 +7,13 @@ import config from "@app/app.config";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 interface DatasetTornadoProps {
-    index: number;
+    value: string;
     projectId: string;
     handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
-export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId, handleLayerUpdate }) => {
-    const dispatch = useAppDispatch();
+export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ value, projectId, handleLayerUpdate }) => {
+    const appDispatch = useAppDispatch();
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [files, setFiles] = useState<File[]>([]);
@@ -54,7 +54,7 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
         try {
             const tornadoJson = await createDatasetTornado(name, description, files);
             if (tornadoJson && tornadoJson.id) {
-                dispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
+                appDispatch(addHazardToProject({ projectId, hazards: [tornadoJson] }));
                 handleLayerUpdate(
                     tornadoJson.hazardDatasets.map((dataset: HazardDataset) => ({
                         workspace: "incore",
@@ -74,7 +74,7 @@ export const DatasetTornado: React.FC<DatasetTornadoProps> = ({ index, projectId
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 {/* Name Input */}
                 <Box sx={{ mb: 2 }}>
