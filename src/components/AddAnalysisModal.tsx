@@ -113,7 +113,9 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                 placeholder="Search Analysis"
                                 value={searchAnalysisTerm}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    setSearchAnalysisTerm(e.target.value.toLowerCase());
+                                    if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                        setSearchAnalysisTerm(e.target.value.toLowerCase());
+                                    }
                                 }}
                             />
                         </Box>

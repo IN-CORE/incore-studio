@@ -21,6 +21,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAppDispatch } from "@app/store/hooks";
 import { createProjectVisualization, fetchInfiniteProjectVisualizations } from "@app/reducer/projectSlice";
 import config from "@app/app.config";
+import { handleBlur } from "@app/utils";
 
 interface VisualizationDialogProps {
     projectId: string;
@@ -206,7 +207,12 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                                     <Input
                                         placeholder="Name"
                                         value={visualizationName}
-                                        onChange={(e) => setVisualizationName(e.target.value)}
+                                        onBlur={() => handleBlur(visualizationName, setVisualizationName)}
+                                        onChange={(e) => {
+                                            if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                                setVisualizationName(e.target.value);
+                                            }
+                                        }}
                                     />
                                 </FormControl>
                                 <FormControl required>
@@ -313,7 +319,12 @@ export const CreateVisualizationDialog: React.FC<CreateVisualizationDialogProps>
                             <Input
                                 placeholder="Name"
                                 value={visualizationName}
-                                onChange={(e) => setVisualizationName(e.target.value)}
+                                onBlur={() => handleBlur(visualizationName, setVisualizationName)}
+                                onChange={(e) => {
+                                    if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                        setVisualizationName(e.target.value);
+                                    }
+                                }}
                             />
                         </FormControl>
                         <FormControl required>

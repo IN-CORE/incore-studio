@@ -725,3 +725,9 @@ export async function createDataset(
         return {};
     }
 }
+
+// When the input loses focus, trim the value.
+export const handleBlur = <T extends string>(value: T, setValue: React.Dispatch<React.SetStateAction<T>>) => {
+    const trimmedValue = value.trim() as T;
+    setValue(trimmedValue);
+};

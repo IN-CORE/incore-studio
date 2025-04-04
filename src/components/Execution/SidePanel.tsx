@@ -727,7 +727,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                         if (
                                                             inputParameter.label !== "Analysis" &&
-                                                            !inputParameter.label.includes("Service")
+                                                            !inputParameter.label.includes("Service") &&
+                                                            /^[A-Za-z0-9 _,-]*$/.test(e.target.value)
                                                         ) {
                                                             updateParameter(
                                                                 inputParameter.execFileEntryId,

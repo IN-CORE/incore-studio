@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { getDatawolfUser } from "@app/reducer/workflowSlice";
 import { createNewExecution, clearSidePanelData } from "@app/reducer/executionSlice";
 import { useNavigate } from "react-router-dom";
+import { handleBlur } from "@app/utils";
 
 interface CreateExecutionDialogProps {
     open: boolean;
@@ -97,7 +98,16 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
                     <Stack spacing={2} sx={{ mt: 2 }}>
                         <FormControl required>
                             <FormLabel>Name your execution</FormLabel>
-                            <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+                            <Input
+                                placeholder="Name"
+                                value={name}
+                                onBlur={() => handleBlur(name, setName)}
+                                onChange={(e) => {
+                                    if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                        setName(e.target.value);
+                                    }
+                                }}
+                            />
                         </FormControl>
                         <FormControl required>
                             <FormLabel>Add description</FormLabel>
@@ -105,7 +115,12 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
                                 placeholder="Add description"
                                 minRows={5}
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={(e) => {
+                                    // Only update the state if the new value is valid.
+                                    if (/^(?!\\s+$)[A-Za-z0-9 _\\-\\(\\)\\$\\.,!\\?:;\'"]*$/.test(e.target.value)) {
+                                        setDescription(e.target.value);
+                                    }
+                                }}
                             />
                         </FormControl>
                     </Stack>

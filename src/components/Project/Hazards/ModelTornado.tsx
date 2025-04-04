@@ -5,6 +5,7 @@ import config from "@app/app.config";
 import { addHazardToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
 import { LngLatLike } from "maplibre-gl";
+import { handleBlur } from "@app/utils/";
 
 interface ModelTornadoProps {
     value: string;
@@ -174,13 +175,29 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
                     <FormLabel required sx={{ fontSize: "1rem" }}>
                         Name
                     </FormLabel>
-                    <Input value={name} onChange={(e) => setName(e.target.value)} />
+                    <Input
+                        value={name}
+                        onBlur={() => handleBlur(name, setName)}
+                        onChange={(e) => {
+                            if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                setName(e.target.value);
+                            }
+                        }}
+                    />
                 </Box>
                 <Box sx={{ mb: 2 }}>
                     <FormLabel required sx={{ fontSize: "1rem" }}>
                         Description
                     </FormLabel>
-                    <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+                    <Input
+                        value={description}
+                        onChange={(e) => {
+                            // Only update the state if the new value is valid.
+                            if (/^(?!\\s+$)[A-Za-z0-9 _\\-\\(\\)\\$\\.,!\\?:;\'"]*$/.test(e.target.value)) {
+                                setDescription(e.target.value);
+                            }
+                        }}
+                    />
                 </Box>
                 <Box sx={{ mb: 2 }}>
                     <FormLabel required sx={{ fontSize: "1rem" }}>

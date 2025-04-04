@@ -17,7 +17,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { addDatasetToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
-import { createDataset } from "@app/utils";
+import { createDataset, handleBlur } from "@app/utils";
 import config from "@app/app.config";
 
 interface CreateDatasetDialogProps {
@@ -110,7 +110,12 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                             value={title}
                             variant="outlined"
                             placeholder="Dataset Title"
-                            onChange={(e) => setTitle(e.target.value)}
+                            onBlur={() => handleBlur(title, setTitle)}
+                            onChange={(e) => {
+                                if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                    setTitle(e.target.value);
+                                }
+                            }}
                         />
                     </Box>
 
@@ -123,7 +128,11 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                             value={description}
                             variant="outlined"
                             placeholder="Dataset Description"
-                            onChange={(e) => setDescription(e.target.value)}
+                            onChange={(e) => {
+                                if (/^(?!\\s+$)[A-Za-z0-9 _\\-\\(\\)\\$\\.,!\\?:;\'"]*$/.test(e.target.value)) {
+                                    setDescription(e.target.value);
+                                }
+                            }}
                         />
                     </Box>
 
@@ -154,7 +163,12 @@ export const CreateDatasetDialog: React.FC<CreateDatasetDialogProps> = ({ open, 
                             value={datasetType}
                             variant="outlined"
                             placeholder="Dataset Type"
-                            onChange={(e) => setDatasetType(e.target.value)}
+                            onBlur={() => handleBlur(datasetType, setDatasetType)}
+                            onChange={(e) => {
+                                if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                    setDatasetType(e.target.value);
+                                }
+                            }}
                         />
                     </Box>
 

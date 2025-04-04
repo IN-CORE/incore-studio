@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Visual feedback of results tab to show execution still running and avoid N/A in output fields [#96](https://github.com/IN-CORE/incore-studio/issues/96)
 - Resolve map layer visibility issue when create new hazard [#113](https://github.com/IN-CORE/incore-studio/issues/113)
 - Visualzation pagination in Execution side panel and select existing visualizations in the dialog dropdown [#95](https://github.com/IN-CORE/incore-studio/issues/95)
+- Allow only alpha-numeric characters as inputs from text fields and some punctuations. [#129](https://github.com/IN-CORE/incore-studio/issues/129)
 
 ### Added
 
