@@ -9,6 +9,7 @@ config.docBaseLink = `${hostname}/doc/incore/analyses`;
 config.projectApi = `${hostname}/project/api/projects`;
 config.spaceApi = `${hostname}/space/api`;
 config.hazardApi = `${hostname}/hazard/api`;
+config.dataApi = `${hostname}/data/api`;
 config.earthquakeApi = `${config.hazardApi}/earthquakes`;
 config.floodApi = `${config.hazardApi}/floods`;
 config.hurricaneWindfieldApi = `${config.hazardApi}/hurricaneWindfields`;
@@ -70,5 +71,6 @@ config.defaultLayerStyles = {
 config.VALID_MAP_BOUNDS = [-180.0, -90, 180.0, 90];
 config.DEFAULT_MAP_BOUNDS = [-125.0, 24.396308, -66.93457, 49.384358];
 config.DEFAULT_MAP_CENTER = [39.8283, -98.5795];
+config.basemapStyle = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
 export default config;

@@ -631,3 +631,53 @@ export const validateCoord = (
 
     return lonNum > boundingBox[0] && lonNum < boundingBox[2] && latNum > boundingBox[1] && latNum < boundingBox[3];
 };
+
+export async function createDataset(
+    title: string,
+    description: string,
+    dataType: string,
+    format: string,
+    files: File[]
+): Promise<any> {
+    try {
+        const dataEndpoint = `${config.dataApi}/datasets`;
+        const datasetMetadata = {
+            title,
+            description,
+            contributors: [],
+            dataType,
+            storedUrl: "",
+            format,
+            sourceDataset: "",
+            networkDataset: null
+        };
+
+        const datasetFormData = new FormData();
+        datasetFormData.append("dataset", JSON.stringify(datasetMetadata));
+
+        const datasetResponse = await axios.post(dataEndpoint, datasetFormData, {
+            headers: getHeaders()
+        });
+
+        if (datasetResponse.status === 200) {
+            const datasetJson = datasetResponse.data;
+            const datasetId = datasetJson.id;
+            const fileEndpoint = `${config.dataApi}/datasets/${datasetId}/files`;
+
+            const fileFormData = new FormData();
+            files.forEach((file) => {
+                fileFormData.append("file", file);
+            });
+
+            const fileResponse = await axios.post(fileEndpoint, fileFormData, {
+                headers: getHeaders()
+            });
+
+            return fileResponse.status === 200 ? fileResponse.data : {};
+        }
+        return {};
+    } catch (error) {
+        console.error("Error creating dataset:", error);
+        return {};
+    }
+}

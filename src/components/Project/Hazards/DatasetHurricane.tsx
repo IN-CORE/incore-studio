@@ -12,12 +12,12 @@ import DatasetFloodUiSchema from "@app/schema/hurricane/datasetHurricaneUi.json"
 import validator from "@rjsf/validator-ajv8";
 
 interface DatasetHurricaneProps {
-    index: number;
+    value: string;
     projectId: string;
     handleLayerUpdate: (hazardType: string) => void;
 }
 
-export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, projectId, handleLayerUpdate }) => {
+export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ value, projectId, handleLayerUpdate }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formKey, setFormKey] = useState<number>(0);
 
@@ -34,7 +34,7 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
         try {
             const hurricaneJson = await createRjfsDatasetHazards(formData, "hurricanes");
             if (hurricaneJson && hurricaneJson.id) {
-                appDispatch(addHazardToProject({ projectId, hazards: [hurricaneJson] }));
+                appDispatch(addHazardToProject({ projectId, hazards: [{ ...hurricaneJson, type: "hurricane" }] }));
                 handleLayerUpdate(hurricaneJson.id);
             }
         } catch (error) {
@@ -47,7 +47,7 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}

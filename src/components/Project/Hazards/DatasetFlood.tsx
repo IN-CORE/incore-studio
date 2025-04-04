@@ -12,12 +12,12 @@ import DatasetFloodUiSchema from "@app/schema/flood/datasetFloodUi.json";
 import validator from "@rjsf/validator-ajv8";
 
 interface DatasetFloodProps {
-    index: number;
+    value: string;
     projectId: string;
     handleLayerUpdate: (hazardType: string) => void;
 }
 
-export const DatasetFlood: React.FC<DatasetFloodProps> = ({ index, projectId, handleLayerUpdate }) => {
+export const DatasetFlood: React.FC<DatasetFloodProps> = ({ value, projectId, handleLayerUpdate }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formKey, setFormKey] = useState<number>(0);
 
@@ -34,7 +34,7 @@ export const DatasetFlood: React.FC<DatasetFloodProps> = ({ index, projectId, ha
         try {
             const floodJson = await createRjfsDatasetHazards(formData, "floods");
             if (floodJson && floodJson.id) {
-                appDispatch(addHazardToProject({ projectId, hazards: [floodJson] }));
+                appDispatch(addHazardToProject({ projectId, hazards: [{ ...floodJson, type: "flood" }] }));
                 handleLayerUpdate(floodJson.id);
             }
         } catch (error) {
@@ -47,7 +47,7 @@ export const DatasetFlood: React.FC<DatasetFloodProps> = ({ index, projectId, ha
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}

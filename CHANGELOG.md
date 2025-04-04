@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Visualzation pagination in Execution side panel and select existing visualizations in the dialog dropdown [#95](https://github.com/IN-CORE/incore-studio/issues/95)
 
+### Added
+
+- Create Hazard option to project dashboard hazard section [#118](https://github.com/IN-CORE/incore-studio/issues/118)
+- Drawing capability to the map. [#115](https://github.com/IN-CORE/incore-studio/issues/115)
+- Upload dataset modal that uploads dataset to IN-CORE [#128](https://github.com/IN-CORE/incore-studio/issues/128)
+
+### Changed
+
+- Allow user to add a region not present in the dropdown [#127](https://github.com/IN-CORE/incore-studio/issues/127)
+
+
 ## [Alpha-3] - 03-10-2025
 
 ### Added
