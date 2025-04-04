@@ -10,12 +10,13 @@ import { createRjfsDatasetHazards } from "@app/utils";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useAppDispatch } from "@app/store/hooks";
+import config from "@app/app.config";
 
 // Define props type
 interface DatasetEarthquakeProps {
     value: string;
     projectId: string;
-    handleLayerUpdate: (hazardId: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
 export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ value, projectId, handleLayerUpdate }) => {
@@ -36,7 +37,13 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ value, pro
             const eqJson = await createRjfsDatasetHazards(formData, "earthquakes");
             if (eqJson && eqJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [{ ...eqJson, type: "earthquake" }] }));
-                handleLayerUpdate(eqJson.id);
+                handleLayerUpdate(
+                    eqJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                        workspace: "incore",
+                        layerId: dataset.datasetId,
+                        styleName: config.defaultLayerStyles.MapUtil.earthquake
+                    }))
+                );
             }
         } catch (error) {
             console.error("Error saving earthquake dataset:", error);

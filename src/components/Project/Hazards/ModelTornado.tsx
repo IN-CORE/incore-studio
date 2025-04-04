@@ -9,7 +9,7 @@ import { LngLatLike } from "maplibre-gl";
 interface ModelTornadoProps {
     value: string;
     projectId: string;
-    handleLayerUpdate: (hazardId: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
     points: LngLatLike[];
     setPoints: (points: LngLatLike[]) => void;
 }
@@ -21,7 +21,7 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
     points,
     setPoints
 }) => {
-    const dispatch = useAppDispatch();
+    const appDispatch = useAppDispatch();
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -146,8 +146,14 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
         );
 
         if (tornadoJson && tornadoJson.id) {
-            dispatch(addHazardToProject({ projectId, hazards: [{ ...tornadoJson, type: "tornado" }] }));
-            handleLayerUpdate(tornadoJson.id);
+            appDispatch(addHazardToProject({ projectId, hazards: [{ ...tornadoJson, type: "tornado" }] }));
+            handleLayerUpdate(
+                tornadoJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                    workspace: "incore",
+                    layerId: dataset.datasetId,
+                    styleName: config.defaultLayerStyles.MapUtil.tornado
+                }))
+            );
 
             setName("");
             setDescription("");
@@ -188,7 +194,6 @@ export const ModelTornado: React.FC<ModelTornadoProps> = ({
                         ))}
                     </Select>
                 </Box>
-
                 {[
                     {
                         label: "Start",

@@ -63,8 +63,11 @@ config.defaultLayerStyles = {
             waterVelocity: "incore:hurricane-water-velocity",
             windVelocity: "incore:hurricane-wind"
         },
-        tsunami: {},
-        floods: {}
+        tsunami: "incore:tsunami",
+        flood: {
+            inundationDepth: "incore:hurricane-inundation-depth",
+            waterSurfaceElevation: "incore:hurricane-surge-level"
+        }
     }
 };
 

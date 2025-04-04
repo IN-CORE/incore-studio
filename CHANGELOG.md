@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- Resolve map layer visibility issue when create new hazard [#113](https://github.com/IN-CORE/incore-studio/issues/113)
 - Visualzation pagination in Execution side panel and select existing visualizations in the dialog dropdown [#95](https://github.com/IN-CORE/incore-studio/issues/95)
 
 ### Added
@@ -19,8 +20,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- Get the layer bounding box and fly to the bound [#124](https://github.com/IN-CORE/incore-studio/issues/124)
 - Allow user to add a region not present in the dropdown [#127](https://github.com/IN-CORE/incore-studio/issues/127)
-
 
 ## [Alpha-3] - 03-10-2025
 
@@ -36,6 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Update how filter and searchbox works on homepage and project resource page [#44](https://github.com/IN-CORE/incore-studio/issues/44)
 - Project Dashboard page [#99](https://github.com/IN-CORE/incore-studio/issues/99)
+- Hide map provider info icon [#114](https://github.com/IN-CORE/incore-studio/issues/114)
 
 ### Fixed
 

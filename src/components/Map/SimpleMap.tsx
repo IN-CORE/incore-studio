@@ -5,6 +5,7 @@ import { ZoomOutMap as ZoomOutMapIcon } from "@mui/icons-material";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import config from "@app/app.config";
+import { getHeaders, getLayerBoundingBox } from "@app/utils";
 import { MapControl } from "./Control";
 import { IS_WEBGL_SUPPORTED } from "./utils";
 
@@ -35,6 +36,9 @@ const SimpleMap = ({
     const [activeLayers, setActiveLayers] = React.useState<{ [key: string]: boolean }>({});
     const [isLoaded, setIsLoaded] = React.useState(false);
     const [zoom] = React.useState(init_zoom || 8);
+    const [layerBoundingBoxes, setLayerBoundingBoxes] = React.useState<
+        Record<string, [number, number, number, number] | null>
+    >({});
 
     React.useEffect(() => {
         if (mapContainerRef.current) {
@@ -60,7 +64,24 @@ const SimpleMap = ({
                 );
             }
 
-            const map = new maplibre.Map(mapInit as maplibregl.MapOptions);
+            const map = new maplibre.Map({
+                ...(mapInit as maplibregl.MapOptions),
+                transformRequest: (url) => {
+                    if (url.startsWith(`${config.hostname}/geoserver/`)) {
+                        try {
+                            return {
+                                url,
+                                headers: getHeaders()
+                            };
+                        } catch (err) {
+                            console.warn("Failed to apply transformRequest logic:", err);
+                            return { url };
+                        }
+                    }
+
+                    return { url }; //
+                }
+            });
 
             if (attribution) {
                 map.addControl(new maplibre.AttributionControl({ compact: true }), "bottom-right");
@@ -80,6 +101,30 @@ const SimpleMap = ({
             mapRef.current = map;
         }
     }, []);
+
+    // Fetch bounding boxes for layers
+    React.useEffect(() => {
+        const fetchBBoxes = async () => {
+            const bboxMap: Record<string, [number, number, number, number] | null> = {};
+
+            await Promise.all(
+                layers.map(async (layer) => {
+                    try {
+                        const bbox = await getLayerBoundingBox(layer.layerId);
+                        bboxMap[`incore-${layer.layerId}`] = bbox;
+                    } catch (error) {
+                        console.warn(`Bounding box fetch failed for ${layer.layerId}`, error);
+                    }
+                })
+            );
+
+            setLayerBoundingBoxes(bboxMap);
+        };
+
+        if (layers.length > 0) {
+            fetchBBoxes();
+        }
+    }, [layers]);
 
     // **Effect to handle dynamic layers**
     React.useEffect(() => {
@@ -120,15 +165,41 @@ const SimpleMap = ({
             }
         });
 
+        // TODO: Figuring out what this code is doing?
         // **Remove layers that no longer exist in props**
-
         existingLayers.forEach((layerId) => {
-            if (!layers.some((layer) => layer.layerId === layerId) && layerId.startsWith("incore-")) {
+            if (!layers.some((layer) => `incore-${layer.layerId}` === layerId) && layerId.startsWith("incore-")) {
                 map.removeLayer(layerId);
                 map.removeSource(layerId);
             }
         });
-    }, [layers, isLoaded]);
+
+        // Fly to first layer's bbox if map hasn't moved yet
+        if (layers.length > 0 && Object.keys(layerBoundingBoxes).length > 0 && map && !initialBounds && !center) {
+            const firstBbox = layerBoundingBoxes[`incore-${layers[0].layerId}`];
+            if (firstBbox) {
+                flyToBoundingBox(firstBbox);
+            }
+        }
+    }, [layers, isLoaded, layerBoundingBoxes]);
+
+    // Function to fly to bounding box
+    const flyToBoundingBox = (bbox: [number, number, number, number] | null) => {
+        if (!mapRef.current || !bbox || bbox.length !== 4) return;
+
+        const [minLng, minLat, maxLng, maxLat] = bbox;
+        mapRef.current.fitBounds(
+            [
+                [minLng, minLat],
+                [maxLng, maxLat]
+            ],
+            {
+                padding: 20,
+                animate: true,
+                duration: 1000
+            }
+        );
+    };
 
     // Function to toggle layers on/off
     const toggleLayer = (layerId: string) => {
@@ -137,7 +208,16 @@ const SimpleMap = ({
         const visibility = activeLayers[layerId] ? "none" : "visible";
         mapRef.current.setLayoutProperty(layerId, "visibility", visibility);
 
-        setActiveLayers((prev) => ({ ...prev, [layerId]: !prev[layerId] }));
+        setActiveLayers((prev) => {
+            const updated = { ...prev, [layerId]: !prev[layerId] };
+
+            // Fly to bbox if layer turned on
+            if (!prev[layerId] && layerBoundingBoxes[layerId]) {
+                flyToBoundingBox(layerBoundingBoxes[layerId]);
+            }
+
+            return updated;
+        });
     };
 
     return (
@@ -150,25 +230,23 @@ const SimpleMap = ({
             {IS_WEBGL_SUPPORTED ? null : "Your browser does not support the map features."}
 
             {navigation ? (
-                <>
-                    <Box ref={resetBoundsButtonRef} className="maplibregl-ctrl-group">
-                        <button
-                            type="button"
-                            title="Reset Map"
-                            onClick={() => {
-                                if (mapRef.current) {
-                                    if (center) {
-                                        mapRef.current?.flyTo({ center, zoom });
-                                    } else {
-                                        mapRef.current?.fitBounds(initialBounds as maplibregl.LngLatBoundsLike);
-                                    }
+                <Box ref={resetBoundsButtonRef} className="maplibregl-ctrl-group">
+                    <button
+                        type="button"
+                        title="Reset Map"
+                        onClick={() => {
+                            if (mapRef.current) {
+                                if (center) {
+                                    mapRef.current?.flyTo({ center, zoom });
+                                } else {
+                                    mapRef.current?.fitBounds(initialBounds as maplibregl.LngLatBoundsLike);
                                 }
-                            }}
-                        >
-                            <ZoomOutMapIcon sx={{ color: "black" }} />
-                        </button>
-                    </Box>
-                </>
+                            }
+                        }}
+                    >
+                        <ZoomOutMapIcon sx={{ color: "black" }} />
+                    </button>
+                </Box>
             ) : null}
 
             {/* Layer Switcher UI */}
@@ -203,9 +281,6 @@ const SimpleMap = ({
                     </AccordionDetails>
                 </Accordion>
             </Box>
-            {/* {layers.length > 0 && (
-
-            )} */}
         </Box>
     );
 };
