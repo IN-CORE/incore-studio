@@ -38,15 +38,6 @@ interface CreateHazardDialogProps {
     onClose: () => void;
 }
 
-// Hazard Layer Mapping
-const hazardLayers: Record<string, IncoreLayer> = {
-    earthquakes: { workspace: "incore", layerId: "" },
-    floods: { workspace: "incore", layerId: "" },
-    hurricanes: { workspace: "incore", layerId: "" },
-    tornadoes: { workspace: "incore", layerId: "" },
-    tsunamis: { workspace: "incore", layerId: "" }
-};
-
 const TAB_DATASET_HAZARD = "dataset-based";
 const TAB_MODEL_HAZARD = "model-based";
 
@@ -263,23 +254,8 @@ export const CreateHazardDialog: React.FC<CreateHazardDialogProps> = ({ open, on
         }
     };
 
-    const handleLayerUpdate = (layerId: string) => {
-        if (hazardType && hazardLayers[hazardType]) {
-            let styleName = ""; // Default empty style
-
-            // Check if hazardType exists in config.defaultLayerStyles
-            // @ts-ignore
-            if (config?.defaultLayerStyles[hazardType]) {
-                // @ts-ignore
-                styleName = config.defaultLayerStyles[hazardType]; // Direct mapping
-            } else if (hazardType === "hurricanes") {
-                // TODO fixme Use the first available hurricane style
-                const hurricaneStyles = Object.values(config.defaultLayerStyles.MapUtil.hurricane);
-                styleName = hurricaneStyles.length > 0 ? hurricaneStyles[0] : "";
-            }
-
-            setActiveLayers([{ ...hazardLayers[hazardType], layerId, styleName }]);
-        }
+    const handleLayerUpdate = (layers: IncoreLayer[]) => {
+        setActiveLayers([...activeLayers, ...layers]);
     };
 
     // Clear Layers on Map

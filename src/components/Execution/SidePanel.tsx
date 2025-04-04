@@ -36,6 +36,7 @@ import {
     updateExecutionSidePanelCheckStatus,
     clearSidePanelData
 } from "@app/reducer/executionSlice";
+import { Pagination } from "@app/components/Home/Pagination";
 import {
     addDatasetToProject,
     addDFR3MappingToProject,
@@ -47,6 +48,7 @@ import { VisualizationView } from "@app/components/Project/Resource/Visaualizati
 import CompatibleTypeTooltip from "./CompatibleTypeTooltip";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { extractStatus } from "@app/utils";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import OutputFileDisplay from "./OutputFileDisplay";
 
@@ -61,6 +63,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const projectHazard = useAppSelector((state) => state.project.projectHazards);
     const projectDFR3Mapping = useAppSelector((state) => state.project.projectDFR3Mappings);
     const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
+    const currentExecution = useAppSelector((state) => state.execution.currentExecution);
 
     const createExecution = useAppSelector((state) => state.execution.createExecution);
 
@@ -162,12 +165,23 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         appDispatch(clearSidePanelData());
     };
 
+    // Pagination states
+    const [visualizationPageNumber, setVisualizationPageNumber] = React.useState(1);
+    const visualizationNextPage = () => {
+        setVisualizationPageNumber((prevPage) => prevPage + 1);
+    };
+    const visualizationPreviousPage = () => {
+        setVisualizationPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
+    };
+
     React.useEffect(() => {
         if (id && !createMode) {
             // get all visualizations
-            appDispatch(getProjectVisualizations({ projectId: id, skip: 0, limit: 100000 }));
+            appDispatch(
+                getProjectVisualizations({ projectId: id, skip: (visualizationPageNumber - 1) * 10, limit: 10 })
+            );
         }
-    }, []);
+    }, [id, visualizationPageNumber]);
 
     const projectVisualizations = useAppSelector((state) => state.project.projectVisualizations);
 
@@ -756,70 +770,104 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         </form>
                     </TabPanel>
                     <TabPanel value={1}>
-                        <Box>
-                            <Typography
-                                level="h4"
-                                sx={{
-                                    fontWeight: 590,
-                                    fontSize: "16px",
-                                    lineHeight: "24px",
-                                    paragraph: "28px",
-                                    color: "#172B4D",
-                                    letter: "5%",
-                                    textTransform: "uppercase",
-                                    mb: "10px"
-                                }}
-                            >
-                                Output Datasets
-                            </Typography>
-                            <Stack direction="column" spacing={2}>
-                                {sidePanelData.currentAnalysis.outputDatasets.map((outputDataset) => (
-                                    <Box key={outputDataset.execFileEntryId}>
-                                        <Stack
-                                            direction="row"
-                                            spacing={2}
-                                            alignItems="center"
-                                            justifyContent="space-between"
-                                            mb={1}
-                                        >
-                                            <Stack direction="row" spacing={2} alignItems="center">
-                                                <StorageIcon
-                                                    sx={{
-                                                        color: "#AB47BC",
-                                                        marginRight: "5px",
-                                                        pointerEvents: "none",
-                                                        fontSize: "15px"
-                                                    }}
-                                                />
-                                                <Typography
-                                                    level="h4"
-                                                    sx={{
-                                                        fontWeight: 400,
-                                                        fontSize: "14px",
-                                                        lineHeight: "24px",
-                                                        paragraph: "28px",
-                                                        color: "#172B4D"
-                                                    }}
-                                                >
-                                                    {outputDataset.label}
-                                                </Typography>
-                                            </Stack>
-                                            <Box>
-                                                <Tooltip title="Download file" placement="top-start">
-                                                    <IconButton
-                                                        aria-label="Download file"
-                                                        onClick={() => downloadFile(outputDataset.datasetId)}
+                        {extractStatus(currentExecution) === "WAITING" ||
+                        extractStatus(currentExecution) === "QUEUED" ||
+                        extractStatus(currentExecution) === "RUNNING" ? (
+                            <Box>
+                                <Typography
+                                    level="h4"
+                                    sx={{
+                                        fontWeight: 590,
+                                        fontSize: "16px",
+                                        lineHeight: "24px",
+                                        paragraph: "28px",
+                                        color: "#172B4D",
+                                        letter: "5%",
+                                        textTransform: "uppercase",
+                                        mb: "10px"
+                                    }}
+                                >
+                                    Execution Status: {extractStatus(currentExecution)}
+                                </Typography>
+                                <Typography
+                                    level="h4"
+                                    sx={{
+                                        fontWeight: 400,
+                                        fontSize: "14px",
+                                        lineHeight: "24px",
+                                        paragraph: "28px",
+                                        color: "#172B4D"
+                                    }}
+                                >
+                                    The execution is currently running. Please wait for the execution to complete.
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <Box>
+                                <Typography
+                                    level="h4"
+                                    sx={{
+                                        fontWeight: 590,
+                                        fontSize: "16px",
+                                        lineHeight: "24px",
+                                        paragraph: "28px",
+                                        color: "#172B4D",
+                                        letter: "5%",
+                                        textTransform: "uppercase",
+                                        mb: "10px"
+                                    }}
+                                >
+                                    Output Datasets
+                                </Typography>
+                                <Stack direction="column" spacing={2}>
+                                    {sidePanelData.currentAnalysis.outputDatasets.map((outputDataset) => (
+                                        <Box key={outputDataset.execFileEntryId}>
+                                            <Stack
+                                                direction="row"
+                                                spacing={2}
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mb={1}
+                                            >
+                                                <Stack direction="row" spacing={2} alignItems="center">
+                                                    <StorageIcon
+                                                        sx={{
+                                                            color: "#AB47BC",
+                                                            marginRight: "5px",
+                                                            pointerEvents: "none",
+                                                            fontSize: "15px"
+                                                        }}
+                                                    />
+                                                    <Typography
+                                                        level="h4"
+                                                        sx={{
+                                                            fontWeight: 400,
+                                                            fontSize: "14px",
+                                                            lineHeight: "24px",
+                                                            paragraph: "28px",
+                                                            color: "#172B4D"
+                                                        }}
                                                     >
-                                                        <FileDownloadRoundedIcon />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </Box>
-                                        </Stack>
-                                        <OutputFileDisplay datasetId={outputDataset.datasetId} projectId={id} />
-                                    </Box>
-                                ))}
-                            </Stack>
-                        </Box>
+                                                        {outputDataset.label}
+                                                    </Typography>
+                                                </Stack>
+                                                <Box>
+                                                    <Tooltip title="Download file" placement="top-start">
+                                                        <IconButton
+                                                            aria-label="Download file"
+                                                            onClick={() => downloadFile(outputDataset.datasetId)}
+                                                        >
+                                                            <FileDownloadRoundedIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </Box>
+                                            </Stack>
+                                            <OutputFileDisplay datasetId={outputDataset.datasetId} projectId={id} />
+                                        </Box>
+                                    ))}
+                                </Stack>
+                            </Box>
+                        )}
                     </TabPanel>
                     <TabPanel value={2}>
                         <Box>
@@ -907,6 +955,17 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                             )}
                                         </Box>
                                     ))
+                                )}
+                                {projectVisualizations.length > 0 && (
+                                    <Box mt={4} display="flex" justifyContent="center">
+                                        <Pagination
+                                            pageNumber={visualizationPageNumber}
+                                            dataLength={projectVisualizations.length}
+                                            dataPerPage={10}
+                                            previous={visualizationPreviousPage}
+                                            next={visualizationNextPage}
+                                        />
+                                    </Box>
                                 )}
                             </Stack>
                         </Box>

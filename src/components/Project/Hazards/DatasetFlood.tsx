@@ -10,11 +10,12 @@ import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/flood/datasetFlood.json";
 import DatasetFloodUiSchema from "@app/schema/flood/datasetFloodUi.json";
 import validator from "@rjsf/validator-ajv8";
+import config from "@app/app.config";
 
 interface DatasetFloodProps {
     value: string;
     projectId: string;
-    handleLayerUpdate: (hazardType: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
 export const DatasetFlood: React.FC<DatasetFloodProps> = ({ value, projectId, handleLayerUpdate }) => {
@@ -35,7 +36,17 @@ export const DatasetFlood: React.FC<DatasetFloodProps> = ({ value, projectId, ha
             const floodJson = await createRjfsDatasetHazards(formData, "floods");
             if (floodJson && floodJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [{ ...floodJson, type: "flood" }] }));
-                handleLayerUpdate(floodJson.id);
+                handleLayerUpdate(
+                    floodJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                        workspace: "incore",
+                        layerId: dataset.datasetId,
+                        styleName:
+                            // TODO type check
+                            // @ts-ignore
+                            config.defaultLayerStyles.MapUtil.flood?.[dataset.demandType] ??
+                            config.defaultLayerStyles.MapUtil.flood.inundationDepth
+                    }))
+                );
             }
         } catch (error) {
             console.error("Error saving flood dataset:", error);

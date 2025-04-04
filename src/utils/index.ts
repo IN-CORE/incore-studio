@@ -548,6 +548,32 @@ export async function createModelEarthquake(
     }
 }
 
+export async function createDatasetTornado(name: string, description: string, files: File[]) {
+    const endpoint = `${config.hazardApi}/tornadoes`;
+    const payload = new FormData();
+
+    const tornadoMetadata = {
+        tornadoType: "dataset",
+        name,
+        description
+    };
+    payload.append("tornado", JSON.stringify(tornadoMetadata));
+    files.forEach((file: File) => {
+        payload.append("file", file);
+    });
+
+    try {
+        const response = await axios.post(endpoint, payload, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
 export async function createRjfsDatasetHazards(formData: any, hazardType: string): Promise<any> {
     const endpoint = `${config.hazardApi}/${hazardType}`;
     const dataUrls: { dataurl: string; filename: string }[] = [];
@@ -631,6 +657,24 @@ export const validateCoord = (
 
     return lonNum > boundingBox[0] && lonNum < boundingBox[2] && latNum > boundingBox[1] && latNum < boundingBox[3];
 };
+
+export async function getLayerBoundingBox(datasetId: string): Promise<[number, number, number, number] | null> {
+    try {
+        const url = `${config.dataApi}/datasets/${datasetId}`;
+        const response = await axios.get<{ boundingBox?: [number, number, number, number] }>(url, {
+            headers: getHeaders()
+        });
+
+        if (response.data && response.data.boundingBox) {
+            return response.data.boundingBox;
+        }
+
+        return null;
+    } catch (error) {
+        console.error(`Error fetching dataset ${datasetId}:`, error);
+        return null;
+    }
+}
 
 export async function createDataset(
     title: string,

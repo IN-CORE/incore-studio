@@ -164,7 +164,7 @@ const DFR3MappingPage = (): JSX.Element => {
                                 <Box mt={4} display="flex" justifyContent="center">
                                     <Pagination
                                         pageNumber={DFR3MappingPageNumber}
-                                        data={projectDFR3Mappings}
+                                        dataLength={projectDFR3Mappings.length}
                                         dataPerPage={10}
                                         previous={DFR3MappingPreviousPage}
                                         next={DFR3MappingNextPage}

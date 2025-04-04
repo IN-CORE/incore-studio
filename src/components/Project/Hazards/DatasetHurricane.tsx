@@ -10,11 +10,12 @@ import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/hurricane/datasetHurricane.json";
 import DatasetFloodUiSchema from "@app/schema/hurricane/datasetHurricaneUi.json";
 import validator from "@rjsf/validator-ajv8";
+import config from "@app/app.config";
 
 interface DatasetHurricaneProps {
     value: string;
     projectId: string;
-    handleLayerUpdate: (hazardType: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
 export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ value, projectId, handleLayerUpdate }) => {
@@ -35,7 +36,17 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ value, proje
             const hurricaneJson = await createRjfsDatasetHazards(formData, "hurricanes");
             if (hurricaneJson && hurricaneJson.id) {
                 appDispatch(addHazardToProject({ projectId, hazards: [{ ...hurricaneJson, type: "hurricane" }] }));
-                handleLayerUpdate(hurricaneJson.id);
+                handleLayerUpdate(
+                    hurricaneJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                        workspace: "incore",
+                        layerId: dataset.datasetId,
+                        styleName:
+                            // TODO type check
+                            // @ts-ignore
+                            config.defaultLayerStyles.MapUtil.hurricane?.[dataset.demandType] ??
+                            config.defaultLayerStyles.MapUtil.hurricane.inundationDepth
+                    }))
+                );
             }
         } catch (error) {
             console.error("Error saving hurricane dataset:", error);

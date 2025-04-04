@@ -10,7 +10,7 @@ import { handleBlur } from "@app/utils";
 interface ModelEarthquakeProps {
     value: string;
     projectId: string;
-    handleLayerUpdate: (hazardType: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
     points: LngLatLike[];
     setPoints: (points: LngLatLike[]) => void;
 }
@@ -129,9 +129,15 @@ export const ModelEarthquake: React.FC<ModelEarthquakeProps> = ({
 
         if (eqJson && eqJson.id) {
             appDispatch(addHazardToProject({ projectId, hazards: [{ ...eqJson, type: "earthquake" }] }));
-            handleLayerUpdate(eqJson.id);
+            handleLayerUpdate(
+                eqJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                    workspace: "incore",
+                    layerId: dataset.datasetId,
+                    styleName: config.defaultLayerStyles.MapUtil.earthquake
+                }))
+            );
 
-            // Clear form + point
+            // Reset form fields
             setName("");
             setDescription("");
             setCoordLat("");
