@@ -210,7 +210,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                 })
             );
         }
-    }, [selected]);
+    }, [selected, currentExecution]);
 
     React.useEffect(() => {
         updateNodeInternals(id);
