@@ -213,7 +213,7 @@ const Project = (): JSX.Element => {
                     <Box mt={4} display="flex" justifyContent="center">
                         <Pagination
                             pageNumber={pageNumber}
-                            data={projects}
+                            dataLength={projects.length}
                             dataPerPage={dataPerPage}
                             previous={previousPage}
                             next={nextPage}

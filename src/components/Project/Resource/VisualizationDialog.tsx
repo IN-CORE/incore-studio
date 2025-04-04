@@ -3,6 +3,7 @@ import {
     Modal,
     Typography,
     Button,
+    CircularProgress,
     Select,
     Option,
     Input,
@@ -16,8 +17,9 @@ import {
 } from "@mui/joy";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAppDispatch } from "@app/store/hooks";
-import { createProjectVisualization, getProjectVisualizations } from "@app/reducer/projectSlice";
+import { createProjectVisualization, fetchInfiniteProjectVisualizations } from "@app/reducer/projectSlice";
 import config from "@app/app.config";
 
 interface VisualizationDialogProps {
@@ -41,13 +43,30 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
     const [boundingBox, setBoundingBox] = useState("");
     const [styleName, setStyleName] = useState("");
 
+    // Fetch options using react-query
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteQuery<{
+        data: Visualization[];
+        nextPage: number;
+    }>({
+        queryKey: ["data"],
+        queryFn: ({ pageParam }) => fetchInfiniteProjectVisualizations({ pageParam, projectId }),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
+        enabled: !projectId
+    });
+    const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
+
     React.useEffect(() => {
         // get all visualizations
-        if (open) appDispatch(getProjectVisualizations({ projectId, skip: 0, limit: 100000 }));
-    }, [open]);
+        refetch();
+    }, [projectVisualizations]);
+
+    // Refetch data when projectId changes
+    React.useEffect(() => {
+        refetch();
+    }, [projectId, refetch]);
 
     const appDispatch = useAppDispatch();
-    const projectVisualizations = useSelector((state: RootState) => state.project.projectVisualizations);
 
     const resetCreation = () => {
         setIsCreatingNew(false);
@@ -55,6 +74,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
         setVisualizationId("");
         setVisualizationType("");
         setDescription("");
+        refetch();
     };
     const openCreateNew = () => {
         setIsCreatingNew(true);
@@ -104,15 +124,37 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                                     </FormLabel>
                                     <Select
                                         placeholder="Select a Visualization"
+                                        slotProps={{
+                                            listbox: {
+                                                sx: {
+                                                    maxHeight: 200, // Set max height
+                                                    overflowY: "auto" // Enable scrolling when overflowing
+                                                }
+                                            }
+                                        }}
                                         onChange={(_: React.SyntheticEvent | null, newValue: string | null) => {
                                             setVisualizationId(newValue || "");
                                         }}
                                     >
-                                        {projectVisualizations.map((visualization) => (
-                                            <Option key={visualization.id} value={visualization.id}>
-                                                {visualization.name}
-                                            </Option>
-                                        ))}
+                                        {data?.pages.flatMap((page) => {
+                                            return page.data.map((item) => (
+                                                <Option key={item.id} value={item.id}>
+                                                    {item.name}
+                                                </Option>
+                                            ));
+                                        })}
+
+                                        {/* Load More Button */}
+                                        <Box sx={{ display: "flex", justifyContent: "center", mt: 1, p: 1 }}>
+                                            <Button
+                                                onClick={() => fetchNextPage()}
+                                                disabled={!hasNextPage || isFetchingNextPage}
+                                                variant="soft"
+                                                fullWidth
+                                            >
+                                                {isFetchingNextPage ? <CircularProgress size="sm" /> : "Load More"}
+                                            </Button>
+                                        </Box>
                                     </Select>
                                 </FormControl>
                                 <FormControl>

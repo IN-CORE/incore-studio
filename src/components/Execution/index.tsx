@@ -117,7 +117,7 @@ const ExecutionComponent: React.FC<{
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "94vh" }}>
-            <Box sx={{ padding: "20px", height: "8vh", borderBottom: "solid 1px black" }}>
+            <Box sx={{ padding: "20px", height: "4vh", borderBottom: "solid 1px black" }}>
                 <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                     <Box sx={{ alignContent: "center" }}>
                         <Stack direction="row" spacing={2}>

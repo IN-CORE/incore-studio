@@ -156,7 +156,7 @@ const WorkflowPage = (): JSX.Element => {
                                 <Box mt={4} display="flex" justifyContent="center">
                                     <Pagination
                                         pageNumber={workflowPageNumber}
-                                        data={projectWorkflows}
+                                        dataLength={projectWorkflows.length}
                                         dataPerPage={10}
                                         previous={workflowPreviousPage}
                                         next={workflowNextPage}
