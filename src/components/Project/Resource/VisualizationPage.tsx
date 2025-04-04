@@ -183,7 +183,7 @@ const VisualizationPage = (): JSX.Element => {
                                 <Box mt={4} display="flex" justifyContent="center">
                                     <Pagination
                                         pageNumber={visualizationPageNumber}
-                                        data={projectVisualizations}
+                                        dataLength={projectVisualizations.length}
                                         dataPerPage={10}
                                         previous={visualizationPreviousPage}
                                         next={visualizationNextPage}

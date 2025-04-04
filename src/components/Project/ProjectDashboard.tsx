@@ -47,6 +47,8 @@ import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazardDialog";
+import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 
 const ProjectDashboardComponent: React.FC = (): JSX.Element => {
     const appDispatch = useAppDispatch();
@@ -142,6 +144,8 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
     }, [success, error]);
 
     // Add resources to project
+    // Create dataset
+    const [openCreateDatasetDialog, setOpenCreateDatasetDialog] = React.useState(false);
     // Add dataset to project from service
     const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = React.useState(false);
     const addDatasetFunc = (projectId: string, resource: Dataset) => {
@@ -155,6 +159,9 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
         appDispatch(addHazardToProject({ projectId, hazards: [resource] }));
         setOpenAddHazardFromServiceDialog(false);
     };
+
+    // Create hazard
+    const [openCreateHazardDialog, setOpenCreateHazardDialog] = React.useState(false);
 
     // Add hazard to project from service
     const [openAddDFR3MappingFromServiceDialog, setOpenAddDFR3MappingFromServiceDialog] = React.useState(false);
@@ -267,8 +274,12 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 icon={<HazardIcon sx={{ color: "black" }} />}
                                 optionsList={[
                                     {
-                                        label: "Add Hazard From Service",
+                                        label: "Add Existing Hazard",
                                         onClick: () => setOpenAddHazardFromServiceDialog(true)
+                                    },
+                                    {
+                                        label: "Create New Hazard",
+                                        onClick: () => setOpenCreateHazardDialog(true)
                                     }
                                 ]}
                             />
@@ -393,6 +404,14 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 }}
                                 onAddClick={addHazardFunc}
                             />
+                            <CreateHazardDialog
+                                projectId={project.id}
+                                resourceType="hazard"
+                                open={openCreateHazardDialog}
+                                onClose={() => {
+                                    setOpenCreateHazardDialog(false);
+                                }}
+                            />
                         </Box>
                         <Box sx={{ width: "100%" }}>
                             <DashboardItemTitleBar
@@ -401,8 +420,12 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 icon={<DatasetIcon sx={{ color: "black" }} />}
                                 optionsList={[
                                     {
-                                        label: "Add Dataset From Service",
+                                        label: "Add Existing Dataset",
                                         onClick: () => setOpenAddDatasetFromServiceDialog(true)
+                                    },
+                                    {
+                                        label: "Upload Dataset",
+                                        onClick: () => setOpenCreateDatasetDialog(true)
                                     }
                                 ]}
                             />
@@ -524,6 +547,13 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     setOpenAddDatasetFromServiceDialog(false);
                                 }}
                                 onAddClick={addDatasetFunc}
+                            />
+                            <CreateDatasetDialog
+                                projectId={project.id}
+                                open={openCreateDatasetDialog}
+                                onClose={() => {
+                                    setOpenCreateDatasetDialog(false);
+                                }}
                             />
                         </Box>
                     </Stack>

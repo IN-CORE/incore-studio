@@ -10,13 +10,12 @@ module.exports = {
         modules: ["node_modules", "src"],
         extensions: [".ts", ".tsx", ".js", ".jsx"],
         alias: {
-            "@app": path.resolve(__dirname, "src/"),
+            "@app": path.resolve(__dirname, "src/")
             // "@mui/material": "@mui/joy",
-            "mapbox-gl": "maplibre-gl"
         }
     },
     devtool: "eval-source-map",
-    entry: ["maplibre-gl/dist/maplibre-gl.css", "maplibre-gl-basemaps/lib/basemaps.css", "./src/App.tsx"],
+    entry: ["maplibre-gl/dist/maplibre-gl.css", "./src/App.tsx"],
     stats: "minimal",
     target: "web",
     context: __dirname,

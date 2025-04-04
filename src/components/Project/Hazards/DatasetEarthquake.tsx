@@ -10,15 +10,16 @@ import { createRjfsDatasetHazards } from "@app/utils";
 import { RegistryWidgetsType, RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useAppDispatch } from "@app/store/hooks";
+import config from "@app/app.config";
 
 // Define props type
 interface DatasetEarthquakeProps {
-    index: number;
+    value: string;
     projectId: string;
-    handleLayerUpdate: (hazardId: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
-export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, projectId, handleLayerUpdate }) => {
+export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ value, projectId, handleLayerUpdate }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formKey, setFormKey] = useState<number>(0);
 
@@ -35,8 +36,14 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, pro
         try {
             const eqJson = await createRjfsDatasetHazards(formData, "earthquakes");
             if (eqJson && eqJson.id) {
-                appDispatch(addHazardToProject({ projectId, hazards: [eqJson] }));
-                handleLayerUpdate(eqJson.id);
+                appDispatch(addHazardToProject({ projectId, hazards: [{ ...eqJson, type: "earthquake" }] }));
+                handleLayerUpdate(
+                    eqJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                        workspace: "incore",
+                        layerId: dataset.datasetId,
+                        styleName: config.defaultLayerStyles.MapUtil.earthquake
+                    }))
+                );
             }
         } catch (error) {
             console.error("Error saving earthquake dataset:", error);
@@ -48,7 +55,7 @@ export const DatasetEarthquake: React.FC<DatasetEarthquakeProps> = ({ index, pro
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}

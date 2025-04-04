@@ -36,6 +36,7 @@ import {
     updateExecutionSidePanelCheckStatus,
     clearSidePanelData
 } from "@app/reducer/executionSlice";
+import { Pagination } from "@app/components/Home/Pagination";
 import {
     addDatasetToProject,
     addDFR3MappingToProject,
@@ -164,12 +165,23 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         appDispatch(clearSidePanelData());
     };
 
+    // Pagination states
+    const [visualizationPageNumber, setVisualizationPageNumber] = React.useState(1);
+    const visualizationNextPage = () => {
+        setVisualizationPageNumber((prevPage) => prevPage + 1);
+    };
+    const visualizationPreviousPage = () => {
+        setVisualizationPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
+    };
+
     React.useEffect(() => {
         if (id && !createMode) {
             // get all visualizations
-            appDispatch(getProjectVisualizations({ projectId: id, skip: 0, limit: 100000 }));
+            appDispatch(
+                getProjectVisualizations({ projectId: id, skip: (visualizationPageNumber - 1) * 10, limit: 10 })
+            );
         }
-    }, []);
+    }, [id, visualizationPageNumber]);
 
     const projectVisualizations = useAppSelector((state) => state.project.projectVisualizations);
 
@@ -942,6 +954,17 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                             )}
                                         </Box>
                                     ))
+                                )}
+                                {projectVisualizations.length > 0 && (
+                                    <Box mt={4} display="flex" justifyContent="center">
+                                        <Pagination
+                                            pageNumber={visualizationPageNumber}
+                                            dataLength={projectVisualizations.length}
+                                            dataPerPage={10}
+                                            previous={visualizationPreviousPage}
+                                            next={visualizationNextPage}
+                                        />
+                                    </Box>
                                 )}
                             </Stack>
                         </Box>

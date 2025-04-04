@@ -23,6 +23,7 @@ import Snackbar from "@mui/joy/Snackbar";
 
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
+import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 
 const DatasetPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -135,6 +136,11 @@ const DatasetPage = (): JSX.Element => {
         setOpenAddDatasetFromServiceDialog(false);
     };
 
+    // Create dataset
+    const [openCreateDatasetDialog, setOpenCreateDatasetDialog] = useState(false);
+    const onCreateDataset = () => {
+        setOpenCreateDatasetDialog(true);
+    };
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <Box sx={{ flexShrink: 0 }} mt={5}>
@@ -164,6 +170,8 @@ const DatasetPage = (): JSX.Element => {
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Add from Service"
+                                    addtionalCreateLabel="Upload Dataset"
+                                    additionalCreateClick={onCreateDataset}
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}
@@ -173,6 +181,13 @@ const DatasetPage = (): JSX.Element => {
                                         setOpenAddDatasetFromServiceDialog(false);
                                     }}
                                     onAddClick={addDatasetFunc}
+                                />
+                                <CreateDatasetDialog
+                                    projectId={project.id}
+                                    open={openCreateDatasetDialog}
+                                    onClose={() => {
+                                        setOpenCreateDatasetDialog(false);
+                                    }}
                                 />
                                 {isTableView ? (
                                     <ResourceTable
@@ -194,7 +209,7 @@ const DatasetPage = (): JSX.Element => {
                                 <Box mt={4} display="flex" justifyContent="center">
                                     <Pagination
                                         pageNumber={datasetPageNumber}
-                                        data={projectDatasets}
+                                        dataLength={projectDatasets.length}
                                         dataPerPage={10}
                                         previous={datasetPreviousPage}
                                         next={datasetNextPage}

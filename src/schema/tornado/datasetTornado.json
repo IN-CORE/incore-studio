@@ -15,7 +15,7 @@
             "title": "Hazard Datasets",
             "items": {
                 "type": "object",
-                "required": ["demandType", "demandUnits", "file"],
+                "required": ["demandType", "demandUnits", "shp", "shx", "dbf", "prj"],
                 "properties": {
                     "demandType": {
                         "type": "string",
@@ -31,10 +31,25 @@
                         "enum": ["mph", "mps"],
                         "default": "mph"
                     },
-                    "file": {
+                    "shp": {
                         "type": "string",
                         "format": "data-url",
-                        "title": "Single file"
+                        "title": "Tornado Shapefile (shp)"
+                    },
+                    "shx": {
+                        "type": "string",
+                        "format": "data-url",
+                        "title": "Tornado Shapefile Index (shx)"
+                    },
+                    "dbf": {
+                        "type": "string",
+                        "format": "data-url",
+                        "title": "Tornado Shapefile Attribute Table (dbf)"
+                    },
+                    "prj": {
+                        "type": "string",
+                        "format": "data-url",
+                        "title": "Tornado Shapefile Projection (prj)"
                     }
                 }
             }
