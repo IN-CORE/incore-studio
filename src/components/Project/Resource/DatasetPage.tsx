@@ -209,7 +209,7 @@ const DatasetPage = (): JSX.Element => {
                                 <Box mt={4} display="flex" justifyContent="center">
                                     <Pagination
                                         pageNumber={datasetPageNumber}
-                                        data={projectDatasets}
+                                        dataLength={projectDatasets.length}
                                         dataPerPage={10}
                                         previous={datasetPreviousPage}
                                         next={datasetNextPage}

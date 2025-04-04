@@ -292,6 +292,23 @@ export const getProjectVisualizations = createAsyncThunk(
     }
 );
 
+export const fetchInfiniteProjectVisualizations = async ({
+    pageParam = 1,
+    projectId
+}: any): Promise<{ data: Visualization[]; nextPage: number }> => {
+    const response = await axios.get(`${PROJECT_API_URL}/${projectId}/visualizations`, {
+        headers: getHeaders(),
+        params: {
+            skip: (pageParam - 1) * 10,
+            limit: 10
+        }
+    });
+    return {
+        data: response.data,
+        nextPage: response.data.length === 10 ? pageParam + 1 : null // stop if no more data
+    };
+};
+
 export const addDatasetToProject = createAsyncThunk(
     "projects/addDatasetToProject",
     async ({ projectId, datasets }: { projectId: string; datasets: Dataset[] }) => {

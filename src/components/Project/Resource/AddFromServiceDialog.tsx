@@ -209,7 +209,7 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                             <Box mt={4} display="flex" justifyContent="center">
                                 <Pagination
                                     pageNumber={pageNumber}
-                                    data={searchResults}
+                                    dataLength={searchResults.length}
                                     dataPerPage={dataPerPage}
                                     previous={previousPage}
                                     next={nextPage}
