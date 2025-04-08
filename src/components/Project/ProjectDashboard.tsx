@@ -695,7 +695,7 @@ const ProjectDashboard: React.FC = (): JSX.Element => {
     const projectWorkflows = useAppSelector((state) => state.project.projectWorkflows);
 
     // Synchronize all generated output datasets with the project datasets.
-    useOutputDatasetsSynchronizationPolling(projectWorkflows, 600000, id);
+    useOutputDatasetsSynchronizationPolling(projectWorkflows, 60 * 1000, id);
 
     // Fetch projects when filters or pagination change (but not during search)
     React.useEffect(() => {
