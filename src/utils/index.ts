@@ -731,3 +731,26 @@ export const handleBlur = <T extends string>(value: T, setValue: React.Dispatch<
     const trimmedValue = value.trim() as T;
     setValue(trimmedValue);
 };
+
+type GeoServerStyle = {
+    name: string;
+    href: string;
+};
+
+export async function getGeoServerStyles() {
+    const workspace = "incore";
+    try {
+        const response = await axios.get(`${config.hostname}/geoserver/rest/workspaces/${workspace}/styles.json`, {
+            headers: getHeaders()
+        });
+
+        return response.data.styles.style
+            .map((style: GeoServerStyle) => {
+                return workspace ? `${workspace}:${style.name}` : style.name;
+            })
+            .sort();
+    } catch (error) {
+        console.error("Error fetching styles:", error);
+        return [];
+    }
+}

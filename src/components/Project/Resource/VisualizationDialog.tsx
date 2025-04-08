@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
     Modal,
     Typography,
@@ -20,8 +20,7 @@ import { RootState } from "@app/store";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAppDispatch } from "@app/store/hooks";
 import { createProjectVisualization, fetchInfiniteProjectVisualizations } from "@app/reducer/projectSlice";
-import config from "@app/app.config";
-import { handleBlur } from "@app/utils";
+import { getGeoServerStyles, handleBlur } from "@app/utils";
 
 interface VisualizationDialogProps {
     projectId: string;
@@ -43,6 +42,22 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
     const [description, setDescription] = useState("");
     const [boundingBox, setBoundingBox] = useState("");
     const [styleName, setStyleName] = useState("");
+    const [styles, setStyles] = useState([]);
+
+    useEffect(() => {
+        (async () => {
+            const fetchedStyles = await getGeoServerStyles();
+            setStyles(fetchedStyles);
+        })();
+    }, []);
+
+    const options = useMemo(() => {
+        return styles.map(({ name }) => (
+            <Option key={name} value={name}>
+                {name}
+            </Option>
+        ));
+    }, [styles]);
 
     // Fetch options using react-query
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteQuery<{
@@ -166,11 +181,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                                             setStyleName(newValue || "");
                                         }}
                                     >
-                                        {config.sytles.map((style: string) => (
-                                            <Option key={style} value={style}>
-                                                {style}
-                                            </Option>
-                                        ))}
+                                        {options}
                                     </Select>
                                 </FormControl>
                                 <Button

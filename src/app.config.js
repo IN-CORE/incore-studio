@@ -23,22 +23,6 @@ config.keycloakConfig = {
 config.dataService = `${hostname}/data/api/datasets`;
 config.semanticService = `${hostname}/semantics/api/types`;
 
-// TODO replace this with dynamically pulling from GeoServer
-config.sytles = [
-    "incore:earthquake-pga-g",
-    "incore:tornado",
-    "incore:hurricane-wave-direction",
-    "incore:hurricane-wave-height",
-    "incore:hurricane-wave-period",
-    "incore:hurricane-wind",
-    "incore:hurricane-inundation-depth",
-    "incore:hurricane-inundation-duration",
-    "incore:hurricane-surge-level",
-    "incore:hurricane-water-velocity",
-    "incore:heatmap",
-    "incore:failure_probability"
-];
-
 config.defaultLayerStyles = {
     RetrofitStrategy: "incore:retrofit-rules",
     RetrofitStrategyHighlight: "incore:retrofit-rules-highlight",

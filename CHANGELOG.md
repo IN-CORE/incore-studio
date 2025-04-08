@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- Dynamically pulling GeoServer Styles belong to incore workspace [#143](https://github.com/IN-CORE/incore-studio/issues/143)
 - Get the layer bounding box and fly to the bound [#124](https://github.com/IN-CORE/incore-studio/issues/124)
 - Allow user to add a region not present in the dropdown [#127](https://github.com/IN-CORE/incore-studio/issues/127)
 
