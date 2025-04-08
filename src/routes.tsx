@@ -4,7 +4,6 @@ import Loading from "@app/components/Loading";
 const LazyHome = lazy(() => import("@app/components/Home"));
 const LazyWorkflowEditor = lazy(() => import("./components/WorkflowEditor"));
 const LazyProjectDatasetPage = lazy(() => import("@app/components/Project/Resource/DatasetPage"));
-// const LazyProjectPage = lazy(() => import("@app/components/Project/ProjectPage"));
 const LazyProjectDashboard = lazy(() => import("@app/components/Project/ProjectDashboard"));
 const LazyProjectHazardsPage = lazy(() => import("@app/components/Project/Resource/HazardPage"));
 const LazyProjectVisualizationsPage = lazy(() => import("@app/components/Project/Resource/VisualizationPage"));
@@ -68,14 +67,14 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
     "/project/:id/workflows/:wfID/execution/:exId": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyExecutionPage create={false} key={"existing-execution-page"} />
+                <LazyExecutionPage create={false} key="existing-execution-page" />
             </Suspense>
         )
     },
     "/project/:id/workflows/:wfID/execution/create": {
         element: (
             <Suspense fallback={<Loading />}>
-                <LazyExecutionPage create={true} key={"create-new-execution-page"} />
+                <LazyExecutionPage create key="create-new-execution-page" />
             </Suspense>
         )
     },
