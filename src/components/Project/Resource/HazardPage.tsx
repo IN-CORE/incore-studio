@@ -224,6 +224,8 @@ const HazardPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteHazardFunc}
                                         addVisualizationFunc={addHazardVisualizationFunc}
+                                        onSelectionChange={(selected) => setSelectedHazards(selected as Hazard[])}
+                                        selectedItems={selectedHazards}
                                     />
                                 ) : (
                                     <ResourceCards

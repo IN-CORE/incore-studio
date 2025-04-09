@@ -21,6 +21,7 @@ import { useAppDispatch } from "@app/store/hooks";
 import DFR3Icon from "@mui/icons-material/ShowChart";
 import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
+import { IncoreDialog } from "@app/components/IncoreDialog";
 
 const DFR3MappingPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -104,8 +105,34 @@ const DFR3MappingPage = (): JSX.Element => {
         }
     }, [success, error]);
 
+    // batch delete
+    const [selectedDFR3Mappings, setSelectedDFR3Mappings] = useState<DFR3Mapping[]>([]);
+    const [openBatchDeleteDialog, setOpenBatchDeleteDialog] = useState(false);
+    const handleBatchDelete = async () => {
+        if (project?.id && selectedDFR3Mappings.length > 0) {
+            await appDispatch(
+                deleteProjectDFR3Mappings({
+                    projectId: project.id,
+                    dfr3mappingIds: selectedDFR3Mappings.map((w) => w.id)
+                })
+            );
+            setSelectedDFR3Mappings([]);
+        }
+        setOpenBatchDeleteDialog(false);
+    };
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+            <IncoreDialog
+                open={openBatchDeleteDialog}
+                onClose={() => {
+                    setOpenBatchDeleteDialog(false);
+                }}
+                onAction={handleBatchDelete}
+                message="Are you sure you want to delete the selected items? This action cannot be undone."
+                dialogTitle="Confirm Deletion"
+                actionButtonName="Batch Delete"
+            />
             <Box sx={{ flexShrink: 0 }} mt={5}>
                 {!project ? (
                     <Typography>Loading...</Typography>
@@ -145,6 +172,8 @@ const DFR3MappingPage = (): JSX.Element => {
                                     onCreateClick={onCreateClick}
                                     isTableView
                                     createLabel="Add from Service"
+                                    selectedItemsCount={selectedDFR3Mappings.length}
+                                    onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}
@@ -160,6 +189,8 @@ const DFR3MappingPage = (): JSX.Element => {
                                     data={projectDFR3Mappings}
                                     projectId={project.id}
                                     deleteFunc={deleteDFR3MappingFunc}
+                                    onSelectionChange={(selected) => setSelectedDFR3Mappings(selected as DFR3Mapping[])}
+                                    selectedItems={selectedDFR3Mappings}
                                 />
                                 <Box mt={4} display="flex" justifyContent="center">
                                     <Pagination

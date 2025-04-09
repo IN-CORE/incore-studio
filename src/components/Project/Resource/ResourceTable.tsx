@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown, Link } from "@mui/joy";
+import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown, Link, Checkbox } from "@mui/joy";
 import { formatHeaderName, parseDateTime } from "@app/utils";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
@@ -14,6 +14,8 @@ interface TableProps {
     resourceType?: string;
     viewFunc?: any;
     addVisualizationFunc?: any;
+    onSelectionChange?: (selectedItems: (Dataset | Hazard | Visualization | Workflow | DFR3Mapping)[]) => void;
+    selectedItems?: (Hazard | Visualization | Dataset | Workflow)[];
 }
 
 // Type narrowing function
@@ -32,7 +34,9 @@ export const ResourceTable = ({
     deleteFunc,
     viewFunc,
     addVisualizationFunc,
-    resourceType
+    resourceType,
+    onSelectionChange,
+    selectedItems = []
 }: TableProps): JSX.Element => {
     const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | DFR3Mapping | null>(
         null
@@ -72,9 +76,34 @@ export const ResourceTable = ({
         setOpenVisDialog(false);
     };
 
+    // batch selection
+    const toggleSelection = (item: Dataset | Hazard | Visualization | Workflow | DFR3Mapping) => {
+        const exists = selectedItems?.find((i) => i.id === item.id);
+        const updated = exists ? selectedItems!.filter((i) => i.id !== item.id) : [...(selectedItems || []), item];
+
+        onSelectionChange?.(updated);
+    };
+    const isSelected = (item: Hazard | Visualization | Dataset | Workflow) => {
+        return selectedItems.some((i) => i.id === item.id);
+    };
+
     const renderRow = (resource: Dataset | Hazard | Visualization | Workflow | DFR3Mapping) => {
         return (
             <>
+                <td
+                    style={{
+                        width: "40px",
+                        textAlign: "center",
+                        verticalAlign: "middle"
+                    }}
+                >
+                    <Checkbox
+                        checked={isSelected(resource)}
+                        onChange={() => toggleSelection(resource)}
+                        variant="outlined"
+                        color="primary"
+                    />
+                </td>
                 {columns.map((column) => {
                     if (column === "date" && hasDate(resource)) {
                         return (
@@ -177,6 +206,14 @@ export const ResourceTable = ({
             <Table>
                 <thead>
                     <tr>
+                        <th
+                            style={{
+                                backgroundColor: "white",
+                                width: "40px",
+                                textAlign: "center",
+                                verticalAlign: "middle"
+                            }}
+                        ></th>
                         {columns.map((column) => (
                             <th key={column} style={{ backgroundColor: "white" }}>
                                 {formatHeaderName(column)}

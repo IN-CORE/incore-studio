@@ -173,6 +173,8 @@ const WorkflowPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteWorkflowFunc}
                                         resourceType="workflow"
+                                        onSelectionChange={(selected) => setSelectedWorkflows(selected as Workflow[])}
+                                        selectedItems={selectedWorkflows}
                                     />
                                 ) : (
                                     <ResourceCards

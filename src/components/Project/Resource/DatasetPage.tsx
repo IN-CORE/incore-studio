@@ -226,6 +226,8 @@ const DatasetPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
                                         addVisualizationFunc={addDatasetVisualizationFunc}
+                                        onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
+                                        selectedItems={selectedDatasets}
                                     />
                                 ) : (
                                     <ResourceCards

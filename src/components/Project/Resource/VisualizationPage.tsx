@@ -196,6 +196,10 @@ const VisualizationPage = (): JSX.Element => {
                                             setSelectedVisualization(visualization);
                                             setOpenVisualziationView(true);
                                         }}
+                                        onSelectionChange={(selected) =>
+                                            setSelectedVisualizations(selected as Visualization[])
+                                        }
+                                        selectedItems={selectedVisualizations}
                                     />
                                 ) : (
                                     <ResourceCards
