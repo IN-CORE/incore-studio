@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Container, Grid, Button } from "@mui/joy";
+import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
@@ -159,19 +159,9 @@ const WorkflowPage = (): JSX.Element => {
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Create Workflow"
+                                    selectedItemsCount={selectedWorkflows.length}
+                                    onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
                                 />
-                                {selectedWorkflows.length > 0 && (
-                                    <Box mt={2} display="flex" justifyContent="flex-end">
-                                        <Button
-                                            color="danger"
-                                            onClick={() => {
-                                                setOpenBatchDeleteDialog(true);
-                                            }}
-                                        >
-                                            Delete Selected ({selectedWorkflows.length})
-                                        </Button>
-                                    </Box>
-                                )}
                                 <CreateWorkflowDialog
                                     open={openCreateWorkflowDialog}
                                     onClose={handleCloseCreateWorkflowDialog}
@@ -191,6 +181,7 @@ const WorkflowPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteWorkflowFunc}
                                         onSelectionChange={(selected) => setSelectedWorkflows(selected as Workflow[])}
+                                        selectedItems={selectedWorkflows}
                                     />
                                 )}
                                 <Box mt={4} display="flex" justifyContent="center">

@@ -59,7 +59,17 @@ export const ResourceCards: React.FC<{
     viewFunc?: any;
     projectId: string;
     onSelectionChange?: (selectedItems: (Hazard | Visualization | Dataset | Workflow)[]) => void;
-}> = ({ resources, cardPerRow, deleteFunc, addVisualizationFunc, projectId, viewFunc, onSelectionChange }) => {
+    selectedItems?: (Hazard | Visualization | Dataset | Workflow)[];
+}> = ({
+    resources,
+    cardPerRow,
+    deleteFunc,
+    addVisualizationFunc,
+    projectId,
+    viewFunc,
+    onSelectionChange,
+    selectedItems = []
+}) => {
     const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | null>(null);
     const handleOpenMenu = (item: Hazard | Visualization | Dataset | Workflow) => {
         setSelectedItem(item);
@@ -96,15 +106,11 @@ export const ResourceCards: React.FC<{
     };
 
     // batch selection
-    const [selectedItems, setSelectedItems] = useState<(Hazard | Visualization | Dataset | Workflow)[]>([]);
-
     const toggleSelection = (item: Hazard | Visualization | Dataset | Workflow) => {
-        setSelectedItems((prev) => {
-            const exists = prev.find((i) => i.id === item.id);
-            const updated = exists ? prev.filter((i) => i.id !== item.id) : [...prev, item];
-            onSelectionChange?.(updated); // Notify parent
-            return updated;
-        });
+        const exists = selectedItems.find((i) => i.id === item.id);
+        const updated = exists ? selectedItems.filter((i) => i.id !== item.id) : [...selectedItems, item];
+
+        onSelectionChange?.(updated); // always notify parent
     };
 
     const isSelected = (item: Hazard | Visualization | Dataset | Workflow) => {
