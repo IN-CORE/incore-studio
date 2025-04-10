@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 
-import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
+import { Modal, ModalDialog, ModalClose, Box, Typography, Sheet } from "@mui/joy";
 import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 
 import DataTable from "./DataTable";
@@ -26,15 +26,22 @@ const parseCSV = (csvText: string): { rows: GridRowsProp; columns: GridColDef[] 
 
     const rows: GridRowsProp = lines.slice(1).map((line, rowIndex) => {
         const values = line.split(",").map((v) => v.trim());
+        // remove any double quotes
+        const cleanedValues = values.map((v) => v.replace(/"/g, ""));
+        // remove any leading or trailing whitespace
+        const trimmedValues = cleanedValues.map((v) => v.trim());
 
         const row: Record<string, any> = { id: rowIndex + 1 };
-        values.forEach((val, i) => {
-            row[`col${i + 1}`] = val;
+        trimmedValues.forEach((val, i) => {
+            if (!isNaN(Number(val)) && /^\d+(\.\d+)?$/.test(val)) {
+                row[`col${i + 1}`] = parseFloat(val);
+            } else {
+                row[`col${i + 1}`] = val;
+            }
         });
 
         return row;
     });
-    console.log("Parsed CSV data:", { rows, columns });
     return { rows, columns };
 };
 
@@ -55,6 +62,7 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
         rows: [],
         columns: []
     });
+    const [jsonData, setJsonData] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(false);
 
     React.useEffect(() => {
@@ -66,7 +74,6 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
         };
 
         if (dataset && dataset?.format === "table") {
-            console.log("Dataset:", dataset);
             const datasetId = dataset?.id;
             if (dataset.fileDescriptors && dataset.fileDescriptors.length > 0) {
                 const fileId = dataset.fileDescriptors[0].id;
@@ -75,7 +82,22 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
                     .then((data) => {
                         const { rows, columns } = parseCSV(data);
                         setTableData({ rows, columns });
-                        setLoading(false);
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching dataset:", error);
+                    });
+                setLoading(false);
+            }
+        } else if (dataset && dataset?.format === "json") {
+            const datasetId = dataset?.id;
+            if (dataset.fileDescriptors && dataset.fileDescriptors.length > 0) {
+                const fileId = dataset.fileDescriptors[0].id;
+                setLoading(true);
+                getDataset(datasetId, fileId)
+                    .then((data) => {
+                        // eliminate the parsing error if the entry is just an array
+                        const jsonData = JSON.parse(JSON.stringify({ metadata: data }));
+                        setJsonData(jsonData);
                     })
                     .catch((error) => {
                         console.error("Error fetching dataset:", error);
@@ -86,12 +108,13 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
 
         return () => {
             setTableData({ rows: [], columns: [] });
+            setJsonData([]);
             setLoading(false);
         };
     }, [dataset]);
     return (
         <Modal open={open} onClose={onClose}>
-            <ModalDialog size="lg" sx={{ backgroundColor: "#fff" }}>
+            <ModalDialog layout="fullscreen" size="lg" sx={{ backgroundColor: "#fff", padding: 10 }}>
                 <Box sx={{ padding: 2 }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography level="h4" fontWeight="bold">
@@ -105,9 +128,15 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
                     </Typography>
                 </Box>
                 {dataset?.format !== "table" ? (
-                    <Typography level="body-md" sx={{ padding: 2 }}>
-                        {dataset?.format} is not supported for table view.
-                    </Typography>
+                    dataset?.format === "json" ? (
+                        <Sheet sx={{ padding: 2, overflow: "auto", height: "90%", scrollBehavior: "smooth" }}>
+                            <pre>{JSON.stringify(jsonData, null, 2)}</pre>
+                        </Sheet>
+                    ) : (
+                        <Typography level="body-md" sx={{ padding: 2 }}>
+                            {dataset?.format} is not supported for table view.
+                        </Typography>
+                    )
                 ) : (
                     <DataTable rows={tableData.rows} columns={tableData.columns} loading={loading} />
                 )}
