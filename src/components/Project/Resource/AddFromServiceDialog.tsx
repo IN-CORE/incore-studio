@@ -118,7 +118,11 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                         <Input
                             placeholder="Name or ID"
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={(e) => {
+                                if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                    setSearchQuery(e.target.value);
+                                }
+                            }}
                             disabled={!hazardType && resourceType === "hazard"}
                         />
                     </FormControl>
@@ -209,7 +213,7 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                             <Box mt={4} display="flex" justifyContent="center">
                                 <Pagination
                                     pageNumber={pageNumber}
-                                    data={searchResults}
+                                    dataLength={searchResults.length}
                                     dataPerPage={dataPerPage}
                                     previous={previousPage}
                                     next={nextPage}

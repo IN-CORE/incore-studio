@@ -10,14 +10,15 @@ import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/tsunami/datasetTsunami.json";
 import DatasetFloodUiSchema from "@app/schema/tsunami/datasetTsunamiUi.json";
 import validator from "@rjsf/validator-ajv8";
+import config from "@app/app.config";
 
 interface DatasetTsunamiProps {
-    index: number;
+    value: string;
     projectId: string;
-    handleLayerUpdate: (hazardType: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
-export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ index, projectId, handleLayerUpdate }) => {
+export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ value, projectId, handleLayerUpdate }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formKey, setFormKey] = useState<number>(0);
 
@@ -34,8 +35,14 @@ export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ index, projectId
         try {
             const tsunamiJson = await createRjfsDatasetHazards(formData, "tsunamis");
             if (tsunamiJson && tsunamiJson.id) {
-                appDispatch(addHazardToProject({ projectId, hazards: [tsunamiJson] }));
-                handleLayerUpdate(tsunamiJson.id);
+                appDispatch(addHazardToProject({ projectId, hazards: [{ ...tsunamiJson, type: "tsunami" }] }));
+                handleLayerUpdate(
+                    tsunamiJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                        workspace: "incore",
+                        layerId: dataset.datasetId,
+                        styleName: config.defaultLayerStyles.MapUtil.tsunami
+                    }))
+                );
             }
         } catch (error) {
             console.error("Error saving tsunami dataset:", error);
@@ -47,7 +54,7 @@ export const DatasetTsunami: React.FC<DatasetTsunamiProps> = ({ index, projectId
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}

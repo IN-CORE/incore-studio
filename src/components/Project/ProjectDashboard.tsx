@@ -47,6 +47,8 @@ import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazardDialog";
+import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 
 const ProjectDashboardComponent: React.FC = (): JSX.Element => {
     const appDispatch = useAppDispatch();
@@ -142,6 +144,8 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
     }, [success, error]);
 
     // Add resources to project
+    // Create dataset
+    const [openCreateDatasetDialog, setOpenCreateDatasetDialog] = React.useState(false);
     // Add dataset to project from service
     const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = React.useState(false);
     const addDatasetFunc = (projectId: string, resource: Dataset) => {
@@ -155,6 +159,9 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
         appDispatch(addHazardToProject({ projectId, hazards: [resource] }));
         setOpenAddHazardFromServiceDialog(false);
     };
+
+    // Create hazard
+    const [openCreateHazardDialog, setOpenCreateHazardDialog] = React.useState(false);
 
     // Add hazard to project from service
     const [openAddDFR3MappingFromServiceDialog, setOpenAddDFR3MappingFromServiceDialog] = React.useState(false);
@@ -267,8 +274,12 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 icon={<HazardIcon sx={{ color: "black" }} />}
                                 optionsList={[
                                     {
-                                        label: "Add Hazard From Service",
+                                        label: "Add Existing Hazard",
                                         onClick: () => setOpenAddHazardFromServiceDialog(true)
+                                    },
+                                    {
+                                        label: "Create New Hazard",
+                                        onClick: () => setOpenCreateHazardDialog(true)
                                     }
                                 ]}
                             />
@@ -367,7 +378,16 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 </Grid>
                                 <Grid sm={6}>
                                     <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
-                                        <Stack sx={{ width: "100%" }} spacing={3} direction="column">
+                                        <Stack
+                                            sx={{
+                                                width: "100%",
+                                                minHeight: "300px",
+                                                maxHeight: "400px",
+                                                overflow: "auto"
+                                            }}
+                                            spacing={3}
+                                            direction="column"
+                                        >
                                             <Typography level="title-lg">Hazard Count By Types</Typography>
                                             {hazardCounts.map((hazard, index) => (
                                                 <Stack
@@ -393,6 +413,14 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 }}
                                 onAddClick={addHazardFunc}
                             />
+                            <CreateHazardDialog
+                                projectId={project.id}
+                                resourceType="hazard"
+                                open={openCreateHazardDialog}
+                                onClose={() => {
+                                    setOpenCreateHazardDialog(false);
+                                }}
+                            />
                         </Box>
                         <Box sx={{ width: "100%" }}>
                             <DashboardItemTitleBar
@@ -401,8 +429,12 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 icon={<DatasetIcon sx={{ color: "black" }} />}
                                 optionsList={[
                                     {
-                                        label: "Add Dataset From Service",
+                                        label: "Add Existing Dataset",
                                         onClick: () => setOpenAddDatasetFromServiceDialog(true)
+                                    },
+                                    {
+                                        label: "Upload Dataset",
+                                        onClick: () => setOpenCreateDatasetDialog(true)
                                     }
                                 ]}
                             />
@@ -496,7 +528,12 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 <Grid sm={6}>
                                     <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
                                         <Stack
-                                            sx={{ width: "100%", scrollBehavior: "smooth", overflow: "auto" }}
+                                            sx={{
+                                                width: "100%",
+                                                minHeight: "300px",
+                                                maxHeight: "400px",
+                                                overflow: "auto"
+                                            }}
                                             spacing={3}
                                             direction="column"
                                         >
@@ -524,6 +561,13 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     setOpenAddDatasetFromServiceDialog(false);
                                 }}
                                 onAddClick={addDatasetFunc}
+                            />
+                            <CreateDatasetDialog
+                                projectId={project.id}
+                                open={openCreateDatasetDialog}
+                                onClose={() => {
+                                    setOpenCreateDatasetDialog(false);
+                                }}
                             />
                         </Box>
                     </Stack>
@@ -665,7 +709,7 @@ const ProjectDashboard: React.FC = (): JSX.Element => {
     const projectWorkflows = useAppSelector((state) => state.project.projectWorkflows);
 
     // Synchronize all generated output datasets with the project datasets.
-    useOutputDatasetsSynchronizationPolling(projectWorkflows, 600000, id);
+    useOutputDatasetsSynchronizationPolling(projectWorkflows, 60 * 1000, id);
 
     // Fetch projects when filters or pagination change (but not during search)
     React.useEffect(() => {

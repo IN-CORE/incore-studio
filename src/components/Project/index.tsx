@@ -194,7 +194,11 @@ const Project = (): JSX.Element => {
                             placeholder="Search"
                             sx={{ width: 400 }}
                             value={searchTerm}
-                            onChange={handleSearchChange}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                    handleSearchChange(e);
+                                }
+                            }}
                         />
                     </Box>
                 </Box>
@@ -213,7 +217,7 @@ const Project = (): JSX.Element => {
                     <Box mt={4} display="flex" justifyContent="center">
                         <Pagination
                             pageNumber={pageNumber}
-                            data={projects}
+                            dataLength={projects.length}
                             dataPerPage={dataPerPage}
                             previous={previousPage}
                             next={nextPage}

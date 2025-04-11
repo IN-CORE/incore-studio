@@ -3,6 +3,7 @@ import React, { StrictMode, Suspense, FC, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AuthProvider, useAuth } from "react-oidc-context";
 
@@ -48,6 +49,8 @@ const App: FC = () => {
     const auth = useAuth();
     const appDispatch = useAppDispatch();
     const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
+    // Create a new QueryClient instance
+    const queryClient = new QueryClient();
 
     useEffect(() => {
         if (dependencyGraph === null) {
@@ -78,14 +81,16 @@ const App: FC = () => {
             <Router basename={basename}>
                 <MaterialThemeProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
                     <JoyCssVarsProvider theme={joyTheme}>
-                        <Navbar />
-                        <Suspense fallback={<Loading />}>
-                            <Routes>
-                                {Object.entries(routes).map(([path, props]) => (
-                                    <Route key={path} path={path} {...props} />
-                                ))}
-                            </Routes>
-                        </Suspense>
+                        <QueryClientProvider client={queryClient}>
+                            <Navbar />
+                            <Suspense fallback={<Loading />}>
+                                <Routes>
+                                    {Object.entries(routes).map(([path, props]) => (
+                                        <Route key={path} path={path} {...props} />
+                                    ))}
+                                </Routes>
+                            </Suspense>
+                        </QueryClientProvider>
                     </JoyCssVarsProvider>
                 </MaterialThemeProvider>
             </Router>

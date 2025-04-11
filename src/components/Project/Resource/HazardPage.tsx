@@ -165,11 +165,11 @@ const HazardPage = (): JSX.Element => {
                                     sortOptions={["date", "type", "name", "id"]}
                                     onApply={onApplyFilterSort}
                                     onCreateClick={onAddHazard}
-                                    additionalCreateClick={onCreateHazard}
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
-                                    createLabel="Add from Service"
+                                    createLabel="Add Existing Hazard"
                                     addtionalCreateLabel="Create Hazard"
+                                    additionalCreateClick={onCreateHazard}
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}
@@ -208,7 +208,7 @@ const HazardPage = (): JSX.Element => {
                                 <Box mt={4} display="flex" justifyContent="center">
                                     <Pagination
                                         pageNumber={hazardPageNumber}
-                                        data={projectHazards}
+                                        dataLength={projectHazards.length}
                                         dataPerPage={10}
                                         previous={hazardPreviousPage}
                                         next={hazardNextPage}

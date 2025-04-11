@@ -257,6 +257,7 @@ interface IncoreLayer {
     workspace: string;
     layerId: string;
     styleName?: string;
+    boundingBox?: [number, number, number, number];
 }
 
 interface Visualization {

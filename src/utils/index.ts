@@ -548,6 +548,32 @@ export async function createModelEarthquake(
     }
 }
 
+export async function createDatasetTornado(name: string, description: string, files: File[]) {
+    const endpoint = `${config.hazardApi}/tornadoes`;
+    const payload = new FormData();
+
+    const tornadoMetadata = {
+        tornadoType: "dataset",
+        name,
+        description
+    };
+    payload.append("tornado", JSON.stringify(tornadoMetadata));
+    files.forEach((file: File) => {
+        payload.append("file", file);
+    });
+
+    try {
+        const response = await axios.post(endpoint, payload, {
+            headers: getHeaders()
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error in API request:", error);
+        return {};
+    }
+}
+
 export async function createRjfsDatasetHazards(formData: any, hazardType: string): Promise<any> {
     const endpoint = `${config.hazardApi}/${hazardType}`;
     const dataUrls: { dataurl: string; filename: string }[] = [];
@@ -630,4 +656,78 @@ export const validateCoord = (
     }
 
     return lonNum > boundingBox[0] && lonNum < boundingBox[2] && latNum > boundingBox[1] && latNum < boundingBox[3];
+};
+
+export async function getLayerBoundingBox(datasetId: string): Promise<[number, number, number, number] | null> {
+    try {
+        const url = `${config.dataApi}/datasets/${datasetId}`;
+        const response = await axios.get<{ boundingBox?: [number, number, number, number] }>(url, {
+            headers: getHeaders()
+        });
+
+        if (response.data && response.data.boundingBox) {
+            return response.data.boundingBox;
+        }
+
+        return null;
+    } catch (error) {
+        console.error(`Error fetching dataset ${datasetId}:`, error);
+        return null;
+    }
+}
+
+export async function createDataset(
+    title: string,
+    description: string,
+    dataType: string,
+    format: string,
+    files: File[]
+): Promise<any> {
+    try {
+        const dataEndpoint = `${config.dataApi}/datasets`;
+        const datasetMetadata = {
+            title,
+            description,
+            contributors: [],
+            dataType,
+            storedUrl: "",
+            format,
+            sourceDataset: "",
+            networkDataset: null
+        };
+
+        const datasetFormData = new FormData();
+        datasetFormData.append("dataset", JSON.stringify(datasetMetadata));
+
+        const datasetResponse = await axios.post(dataEndpoint, datasetFormData, {
+            headers: getHeaders()
+        });
+
+        if (datasetResponse.status === 200) {
+            const datasetJson = datasetResponse.data;
+            const datasetId = datasetJson.id;
+            const fileEndpoint = `${config.dataApi}/datasets/${datasetId}/files`;
+
+            const fileFormData = new FormData();
+            files.forEach((file) => {
+                fileFormData.append("file", file);
+            });
+
+            const fileResponse = await axios.post(fileEndpoint, fileFormData, {
+                headers: getHeaders()
+            });
+
+            return fileResponse.status === 200 ? fileResponse.data : {};
+        }
+        return {};
+    } catch (error) {
+        console.error("Error creating dataset:", error);
+        return {};
+    }
+}
+
+// When the input loses focus, trim the value.
+export const handleBlur = <T extends string>(value: T, setValue: React.Dispatch<React.SetStateAction<T>>) => {
+    const trimmedValue = value.trim() as T;
+    setValue(trimmedValue);
 };

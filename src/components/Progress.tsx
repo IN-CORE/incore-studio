@@ -33,7 +33,7 @@ export const Progress = (props: ProgressProps): JSX.Element => {
                         mixBlendMode: "color-dodge"
                     }}
                 >
-                    {`${status}...` ?? "PENDING..."}
+                    {status ? `${status}...` : "PENDING..."}
                 </Typography>
             </LinearProgress>
         </Box>

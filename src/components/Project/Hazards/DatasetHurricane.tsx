@@ -10,14 +10,15 @@ import Form from "@rjsf/mui";
 import DatasetFloodSchema from "@app/schema/hurricane/datasetHurricane.json";
 import DatasetFloodUiSchema from "@app/schema/hurricane/datasetHurricaneUi.json";
 import validator from "@rjsf/validator-ajv8";
+import config from "@app/app.config";
 
 interface DatasetHurricaneProps {
-    index: number;
+    value: string;
     projectId: string;
-    handleLayerUpdate: (hazardType: string) => void;
+    handleLayerUpdate: (layers: IncoreLayer[]) => void;
 }
 
-export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, projectId, handleLayerUpdate }) => {
+export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ value, projectId, handleLayerUpdate }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formKey, setFormKey] = useState<number>(0);
 
@@ -34,8 +35,18 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
         try {
             const hurricaneJson = await createRjfsDatasetHazards(formData, "hurricanes");
             if (hurricaneJson && hurricaneJson.id) {
-                appDispatch(addHazardToProject({ projectId, hazards: [hurricaneJson] }));
-                handleLayerUpdate(hurricaneJson.id);
+                appDispatch(addHazardToProject({ projectId, hazards: [{ ...hurricaneJson, type: "hurricane" }] }));
+                handleLayerUpdate(
+                    hurricaneJson.hazardDatasets.map((dataset: HazardDataset) => ({
+                        workspace: "incore",
+                        layerId: dataset.datasetId,
+                        styleName:
+                            // TODO type check
+                            // @ts-ignore
+                            config.defaultLayerStyles.MapUtil.hurricane?.[dataset.demandType] ??
+                            config.defaultLayerStyles.MapUtil.hurricane.inundationDepth
+                    }))
+                );
             }
         } catch (error) {
             console.error("Error saving hurricane dataset:", error);
@@ -47,7 +58,7 @@ export const DatasetHurricane: React.FC<DatasetHurricaneProps> = ({ index, proje
     };
 
     return (
-        <TabPanel value={index}>
+        <TabPanel value={value}>
             <Box sx={{ opacity: loading ? 0.5 : 1 }}>
                 <Form
                     key={formKey}

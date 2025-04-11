@@ -41,7 +41,7 @@ import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateWorkflowDialog } from "./CreateWorkflow";
 
-const ProjectPage = (): JSX.Element => {
+const LegacyProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
     const appDispatch = useAppDispatch();
 
@@ -272,7 +272,7 @@ const ProjectPage = (): JSX.Element => {
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination
                                             pageNumber={wfPageNumber}
-                                            data={projectWorkflows}
+                                            dataLength={projectWorkflows.length}
                                             dataPerPage={2}
                                             previous={wfPreviousPage}
                                             next={wfNextPage}
@@ -304,7 +304,7 @@ const ProjectPage = (): JSX.Element => {
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination
                                             pageNumber={hazardPageNumber}
-                                            data={projectHazards}
+                                            dataLength={projectHazards.length}
                                             dataPerPage={2}
                                             previous={hazardPreviousPage}
                                             next={hazardNextPage}
@@ -342,7 +342,7 @@ const ProjectPage = (): JSX.Element => {
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination
                                             pageNumber={visPageNumber}
-                                            data={projectVisualizations}
+                                            dataLength={projectVisualizations.length}
                                             dataPerPage={2}
                                             previous={visPreviousPage}
                                             next={visNextPage}
@@ -378,7 +378,7 @@ const ProjectPage = (): JSX.Element => {
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination
                                             pageNumber={datasetPageNumber}
-                                            data={projectDatasets}
+                                            dataLength={projectDatasets.length}
                                             dataPerPage={5}
                                             previous={datasetPreviousPage}
                                             next={datasetNextPage}
@@ -411,7 +411,7 @@ const ProjectPage = (): JSX.Element => {
                                     <Box mt={4} display="flex" justifyContent="center">
                                         <Pagination
                                             pageNumber={dfr3mappingPageNumber}
-                                            data={projectDFR3Mappings}
+                                            dataLength={projectDFR3Mappings.length}
                                             dataPerPage={5}
                                             previous={dfr3mappingPreviousPage}
                                             next={dfr3mappingNextPage}
@@ -440,4 +440,4 @@ const ProjectPage = (): JSX.Element => {
     );
 };
 
-export default ProjectPage;
+export default LegacyProjectPage;
