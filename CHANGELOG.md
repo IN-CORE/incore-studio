@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Batch select and delete resources [#140](https://github.com/IN-CORE/incore-studio/issues/140)
+
 ## [Alpha-4] - 04-11-2025
 
 ### Fixed
@@ -19,7 +25,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Create Hazard option to project dashboard hazard section [#118](https://github.com/IN-CORE/incore-studio/issues/118)
 - Drawing capability to the map. [#115](https://github.com/IN-CORE/incore-studio/issues/115)
 - Upload dataset modal that uploads dataset to IN-CORE [#128](https://github.com/IN-CORE/incore-studio/issues/128)
-- Batch select and delete resources [#140](https://github.com/IN-CORE/incore-studio/issues/140)
 
 ### Changed
 
