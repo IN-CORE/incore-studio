@@ -41,7 +41,7 @@ import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateWorkflowDialog } from "./CreateWorkflow";
 
-const ProjectPage = (): JSX.Element => {
+const LegacyProjectPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
     const appDispatch = useAppDispatch();
 
@@ -440,4 +440,4 @@ const ProjectPage = (): JSX.Element => {
     );
 };
 
-export default ProjectPage;
+export default LegacyProjectPage;

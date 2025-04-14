@@ -378,7 +378,16 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 </Grid>
                                 <Grid sm={6}>
                                     <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
-                                        <Stack sx={{ width: "100%" }} spacing={3} direction="column">
+                                        <Stack
+                                            sx={{
+                                                width: "100%",
+                                                minHeight: "300px",
+                                                maxHeight: "400px",
+                                                overflow: "auto"
+                                            }}
+                                            spacing={3}
+                                            direction="column"
+                                        >
                                             <Typography level="title-lg">Hazard Count By Types</Typography>
                                             {hazardCounts.map((hazard, index) => (
                                                 <Stack
@@ -519,7 +528,12 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 <Grid sm={6}>
                                     <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
                                         <Stack
-                                            sx={{ width: "100%", scrollBehavior: "smooth", overflow: "auto" }}
+                                            sx={{
+                                                width: "100%",
+                                                minHeight: "300px",
+                                                maxHeight: "400px",
+                                                overflow: "auto"
+                                            }}
                                             spacing={3}
                                             direction="column"
                                         >
@@ -695,7 +709,7 @@ const ProjectDashboard: React.FC = (): JSX.Element => {
     const projectWorkflows = useAppSelector((state) => state.project.projectWorkflows);
 
     // Synchronize all generated output datasets with the project datasets.
-    useOutputDatasetsSynchronizationPolling(projectWorkflows, 600000, id);
+    useOutputDatasetsSynchronizationPolling(projectWorkflows, 60 * 1000, id);
 
     // Fetch projects when filters or pagination change (but not during search)
     React.useEffect(() => {

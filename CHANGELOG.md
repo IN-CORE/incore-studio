@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Batch select and delete resources [#140](https://github.com/IN-CORE/incore-studio/issues/140)
+
+## [Alpha-4] - 04-11-2025
+
 ### Fixed
 
 - Visual feedback of results tab to show execution still running and avoid N/A in output fields [#96](https://github.com/IN-CORE/incore-studio/issues/96)

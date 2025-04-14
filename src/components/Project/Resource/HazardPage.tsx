@@ -24,6 +24,7 @@ import HazardIcon from "@mui/icons-material/Storm";
 import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazardDialog";
+import { IncoreDialog } from "@app/components/IncoreDialog";
 
 const HazardPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -139,8 +140,34 @@ const HazardPage = (): JSX.Element => {
     // Create new hazard
     const [openCreateHazardDialog, setOpenCreateHazardDialog] = useState(false);
 
+    // batch delete
+    const [selectedHazards, setSelectedHazards] = useState<Hazard[]>([]);
+    const [openBatchDeleteDialog, setOpenBatchDeleteDialog] = useState(false);
+    const handleBatchDelete = async () => {
+        if (project?.id && selectedHazards.length > 0) {
+            await appDispatch(
+                deleteProjectHazards({
+                    projectId: project.id,
+                    hazardIds: selectedHazards.map((w) => w.id)
+                })
+            );
+            setSelectedHazards([]);
+        }
+        setOpenBatchDeleteDialog(false);
+    };
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+            <IncoreDialog
+                open={openBatchDeleteDialog}
+                onClose={() => {
+                    setOpenBatchDeleteDialog(false);
+                }}
+                onAction={handleBatchDelete}
+                message="Are you sure you want to delete the selected items? This action cannot be undone."
+                dialogTitle="Confirm Deletion"
+                actionButtonName="Batch Delete"
+            />
             <Box sx={{ flexShrink: 0 }} mt={5}>
                 {!project ? (
                     <Typography>Loading...</Typography>
@@ -170,6 +197,8 @@ const HazardPage = (): JSX.Element => {
                                     createLabel="Add Existing Hazard"
                                     addtionalCreateLabel="Create Hazard"
                                     additionalCreateClick={onCreateHazard}
+                                    selectedItemsCount={selectedHazards.length}
+                                    onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}
@@ -195,6 +224,8 @@ const HazardPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteHazardFunc}
                                         addVisualizationFunc={addHazardVisualizationFunc}
+                                        onSelectionChange={(selected) => setSelectedHazards(selected as Hazard[])}
+                                        selectedItems={selectedHazards}
                                     />
                                 ) : (
                                     <ResourceCards
@@ -203,6 +234,8 @@ const HazardPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteHazardFunc}
                                         addVisualizationFunc={addHazardVisualizationFunc}
+                                        onSelectionChange={(selected) => setSelectedHazards(selected as Hazard[])}
+                                        selectedItems={selectedHazards}
                                     />
                                 )}
                                 <Box mt={4} display="flex" justifyContent="center">
