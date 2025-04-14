@@ -205,6 +205,7 @@ const DatasetPage = (): JSX.Element => {
                                     additionalCreateClick={onCreateDataset}
                                     selectedItemsCount={selectedDatasets.length}
                                     onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
+                                    onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}

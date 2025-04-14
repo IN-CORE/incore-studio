@@ -173,6 +173,9 @@ const VisualizationPage = (): JSX.Element => {
                                     createLabel="Create Visualization"
                                     selectedItemsCount={selectedVisualizations.length}
                                     onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
+                                    onSelectionChange={(selected) =>
+                                        setSelectedVisualizations(selected as Visualization[])
+                                    }
                                 />
                                 <CreateVisualizationDialog
                                     projectId={project.id}

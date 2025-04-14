@@ -119,6 +119,32 @@ export const ResourceCards: React.FC<{
 
     const navigate = useNavigate();
 
+    const handleClick = (
+        event: React.MouseEvent<HTMLDivElement>,
+        resource: Hazard | Visualization | Dataset | Workflow
+    ) => {
+        // Prevent triggering when clicking inside a button
+        if ((event.target as HTMLElement).closest("button")) return;
+
+        const isModifierPressed = event.ctrlKey || event.metaKey;
+
+        if (event.button === 0 && isModifierPressed) {
+            toggleSelection(resource);
+        } else if (event.button === 0) {
+            const exists = selectedItems.find((i) => i.id === resource.id);
+            if (exists) {
+                toggleSelection(resource); // Deselect if already selected
+            } else {
+                onSelectionChange?.([resource]); // Single selection
+            }
+        }
+    };
+
+    const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+        // Prevent default browser context menu
+        event.preventDefault();
+    };
+
     return (
         <Grid container spacing={3}>
             <VisualizationDialog
@@ -170,15 +196,21 @@ export const ResourceCards: React.FC<{
                             {/* Card */}
                             <Card
                                 sx={{
-                                    position: "relative",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    height: "100%",
-                                    padding: "1em",
-                                    boxShadow: selected ? "0 0 8px rgba(66, 82, 110, 0.5)" : "none",
-                                    transition: "all 0.3s ease",
-                                    opacity: selected ? 0.7 : 1
+                                    "position": "relative",
+                                    "display": "flex",
+                                    "flexDirection": "column",
+                                    "height": "100%",
+                                    "padding": "1em",
+                                    "boxShadow": selected ? "0 0 8px rgba(66, 82, 110, 0.5)" : "none",
+                                    "transition": "all 0.3s ease",
+                                    "opacity": selected ? 0.7 : 1,
+                                    "&:hover": {
+                                        boxShadow: "0 0 8px rgba(66, 82, 110, 0.5)",
+                                        cursor: "pointer"
+                                    }
                                 }}
+                                onMouseDown={(e) => handleClick(e, resource)}
+                                onContextMenu={handleContextMenu}
                             >
                                 {/* Menu Icon */}
                                 <Dropdown>
@@ -190,7 +222,7 @@ export const ResourceCards: React.FC<{
                                         slots={{ root: IconButton }}
                                         slotProps={{
                                             root: {
-                                                sx: { position: "absolute", top: 8, right: 0, zIndex: 15 },
+                                                sx: { position: "absolute", top: 8, right: 8, zIndex: 15 },
                                                 variant: "plain",
                                                 color: "neutral"
                                             }
@@ -292,7 +324,7 @@ export const ResourceCards: React.FC<{
                                         <Button
                                             variant="solid"
                                             size="md"
-                                            color="primary"
+                                            sx={{ backgroundColor: "primary.main" }}
                                             aria-label="Open"
                                             onClick={() => {
                                                 navigate(`/project/${projectId}/workflows/${resource.id}`);
@@ -305,7 +337,7 @@ export const ResourceCards: React.FC<{
                                         <Button
                                             variant="solid"
                                             size="md"
-                                            color="primary"
+                                            sx={{ backgroundColor: "primary.main" }}
                                             aria-label="View"
                                             onClick={() => {
                                                 viewFunc(resource);

@@ -22,6 +22,7 @@ interface ResourceFilterBarProps {
     selectedItemsCount?: number;
     resetSelectedItemsCount?: () => void;
     onBatchDeleteClick?: () => void;
+    onSelectionChange?: (selectedItems: (Hazard | Visualization | Dataset | Workflow)[]) => void;
 }
 
 const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
@@ -37,7 +38,8 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     createLabel = "Create Item", // Default label for the create button
     addtionalCreateLabel = "Additional Create Item",
     selectedItemsCount,
-    onBatchDeleteClick
+    onBatchDeleteClick,
+    onSelectionChange
 }) => {
     return (
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -78,6 +80,17 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                         sx={{ ml: 1 }}
                     >
                         {addtionalCreateLabel}
+                    </Button>
+                )}
+                {Boolean(selectedItemsCount) && (
+                    <Button
+                        variant="soft"
+                        color="neutral"
+                        sx={{ ml: 1 }}
+                        onClick={() => onSelectionChange?.([])}
+                        size="sm"
+                    >
+                        Unselect All ({selectedItemsCount})
                     </Button>
                 )}
                 {Boolean(selectedItemsCount) && (

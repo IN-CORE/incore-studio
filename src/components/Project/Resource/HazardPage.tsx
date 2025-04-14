@@ -199,6 +199,7 @@ const HazardPage = (): JSX.Element => {
                                     additionalCreateClick={onCreateHazard}
                                     selectedItemsCount={selectedHazards.length}
                                     onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
+                                    onSelectionChange={(selected) => setSelectedHazards(selected as Hazard[])}
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}
