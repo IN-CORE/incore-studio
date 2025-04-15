@@ -190,7 +190,7 @@ export const ResourceCards: React.FC<{
                                         slots={{ root: IconButton }}
                                         slotProps={{
                                             root: {
-                                                sx: { position: "absolute", top: 8, right: 0, zIndex: 15 },
+                                                sx: { position: "absolute", top: 8, right: 8, zIndex: 15 },
                                                 variant: "plain",
                                                 color: "neutral"
                                             }
@@ -292,11 +292,11 @@ export const ResourceCards: React.FC<{
                                         <Button
                                             variant="solid"
                                             size="md"
-                                            color="primary"
                                             aria-label="Open"
                                             onClick={() => {
                                                 navigate(`/project/${projectId}/workflows/${resource.id}`);
                                             }}
+                                            sx={{ backgroundColor: "primary.main" }}
                                         >
                                             Open
                                         </Button>
@@ -310,6 +310,7 @@ export const ResourceCards: React.FC<{
                                             onClick={() => {
                                                 viewFunc(resource);
                                             }}
+                                            sx={{ backgroundColor: "primary.main" }}
                                         >
                                             View
                                         </Button>
