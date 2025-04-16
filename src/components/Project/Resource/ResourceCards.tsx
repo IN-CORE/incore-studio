@@ -126,18 +126,7 @@ export const ResourceCards: React.FC<{
         // Prevent triggering when clicking inside a button
         if ((event.target as HTMLElement).closest("button")) return;
 
-        const isModifierPressed = event.ctrlKey || event.metaKey;
-
-        if (event.button === 0 && isModifierPressed) {
-            toggleSelection(resource);
-        } else if (event.button === 0) {
-            const exists = selectedItems.find((i) => i.id === resource.id);
-            if (exists) {
-                toggleSelection(resource); // Deselect if already selected
-            } else {
-                onSelectionChange?.([resource]); // Single selection
-            }
-        }
+        toggleSelection(resource); // Deselect if already selected, otherwise select
     };
 
     const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -233,6 +222,9 @@ export const ResourceCards: React.FC<{
                                     <Menu onClose={handleCloseMenu} placement="bottom-start">
                                         {addVisualizationFunc && (
                                             <MenuItem
+                                                onMouseDown={(e) => {
+                                                    e.stopPropagation();
+                                                }}
                                                 onClick={() => {
                                                     setOpenVisDialog(true);
                                                 }}
@@ -241,6 +233,9 @@ export const ResourceCards: React.FC<{
                                             </MenuItem>
                                         )}
                                         <MenuItem
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation();
+                                            }}
                                             onClick={() => {
                                                 setOpenDeleteDialog(true);
                                             }}
@@ -248,6 +243,9 @@ export const ResourceCards: React.FC<{
                                             Delete
                                         </MenuItem>
                                         <MenuItem
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation();
+                                            }}
                                             onClick={() => {
                                                 toggleSelection(resource);
                                             }}
