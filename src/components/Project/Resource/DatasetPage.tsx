@@ -24,6 +24,7 @@ import Snackbar from "@mui/joy/Snackbar";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
+import TableDataModal from "@app/components/TableDataModal";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 
 const DatasetPage = (): JSX.Element => {
@@ -33,6 +34,8 @@ const DatasetPage = (): JSX.Element => {
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
     const deletedDatasetIds = useSelector((state: RootState) => state.project.deletedDatasetIds);
+    const [openTableDataModal, setOpenTableDataModal] = useState(false); // State to control the visibility of the table data modal
+    const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null); // State to store the selected dataset
 
     // Pagination states
     const [datasetPageNumber, setDatasetPageNumber] = useState(1);
@@ -202,6 +205,7 @@ const DatasetPage = (): JSX.Element => {
                                     additionalCreateClick={onCreateDataset}
                                     selectedItemsCount={selectedDatasets.length}
                                     onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
+                                    onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}
@@ -226,6 +230,10 @@ const DatasetPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
                                         addVisualizationFunc={addDatasetVisualizationFunc}
+                                        viewFunc={(dataset: Dataset) => {
+                                            setOpenTableDataModal(true);
+                                            setSelectedDataset(dataset);
+                                        }}
                                         onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
                                         selectedItems={selectedDatasets}
                                     />
@@ -236,6 +244,10 @@ const DatasetPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
                                         addVisualizationFunc={addDatasetVisualizationFunc}
+                                        viewFunc={(dataset: Dataset) => {
+                                            setOpenTableDataModal(true);
+                                            setSelectedDataset(dataset);
+                                        }}
                                         onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
                                         selectedItems={selectedDatasets}
                                     />
@@ -254,6 +266,15 @@ const DatasetPage = (): JSX.Element => {
                     </>
                 )}
             </Box>
+            {selectedDataset && (
+                <TableDataModal
+                    open={openTableDataModal}
+                    onClose={() => {
+                        setOpenTableDataModal(false);
+                    }}
+                    dataset={selectedDataset}
+                />
+            )}
             <Snackbar
                 anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 open={snackbarOpen}
