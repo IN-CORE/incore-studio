@@ -119,6 +119,21 @@ export const ResourceCards: React.FC<{
 
     const navigate = useNavigate();
 
+    const handleClick = (
+        event: React.MouseEvent<HTMLDivElement>,
+        resource: Hazard | Visualization | Dataset | Workflow
+    ) => {
+        // Prevent triggering when clicking inside a button
+        if ((event.target as HTMLElement).closest("button")) return;
+
+        toggleSelection(resource); // Deselect if already selected, otherwise select
+    };
+
+    const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+        // Prevent default browser context menu
+        event.preventDefault();
+    };
+
     return (
         <Grid container spacing={3}>
             <VisualizationDialog
@@ -170,15 +185,21 @@ export const ResourceCards: React.FC<{
                             {/* Card */}
                             <Card
                                 sx={{
-                                    position: "relative",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    height: "100%",
-                                    padding: "1em",
-                                    boxShadow: selected ? "0 0 8px rgba(66, 82, 110, 0.5)" : "none",
-                                    transition: "all 0.3s ease",
-                                    opacity: selected ? 0.7 : 1
+                                    "position": "relative",
+                                    "display": "flex",
+                                    "flexDirection": "column",
+                                    "height": "100%",
+                                    "padding": "1em",
+                                    "boxShadow": selected ? "0 0 8px rgba(66, 82, 110, 0.5)" : "none",
+                                    "transition": "all 0.3s ease",
+                                    "opacity": selected ? 0.7 : 1,
+                                    "&:hover": {
+                                        boxShadow: "0 0 8px rgba(66, 82, 110, 0.5)",
+                                        cursor: "pointer"
+                                    }
                                 }}
+                                onMouseDown={(e) => handleClick(e, resource)}
+                                onContextMenu={handleContextMenu}
                             >
                                 {/* Menu Icon */}
                                 <Dropdown>
@@ -201,6 +222,9 @@ export const ResourceCards: React.FC<{
                                     <Menu onClose={handleCloseMenu} placement="bottom-start">
                                         {addVisualizationFunc && (
                                             <MenuItem
+                                                onMouseDown={(e) => {
+                                                    e.stopPropagation();
+                                                }}
                                                 onClick={() => {
                                                     setOpenVisDialog(true);
                                                 }}
@@ -209,6 +233,9 @@ export const ResourceCards: React.FC<{
                                             </MenuItem>
                                         )}
                                         <MenuItem
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation();
+                                            }}
                                             onClick={() => {
                                                 setOpenDeleteDialog(true);
                                             }}
@@ -216,6 +243,9 @@ export const ResourceCards: React.FC<{
                                             Delete
                                         </MenuItem>
                                         <MenuItem
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation();
+                                            }}
                                             onClick={() => {
                                                 toggleSelection(resource);
                                             }}
@@ -292,11 +322,11 @@ export const ResourceCards: React.FC<{
                                         <Button
                                             variant="solid"
                                             size="md"
+                                            sx={{ backgroundColor: "primary.main" }}
                                             aria-label="Open"
                                             onClick={() => {
                                                 navigate(`/project/${projectId}/workflows/${resource.id}`);
                                             }}
-                                            sx={{ backgroundColor: "primary.main" }}
                                         >
                                             Open
                                         </Button>
@@ -305,12 +335,11 @@ export const ResourceCards: React.FC<{
                                         <Button
                                             variant="solid"
                                             size="md"
-                                            color="primary"
+                                            sx={{ backgroundColor: "primary.main" }}
                                             aria-label="View"
                                             onClick={() => {
                                                 viewFunc(resource);
                                             }}
-                                            sx={{ backgroundColor: "primary.main" }}
                                         >
                                             View
                                         </Button>

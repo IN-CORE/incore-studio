@@ -161,6 +161,7 @@ const WorkflowPage = (): JSX.Element => {
                                     createLabel="Create Workflow"
                                     selectedItemsCount={selectedWorkflows.length}
                                     onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
+                                    onSelectionChange={(selected) => setSelectedWorkflows(selected as Workflow[])}
                                 />
                                 <CreateWorkflowDialog
                                     open={openCreateWorkflowDialog}
