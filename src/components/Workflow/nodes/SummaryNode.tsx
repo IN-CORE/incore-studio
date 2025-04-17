@@ -11,12 +11,13 @@ export function SummaryNode({ data }: NodeProps<SummaryNode>): JSX.Element {
             sx={{
                 borderRadius: "6px",
                 padding: "5px",
-                gap: "10px",
                 height: "56px",
                 width: "56px",
                 backgroundColor: "#EA580C",
-                wordWrap: "break-word",
-                hyphens: "auto"
+                position: "relative", // needed for absolute positioning the label
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
             }}
         >
             <Handle type="target" position={Position.Left} />
@@ -24,15 +25,15 @@ export function SummaryNode({ data }: NodeProps<SummaryNode>): JSX.Element {
             <Typography
                 level="body-sm"
                 sx={{
-                    position: "absolute", // Position label absolutely relative to the parent container
-                    top: "60px", // Position label just below the node
-                    left: "50%", // Center the label horizontally
-                    transform: "translateX(-50%)", // Adjust to perfectly center the label
+                    position: "absolute",
+                    top: "70px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
                     textAlign: "center",
                     color: "neutral",
                     wordWrap: "break-word",
                     hyphens: "auto",
-                    width: "100px" // Set width for consistent wrapping
+                    width: "100px"
                 }}
             >
                 {data.label}

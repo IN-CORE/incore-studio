@@ -6,6 +6,7 @@ import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 
 import { SvgIconProps } from "@mui/material";
 import SearchFilterSortDropdown from "@app/components/Project/Resource/SearchFilterSortDropdown";
+import { theme } from "@app/theme";
 
 interface ResourceFilterBarProps {
     title: string;
@@ -55,10 +56,14 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                 {onViewChangeClick && (
                     <ButtonGroup variant="soft" sx={{ ml: 1 }}>
                         <IconButton onClick={onViewChangeClick}>
-                            <GridViewOutlinedIcon sx={{ color: !isTableView ? "primary.light" : "primary.main" }} />
+                            <GridViewOutlinedIcon
+                                sx={{ color: !isTableView ? theme.colorSchemes.light.palette.primary[700] : "inherit" }}
+                            />
                         </IconButton>
                         <IconButton onClick={onViewChangeClick}>
-                            <FormatListBulletedIcon sx={{ color: isTableView ? "primary.light" : "text.secondary" }} />
+                            <FormatListBulletedIcon
+                                sx={{ color: isTableView ? theme.colorSchemes.light.palette.primary[700] : "inherit" }}
+                            />
                         </IconButton>
                     </ButtonGroup>
                 )}

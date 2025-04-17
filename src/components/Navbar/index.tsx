@@ -2,11 +2,14 @@ import React from "react";
 import { Box, Typography } from "@mui/joy";
 import { Link } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
-import { Divider, IconButton, Menu, MenuItem } from "@mui/material";
-import { FaBell, FaCog, FaQuestionCircle, FaUser } from "react-icons/fa";
+import { Divider, IconButton, Menu, MenuItem, Avatar } from "@mui/joy";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import HelpIcon from "@mui/icons-material/Help";
+import SettingsIcon from "@mui/icons-material/Settings";
 // eslint-disable-next-line import/no-unresolved
 import config from "@app/app.config";
 import logo from "/public/resilience-logo.png";
+import Gravatar from "react-gravatar";
 
 const Navbar: React.FC = () => {
     const auth = useAuth();
@@ -41,12 +44,11 @@ const Navbar: React.FC = () => {
                 justifyContent: "space-between",
                 bgcolor: "white",
                 color: "primary.main",
-                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
                 position: "sticky",
                 top: 0,
                 height: "6vh",
-
-                zIndex: 1001
+                borderBottom: "solid 1px #0000001F",
+                zIndex: 20
             }}
         >
             <Link
@@ -68,19 +70,21 @@ const Navbar: React.FC = () => {
                             marginRight: "0.5em"
                         }}
                     />
-                    <Box component="span">Studio</Box>
+                    <Box component="span" sx={{ fontWeight: 700, fontSize: "20px" }}>
+                        Studio
+                    </Box>
                 </Typography>
             </Link>
 
-            <div style={{ marginRight: "1em" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mr: 2 }}>
                 <IconButton>
-                    <FaBell className="icon" />
+                    <NotificationsIcon className="icon" />
                 </IconButton>
                 <IconButton>
-                    <FaQuestionCircle className="icon" />
+                    <HelpIcon className="icon" />
                 </IconButton>
                 <IconButton>
-                    <FaCog className="icon" />
+                    <SettingsIcon className="icon" />
                 </IconButton>
                 <IconButton
                     aria-controls={open ? "basic-menu" : undefined}
@@ -89,9 +93,14 @@ const Navbar: React.FC = () => {
                     color="primary"
                     onClick={handleClick}
                 >
-                    <FaUser className="icon" />
+                    <Avatar variant="outlined" size="sm">
+                        <Gravatar
+                            email={auth?.user?.profile?.email || "placeholder@example.com"}
+                            size={40}
+                            default="identicon"
+                        />
+                    </Avatar>
                 </IconButton>
-
                 <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
                     {auth?.user && (
                         <Typography style={{ padding: "8px 16px", margin: "0 auto" }}>
@@ -105,7 +114,7 @@ const Navbar: React.FC = () => {
                     <MenuItem onClick={() => handleLinkClick(config.tosURL)}>Terms of Service</MenuItem>
                     <MenuItem onClick={handleLogout}>Log out</MenuItem>
                 </Menu>
-            </div>
+            </Box>
         </Box>
     );
 };

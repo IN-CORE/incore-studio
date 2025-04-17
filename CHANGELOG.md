@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Batch select and delete resources [#140](https://github.com/IN-CORE/incore-studio/issues/140)
 
+### Fixed
+
+- Fix inconsistency in styling [#156](https://github.com/IN-CORE/incore-studio/issues/156)
+
 ## [Alpha-4] - 04-11-2025
 
 ### Fixed
