@@ -731,3 +731,31 @@ export const handleBlur = <T extends string>(value: T, setValue: React.Dispatch<
     const trimmedValue = value.trim() as T;
     setValue(trimmedValue);
 };
+
+// For the Vega Chart
+export type VegaDataType = "quantitative" | "temporal" | "ordinal" | "nominal" | "geojson" | "unknown";
+
+export function guessDataType(inputString: string): VegaDataType {
+    const quantitativePattern = /^[-+]?\d+(\.\d+)?$/;
+    const temporalPattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
+    const ordinalPattern = /[a-zA-Z]/;
+    const nominalPattern = /[a-zA-Z]/;
+    const geojsonPattern = /^(\{"type": "Feature".*?\}|{"type": "FeatureCollection".*?})$/;
+
+    if (quantitativePattern.test(inputString)) {
+        return "quantitative";
+    }
+    if (temporalPattern.test(inputString)) {
+        return "temporal";
+    }
+    if (geojsonPattern.test(inputString)) {
+        return "geojson";
+    }
+    if (ordinalPattern.test(inputString)) {
+        return "ordinal";
+    }
+    if (nominalPattern.test(inputString)) {
+        return "nominal";
+    }
+    return "unknown";
+}
