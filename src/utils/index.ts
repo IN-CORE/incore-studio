@@ -2,6 +2,7 @@ import { User } from "oidc-client";
 import config from "@app/app.config";
 
 import axios from "axios";
+import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 
 export function getOidcUser() {
     const oidcStorage = sessionStorage.getItem(
@@ -758,4 +759,18 @@ export function guessDataType(inputString: string): VegaDataType {
         return "nominal";
     }
     return "unknown";
+}
+
+export function convertGridToVegaData(rows: GridRowsProp, columns: GridColDef[]): Record<string, any>[] {
+    const headerMap = Object.fromEntries(columns.map((col) => [col.field, col.headerName || col.field]));
+
+    return rows.map((row) => {
+        const vegaData: Record<string, any> = {};
+        columns.forEach((col) => {
+            const value = row[col.field];
+            const vegaKey = headerMap[col.field];
+            vegaData[vegaKey] = value;
+        });
+        return vegaData;
+    });
 }

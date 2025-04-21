@@ -5,7 +5,7 @@ import { Modal, ModalDialog, ModalClose, Box, Typography, Sheet, Tabs, Tab, TabL
 import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 
 import config from "@app/app.config";
-import { getHeaders } from "@app/utils";
+import { convertGridToVegaData, getHeaders } from "@app/utils";
 import { CSVVegaChart } from "@app/components/CSVVegaChart";
 import DataTable from "./DataTable";
 
@@ -148,7 +148,7 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
                             <DataTable rows={tableData.rows} columns={tableData.columns} loading={loading} />
                         </TabPanel>
                         <TabPanel value={1}>
-                            <CSVVegaChart data={tableData.rows} />
+                            <CSVVegaChart data={convertGridToVegaData([...tableData.rows], tableData.columns)} />
                         </TabPanel>
                     </Tabs>
                 ) : dataset?.format === "json" ? (

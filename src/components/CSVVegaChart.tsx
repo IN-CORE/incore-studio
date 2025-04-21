@@ -4,12 +4,11 @@ import { Box, Container, Grid, Option, Select, Typography, Sheet } from "@mui/jo
 
 import { guessDataType } from "@app/utils";
 import { theme } from "@app/theme";
-import { GridRowsProp } from "@mui/x-data-grid";
 
 const allowedTypes = ["quantitative", "temporal", "ordinal", "nominal"];
 
 interface CSVVegaChartProps {
-    data: GridRowsProp;
+    data: Record<string, any>[];
 }
 
 export const CSVVegaChart: React.FC<CSVVegaChartProps> = ({ data }) => {
