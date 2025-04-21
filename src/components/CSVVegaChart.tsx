@@ -3,10 +3,21 @@ import { VegaLite, VisualizationSpec } from "react-vega";
 import { Box, Grid, Option, Select, Typography, Sheet } from "@mui/joy";
 
 import { guessDataType } from "@app/utils";
-import { theme } from "@app/theme";
 
 // VegaLite supports specific mark types
-type MarkType = "bar" | "point" | "line";
+type MarkType =
+    | "area"
+    | "bar"
+    | "circle"
+    | "line"
+    | "point"
+    | "rect"
+    | "rule"
+    | "square"
+    | "text"
+    | "tick"
+    | "trail"
+    | "geoshape"; // for geographic plots like maps
 
 const allowedTypes = ["quantitative", "temporal", "ordinal", "nominal"] as const;
 type EncodingType = (typeof allowedTypes)[number];
@@ -45,14 +56,23 @@ export const CSVVegaChart: React.FC<CSVVegaChartProps> = ({ data }) => {
     // Explicitly type the spec as VisualizationSpec
     const spec: VisualizationSpec = {
         mark: {
-            type: mark, // ✅ strongly typed
-            color: theme.palette.primary[700]
+            type: mark,
+            color: "#344563"
         },
         encoding: {
             x: { field: xColumn, type: xColumnType },
             y: { field: yColumn, type: yColumnType }
         },
-        data: { name: "table" }
+        data: { name: "table" },
+        width: "container",
+        height: 500,
+        autosize: {
+            type: "fit",
+            contains: "padding"
+        },
+        config: {
+            view: { stroke: "transparent" } // optional cleanup
+        }
     };
 
     return (
@@ -77,8 +97,20 @@ export const CSVVegaChart: React.FC<CSVVegaChartProps> = ({ data }) => {
                             </Typography>
                             <Select value={mark} onChange={(_, val) => setMark((val as MarkType) || "bar")}>
                                 <Option value="bar">Bar Chart</Option>
-                                <Option value="point">Scatter Plot</Option>
                                 <Option value="line">Line Chart</Option>
+                                <Option value="point">Scatter Plot</Option>
+                                <Option value="area">Area Plot</Option>
+                                <Option value="circle">Circle Plot</Option>
+                                <Option value="square">Square Plot</Option>
+                                <Option value="tick">Tick Plot</Option>
+                                <Option value="rule">Rule (Guide Line)</Option>
+                                <Option value="rect">Rectangle Plot</Option>
+                                <Option value="text">Text Label</Option>
+                                <Option value="trail">Trail Line</Option>
+                                <Option value="boxplot">Box Plot</Option>
+                                <Option value="errorbar">Error Bar</Option>
+                                <Option value="errorband">Error Band</Option>
+                                <Option value="geoshape">Geographic Shape</Option>
                             </Select>
                         </Grid>
 
@@ -144,7 +176,7 @@ export const CSVVegaChart: React.FC<CSVVegaChartProps> = ({ data }) => {
             </Grid>
 
             <Grid xs={12} sm={9}>
-                <Box sx={{ p: "5em", width: "100%" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", width: "100%", flexGrow: 1, height: "100%" }}>
                     <VegaLite spec={spec} data={{ table: data }} />
                 </Box>
             </Grid>

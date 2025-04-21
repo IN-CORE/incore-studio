@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Batch select and delete resources [#140](https://github.com/IN-CORE/incore-studio/issues/140)
+- Implement basic chart visualization using vega-lite [#152](https://github.com/IN-CORE/incore-studio/issues/152)
 
 ### Fixed
 
