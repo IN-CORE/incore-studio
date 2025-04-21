@@ -52,6 +52,36 @@ import { extractStatus } from "@app/utils";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import OutputFileDisplay from "./OutputFileDisplay";
 
+const getInitialParametersState = (
+    sidePanelData: ExecutionSidePandelData,
+    dependencyGraph: DependencyGraph | null,
+    createExecution: ExecutionCreate
+): { [key: string]: string | boolean } => {
+    let initialState: { [key: string]: string | boolean } = {};
+    sidePanelData.currentAnalysis.inputParameters.forEach((inputParameter) => {
+        initialState[inputParameter.execFileEntryId] =
+            createExecution.parameters[inputParameter.execFileEntryId] ?? inputParameter.value;
+        if (
+            dependencyGraph &&
+            dependencyGraph[sidePanelData.currentAnalysis.depGName].parameter_defaults[inputParameter.label] !==
+                undefined
+        ) {
+            if (inputParameter.type === "boolean") {
+                initialState[inputParameter.execFileEntryId] =
+                    dependencyGraph[sidePanelData.currentAnalysis.depGName].parameter_defaults[inputParameter.label] ===
+                    "true";
+            } else {
+                initialState[inputParameter.execFileEntryId] =
+                    dependencyGraph[sidePanelData.currentAnalysis.depGName].parameter_defaults[inputParameter.label];
+            }
+        }
+        if (inputParameter.label.includes("Service")) {
+            initialState[inputParameter.execFileEntryId] = config.hostname;
+        }
+    });
+    return initialState;
+};
+
 const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const appDispatch = useAppDispatch();
 
@@ -66,6 +96,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const currentExecution = useAppSelector((state) => state.execution.currentExecution);
 
     const createExecution = useAppSelector((state) => state.execution.createExecution);
+    // const inputRef = React.useRef<HTMLInputElement>(null);
 
     const getInputDatasetInitialState = (): { [key: string]: string } => {
         let initialState: { [key: string]: string } = {};
@@ -78,18 +109,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                     initialState[inputDataset.execFileEntryId] =
                         createExecution.datasets[inputDataset.execFileEntryId] ?? "";
                 }
-            }
-        });
-        return initialState;
-    };
-
-    const getInitialParametersState = (): { [key: string]: string } => {
-        let initialState: { [key: string]: string } = {};
-        sidePanelData.currentAnalysis.inputParameters.forEach((inputParameter) => {
-            initialState[inputParameter.execFileEntryId] =
-                createExecution.parameters[inputParameter.execFileEntryId] ?? inputParameter.value;
-            if (inputParameter.label.includes("Service")) {
-                initialState[inputParameter.execFileEntryId] = config.hostname;
             }
         });
         return initialState;
@@ -129,15 +148,17 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         }
     }, [project, projectDataset, projectHazard, projectDFR3Mapping]);
 
-    const [datasetSelect, setDatasetSelect] = React.useState<{ [key: string]: string }>(getInputDatasetInitialState());
-    const [parameters, setParameters] = React.useState<{ [key: string]: string }>(getInitialParametersState());
+    const [datasetSelect, setDatasetSelect] = React.useState<{ [key: string]: string } | null>(null);
+    const [parameters, setParameters] = React.useState<{ [key: string]: string | boolean | null }>(
+        getInitialParametersState(sidePanelData, dependencyGraph, createExecution)
+    );
     const [selectedHazardType, setSelectedHazardType] = React.useState<string | null>(null);
     const [selectedDFR3HazardType, setSelectedDFR3HazardType] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         setDatasetSelect(getInputDatasetInitialState());
-        setParameters(getInitialParametersState());
-    }, [sidePanelData, createExecution]);
+        setParameters(getInitialParametersState(sidePanelData, dependencyGraph, createExecution));
+    }, [sidePanelData, createExecution, dependencyGraph]);
 
     const handleResetDatasets = () => {
         setDatasetSelect(getInputDatasetInitialState());
@@ -146,10 +167,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     };
 
     const handleResetParameters = () => {
-        setParameters(getInitialParametersState());
+        setParameters(getInitialParametersState(sidePanelData, dependencyGraph, createExecution));
     };
 
-    const updateParameter = (execFileEntryId: string, value: string) => {
+    const updateParameter = (execFileEntryId: string, value: string | boolean | null) => {
         setParameters((prev) => {
             return { ...prev, [execFileEntryId]: value };
         });
@@ -411,7 +432,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                             onSubmit={(event) => {
                                 event.preventDefault();
                                 let actualDatasets: { [key: string]: string } = {};
-                                let actualParameters: { [key: string]: string } = {};
+                                let actualParameters: { [key: string]: string | boolean | null } = {};
                                 sidePanelData.currentAnalysis.inputDatasets.forEach((inputDataset) => {
                                     if (inputDataset.fromExisting === null) {
                                         if (
@@ -419,10 +440,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                             inputDataset.label.includes("DFR3")
                                         ) {
                                             actualParameters[inputDataset.execFileEntryId] =
-                                                datasetSelect[inputDataset.execFileEntryId];
+                                                datasetSelect?.[inputDataset.execFileEntryId] ?? "";
                                         } else {
                                             actualDatasets[inputDataset.execFileEntryId] =
-                                                datasetSelect[inputDataset.execFileEntryId];
+                                                datasetSelect?.[inputDataset.execFileEntryId] ?? "";
                                         }
                                     }
                                 });
@@ -435,9 +456,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                 );
                                 appDispatch(updateExecutionSidePanelCheckStatus(sidePanelData.currentAnalysis.id));
                                 appDispatch(clearSidePanelData());
+                                console.log(actualDatasets, actualParameters);
                             }}
                         >
-                            {sidePanelData.currentAnalysis.inputDatasets.length > 0 && (
+                            {sidePanelData.currentAnalysis.inputDatasets.length > 0 && datasetSelect !== null && (
                                 <Box mb={4}>
                                     <Stack
                                         direction="row"
@@ -547,8 +569,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                     inputDataset.label.includes("Hazard")
                                                                         ? "Hazard"
                                                                         : inputDataset.label.includes("DFR3")
-                                                                          ? "DFR3 Mapping"
-                                                                          : "Dataset"
+                                                                        ? "DFR3 Mapping"
+                                                                        : "Dataset"
                                                                 }`}
                                                                 name={inputDataset.execFileEntryId}
                                                                 required={
@@ -565,6 +587,15 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         let pjHtype = projectHazard.find(
                                                                             (hazard) => hazard.id === value
                                                                         )?.type;
+                                                                        // update hazard_type parameter in the parameters
+                                                                        let hazard_type_exec_id =
+                                                                            sidePanelData.currentAnalysis.inputParameters.find(
+                                                                                (inpP) => inpP.label === "hazard_type"
+                                                                            )?.execFileEntryId;
+                                                                        updateParameter(
+                                                                            hazard_type_exec_id ?? "hazard_type",
+                                                                            pjHtype ?? ""
+                                                                        );
                                                                         setSelectedHazardType(pjHtype ?? null);
                                                                     } else if (inputDataset.label.includes("DFR3")) {
                                                                         let pjDFR3Htype = projectDFR3Mapping.find(
@@ -586,33 +617,31 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 {inputDataset.label.includes("Hazard")
                                                                     ? options?.projectHazardOptions
                                                                     : inputDataset.label.includes("DFR3")
-                                                                      ? options?.projectDFR3MappingOptions
-                                                                      : options?.projectDatasetOptions?.filter(
-                                                                            (option: JSX.Element) => {
-                                                                                if (
-                                                                                    dependencyGraph &&
-                                                                                    dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ] &&
-                                                                                    dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ].inputs[inputDataset.label] &&
-                                                                                    option.key
-                                                                                ) {
-                                                                                    return dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ].inputs[
-                                                                                        inputDataset.label
-                                                                                    ].includes(
-                                                                                        option.key.split("|")[1]
-                                                                                    ); // show datasets that are compatible with the input
-                                                                                }
-                                                                                return true; // if the property is not found, show all datasets
-                                                                            }
-                                                                        )}
+                                                                    ? options?.projectDFR3MappingOptions
+                                                                    : options?.projectDatasetOptions?.filter(
+                                                                          (option: JSX.Element) => {
+                                                                              if (
+                                                                                  dependencyGraph &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ] &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label] &&
+                                                                                  option.key
+                                                                              ) {
+                                                                                  return dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label].includes(
+                                                                                      option.key.split("|")[1]
+                                                                                  ); // show datasets that are compatible with the input
+                                                                              }
+                                                                              return true; // if the property is not found, show all datasets
+                                                                          }
+                                                                      )}
                                                             </Select>
                                                         </Box>
                                                         {createMode && (
@@ -622,12 +651,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         inputDataset.label.includes("Hazard")
                                                                             ? setOpenAddHazardFromServiceDialog(true)
                                                                             : inputDataset.label.includes("DFR3")
-                                                                              ? setOpenAddDFR3MappingFromServiceDialog(
-                                                                                    true
-                                                                                )
-                                                                              : setOpenAddDatasetFromServiceDialog(
-                                                                                    true
-                                                                                );
+                                                                            ? setOpenAddDFR3MappingFromServiceDialog(
+                                                                                  true
+                                                                              )
+                                                                            : setOpenAddDatasetFromServiceDialog(true);
                                                                     }}
                                                                 >
                                                                     <AddIcon />
@@ -679,72 +706,142 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                         )}
                                     </Stack>
                                     <Stack direction="column" spacing={2}>
-                                        {sidePanelData.currentAnalysis.inputParameters.map((inputParameter) => (
-                                            <Box key={inputParameter.execFileEntryId}>
-                                                {inputParameter.required ? (
-                                                    <Typography
-                                                        level="h4"
-                                                        component="label"
-                                                        htmlFor={`${inputParameter.label}-input`}
-                                                        sx={{
-                                                            display: "block",
-                                                            mb: 1,
-                                                            fontWeight: 400,
-                                                            fontSize: "14px",
-                                                            lineHeight: "24px",
-                                                            paragraph: "28px",
-                                                            color: "#172B4D"
-                                                        }}
-                                                    >
-                                                        {inputParameter.label}
-                                                        <Typography
-                                                            component="span"
-                                                            sx={{ color: "red", marginLeft: 0.5 }}
-                                                        >
-                                                            *
-                                                        </Typography>
-                                                    </Typography>
-                                                ) : (
-                                                    <Typography
-                                                        level="h4"
-                                                        sx={{
-                                                            display: "block",
-                                                            mb: 1,
-                                                            fontWeight: 400,
-                                                            fontSize: "14px",
-                                                            lineHeight: "24px",
-                                                            paragraph: "28px",
-                                                            color: "#172B4D"
-                                                        }}
-                                                    >
-                                                        {inputParameter.label}
-                                                    </Typography>
-                                                )}
-                                                <Input
-                                                    disabled={!createMode}
-                                                    value={parameters[inputParameter.execFileEntryId]}
-                                                    name={inputParameter.execFileEntryId}
-                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                        if (
-                                                            inputParameter.label !== "Analysis" &&
-                                                            !inputParameter.label.includes("Service") &&
-                                                            /^[A-Za-z0-9 _,-]*$/.test(e.target.value)
-                                                        ) {
-                                                            updateParameter(
-                                                                inputParameter.execFileEntryId,
-                                                                e.target.value
-                                                            );
-                                                        }
-                                                    }}
-                                                    variant={createMode ? "outlined" : "solid"}
-                                                    sx={{
-                                                        "&.Mui-disabled": {
-                                                            color: "#1E293B"
-                                                        }
-                                                    }}
-                                                />
-                                            </Box>
-                                        ))}
+                                        {sidePanelData.currentAnalysis.inputParameters.map((inputParameter) => {
+                                            if (!inputParameter.hidden) {
+                                                return (
+                                                    <Box key={inputParameter.execFileEntryId}>
+                                                        {inputParameter.required ? (
+                                                            <Typography
+                                                                level="h4"
+                                                                component="label"
+                                                                htmlFor={`${inputParameter.label}-input`}
+                                                                sx={{
+                                                                    display: "block",
+                                                                    mb: 1,
+                                                                    fontWeight: 400,
+                                                                    fontSize: "14px",
+                                                                    lineHeight: "24px",
+                                                                    paragraph: "28px",
+                                                                    color: "#172B4D"
+                                                                }}
+                                                            >
+                                                                {inputParameter.label}
+                                                                <Typography
+                                                                    component="span"
+                                                                    sx={{ color: "red", marginLeft: 0.5 }}
+                                                                >
+                                                                    *
+                                                                </Typography>
+                                                            </Typography>
+                                                        ) : (
+                                                            <Typography
+                                                                level="h4"
+                                                                sx={{
+                                                                    display: "block",
+                                                                    mb: 1,
+                                                                    fontWeight: 400,
+                                                                    fontSize: "14px",
+                                                                    lineHeight: "24px",
+                                                                    paragraph: "28px",
+                                                                    color: "#172B4D"
+                                                                }}
+                                                            >
+                                                                {inputParameter.label}
+                                                            </Typography>
+                                                        )}
+                                                        {inputParameter.type === "BOOLEAN" ? (
+                                                            <Select
+                                                                disabled={!createMode}
+                                                                value={
+                                                                    (parameters[
+                                                                        inputParameter.execFileEntryId
+                                                                    ] as boolean) ?? null
+                                                                }
+                                                                name={inputParameter.execFileEntryId}
+                                                                onChange={(_, newValue: boolean | null) => {
+                                                                    if (newValue !== null) {
+                                                                        updateParameter(
+                                                                            inputParameter.execFileEntryId,
+                                                                            newValue
+                                                                        );
+                                                                    }
+                                                                }}
+                                                                variant={createMode ? "outlined" : "solid"}
+                                                                sx={{
+                                                                    "&.Mui-disabled": {
+                                                                        color: "#1E293B"
+                                                                    }
+                                                                }}
+                                                                placeholder="Select true or false"
+                                                            >
+                                                                <Option value={true}>True</Option>
+                                                                <Option value={false}>False</Option>
+                                                            </Select>
+                                                        ) : (
+                                                            <Input
+                                                                disabled={
+                                                                    !createMode ||
+                                                                    inputParameter.label === "hazard_type" ||
+                                                                    inputParameter.label.toLocaleLowerCase() ===
+                                                                        "analysis" ||
+                                                                    inputParameter.label.includes("Service")
+                                                                }
+                                                                value={
+                                                                    (parameters?.[
+                                                                        inputParameter.execFileEntryId
+                                                                    ] as string) ?? ""
+                                                                }
+                                                                name={inputParameter.execFileEntryId}
+                                                                type={inputParameter.type.toLocaleLowerCase()}
+                                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                    console.log(typeof e.target.value);
+                                                                    console.log(parseFloat(e.target.value));
+                                                                    if (
+                                                                        inputParameter.label !== "Analysis" &&
+                                                                        !inputParameter.label.includes("Service") &&
+                                                                        /^[A-Za-z0-9 _,\-\.]*$/.test(e.target.value)
+                                                                    ) {
+                                                                        updateParameter(
+                                                                            inputParameter.execFileEntryId,
+                                                                            e.target.value
+                                                                        );
+                                                                    }
+                                                                }}
+                                                                placeholder={
+                                                                    inputParameter.label === "hazard_type"
+                                                                        ? (parameters?.[
+                                                                              inputParameter.execFileEntryId
+                                                                          ] as string)
+                                                                        : undefined
+                                                                }
+                                                                variant={createMode ? "outlined" : "solid"}
+                                                                sx={{
+                                                                    "&.Mui-disabled": {
+                                                                        color: "#1E293B"
+                                                                    }
+                                                                }}
+                                                                slotProps={
+                                                                    inputParameter.type === "NUMBER"
+                                                                        ? {
+                                                                              input: {
+                                                                                  min: 0,
+                                                                                  step:
+                                                                                      inputParameter.label ===
+                                                                                          "num_cpu" ||
+                                                                                      inputParameter.label === "seed"
+                                                                                          ? 1
+                                                                                          : 0.01 // allows any decimal value
+                                                                              }
+                                                                          }
+                                                                        : {}
+                                                                }
+                                                            />
+                                                        )}
+                                                    </Box>
+                                                );
+                                            }
+                                            return null;
+                                        })}
                                     </Stack>
                                 </Box>
                             )}
