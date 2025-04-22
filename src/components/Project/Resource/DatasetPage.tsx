@@ -25,6 +25,11 @@ import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 import { IncoreDialog } from "@app/components/IncoreDialog";
+import { getOidcUser } from "@app/utils";
+import config from "@app/app.config";
+
+import { GeoExplorer, GeoExplorerProvider } from "@ncsa/geo-explorer";
+import "@ncsa/geo-explorer/index.css";
 
 const DatasetPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -219,6 +224,41 @@ const DatasetPage = (): JSX.Element => {
                                         setOpenCreateDatasetDialog(false);
                                     }}
                                 />
+                                <GeoExplorerProvider
+                                    config={{
+                                        basemaps: [
+                                            {
+                                                layer_id: "OSM",
+                                                display_name: "OpenStreetMap",
+                                                tile_url_template: "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                                thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
+                                            }
+                                        ],
+                                        simple_layers: projectDatasets
+                                            .filter((dataset) => dataset.format === "shapefile")
+                                            .map((dataset) => ({
+                                                layer_id: dataset.id,
+                                                display_name: dataset.title,
+                                                description: dataset.description,
+                                                dataset_info: {
+                                                    dataset_type: "vector",
+                                                    dataset_category: "power",
+                                                    feature_type: "polygon",
+                                                    timestamps: []
+                                                },
+                                                default_style_name: "",
+                                                ogc_service_url: `${config.hostname}/geoserver`,
+                                                geometry_column: "the_geom"
+                                            })),
+                                        temporal_layers: []
+                                    }}
+                                    accessToken={getOidcUser()?.access_token}
+                                    isProtectedResource={(url) => /geoserver/.test(url)}
+                                >
+                                    <Box sx={{ height: 800, position: "relative", overflow: "hidden", my: "20px" }}>
+                                        <GeoExplorer />
+                                    </Box>
+                                </GeoExplorerProvider>
                                 {isTableView ? (
                                     <ResourceTable
                                         columns={["title", "description", "date", "owner"]}
