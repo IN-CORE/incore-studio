@@ -117,7 +117,7 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
     }, [dataset]);
     return (
         <Modal open={open} onClose={onClose}>
-            <ModalDialog layout="fullscreen" size="lg" sx={{ backgroundColor: "#fff", padding: 10 }}>
+            <ModalDialog layout="fullscreen" size="lg" sx={{ backgroundColor: "#fff", padding: 10, height: "100%" }}>
                 <Box sx={{ padding: 2 }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography level="h4" fontWeight="bold">
@@ -140,11 +140,28 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
                         sx={{ mt: 2 }}
                     >
                         <TabList>
-                            <Tab>Table</Tab>
-                            <Tab>Chart</Tab>
+                            <Tab
+                                sx={{
+                                    "&.Mui-selected": {
+                                        color: "primary.main",
+                                        fontWeight: "bold"
+                                    }
+                                }}
+                            >
+                                Table
+                            </Tab>
+                            <Tab
+                                sx={{
+                                    "&.Mui-selected": {
+                                        color: "primary.main",
+                                        fontWeight: "bold"
+                                    }
+                                }}
+                            >
+                                Chart
+                            </Tab>
                         </TabList>
-
-                        <TabPanel value={0}>
+                        <TabPanel value={0} sx={{ maxHeight: "70vh", overflow: "auto" }}>
                             <DataTable rows={tableData.rows} columns={tableData.columns} loading={loading} />
                         </TabPanel>
                         <TabPanel value={1}>
@@ -152,7 +169,7 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
                         </TabPanel>
                     </Tabs>
                 ) : dataset?.format === "json" ? (
-                    <Sheet sx={{ padding: 2, overflow: "auto", height: "90%" }}>
+                    <Sheet sx={{ padding: 2, overflow: "auto" }}>
                         <pre>{JSON.stringify(jsonData, null, 2)}</pre>
                     </Sheet>
                 ) : (

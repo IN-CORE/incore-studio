@@ -5,19 +5,7 @@ import { Box, Grid, Option, Select, Typography, Sheet } from "@mui/joy";
 import { guessDataType } from "@app/utils";
 
 // VegaLite supports specific mark types
-type MarkType =
-    | "area"
-    | "bar"
-    | "circle"
-    | "line"
-    | "point"
-    | "rect"
-    | "rule"
-    | "square"
-    | "text"
-    | "tick"
-    | "trail"
-    | "geoshape"; // for geographic plots like maps
+type MarkType = "area" | "bar" | "circle" | "line" | "point" | "rect" | "rule" | "square" | "tick";
 
 const allowedTypes = ["quantitative", "temporal", "ordinal", "nominal"] as const;
 type EncodingType = (typeof allowedTypes)[number];
@@ -105,12 +93,6 @@ export const CSVVegaChart: React.FC<CSVVegaChartProps> = ({ data }) => {
                                 <Option value="tick">Tick Plot</Option>
                                 <Option value="rule">Rule (Guide Line)</Option>
                                 <Option value="rect">Rectangle Plot</Option>
-                                <Option value="text">Text Label</Option>
-                                <Option value="trail">Trail Line</Option>
-                                <Option value="boxplot">Box Plot</Option>
-                                <Option value="errorbar">Error Bar</Option>
-                                <Option value="errorband">Error Band</Option>
-                                <Option value="geoshape">Geographic Shape</Option>
                             </Select>
                         </Grid>
 
