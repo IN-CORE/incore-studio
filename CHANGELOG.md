@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Batch select and delete resources [#140](https://github.com/IN-CORE/incore-studio/issues/140)
+- Group analyses in the workflow editor by tags [#32](https://github.com/IN-CORE/incore-studio/issues/32)
 
 ### Fixed
 
