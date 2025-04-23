@@ -13,8 +13,18 @@ interface DataTableProps {
 }
 const DataTable: React.FC<DataTableProps> = ({ rows = [], columns = [], loading }) => {
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", width: "100%", flexGrow: 1, height: "90%" }}>
-            <DataGrid rows={rows} columns={columns} loading={loading} />
+        <Box sx={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", overflow: "auto" }}>
+            <DataGrid
+                rows={rows}
+                columns={columns}
+                loading={loading}
+                pageSizeOptions={[10, 25, 50, 100]}
+                initialState={{
+                    pagination: { paginationModel: { pageSize: 10, page: 0 } }
+                }}
+                pagination
+                sx={{ height: "100%", width: "100%" }}
+            />
         </Box>
     );
 };
