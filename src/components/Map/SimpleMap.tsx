@@ -1,11 +1,12 @@
 import React from "react";
 import maplibre from "maplibre-gl";
-import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Checkbox } from "@mui/joy";
+import { Box } from "@mui/joy";
 import { ZoomOutMap as ZoomOutMapIcon } from "@mui/icons-material";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import config from "@app/app.config";
 import { getHeaders, getLayerBoundingBox } from "@app/utils";
+import { LayerAccordion } from "@app/components/Map/LayerAccordion";
 import { MapControl } from "./Control";
 import { IS_WEBGL_SUPPORTED } from "./utils";
 
@@ -220,6 +221,14 @@ const SimpleMap = ({
         });
     };
 
+    const deleteLayer = (layerId: string) => {
+        console.log(layerId);
+    };
+    const addLayer = () => {};
+    const editLayerStyle = (layerId: string, newStyle: string | null) => {
+        console.log(layerId, newStyle);
+    };
+
     return (
         <Box
             ref={mapContainerRef}
@@ -262,24 +271,14 @@ const SimpleMap = ({
                     border: "0.5px solid #999"
                 }}
             >
-                <Accordion variant="plain" defaultExpanded>
-                    <AccordionSummary>
-                        <Typography level="body-md">Layers</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails sx={{ marginTop: "0.5em" }}>
-                        {layers.map((layer) => (
-                            <Box key={layer.layerId} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                                <Checkbox
-                                    checked={!!activeLayers[`incore-${layer.layerId}`]}
-                                    onChange={() => toggleLayer(`incore-${layer.layerId}`)}
-                                    size="sm"
-                                    sx={{ mr: 1 }}
-                                />
-                                <Typography>{`${layer.workspace}:${layer.layerId}`}</Typography>
-                            </Box>
-                        ))}
-                    </AccordionDetails>
-                </Accordion>
+                <LayerAccordion
+                    layers={layers}
+                    activeLayers={activeLayers}
+                    toggleLayer={toggleLayer}
+                    addLayer={addLayer}
+                    deleteLayer={deleteLayer}
+                    editLayerStyle={editLayerStyle}
+                />
             </Box>
         </Box>
     );
