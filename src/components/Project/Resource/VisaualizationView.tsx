@@ -31,6 +31,7 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                 <Box sx={{ width: "800px", height: "500px" }}>
                     {visualization.layers && (
                         <SimpleMap
+                            visualizationId={visualization.id}
                             layers={visualization.layers}
                             mapOptions={{
                                 minZoom: 1

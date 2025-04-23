@@ -7,12 +7,17 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import config from "@app/app.config";
 import { getHeaders, getLayerBoundingBox } from "@app/utils";
 import { LayerAccordion } from "@app/components/Map/LayerAccordion";
+import { deleteLayerFromVisualization } from "@app/reducer/projectSlice";
+import { useAppDispatch } from "@app/store/hooks";
+import { useSelector } from "react-redux";
+import { RootState } from "@app/store";
 import { MapControl } from "./Control";
 import { IS_WEBGL_SUPPORTED } from "./utils";
 
 interface Props {
+    visualizationId?: string;
     mapOptions: Partial<maplibregl.MapOptions>;
-    layers?: IncoreLayer[]; // Optional layers for switching
+    layers?: IncoreLayer[];
     initialBounds?: number[];
     center?: maplibregl.LngLatLike;
     init_zoom?: number;
@@ -29,7 +34,8 @@ const SimpleMap = ({
     init_zoom,
     attribution,
     navigation,
-    onLoad
+    onLoad,
+    visualizationId = ""
 }: Props): JSX.Element => {
     const mapContainerRef = React.useRef<HTMLDivElement>(null);
     const mapRef = React.useRef<maplibregl.Map>();
@@ -40,6 +46,9 @@ const SimpleMap = ({
     const [layerBoundingBoxes, setLayerBoundingBoxes] = React.useState<
         Record<string, [number, number, number, number] | null>
     >({});
+
+    const appDispatch = useAppDispatch();
+    const project = useSelector((state: RootState) => state.project.project);
 
     React.useEffect(() => {
         if (mapContainerRef.current) {
@@ -221,12 +230,14 @@ const SimpleMap = ({
         });
     };
 
-    const deleteLayer = (layerId: string) => {
-        console.log(layerId);
+    const deleteLayer = (layer: IncoreLayer | null) => {
+        if (project && layer)
+            appDispatch(deleteLayerFromVisualization({ projectId: project?.id, visualizationId, layers: [layer] }));
     };
-    const addLayer = () => {};
-    const editLayerStyle = (layerId: string, newStyle: string | null) => {
-        console.log(layerId, newStyle);
+
+    // const addLayer = () => {};
+    const editLayerStyle = (layer: IncoreLayer, newStyle: string | null) => {
+        console.log(layer.layerId, newStyle);
     };
 
     return (
@@ -275,7 +286,7 @@ const SimpleMap = ({
                     layers={layers}
                     activeLayers={activeLayers}
                     toggleLayer={toggleLayer}
-                    addLayer={addLayer}
+                    // addLayer={addLayer}
                     deleteLayer={deleteLayer}
                     editLayerStyle={editLayerStyle}
                 />
