@@ -49,6 +49,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
     const [groupedAnalyses, setGroupedAnalyses] = React.useState<Record<string, string[]>>({});
     const [selectedTag, setSelectedTag] = React.useState<string>("all");
     const [currentAnalysesList, setCurrentAnalysesList] = React.useState<string[]>([]);
+    const [currentAnalysisCount, setCurrentAnalysisCount] = React.useState<number>(0);
 
     const { addNodes } = useStore(useShallow(selector));
     const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
@@ -105,6 +106,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
             setGroupedAnalyses(groupedTools);
             setAvailableAnalyses(toolNames);
             setCurrentAnalysesList(selectedTag === "all" ? toolNames : groupedTools[selectedTag]);
+            setCurrentAnalysisCount(selectedTag === "all" ? toolNames.length : groupedTools[selectedTag].length);
         }
     }, [datawolfTools, searchAnalysisTerm]);
 
@@ -151,12 +153,12 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                     value={selectedTag}
                                     onChange={(_, newTag: string | null) => {
                                         setSelectedTag(newTag ?? "all");
-                                        console.log("newTag", newTag);
                                         if (newTag !== "all" && newTag !== null) {
                                             setCurrentAnalysesList(groupedAnalyses[newTag]);
-                                            console.log(groupedAnalyses[newTag]);
+                                            setCurrentAnalysisCount(groupedAnalyses[newTag].length);
                                         } else {
                                             setCurrentAnalysesList(availableAnalyses);
+                                            setCurrentAnalysisCount(availableAnalyses.length);
                                         }
                                     }}
                                     sx={{
@@ -201,6 +203,11 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                 />
                             </FormControl>
                         </Stack>
+                        <Box>
+                            <Typography level="body-sm" sx={{ color: "#172B4D", fontWeight: 500 }}>
+                                {currentAnalysisCount} Analysis{currentAnalysisCount !== 1 ? "es" : ""} found
+                            </Typography>
+                        </Box>
                         <Box sx={{ height: "400px", overflow: "auto", padding: "10px" }}>
                             <List
                                 sx={{
