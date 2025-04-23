@@ -1,556 +1,92 @@
 {
-    "studio-BuildingFunctionality": {
+    "studio-BuyoutDecision": {
         "before": {
-            "studio-EpnFunctionality": [
+            "studio-HousingUnitAllocation": [
                 {
-                    "from": "sample_failure_state",
-                    "to": "substations_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "building_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "poles_damage_mcs_samples"
-                }
-            ],
-            "studio-PipelineFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "building_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "substations_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "poles_damage_mcs_samples"
-                }
-            ],
-            "studio-WfnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "building_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "poles_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "substations_damage_mcs_samples"
-                }
-            ],
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "building_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "poles_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "substations_damage_mcs_samples"
-                }
-            ]
-        },
-        "after": {},
-        "pretty_name": "Building Functionality",
-        "tags": ["Building"],
-        "manual": "building_func.html",
-        "inputs": {
-            "building_damage_mcs_samples": ["incore:sampleFailureState"],
-            "substations_damage_mcs_samples": ["incore:sampleFailureState"],
-            "poles_damage_mcs_samples": ["incore:sampleFailureState"],
-            "interdependency_dictionary": ["incore:buildingInterdependencyDict"]
-        }
-    },
-    "studio-EpnFunctionality": {
-        "before": {
-            "studio-EpnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_sample_failure_state"
-                }
-            ],
-            "studio-WfnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_sample_failure_state"
-                }
-            ],
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_sample_failure_state"
-                }
-            ],
-            "studio-PipelineFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_sample_failure_state"
-                }
-            ]
-        },
-        "after": {
-            "studio-INDP": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pipeline_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_failure_state"
-                }
-            ],
-            "studio-BuildingFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "building_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "poles_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "substations_damage_mcs_samples"
-                }
-            ],
-            "studio-NciFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "epf_subst_failure_results"
-                }
-            ],
-            "studio-EpnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_sample_failure_state"
-                }
-            ],
-            "studio-CommercialBuildingRecovery": [
-                {
-                    "from": "failure_probability",
-                    "to": "mcs_failure"
-                }
-            ],
-            "studio-CapitalShocks": [
-                {
-                    "from": "failure_probability",
-                    "to": "failure_probability"
-                }
-            ],
-            "studio-WfnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_sample_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pp_sample_failure_state"
-                }
-            ]
-        },
-        "pretty_name": "Electric Power Network Functionality",
-        "tags": ["Lifeline"],
-        "manual": "epn_functionality.html",
-        "inputs": {
-            "epn_network": ["incore:epnNetwork"],
-            "epf_sample_failure_state": ["incore:sampleFailureState"]
-        }
-    },
-    "studio-INDP": {
-        "before": {
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "sample_damage_states",
-                    "to": "wf_damage_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pipeline_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_failure_state"
-                },
-                {
-                    "from": "sample_damage_states",
-                    "to": "epf_damage_state"
-                }
-            ],
-            "studio-PipelineFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "pipeline_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_failure_state"
+                    "from": "result",
+                    "to": "housing_unit_allocation"
                 }
             ],
             "studio-PopulationDislocation": [
                 {
                     "from": "result",
-                    "to": "pop_dislocation"
+                    "to": "population_dislocation"
                 }
             ],
-            "studio-WfnFunctionality": [
+            "studio-CombinedWindWaveSurgeBuildingDamage": [
                 {
-                    "from": "sample_failure_state",
-                    "to": "epf_failure_state"
+                    "from": "ds_result",
+                    "to": "future_building_damage"
                 },
                 {
-                    "from": "sample_failure_state",
-                    "to": "wf_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pipeline_failure_state"
-                }
-            ],
-            "studio-WaterFacilityRepairCost": [
-                {
-                    "from": "result",
-                    "to": "epf_repair_cost"
-                },
-                {
-                    "from": "result",
-                    "to": "wf_repair_cost"
-                }
-            ],
-            "studio-EpfRepairCost": [
-                {
-                    "from": "result",
-                    "to": "wf_repair_cost"
-                },
-                {
-                    "from": "result",
-                    "to": "epf_repair_cost"
-                }
-            ],
-            "studio-WaterFacilityRestoration": [
-                {
-                    "from": "repair_times",
-                    "to": "wf_restoration_time"
-                }
-            ],
-            "studio-EpnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "pipeline_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_failure_state"
-                }
-            ],
-            "studio-EpfRestoration": [
-                {
-                    "from": "repair_times",
-                    "to": "epf_restoration_time"
-                }
-            ],
-            "studio-PipelineRestoration": [
-                {
-                    "from": "pipeline_restoration",
-                    "to": "pipeline_restoration_time"
-                }
-            ],
-            "studio-PipelineRepairCost": [
-                {
-                    "from": "result",
-                    "to": "pipeline_repair_cost"
-                }
-            ]
-        },
-        "after": {},
-        "pretty_name": "Infrastructure Network Disruption Planning",
-        "tags": ["Decision Support"],
-        "manual": "indp.html",
-        "inputs": {
-            "wf_repair_cost": ["incore:repairCost"],
-            "wf_restoration_time": ["incore:waterFacilityRepairTime"],
-            "epf_repair_cost": ["incore:repairCost"],
-            "epf_restoration_time": ["incore:epfRepairTime"],
-            "pipeline_repair_cost": ["incore:pipelineRepairCost"],
-            "pipeline_restoration_time": ["incore:pipelineRestorationVer1"],
-            "power_network": ["incore:epnNetwork"],
-            "water_network": ["incore:waterNetwork"],
-            "powerline_supply_demand_info": ["incore:powerLineSupplyDemandInfo"],
-            "epf_supply_demand_info": ["incore:epfSupplyDemandInfo"],
-            "wf_supply_demand_info": ["incore:waterFacilitySupplyDemandInfo"],
-            "pipeline_supply_demand_info": ["incore:pipelineSupplyDemandInfo"],
-            "interdep": ["incore:interdep"],
-            "wf_failure_state": ["incore:sampleFailureState"],
-            "wf_damage_state": ["incore:sampleDamageState"],
-            "pipeline_failure_state": ["incore:sampleFailureState"],
-            "epf_failure_state": ["incore:sampleFailureState"],
-            "epf_damage_state": ["incore:sampleDamageState"],
-            "dt_params": ["incore:dTParams"],
-            "pop_dislocation": ["incore:popDislocation"],
-            "bldgs2elec": ["incore:bldgs2elec"],
-            "bldgs2wter": ["incore:bldgs2wter"]
-        }
-    },
-    "studio-WfnFunctionality": {
-        "before": {
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_sample_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pp_sample_failure_state"
-                }
-            ],
-            "studio-EpnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "pp_sample_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_sample_failure_state"
-                }
-            ],
-            "studio-PipelineFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "pp_sample_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_sample_failure_state"
-                }
-            ],
-            "studio-WfnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_sample_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pp_sample_failure_state"
-                }
-            ]
-        },
-        "after": {
-            "studio-INDP": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pipeline_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_failure_state"
-                }
-            ],
-            "studio-BuildingFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "building_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "poles_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "substations_damage_mcs_samples"
-                }
-            ],
-            "studio-NciFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "epf_subst_failure_results"
-                }
-            ],
-            "studio-EpnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_sample_failure_state"
-                }
-            ],
-            "studio-CommercialBuildingRecovery": [
-                {
-                    "from": "failure_probability",
-                    "to": "mcs_failure"
-                }
-            ],
-            "studio-CapitalShocks": [
-                {
-                    "from": "failure_probability",
-                    "to": "failure_probability"
-                }
-            ],
-            "studio-WfnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_sample_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pp_sample_failure_state"
-                }
-            ]
-        },
-        "pretty_name": "Water Facility Network Functionality",
-        "tags": ["Lifeline"],
-        "manual": "wfn_functionality.html",
-        "inputs": {
-            "wfn_network": ["incore:waterNetwork"],
-            "wf_sample_failure_state": ["incore:sampleFailureState"],
-            "pp_sample_failure_state": ["incore:sampleFailureState"]
-        }
-    },
-    "studio-MonteCarloLimitStateProbability": {
-        "after": {
-            "studio-INDP": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pipeline_failure_state"
-                },
-                {
-                    "from": "sample_damage_states",
-                    "to": "epf_damage_state"
-                },
-                {
-                    "from": "sample_damage_states",
-                    "to": "wf_damage_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_failure_state"
-                }
-            ],
-            "studio-CommercialBuildingRecovery": [
-                {
-                    "from": "sample_damage_states",
-                    "to": "sample_damage_states"
-                },
-                {
-                    "from": "failure_probability",
-                    "to": "mcs_failure"
-                }
-            ],
-            "studio-BuildingFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "building_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "poles_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "substations_damage_mcs_samples"
-                }
-            ],
-            "studio-NciFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "epf_subst_failure_results"
-                }
-            ],
-            "studio-EpnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_sample_failure_state"
-                }
-            ],
-            "studio-CapitalShocks": [
-                {
-                    "from": "failure_probability",
-                    "to": "failure_probability"
-                }
-            ],
-            "studio-WaterFacilityRepairCost": [
-                {
-                    "from": "sample_damage_states",
-                    "to": "sample_damage_states"
-                }
-            ],
-            "studio-ResidentialBuildingRecovery": [
-                {
-                    "from": "sample_damage_states",
-                    "to": "sample_damage_states"
-                }
-            ],
-            "studio-WfnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_sample_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pp_sample_failure_state"
-                }
-            ],
-            "studio-EpfRepairCost": [
-                {
-                    "from": "sample_damage_states",
-                    "to": "sample_damage_states"
-                }
-            ]
-        },
-        "before": {
-            "studio-RoadDamage": [
-                {
-                    "from": "result",
-                    "to": "damage"
-                }
-            ],
-            "studio-PipelineDamage": [
-                {
-                    "from": "result",
-                    "to": "damage"
-                }
-            ],
-            "studio-EpfDamage": [
-                {
-                    "from": "result",
-                    "to": "damage"
+                    "from": "ds_result",
+                    "to": "past_building_damage"
                 }
             ],
             "studio-BuildingStructuralDamage": [
                 {
                     "from": "ds_result",
-                    "to": "damage"
+                    "to": "future_building_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "past_building_damage"
+                }
+            ]
+        },
+        "after": {},
+        "pretty_name": "Buyout Decision",
+        "tags": ["Decision Support"],
+        "manual": "buyout_decision.html",
+        "inputs": {
+            "past_building_damage": ["ergo:buildingDamageVer6"],
+            "future_building_damage": ["ergo:buildingDamageVer6"],
+            "buildings": [
+                "ergo:buildingInventoryVer4",
+                "ergo:buildingInventoryVer5",
+                "ergo:buildingInventoryVer6",
+                "ergo:buildingInventoryVer7"
+            ],
+            "housing_unit_allocation": ["incore:housingUnitAllocation"],
+            "population_dislocation": ["incore:popDislocation"]
+        },
+        "parameter_defaults": {
+            "fema_buyout_cap": 250000.0,
+            "residential_archetypes": null,
+            "result_name": "buyout-decision-result"
+        }
+    },
+    "studio-CombinedWindWaveSurgeBuildingDamage": {
+        "before": {
+            "studio-CombinedWindWaveSurgeBuildingDamage": [
+                {
+                    "from": "ds_result",
+                    "to": "surge_wave_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "wind_damage"
                 }
             ],
-            "studio-CombinedWindWaveSurgeBuildingDamage": [
+            "studio-BuildingStructuralDamage": [
+                {
+                    "from": "ds_result",
+                    "to": "surge_wave_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "wind_damage"
+                }
+            ],
+            "studio-BuildingNonStructDamage": [
+                {
+                    "from": "result",
+                    "to": "flood_damage"
+                }
+            ]
+        },
+        "after": {
+            "studio-MeanDamage": [
                 {
                     "from": "ds_result",
                     "to": "damage"
@@ -558,455 +94,133 @@
             ],
             "studio-CumulativeBuildingDamage": [
                 {
-                    "from": "combined-result",
+                    "from": "ds_result",
+                    "to": "tsunami_bldg_dmg"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "eq_bldg_dmg"
+                }
+            ],
+            "studio-CombinedWindWaveSurgeBuildingDamage": [
+                {
+                    "from": "ds_result",
+                    "to": "surge_wave_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "wind_damage"
+                }
+            ],
+            "studio-CombinedWindWaveSurgeBuildingLoss": [
+                {
+                    "from": "ds_result",
+                    "to": "wind_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "surge_wave_damage"
+                }
+            ],
+            "studio-CommercialBuildingRecovery": [
+                {
+                    "from": "ds_result",
+                    "to": "building_dmg"
+                }
+            ],
+            "studio-BuyoutDecision": [
+                {
+                    "from": "ds_result",
+                    "to": "future_building_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "past_building_damage"
+                }
+            ],
+            "studio-PopulationDislocation": [
+                {
+                    "from": "ds_result",
+                    "to": "building_dmg"
+                }
+            ],
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "ds_result",
                     "to": "damage"
                 }
             ],
-            "studio-BridgeDamage": [
+            "studio-JoplinEmpiricalBuildingRestoration": [
                 {
-                    "from": "result",
-                    "to": "damage"
+                    "from": "ds_result",
+                    "to": "building_dmg"
+                }
+            ]
+        },
+        "pretty_name": "Combined Wind Wave Surge Building Damage",
+        "tags": ["Building"],
+        "manual": "combined_wind_wave_surge_building_dmg.html",
+        "inputs": {
+            "wind_damage": ["ergo:buildingDamageVer6"],
+            "surge_wave_damage": ["ergo:buildingDamageVer6"],
+            "flood_damage": ["ergo:nsBuildingInventoryDamageVer4"]
+        },
+        "parameter_defaults": {
+            "result_name": "combined-wind-wave-surge-building-damage-result"
+        }
+    },
+    "studio-CombinedWindWaveSurgeBuildingLoss": {
+        "before": {
+            "studio-CombinedWindWaveSurgeBuildingDamage": [
+                {
+                    "from": "ds_result",
+                    "to": "surge_wave_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "wind_damage"
                 }
             ],
-            "studio-WaterFacilityDamage": [
+            "studio-BuildingStructuralDamage": [
                 {
-                    "from": "result",
-                    "to": "damage"
+                    "from": "ds_result",
+                    "to": "surge_wave_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "wind_damage"
                 }
             ],
             "studio-BuildingNonStructDamage": [
                 {
                     "from": "result",
-                    "to": "damage"
-                }
-            ]
-        },
-        "pretty_name": "Monte Carlo Limit State Probability",
-        "tags": ["Decision Support"],
-        "manual": "mc_limit_state_prob.html",
-        "inputs": {
-            "damage": [
-                "ergo:buildingDamageVer4",
-                "ergo:buildingDamageVer5",
-                "ergo:buildingDamageVer6",
-                "ergo:nsBuildingInventoryDamage",
-                "ergo:nsBuildingInventoryDamageVer2",
-                "ergo:nsBuildingInventoryDamageVer3",
-                "ergo:nsBuildingInventoryDamageVer4",
-                "ergo:bridgeDamage",
-                "ergo:bridgeDamageVer2",
-                "ergo:bridgeDamageVer3",
-                "ergo:waterFacilityDamageVer4",
-                "ergo:waterFacilityDamageVer5",
-                "ergo:waterFacilityDamageVer6",
-                "ergo:roadDamage",
-                "ergo:roadDamageVer2",
-                "ergo:roadDamageVer3",
-                "incore:epfDamage",
-                "incore:epfDamageVer2",
-                "incore:epfDamageVer3",
-                "incore:pipelineDamage",
-                "incore:pipelineDamageVer2",
-                "incore:pipelineDamageVer3"
-            ]
-        }
-    },
-    "studio-PipelineFunctionality": {
-        "after": {
-            "studio-INDP": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pipeline_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_failure_state"
-                }
-            ],
-            "studio-BuildingFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "building_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "poles_damage_mcs_samples"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "substations_damage_mcs_samples"
-                }
-            ],
-            "studio-NciFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "epf_subst_failure_results"
-                }
-            ],
-            "studio-EpnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "epf_sample_failure_state"
-                }
-            ],
-            "studio-CommercialBuildingRecovery": [
-                {
-                    "from": "failure_probability",
-                    "to": "mcs_failure"
-                }
-            ],
-            "studio-CapitalShocks": [
-                {
-                    "from": "failure_probability",
-                    "to": "failure_probability"
-                }
-            ],
-            "studio-WfnFunctionality": [
-                {
-                    "from": "sample_failure_state",
-                    "to": "wf_sample_failure_state"
-                },
-                {
-                    "from": "sample_failure_state",
-                    "to": "pp_sample_failure_state"
-                }
-            ]
-        },
-        "before": {
-            "studio-PipelineDamageRepairRate": [
-                {
-                    "from": "result",
-                    "to": "pipeline_repair_rate_damage"
-                }
-            ]
-        },
-        "pretty_name": "Pipeline Functionality",
-        "tags": ["Lifeline"],
-        "manual": "pipeline_functionality.html",
-        "inputs": {
-            "pipeline_repair_rate_damage": ["ergo:pipelineDamageVer3"]
-        }
-    },
-    "studio-HousingRecoverySequential": {
-        "before": {
-            "studio-PopulationDislocation": [
-                {
-                    "from": "result",
-                    "to": "population_dislocation_block"
-                }
-            ],
-            "studio-SocialVulnerabilityScore": [
-                {
-                    "from": "sv_result",
-                    "to": "sv_result"
+                    "to": "flood_damage"
                 }
             ]
         },
         "after": {},
-        "pretty_name": "Housing Recovery Sequential",
-        "tags": ["Socioeconomic", "Decision Support"],
-        "manual": "housing_household_recovery.html",
+        "pretty_name": "Combined Wind Wave Surge Building Loss",
+        "tags": ["Building"],
+        "manual": "combined_wind_wave_surge_building_loss.html",
         "inputs": {
-            "population_dislocation_block": ["incore:popDislocation"],
-            "tpm": ["incore:houseRecTransitionProbMatrix"],
-            "initial_stage_probabilities": ["incore:houseRecInitialStageProbability"],
-            "sv_result": ["incore:socialVulnerabilityScore"],
-            "zone_def_sv": ["incore:zoneDefinitionsSocialVulnerability"],
-            "zone_def_hhinc": ["incore:zoneDefinitionsHouseholdIncome"]
-        }
-    },
-    "studio-SocialVulnerabilityScore": {
-        "after": {
-            "studio-HousingRecoverySequential": [
-                {
-                    "from": "sv_result",
-                    "to": "sv_result"
-                }
-            ]
+            "buildings": [
+                "ergo:buildingInventoryVer4",
+                "ergo:buildingInventoryVer5",
+                "ergo:buildingInventoryVer6",
+                "ergo:buildingInventoryVer7"
+            ],
+            "wind_damage": ["ergo:buildingDamageVer6"],
+            "surge_wave_damage": ["ergo:buildingDamageVer6"],
+            "flood_damage": ["ergo:nsBuildingInventoryDamageVer4"],
+            "structural_cost": ["incore:structuralCostRatio"],
+            "content_cost": ["incore:contentCostRatio"]
         },
-        "before": {},
-        "pretty_name": "Social Vulnerability Score",
-        "tags": ["Socioeconomic"],
-        "manual": "social_vulnerability_score.html",
-        "inputs": {
-            "national_vulnerability_feature_averages": ["incore:socialVulnerabilityFeatureAverages"],
-            "social_vulnerability_demographic_factors": ["incore:socialVulnerabilityDemFactors"]
-        }
-    },
-    "studio-PipelineRestoration": {
-        "after": {
-            "studio-INDP": [
-                {
-                    "from": "pipeline_restoration",
-                    "to": "pipeline_restoration_time"
-                }
-            ]
-        },
-        "before": {
-            "studio-PipelineDamageRepairRate": [
-                {
-                    "from": "result",
-                    "to": "pipeline_damage"
-                }
-            ]
-        },
-        "pretty_name": "Pipeline Restoration",
-        "tags": ["Lifeline"],
-        "manual": "pipeline_restoration.html",
-        "inputs": {
-            "pipeline": ["ergo:buriedPipelineTopology", "ergo:pipeline"],
-            "pipeline_damage": ["ergo:pipelineDamageVer2", "ergo:pipelineDamageVer3"],
-            "dfr3_mapping_set": ["incore:dfr3MappingSet"]
-        }
-    },
-    "studio-NciFunctionality": {
-        "before": {
-            "studio-EpnFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "epf_subst_failure_results"
-                }
-            ],
-            "studio-PipelineFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "epf_subst_failure_results"
-                }
-            ],
-            "studio-WaterFacilityRestoration": [
-                {
-                    "from": "time_results",
-                    "to": "wds_time_results"
-                },
-                {
-                    "from": "inventory_restoration_map",
-                    "to": "wds_inventory_rest_map"
-                },
-                {
-                    "from": "inventory_restoration_map",
-                    "to": "epf_inventory_rest_map"
-                }
-            ],
-            "studio-WaterFacilityDamage": [
-                {
-                    "from": "result",
-                    "to": "wds_dmg_results"
-                }
-            ],
-            "studio-WfnFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "epf_subst_failure_results"
-                }
-            ],
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "failure_probability",
-                    "to": "epf_subst_failure_results"
-                }
-            ],
-            "studio-EpfRestoration": [
-                {
-                    "from": "time_results",
-                    "to": "epf_time_results"
-                },
-                {
-                    "from": "inventory_restoration_map",
-                    "to": "wds_inventory_rest_map"
-                },
-                {
-                    "from": "inventory_restoration_map",
-                    "to": "epf_inventory_rest_map"
-                }
-            ],
-            "studio-EpfDamage": [
-                {
-                    "from": "result",
-                    "to": "epf_damage"
-                }
-            ]
-        },
-        "after": {},
-        "pretty_name": "Network Cascading Interdependency Functionality",
-        "tags": ["Decision Support"],
-        "manual": "nci_functionality.html",
-        "inputs": {
-            "epf_network": ["incore:epnNetwork"],
-            "wds_network": ["incore:waterNetwork"],
-            "epf_wds_intdp_table": ["incore:networkInterdependencyTable"],
-            "wds_epf_intdp_table": ["incore:networkInterdependencyTable"],
-            "epf_subst_failure_results": ["incore:failureProbability"],
-            "epf_inventory_rest_map": ["incore:inventoryRestorationMap"],
-            "epf_time_results": ["incore:epfRestorationTime"],
-            "wds_dmg_results": ["ergo:waterFacilityDamageVer6"],
-            "wds_inventory_rest_map": ["incore:inventoryRestorationMap"],
-            "wds_time_results": ["incore:waterFacilityRestorationTime"],
-            "epf_damage": ["incore:epfDamageVer3"]
-        }
-    },
-    "studio-WaterFacilityRestoration": {
-        "before": {
-            "studio-WaterFacilityDamage": [
-                {
-                    "from": "result",
-                    "to": "damage"
-                }
-            ]
-        },
-        "after": {
-            "studio-NciFunctionality": [
-                {
-                    "from": "inventory_restoration_map",
-                    "to": "wds_inventory_rest_map"
-                },
-                {
-                    "from": "time_results",
-                    "to": "wds_time_results"
-                },
-                {
-                    "from": "inventory_restoration_map",
-                    "to": "epf_inventory_rest_map"
-                }
-            ],
-            "studio-INDP": [
-                {
-                    "from": "repair_times",
-                    "to": "wf_restoration_time"
-                }
-            ]
-        },
-        "pretty_name": "Water Facility Restoration",
-        "tags": ["Lifeline"],
-        "manual": "water_facility_restoration.html",
-        "inputs": {
-            "water_facilities": ["ergo:waterFacilityTopo"],
-            "dfr3_mapping_set": ["incore:dfr3MappingSet"],
-            "damage": ["ergo:waterFacilityDamageVer6"]
-        }
-    },
-    "studio-WaterFacilityDamage": {
-        "after": {
-            "studio-NciFunctionality": [
-                {
-                    "from": "result",
-                    "to": "wds_dmg_results"
-                }
-            ],
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "result",
-                    "to": "damage"
-                }
-            ],
-            "studio-WaterFacilityRestoration": [
-                {
-                    "from": "result",
-                    "to": "damage"
-                }
-            ]
-        },
-        "before": {},
-        "pretty_name": "Water Facility Damage",
-        "tags": ["Lifeline"],
-        "manual": "waterfacility_dmg.html",
-        "inputs": {
-            "hazard": ["earthquake", "tsunami"],
-            "water_facilities": ["ergo:waterFacilityTopo"],
-            "dfr3_mapping_set": ["incore:dfr3MappingSet"]
-        }
-    },
-    "studio-CapitalShocks": {
-        "before": {
-            "studio-PipelineFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "failure_probability"
-                }
-            ],
-            "studio-EpnFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "failure_probability"
-                }
-            ],
-            "studio-WfnFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "failure_probability"
-                }
-            ],
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "failure_probability",
-                    "to": "failure_probability"
-                }
-            ]
-        },
-        "after": {
-            "studio-GalvestonCGEModel": [
-                {
-                    "from": "sector_shocks",
-                    "to": "sector_shocks"
-                }
-            ],
-            "studio-MlEnabledCgeJoplin": [
-                {
-                    "from": "sector_shocks",
-                    "to": "sector_shocks"
-                }
-            ],
-            "studio-SeasideCGEModel": [
-                {
-                    "from": "sector_shocks",
-                    "to": "sector_shocks"
-                }
-            ],
-            "studio-JoplinCGEModel": [
-                {
-                    "from": "sector_shocks",
-                    "to": "sector_shocks"
-                }
-            ],
-            "studio-MlEnabledCgeSlc": [
-                {
-                    "from": "sector_shocks",
-                    "to": "sector_shocks"
-                }
-            ],
-            "studio-SaltLakeCGEModel": [
-                {
-                    "from": "sector_shocks",
-                    "to": "sector_shocks"
-                }
-            ]
-        },
-        "pretty_name": "Capital Shocks",
-        "tags": ["Economic"],
-        "manual": "capital_shocks.html",
-        "inputs": {
-            "buildings": ["ergo:buildingInventoryVer5", "ergo:buildingInventoryVer6", "ergo:buildingInventoryVer7"],
-            "buildings_to_sectors": ["incore:buildingsToSectors"],
-            "failure_probability": ["incore:failureProbability"]
+        "parameter_defaults": {
+            "result_name": "combined-wind-wave-surge-building-loss-result"
         }
     },
     "studio-CommercialBuildingRecovery": {
         "before": {
-            "studio-EpnFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "mcs_failure"
-                }
-            ],
-            "studio-PipelineFunctionality": [
-                {
-                    "from": "failure_probability",
-                    "to": "mcs_failure"
-                }
-            ],
             "studio-WfnFunctionality": [
                 {
                     "from": "failure_probability",
@@ -1015,12 +229,12 @@
             ],
             "studio-MonteCarloLimitStateProbability": [
                 {
-                    "from": "sample_damage_states",
-                    "to": "sample_damage_states"
-                },
-                {
                     "from": "failure_probability",
                     "to": "mcs_failure"
+                },
+                {
+                    "from": "sample_damage_states",
+                    "to": "sample_damage_states"
                 }
             ],
             "studio-BuildingStructuralDamage": [
@@ -1029,10 +243,22 @@
                     "to": "building_dmg"
                 }
             ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "failure_probability",
+                    "to": "mcs_failure"
+                }
+            ],
             "studio-CombinedWindWaveSurgeBuildingDamage": [
                 {
                     "from": "ds_result",
                     "to": "building_dmg"
+                }
+            ],
+            "studio-PipelineFunctionality": [
+                {
+                    "from": "failure_probability",
+                    "to": "mcs_failure"
                 }
             ]
         },
@@ -1052,6 +278,12 @@
             "mcs_failure": ["incore:failureProbability"],
             "delay_factors": ["incore:buildingRecoveryFactors"],
             "building_dmg": ["ergo:buildingDamageVer6"]
+        },
+        "parameter_defaults": {
+            "result_name": "commercial-building-recovery-result",
+            "num_samples": 10,
+            "repair_key": null,
+            "seed": 1234
         }
     },
     "studio-CumulativeBuildingDamage": {
@@ -1066,16 +298,6 @@
                     "to": "eq_bldg_dmg"
                 }
             ],
-            "studio-BuildingStructuralDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "eq_bldg_dmg"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "tsunami_bldg_dmg"
-                }
-            ],
             "studio-CumulativeBuildingDamage": [
                 {
                     "from": "combined-result",
@@ -1085,9 +307,37 @@
                     "from": "combined-result",
                     "to": "tsunami_bldg_dmg"
                 }
+            ],
+            "studio-BuildingStructuralDamage": [
+                {
+                    "from": "ds_result",
+                    "to": "tsunami_bldg_dmg"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "eq_bldg_dmg"
+                }
             ]
         },
         "after": {
+            "studio-JoplinEmpiricalBuildingRestoration": [
+                {
+                    "from": "combined-result",
+                    "to": "building_dmg"
+                }
+            ],
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "combined-result",
+                    "to": "damage"
+                }
+            ],
+            "studio-MeanDamage": [
+                {
+                    "from": "combined-result",
+                    "to": "damage"
+                }
+            ],
             "studio-PopulationDislocation": [
                 {
                     "from": "combined-result",
@@ -1103,24 +353,6 @@
                     "from": "combined-result",
                     "to": "tsunami_bldg_dmg"
                 }
-            ],
-            "studio-JoplinEmpiricalBuildingRestoration": [
-                {
-                    "from": "combined-result",
-                    "to": "building_dmg"
-                }
-            ],
-            "studio-MeanDamage": [
-                {
-                    "from": "combined-result",
-                    "to": "damage"
-                }
-            ],
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "combined-result",
-                    "to": "damage"
-                }
             ]
         },
         "pretty_name": "Cumulative Building Damage",
@@ -1129,19 +361,23 @@
         "inputs": {
             "eq_bldg_dmg": ["ergo:buildingDamageVer5", "ergo:buildingDamageVer6"],
             "tsunami_bldg_dmg": ["ergo:buildingDamageVer5", "ergo:buildingDamageVer6"]
+        },
+        "parameter_defaults": {
+            "result_name": "cumulative-building-damage-result",
+            "num_cpu": 4
         }
     },
     "studio-JoplinEmpiricalBuildingRestoration": {
         "before": {
-            "studio-BuildingNonStructDamage": [
+            "studio-CumulativeBuildingDamage": [
                 {
-                    "from": "result",
+                    "from": "combined-result",
                     "to": "building_dmg"
                 }
             ],
-            "studio-BuildingStructuralDamage": [
+            "studio-BuildingNonStructDamage": [
                 {
-                    "from": "ds_result",
+                    "from": "result",
                     "to": "building_dmg"
                 }
             ],
@@ -1151,9 +387,9 @@
                     "to": "building_dmg"
                 }
             ],
-            "studio-CumulativeBuildingDamage": [
+            "studio-BuildingStructuralDamage": [
                 {
-                    "from": "combined-result",
+                    "from": "ds_result",
                     "to": "building_dmg"
                 }
             ]
@@ -1180,6 +416,11 @@
                 "ergo:nsBuildingInventoryDamageVer4"
             ],
             "building_functionality_level": ["incore:buildingFuncTargetVer1"]
+        },
+        "parameter_defaults": {
+            "result_name": "joplin-empirical-building-restoration",
+            "target_functionality_level": 0,
+            "seed": 1234
         }
     },
     "studio-MeanDamage": {
@@ -1202,12 +443,6 @@
                     "to": "damage"
                 }
             ],
-            "studio-CumulativeBuildingDamage": [
-                {
-                    "from": "combined-result",
-                    "to": "damage"
-                }
-            ],
             "studio-BridgeDamage": [
                 {
                     "from": "result",
@@ -1217,6 +452,12 @@
             "studio-BuildingNonStructDamage": [
                 {
                     "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-CumulativeBuildingDamage": [
+                {
+                    "from": "combined-result",
                     "to": "damage"
                 }
             ]
@@ -1256,20 +497,220 @@
                 "ergo:buildingDSDamageRatios",
                 "ergo:roadDamageRatios"
             ]
+        },
+        "parameter_defaults": {
+            "result_name": "mean-damage-result",
+            "damage_interval_keys": "['DS_0', 'DS_1', 'DS_2', 'DS_3', 'DS_4']",
+            "num_cpu": 1
+        }
+    },
+    "studio-MonteCarloLimitStateProbability": {
+        "before": {
+            "studio-WaterFacilityDamage": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-CombinedWindWaveSurgeBuildingDamage": [
+                {
+                    "from": "ds_result",
+                    "to": "damage"
+                }
+            ],
+            "studio-BuildingStructuralDamage": [
+                {
+                    "from": "ds_result",
+                    "to": "damage"
+                }
+            ],
+            "studio-RoadDamage": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-EpfDamage": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-BridgeDamage": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-BuildingNonStructDamage": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-PipelineDamage": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-CumulativeBuildingDamage": [
+                {
+                    "from": "combined-result",
+                    "to": "damage"
+                }
+            ]
+        },
+        "after": {
+            "studio-BuildingFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "substations_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "building_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "poles_damage_mcs_samples"
+                }
+            ],
+            "studio-INDP": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_failure_state"
+                },
+                {
+                    "from": "sample_damage_states",
+                    "to": "wf_damage_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pipeline_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_failure_state"
+                },
+                {
+                    "from": "sample_damage_states",
+                    "to": "epf_damage_state"
+                }
+            ],
+            "studio-WfnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_sample_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pp_sample_failure_state"
+                }
+            ],
+            "studio-EpfRepairCost": [
+                {
+                    "from": "sample_damage_states",
+                    "to": "sample_damage_states"
+                }
+            ],
+            "studio-NciFunctionality": [
+                {
+                    "from": "failure_probability",
+                    "to": "epf_subst_failure_results"
+                }
+            ],
+            "studio-ResidentialBuildingRecovery": [
+                {
+                    "from": "sample_damage_states",
+                    "to": "sample_damage_states"
+                }
+            ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_sample_failure_state"
+                }
+            ],
+            "studio-CapitalShocks": [
+                {
+                    "from": "failure_probability",
+                    "to": "failure_probability"
+                }
+            ],
+            "studio-WaterFacilityRepairCost": [
+                {
+                    "from": "sample_damage_states",
+                    "to": "sample_damage_states"
+                }
+            ],
+            "studio-CommercialBuildingRecovery": [
+                {
+                    "from": "sample_damage_states",
+                    "to": "sample_damage_states"
+                },
+                {
+                    "from": "failure_probability",
+                    "to": "mcs_failure"
+                }
+            ],
+            "studio-BuildingFailureClusterTool": [
+                {
+                    "from": "failure_probability",
+                    "to": "Building Failure Probability"
+                }
+            ]
+        },
+        "pretty_name": "Monte Carlo Limit State Probability",
+        "tags": ["Decision Support"],
+        "manual": "mc_limit_state_prob.html",
+        "inputs": {
+            "damage": [
+                "ergo:buildingDamageVer4",
+                "ergo:buildingDamageVer5",
+                "ergo:buildingDamageVer6",
+                "ergo:nsBuildingInventoryDamage",
+                "ergo:nsBuildingInventoryDamageVer2",
+                "ergo:nsBuildingInventoryDamageVer3",
+                "ergo:nsBuildingInventoryDamageVer4",
+                "ergo:bridgeDamage",
+                "ergo:bridgeDamageVer2",
+                "ergo:bridgeDamageVer3",
+                "ergo:waterFacilityDamageVer4",
+                "ergo:waterFacilityDamageVer5",
+                "ergo:waterFacilityDamageVer6",
+                "ergo:roadDamage",
+                "ergo:roadDamageVer2",
+                "ergo:roadDamageVer3",
+                "incore:epfDamage",
+                "incore:epfDamageVer2",
+                "incore:epfDamageVer3",
+                "incore:pipelineDamage",
+                "incore:pipelineDamageVer2",
+                "incore:pipelineDamageVer3"
+            ]
+        },
+        "parameter_defaults": {
+            "result_name": "monte_carlo_limit_state_probability-result",
+            "num_cpu": 8,
+            "num_samples": 10,
+            "damage_interval_keys": "['DS_0', 'DS_1', 'DS_2', 'DS_3']",
+            "failure_state_keys": "['DS_1', 'DS_2', 'DS_3']",
+            "seed": 1234
         }
     },
     "studio-PopulationDislocation": {
         "before": {
-            "studio-BuildingStructuralDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "building_dmg"
-                }
-            ],
             "studio-HousingUnitAllocation": [
                 {
                     "from": "result",
                     "to": "housing_unit_allocation"
+                }
+            ],
+            "studio-CumulativeBuildingDamage": [
+                {
+                    "from": "combined-result",
+                    "to": "building_dmg"
                 }
             ],
             "studio-CombinedWindWaveSurgeBuildingDamage": [
@@ -1278,20 +719,14 @@
                     "to": "building_dmg"
                 }
             ],
-            "studio-CumulativeBuildingDamage": [
+            "studio-BuildingStructuralDamage": [
                 {
-                    "from": "combined-result",
+                    "from": "ds_result",
                     "to": "building_dmg"
                 }
             ]
         },
         "after": {
-            "studio-INDP": [
-                {
-                    "from": "result",
-                    "to": "pop_dislocation"
-                }
-            ],
             "studio-BuyoutDecision": [
                 {
                     "from": "result",
@@ -1309,6 +744,18 @@
                     "from": "result",
                     "to": "population_dislocation_block"
                 }
+            ],
+            "studio-INDP": [
+                {
+                    "from": "result",
+                    "to": "pop_dislocation"
+                }
+            ],
+            "studio-DislPostProcessTool": [
+                {
+                    "from": "result",
+                    "to": "Dislocation Output"
+                }
             ]
         },
         "pretty_name": "Population Dislocation",
@@ -1324,6 +771,910 @@
             "housing_unit_allocation": ["incore:housingUnitAllocation"],
             "block_group_data": ["incore:blockGroupData"],
             "value_loss_param": ["incore:valuLossParam"]
+        },
+        "parameter_defaults": {
+            "result_name": "population-dislocation-result",
+            "seed": 1234,
+            "choice_dislocation": false,
+            "choice_dislocation_cutoff": 0.0,
+            "choice_dislocation_ds": null,
+            "unsafe_occupancy": false,
+            "unsafe_occupancy_cutoff": 0.0,
+            "unsafe_occupancy_ds": null
+        }
+    },
+    "studio-BuildingStructuralDamage": {
+        "after": {
+            "studio-MeanDamage": [
+                {
+                    "from": "ds_result",
+                    "to": "damage"
+                }
+            ],
+            "studio-CumulativeBuildingDamage": [
+                {
+                    "from": "ds_result",
+                    "to": "tsunami_bldg_dmg"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "eq_bldg_dmg"
+                }
+            ],
+            "studio-CombinedWindWaveSurgeBuildingDamage": [
+                {
+                    "from": "ds_result",
+                    "to": "surge_wave_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "wind_damage"
+                }
+            ],
+            "studio-CombinedWindWaveSurgeBuildingLoss": [
+                {
+                    "from": "ds_result",
+                    "to": "wind_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "surge_wave_damage"
+                }
+            ],
+            "studio-CommercialBuildingRecovery": [
+                {
+                    "from": "ds_result",
+                    "to": "building_dmg"
+                }
+            ],
+            "studio-BuyoutDecision": [
+                {
+                    "from": "ds_result",
+                    "to": "future_building_damage"
+                },
+                {
+                    "from": "ds_result",
+                    "to": "past_building_damage"
+                }
+            ],
+            "studio-PopulationDislocation": [
+                {
+                    "from": "ds_result",
+                    "to": "building_dmg"
+                }
+            ],
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "ds_result",
+                    "to": "damage"
+                }
+            ],
+            "studio-JoplinEmpiricalBuildingRestoration": [
+                {
+                    "from": "ds_result",
+                    "to": "building_dmg"
+                }
+            ],
+            "studio-MaxDamageStateTool": [
+                {
+                    "from": "ds_result",
+                    "to": "Output dataset"
+                }
+            ]
+        },
+        "before": {},
+        "pretty_name": "Building Structural Damage",
+        "tags": ["Building"],
+        "manual": "building_structural_dmg.html",
+        "inputs": {
+            "hazard": ["earthquake", "tornado", "hurricane", "flood", "tsunami"],
+            "buildings": [
+                "ergo:buildingInventoryVer4",
+                "ergo:buildingInventoryVer5",
+                "ergo:buildingInventoryVer6",
+                "ergo:buildingInventoryVer7"
+            ],
+            "dfr3_mapping_set": ["incore:dfr3MappingSet"],
+            "retrofit_strategy": ["incore:retrofitStrategy"]
+        },
+        "parameter_defaults": {
+            "result_name": "building-struct-dmg-result",
+            "hazard_type": null,
+            "hazard_id": null,
+            "fragility_key": null,
+            "use_liquefaction": false,
+            "use_hazard_uncertainty": false,
+            "num_cpu": 1,
+            "seed": 1234,
+            "liquefaction_geology_dataset_id": null
+        }
+    },
+    "studio-INDP": {
+        "before": {
+            "studio-WaterFacilityRestoration": [
+                {
+                    "from": "repair_times",
+                    "to": "wf_restoration_time"
+                }
+            ],
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_failure_state"
+                },
+                {
+                    "from": "sample_damage_states",
+                    "to": "epf_damage_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pipeline_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_failure_state"
+                },
+                {
+                    "from": "sample_damage_states",
+                    "to": "wf_damage_state"
+                }
+            ],
+            "studio-WfnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "pipeline_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_failure_state"
+                }
+            ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pipeline_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_failure_state"
+                }
+            ],
+            "studio-PipelineFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pipeline_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_failure_state"
+                }
+            ],
+            "studio-PipelineRestoration": [
+                {
+                    "from": "pipeline_restoration",
+                    "to": "pipeline_restoration_time"
+                }
+            ],
+            "studio-PopulationDislocation": [
+                {
+                    "from": "result",
+                    "to": "pop_dislocation"
+                }
+            ],
+            "studio-EpfRepairCost": [
+                {
+                    "from": "result",
+                    "to": "epf_repair_cost"
+                },
+                {
+                    "from": "result",
+                    "to": "wf_repair_cost"
+                }
+            ],
+            "studio-WaterFacilityRepairCost": [
+                {
+                    "from": "result",
+                    "to": "epf_repair_cost"
+                },
+                {
+                    "from": "result",
+                    "to": "wf_repair_cost"
+                }
+            ],
+            "studio-EpfRestoration": [
+                {
+                    "from": "repair_times",
+                    "to": "epf_restoration_time"
+                }
+            ],
+            "studio-PipelineRepairCost": [
+                {
+                    "from": "result",
+                    "to": "pipeline_repair_cost"
+                }
+            ]
+        },
+        "after": {},
+        "pretty_name": "Infrastructure Network Disruption Planning",
+        "tags": ["Decision Support"],
+        "manual": "indp.html",
+        "inputs": {
+            "wf_repair_cost": ["incore:repairCost"],
+            "wf_restoration_time": ["incore:waterFacilityRepairTime"],
+            "epf_repair_cost": ["incore:repairCost"],
+            "epf_restoration_time": ["incore:epfRepairTime"],
+            "pipeline_repair_cost": ["incore:pipelineRepairCost"],
+            "pipeline_restoration_time": ["incore:pipelineRestorationVer1"],
+            "power_network": ["incore:epnNetwork"],
+            "water_network": ["incore:waterNetwork"],
+            "powerline_supply_demand_info": ["incore:powerLineSupplyDemandInfo"],
+            "epf_supply_demand_info": ["incore:epfSupplyDemandInfo"],
+            "wf_supply_demand_info": ["incore:waterFacilitySupplyDemandInfo"],
+            "pipeline_supply_demand_info": ["incore:pipelineSupplyDemandInfo"],
+            "interdep": ["incore:interdep"],
+            "wf_failure_state": ["incore:sampleFailureState"],
+            "wf_damage_state": ["incore:sampleDamageState"],
+            "pipeline_failure_state": ["incore:sampleFailureState"],
+            "epf_failure_state": ["incore:sampleFailureState"],
+            "epf_damage_state": ["incore:sampleDamageState"],
+            "dt_params": ["incore:dTParams"],
+            "pop_dislocation": ["incore:popDislocation"],
+            "bldgs2elec": ["incore:bldgs2elec"],
+            "bldgs2wter": ["incore:bldgs2wter"]
+        },
+        "parameter_defaults": {
+            "network_type": "from_csv",
+            "MAGS": "[1000]",
+            "sample_range": "[0]",
+            "dislocation_data_type": "incore",
+            "return_model": "step_function",
+            "testbed_name": null,
+            "extra_commodity": null,
+            "RC": null,
+            "layers": null,
+            "method": "INDP",
+            "t_steps": 10,
+            "time_resource": true,
+            "save_model": false,
+            "solver_engine": null,
+            "solver_path": null,
+            "solver_time_limit": null
+        }
+    },
+    "studio-PipelineRepairCost": {
+        "after": {
+            "studio-INDP": [
+                {
+                    "from": "result",
+                    "to": "pipeline_repair_cost"
+                }
+            ]
+        },
+        "before": {
+            "studio-PipelineDamageRepairRate": [
+                {
+                    "from": "result",
+                    "to": "pipeline_dmg"
+                }
+            ]
+        },
+        "pretty_name": "Pipeline Repair Cost",
+        "tags": ["Lifeline"],
+        "manual": "pipeline_repair_cost.html",
+        "inputs": {
+            "pipeline": ["ergo:buriedPipelineTopology", "ergo:pipeline"],
+            "replacement_cost": ["incore:replacementCost"],
+            "pipeline_dmg": ["ergo:pipelineDamageVer3"],
+            "pipeline_dmg_ratios": ["incore:pipelineDamageRatios"]
+        },
+        "parameter_defaults": {
+            "result_name": "pipeline-repair-cost-result",
+            "num_cpu": 1,
+            "diameter": 20,
+            "segment_length": 20
+        }
+    },
+    "studio-EpfRepairCost": {
+        "after": {
+            "studio-INDP": [
+                {
+                    "from": "result",
+                    "to": "wf_repair_cost"
+                },
+                {
+                    "from": "result",
+                    "to": "epf_repair_cost"
+                }
+            ]
+        },
+        "before": {
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "sample_damage_states",
+                    "to": "sample_damage_states"
+                }
+            ]
+        },
+        "pretty_name": "Electric Power Facility Repair Cost",
+        "tags": ["Lifeline"],
+        "manual": "epf_repair_cost.html",
+        "inputs": {
+            "epfs": ["incore:epf", "ergo:epf", "incore:epfVer2"],
+            "replacement_cost": ["incore:replacementCost"],
+            "sample_damage_states": ["incore:sampleDamageState"],
+            "epf_dmg_ratios": ["incore:epfDamageRatios"]
+        },
+        "parameter_defaults": {
+            "result_name": "epf-repair-cost-result",
+            "num_cpu": 1
+        }
+    },
+    "studio-WaterFacilityRepairCost": {
+        "after": {
+            "studio-INDP": [
+                {
+                    "from": "result",
+                    "to": "wf_repair_cost"
+                },
+                {
+                    "from": "result",
+                    "to": "epf_repair_cost"
+                }
+            ]
+        },
+        "before": {
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "sample_damage_states",
+                    "to": "sample_damage_states"
+                }
+            ]
+        },
+        "pretty_name": "Water Facility Repair Cost",
+        "tags": ["Lifeline"],
+        "manual": "water_facility_repair_cost.html",
+        "inputs": {
+            "water_facilities": ["ergo:waterFacilityTopo"],
+            "replacement_cost": ["incore:replacementCost"],
+            "sample_damage_states": ["incore:sampleDamageState"],
+            "wf_dmg_ratios": ["incore:waterFacilityDamageRatios"]
+        },
+        "parameter_defaults": {
+            "result_name": "water-facility-repair-cost-result",
+            "num_cpu": 1
+        }
+    },
+    "studio-BuildingEconLoss": {
+        "before": {
+            "studio-MeanDamage": [
+                {
+                    "from": "result",
+                    "to": "building_mean_dmg"
+                }
+            ]
+        },
+        "after": {},
+        "pretty_name": "Building Economic Loss",
+        "tags": ["Building"],
+        "manual": "building_loss.html",
+        "inputs": {
+            "buildings": [
+                "ergo:buildingInventory",
+                "ergo:buildingInventoryVer4",
+                "ergo:buildingInventoryVer5",
+                "ergo:buildingInventoryVer6",
+                "ergo:buildingInventoryVer7"
+            ],
+            "building_mean_dmg": ["ergo:meanDamage"],
+            "occupancy_multiplier": ["incore:buildingOccupancyMultiplier"]
+        },
+        "parameter_defaults": {
+            "result_name": "building-econ-loss-result",
+            "inflation_factor": 0.0
+        }
+    },
+    "studio-PipelineFunctionality": {
+        "before": {
+            "studio-PipelineDamageRepairRate": [
+                {
+                    "from": "result",
+                    "to": "pipeline_repair_rate_damage"
+                }
+            ]
+        },
+        "after": {
+            "studio-BuildingFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "substations_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "building_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "poles_damage_mcs_samples"
+                }
+            ],
+            "studio-INDP": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pipeline_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_failure_state"
+                }
+            ],
+            "studio-WfnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_sample_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pp_sample_failure_state"
+                }
+            ],
+            "studio-NciFunctionality": [
+                {
+                    "from": "failure_probability",
+                    "to": "epf_subst_failure_results"
+                }
+            ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_sample_failure_state"
+                }
+            ],
+            "studio-CapitalShocks": [
+                {
+                    "from": "failure_probability",
+                    "to": "failure_probability"
+                }
+            ],
+            "studio-CommercialBuildingRecovery": [
+                {
+                    "from": "failure_probability",
+                    "to": "mcs_failure"
+                }
+            ]
+        },
+        "pretty_name": "Pipeline Functionality",
+        "tags": ["Lifeline"],
+        "manual": "pipeline_functionality.html",
+        "inputs": {
+            "pipeline_repair_rate_damage": ["ergo:pipelineDamageVer3"]
+        },
+        "parameter_defaults": {
+            "result_name": "pipeline-functionality-result",
+            "num_samples": 100
+        }
+    },
+    "studio-PipelineRestoration": {
+        "before": {
+            "studio-PipelineDamageRepairRate": [
+                {
+                    "from": "result",
+                    "to": "pipeline_damage"
+                }
+            ]
+        },
+        "after": {
+            "studio-INDP": [
+                {
+                    "from": "pipeline_restoration",
+                    "to": "pipeline_restoration_time"
+                }
+            ]
+        },
+        "pretty_name": "Pipeline Restoration",
+        "tags": ["Lifeline"],
+        "manual": "pipeline_restoration.html",
+        "inputs": {
+            "pipeline": ["ergo:buriedPipelineTopology", "ergo:pipeline"],
+            "pipeline_damage": ["ergo:pipelineDamageVer2", "ergo:pipelineDamageVer3"],
+            "dfr3_mapping_set": ["incore:dfr3MappingSet"]
+        },
+        "parameter_defaults": {
+            "result_name": "pipeline-restoration-result",
+            "num_cpu": 1,
+            "num_available_workers": 4,
+            "restoration_key": "Restoration ID Code"
+        }
+    },
+    "studio-PipelineDamageRepairRate": {
+        "after": {
+            "studio-PipelineFunctionality": [
+                {
+                    "from": "result",
+                    "to": "pipeline_repair_rate_damage"
+                }
+            ],
+            "studio-PipelineRepairCost": [
+                {
+                    "from": "result",
+                    "to": "pipeline_dmg"
+                }
+            ],
+            "studio-PipelineRestoration": [
+                {
+                    "from": "result",
+                    "to": "pipeline_damage"
+                }
+            ]
+        },
+        "before": {},
+        "pretty_name": "Pipeline Damage Repair Rate",
+        "tags": ["Lifeline"],
+        "manual": "pipeline_dmg_w_repair_rate.html",
+        "inputs": {
+            "hazard": ["earthquake", "tsunami"],
+            "pipeline": ["ergo:buriedPipelineTopology", "ergo:pipeline"],
+            "dfr3_mapping_set": ["incore:dfr3MappingSet"]
+        },
+        "parameter_defaults": {
+            "result_name": "pipeline-damage-repair-rate-result",
+            "hazard_type": null,
+            "hazard_id": null,
+            "fragility_key": null,
+            "use_liquefaction": false,
+            "liquefaction_fragility_key": null,
+            "num_cpu": 1,
+            "liquefaction_geology_dataset_id": null
+        }
+    },
+    "studio-HousingRecoverySequential": {
+        "before": {
+            "studio-SocialVulnerabilityScore": [
+                {
+                    "from": "sv_result",
+                    "to": "sv_result"
+                }
+            ],
+            "studio-PopulationDislocation": [
+                {
+                    "from": "result",
+                    "to": "population_dislocation_block"
+                }
+            ]
+        },
+        "after": {},
+        "pretty_name": "Housing Recovery Sequential",
+        "tags": ["Socioeconomic", "Decision Support"],
+        "manual": "housing_household_recovery.html",
+        "inputs": {
+            "population_dislocation_block": ["incore:popDislocation"],
+            "tpm": ["incore:houseRecTransitionProbMatrix"],
+            "initial_stage_probabilities": ["incore:houseRecInitialStageProbability"],
+            "sv_result": ["incore:socialVulnerabilityScore"],
+            "zone_def_sv": ["incore:zoneDefinitionsSocialVulnerability"],
+            "zone_def_hhinc": ["incore:zoneDefinitionsHouseholdIncome"]
+        },
+        "parameter_defaults": {
+            "result_name": "housing-recovery-sequential-result",
+            "t_delta": null,
+            "t_final": null,
+            "seed": 1234,
+            "num_cpu": 4
+        }
+    },
+    "studio-HousingValuationRecovery": {
+        "before": {
+            "studio-PopulationDislocation": [
+                {
+                    "from": "result",
+                    "to": "population_dislocation"
+                }
+            ]
+        },
+        "after": {},
+        "pretty_name": "Housing Valuation Recovery",
+        "tags": ["Socioeconomic"],
+        "manual": "housing_recovery.html",
+        "inputs": {
+            "population_dislocation": ["incore:popDislocation"],
+            "building_area": ["incore:buildingInventoryArea"],
+            "census_block_groups_data": ["incore:censusBlockGroupsData"],
+            "census_appraisal_data": ["incore:censusAppraisalData"]
+        },
+        "parameter_defaults": {
+            "base_year": 2008,
+            "result_name": "housing-valuation-recovery-result"
+        }
+    },
+    "studio-SocialVulnerabilityScore": {
+        "after": {
+            "studio-HousingRecoverySequential": [
+                {
+                    "from": "sv_result",
+                    "to": "sv_result"
+                }
+            ]
+        },
+        "before": {},
+        "pretty_name": "Social Vulnerability Score",
+        "tags": ["Socioeconomic"],
+        "manual": "social_vulnerability_score.html",
+        "inputs": {
+            "national_vulnerability_feature_averages": ["incore:socialVulnerabilityFeatureAverages"],
+            "social_vulnerability_demographic_factors": ["incore:socialVulnerabilityDemFactors"]
+        },
+        "parameter_defaults": {
+            "result_name": "social-vulnerability-score-result"
+        }
+    },
+    "studio-HousingUnitAllocation": {
+        "after": {
+            "studio-BuyoutDecision": [
+                {
+                    "from": "result",
+                    "to": "housing_unit_allocation"
+                }
+            ],
+            "studio-PopulationDislocation": [
+                {
+                    "from": "result",
+                    "to": "housing_unit_allocation"
+                }
+            ]
+        },
+        "before": {},
+        "pretty_name": "Housing Unit Allocation",
+        "tags": ["Socioeconomic"],
+        "manual": "housingunitallocation.html",
+        "inputs": {
+            "buildings": [
+                "ergo:buildingInventoryVer4",
+                "ergo:buildingInventoryVer5",
+                "ergo:buildingInventoryVer6",
+                "ergo:buildingInventoryVer7"
+            ],
+            "housing_unit_inventory": ["incore:housingUnitInventory"],
+            "address_point_inventory": ["incore:addressPoints"]
+        },
+        "parameter_defaults": {
+            "result_name": "housing-unit-allocation-result",
+            "seed": 1234,
+            "iterations": 10
+        }
+    },
+    "studio-NciFunctionality": {
+        "before": {
+            "studio-WaterFacilityDamage": [
+                {
+                    "from": "result",
+                    "to": "wds_dmg_results"
+                }
+            ],
+            "studio-EpfRestoration": [
+                {
+                    "from": "inventory_restoration_map",
+                    "to": "epf_inventory_rest_map"
+                },
+                {
+                    "from": "inventory_restoration_map",
+                    "to": "wds_inventory_rest_map"
+                },
+                {
+                    "from": "time_results",
+                    "to": "epf_time_results"
+                }
+            ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "failure_probability",
+                    "to": "epf_subst_failure_results"
+                }
+            ],
+            "studio-WaterFacilityRestoration": [
+                {
+                    "from": "inventory_restoration_map",
+                    "to": "epf_inventory_rest_map"
+                },
+                {
+                    "from": "time_results",
+                    "to": "wds_time_results"
+                },
+                {
+                    "from": "inventory_restoration_map",
+                    "to": "wds_inventory_rest_map"
+                }
+            ],
+            "studio-PipelineFunctionality": [
+                {
+                    "from": "failure_probability",
+                    "to": "epf_subst_failure_results"
+                }
+            ],
+            "studio-EpfDamage": [
+                {
+                    "from": "result",
+                    "to": "epf_damage"
+                }
+            ],
+            "studio-WfnFunctionality": [
+                {
+                    "from": "failure_probability",
+                    "to": "epf_subst_failure_results"
+                }
+            ],
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "failure_probability",
+                    "to": "epf_subst_failure_results"
+                }
+            ]
+        },
+        "after": {},
+        "pretty_name": "Network Cascading Interdependency Functionality",
+        "tags": ["Decision Support"],
+        "manual": "nci_functionality.html",
+        "inputs": {
+            "epf_network": ["incore:epnNetwork"],
+            "wds_network": ["incore:waterNetwork"],
+            "epf_wds_intdp_table": ["incore:networkInterdependencyTable"],
+            "wds_epf_intdp_table": ["incore:networkInterdependencyTable"],
+            "epf_subst_failure_results": ["incore:failureProbability"],
+            "epf_inventory_rest_map": ["incore:inventoryRestorationMap"],
+            "epf_time_results": ["incore:epfRestorationTime"],
+            "wds_dmg_results": ["ergo:waterFacilityDamageVer6"],
+            "wds_inventory_rest_map": ["incore:inventoryRestorationMap"],
+            "wds_time_results": ["incore:waterFacilityRestorationTime"],
+            "epf_damage": ["incore:epfDamageVer3"]
+        },
+        "parameter_defaults": {
+            "result_name": "nci-functionality-result",
+            "discretized_days": "[1, 3, 7, 30, 90]"
+        }
+    },
+    "studio-WaterFacilityRestoration": {
+        "before": {
+            "studio-WaterFacilityDamage": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ]
+        },
+        "after": {
+            "studio-INDP": [
+                {
+                    "from": "repair_times",
+                    "to": "wf_restoration_time"
+                }
+            ],
+            "studio-NciFunctionality": [
+                {
+                    "from": "inventory_restoration_map",
+                    "to": "wds_inventory_rest_map"
+                },
+                {
+                    "from": "time_results",
+                    "to": "wds_time_results"
+                },
+                {
+                    "from": "inventory_restoration_map",
+                    "to": "epf_inventory_rest_map"
+                }
+            ]
+        },
+        "pretty_name": "Water Facility Restoration",
+        "tags": ["Lifeline"],
+        "manual": "water_facility_restoration.html",
+        "inputs": {
+            "water_facilities": ["ergo:waterFacilityTopo"],
+            "dfr3_mapping_set": ["incore:dfr3MappingSet"],
+            "damage": ["ergo:waterFacilityDamageVer6"]
+        },
+        "parameter_defaults": {
+            "result_name": "water-facility-restoration-result",
+            "restoration_key": "Restoration ID Code",
+            "end_time": 100.0,
+            "time_interval": 1.0,
+            "pf_interval": 0.05,
+            "discretized_days": "[1, 3, 7, 30, 90]"
+        }
+    },
+    "studio-WaterFacilityDamage": {
+        "after": {
+            "studio-WaterFacilityRestoration": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-NciFunctionality": [
+                {
+                    "from": "result",
+                    "to": "wds_dmg_results"
+                }
+            ]
+        },
+        "before": {},
+        "pretty_name": "Water Facility Damage",
+        "tags": ["Lifeline"],
+        "manual": "waterfacility_dmg.html",
+        "inputs": {
+            "hazard": ["earthquake", "tsunami"],
+            "water_facilities": ["ergo:waterFacilityTopo"],
+            "dfr3_mapping_set": ["incore:dfr3MappingSet"]
+        },
+        "parameter_defaults": {
+            "result_name": "water-facility-damage-result",
+            "hazard_type": null,
+            "hazard_id": null,
+            "fragility_key": null,
+            "use_liquefaction": false,
+            "liquefaction_geology_dataset_id": null,
+            "liquefaction_fragility_key": null,
+            "use_hazard_uncertainty": false,
+            "num_cpu": 1
+        }
+    },
+    "studio-BridgeDamage": {
+        "after": {
+            "studio-MeanDamage": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ],
+            "studio-MaxDamageStateTool": [
+                {
+                    "from": "ds_result",
+                    "to": "Output dataset"
+                }
+            ]
+        },
+        "before": {},
+        "pretty_name": "Bridge Damage",
+        "tags": ["Bridge"],
+        "manual": "bridge_dmg.html",
+        "inputs": {
+            "hazard": ["earthquake", "tornado", "hurricane", "flood", "tsunami"],
+            "bridges": ["ergo:bridges", "ergo:bridgesVer2", "ergo:bridgesVer3"],
+            "dfr3_mapping_set": ["incore:dfr3MappingSet"]
+        },
+        "parameter_defaults": {
+            "result_name": "bridge-damage-result",
+            "fragility_key": null,
+            "use_liquefaction": false,
+            "liquefaction_geology_dataset_id": null,
+            "use_hazard_uncertainty": false,
+            "num_cpu": 4,
+            "hazard_id": null,
+            "hazard_type": null
         }
     },
     "studio-RoadDamage": {
@@ -1349,186 +1700,320 @@
             "hazard": ["earthquake", "hurricane", "tsunami"],
             "roads": ["ergo:roadLinkTopo", "incore:roads", "ergo:roadLinkTopoVer2"],
             "dfr3_mapping_set": ["incore:dfr3MappingSet"]
-        }
-    },
-    "studio-PipelineDamage": {
-        "after": {
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "result",
-                    "to": "damage"
-                }
-            ]
         },
-        "before": {},
-        "pretty_name": "Pipeline Damage",
-        "tags": ["Lifeline"],
-        "manual": "pipeline_dmg.html",
-        "inputs": {
-            "hazard": ["earthquake", "tsunami"],
-            "pipeline": ["ergo:buriedPipelineTopology", "ergo:pipeline"],
-            "dfr3_mapping_set": ["incore:dfr3MappingSet"]
+        "parameter_defaults": {
+            "result_name": "road-damage-result",
+            "hazard_type": null,
+            "hazard_id": null,
+            "fragility_key": null,
+            "use_liquefaction": false,
+            "liquefaction_geology_dataset_id": null,
+            "use_hazard_uncertainty": false,
+            "num_cpu": 1
         }
     },
-    "studio-EpfRepairCost": {
+    "studio-BuildingFunctionality": {
         "before": {
+            "studio-PipelineFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "substations_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "building_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "poles_damage_mcs_samples"
+                }
+            ],
+            "studio-WfnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "building_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "poles_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "substations_damage_mcs_samples"
+                }
+            ],
             "studio-MonteCarloLimitStateProbability": [
                 {
-                    "from": "sample_damage_states",
-                    "to": "sample_damage_states"
+                    "from": "sample_failure_state",
+                    "to": "building_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "substations_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "poles_damage_mcs_samples"
+                }
+            ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "building_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "poles_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "substations_damage_mcs_samples"
                 }
             ]
         },
         "after": {
+            "studio-BuildingFunctionalityClusterTool": [
+                {
+                    "from": "functionality_probability",
+                    "to": "Functionality Probability"
+                }
+            ]
+        },
+        "pretty_name": "Building Functionality",
+        "tags": ["Building"],
+        "manual": "building_func.html",
+        "inputs": {
+            "building_damage_mcs_samples": ["incore:sampleFailureState"],
+            "substations_damage_mcs_samples": ["incore:sampleFailureState"],
+            "poles_damage_mcs_samples": ["incore:sampleFailureState"],
+            "interdependency_dictionary": ["incore:buildingInterdependencyDict"]
+        },
+        "parameter_defaults": {
+            "result_name": "bldg-functionality-result"
+        }
+    },
+    "studio-EpnFunctionality": {
+        "before": {
+            "studio-WfnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_sample_failure_state"
+                }
+            ],
+            "studio-PipelineFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_sample_failure_state"
+                }
+            ],
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_sample_failure_state"
+                }
+            ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_sample_failure_state"
+                }
+            ]
+        },
+        "after": {
+            "studio-BuildingFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "substations_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "building_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "poles_damage_mcs_samples"
+                }
+            ],
             "studio-INDP": [
                 {
-                    "from": "result",
-                    "to": "wf_repair_cost"
+                    "from": "sample_failure_state",
+                    "to": "epf_failure_state"
                 },
                 {
-                    "from": "result",
-                    "to": "epf_repair_cost"
-                }
-            ]
-        },
-        "pretty_name": "Electric Power Facility Repair Cost",
-        "tags": ["Lifeline"],
-        "manual": "epf_repair_cost.html",
-        "inputs": {
-            "epfs": ["incore:epf", "ergo:epf", "incore:epfVer2"],
-            "replacement_cost": ["incore:replacementCost"],
-            "sample_damage_states": ["incore:sampleDamageState"],
-            "epf_dmg_ratios": ["incore:epfDamageRatios"]
-        }
-    },
-    "studio-ResidentialBuildingRecovery": {
-        "before": {
-            "studio-MonteCarloLimitStateProbability": [
+                    "from": "sample_failure_state",
+                    "to": "pipeline_failure_state"
+                },
                 {
-                    "from": "sample_damage_states",
-                    "to": "sample_damage_states"
+                    "from": "sample_failure_state",
+                    "to": "wf_failure_state"
                 }
-            ]
-        },
-        "after": {},
-        "pretty_name": "Residential Building Recovery",
-        "tags": ["Socioeconomic", "Decision Support"],
-        "manual": "residential_building_recovery.html",
-        "inputs": {
-            "buildings": [
-                "ergo:buildingInventoryVer4",
-                "ergo:buildingInventoryVer5",
-                "ergo:buildingInventoryVer6",
-                "ergo:buildingInventoryVer7"
             ],
-            "dfr3_mapping_set": ["incore:dfr3MappingSet"],
-            "sample_damage_states": ["incore:sampleDamageState"],
-            "socio_demographic_data": ["incore:socioDemograhicData"],
-            "financial_resources": ["incore:householdFinancialResources"],
-            "delay_factors": ["incore:buildingRecoveryFactors"]
+            "studio-WfnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_sample_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pp_sample_failure_state"
+                }
+            ],
+            "studio-NciFunctionality": [
+                {
+                    "from": "failure_probability",
+                    "to": "epf_subst_failure_results"
+                }
+            ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_sample_failure_state"
+                }
+            ],
+            "studio-CapitalShocks": [
+                {
+                    "from": "failure_probability",
+                    "to": "failure_probability"
+                }
+            ],
+            "studio-CommercialBuildingRecovery": [
+                {
+                    "from": "failure_probability",
+                    "to": "mcs_failure"
+                }
+            ]
+        },
+        "pretty_name": "Electric Power Network Functionality",
+        "tags": ["Lifeline"],
+        "manual": "epn_functionality.html",
+        "inputs": {
+            "epn_network": ["incore:epnNetwork"],
+            "epf_sample_failure_state": ["incore:sampleFailureState"]
+        },
+        "parameter_defaults": {
+            "result_name": "epn-functionality-result",
+            "gate_station_node_list": null
         }
     },
-    "studio-WaterFacilityRepairCost": {
+    "studio-WfnFunctionality": {
         "before": {
+            "studio-WfnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_sample_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pp_sample_failure_state"
+                }
+            ],
             "studio-MonteCarloLimitStateProbability": [
                 {
-                    "from": "sample_damage_states",
-                    "to": "sample_damage_states"
+                    "from": "sample_failure_state",
+                    "to": "wf_sample_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pp_sample_failure_state"
+                }
+            ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "pp_sample_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_sample_failure_state"
+                }
+            ],
+            "studio-PipelineFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "pp_sample_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_sample_failure_state"
                 }
             ]
         },
         "after": {
+            "studio-BuildingFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "substations_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "building_damage_mcs_samples"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "poles_damage_mcs_samples"
+                }
+            ],
             "studio-INDP": [
                 {
-                    "from": "result",
-                    "to": "wf_repair_cost"
+                    "from": "sample_failure_state",
+                    "to": "epf_failure_state"
                 },
                 {
-                    "from": "result",
-                    "to": "epf_repair_cost"
+                    "from": "sample_failure_state",
+                    "to": "pipeline_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_failure_state"
+                }
+            ],
+            "studio-WfnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "wf_sample_failure_state"
+                },
+                {
+                    "from": "sample_failure_state",
+                    "to": "pp_sample_failure_state"
+                }
+            ],
+            "studio-NciFunctionality": [
+                {
+                    "from": "failure_probability",
+                    "to": "epf_subst_failure_results"
+                }
+            ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "sample_failure_state",
+                    "to": "epf_sample_failure_state"
+                }
+            ],
+            "studio-CapitalShocks": [
+                {
+                    "from": "failure_probability",
+                    "to": "failure_probability"
+                }
+            ],
+            "studio-CommercialBuildingRecovery": [
+                {
+                    "from": "failure_probability",
+                    "to": "mcs_failure"
                 }
             ]
         },
-        "pretty_name": "Water Facility Repair Cost",
+        "pretty_name": "Water Facility Network Functionality",
         "tags": ["Lifeline"],
-        "manual": "water_facility_repair_cost.html",
+        "manual": "wfn_functionality.html",
         "inputs": {
-            "water_facilities": ["ergo:waterFacilityTopo"],
-            "replacement_cost": ["incore:replacementCost"],
-            "sample_damage_states": ["incore:sampleDamageState"],
-            "wf_dmg_ratios": ["incore:waterFacilityDamageRatios"]
-        }
-    },
-    "studio-BuyoutDecision": {
-        "before": {
-            "studio-BuildingStructuralDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "past_building_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "future_building_damage"
-                }
-            ],
-            "studio-HousingUnitAllocation": [
-                {
-                    "from": "result",
-                    "to": "housing_unit_allocation"
-                }
-            ],
-            "studio-PopulationDislocation": [
-                {
-                    "from": "result",
-                    "to": "population_dislocation"
-                }
-            ],
-            "studio-CombinedWindWaveSurgeBuildingDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "future_building_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "past_building_damage"
-                }
-            ]
+            "wfn_network": ["incore:waterNetwork"],
+            "wf_sample_failure_state": ["incore:sampleFailureState"],
+            "pp_sample_failure_state": ["incore:sampleFailureState"]
         },
-        "after": {},
-        "pretty_name": "Buyout Decision",
-        "tags": ["Decision Support"],
-        "manual": "buyout_decision.html",
-        "inputs": {
-            "past_building_damage": ["ergo:buildingDamageVer6"],
-            "future_building_damage": ["ergo:buildingDamageVer6"],
-            "buildings": [
-                "ergo:buildingInventoryVer4",
-                "ergo:buildingInventoryVer5",
-                "ergo:buildingInventoryVer6",
-                "ergo:buildingInventoryVer7"
-            ],
-            "housing_unit_allocation": ["incore:housingUnitAllocation"],
-            "population_dislocation": ["incore:popDislocation"]
-        }
-    },
-    "studio-HousingValuationRecovery": {
-        "before": {
-            "studio-PopulationDislocation": [
-                {
-                    "from": "result",
-                    "to": "population_dislocation"
-                }
-            ]
-        },
-        "after": {},
-        "pretty_name": "Housing Valuation Recovery",
-        "tags": ["Socioeconomic"],
-        "manual": "housing_recovery.html",
-        "inputs": {
-            "population_dislocation": ["incore:popDislocation"],
-            "building_area": ["incore:buildingInventoryArea"],
-            "census_block_groups_data": ["incore:censusBlockGroupsData"],
-            "census_appraisal_data": ["incore:censusAppraisalData"]
+        "parameter_defaults": {
+            "result_name": "wfn-functionality-result",
+            "tank_node_list": "[]",
+            "pumpstation_node_list": "[]"
         }
     },
     "studio-EpfRestoration": {
@@ -1569,36 +2054,91 @@
             "epfs": ["incore:epf", "ergo:epf"],
             "dfr3_mapping_set": ["incore:dfr3MappingSet"],
             "damage": ["incore:epfDamage", "incore:epfDamageVer2", "incore:epfDamageVer3"]
+        },
+        "parameter_defaults": {
+            "result_name": "epf-restoration-result",
+            "restoration_key": null,
+            "end_time": 365.0,
+            "time_interval": 1.0,
+            "pf_interval": 0.1,
+            "discretized_days": "[1, 3, 7, 30, 90]"
         }
     },
-    "studio-HousingUnitAllocation": {
-        "after": {
-            "studio-BuyoutDecision": [
+    "studio-CapitalShocks": {
+        "before": {
+            "studio-WfnFunctionality": [
                 {
-                    "from": "result",
-                    "to": "housing_unit_allocation"
+                    "from": "failure_probability",
+                    "to": "failure_probability"
                 }
             ],
-            "studio-PopulationDislocation": [
+            "studio-PipelineFunctionality": [
                 {
-                    "from": "result",
-                    "to": "housing_unit_allocation"
+                    "from": "failure_probability",
+                    "to": "failure_probability"
+                }
+            ],
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "failure_probability",
+                    "to": "failure_probability"
+                }
+            ],
+            "studio-EpnFunctionality": [
+                {
+                    "from": "failure_probability",
+                    "to": "failure_probability"
                 }
             ]
         },
-        "before": {},
-        "pretty_name": "Housing Unit Allocation",
-        "tags": ["Socioeconomic"],
-        "manual": "housingunitallocation.html",
-        "inputs": {
-            "buildings": [
-                "ergo:buildingInventoryVer4",
-                "ergo:buildingInventoryVer5",
-                "ergo:buildingInventoryVer6",
-                "ergo:buildingInventoryVer7"
+        "after": {
+            "studio-MlEnabledCgeJoplin": [
+                {
+                    "from": "sector_shocks",
+                    "to": "sector_shocks"
+                }
             ],
-            "housing_unit_inventory": ["incore:housingUnitInventory"],
-            "address_point_inventory": ["incore:addressPoints"]
+            "studio-JoplinCGEModel": [
+                {
+                    "from": "sector_shocks",
+                    "to": "sector_shocks"
+                }
+            ],
+            "studio-SaltLakeCGEModel": [
+                {
+                    "from": "sector_shocks",
+                    "to": "sector_shocks"
+                }
+            ],
+            "studio-MlEnabledCgeSlc": [
+                {
+                    "from": "sector_shocks",
+                    "to": "sector_shocks"
+                }
+            ],
+            "studio-GalvestonCGEModel": [
+                {
+                    "from": "sector_shocks",
+                    "to": "sector_shocks"
+                }
+            ],
+            "studio-SeasideCGEModel": [
+                {
+                    "from": "sector_shocks",
+                    "to": "sector_shocks"
+                }
+            ]
+        },
+        "pretty_name": "Capital Shocks",
+        "tags": ["Economic"],
+        "manual": "capital_shocks.html",
+        "inputs": {
+            "buildings": ["ergo:buildingInventoryVer5", "ergo:buildingInventoryVer6", "ergo:buildingInventoryVer7"],
+            "buildings_to_sectors": ["incore:buildingsToSectors"],
+            "failure_probability": ["incore:failureProbability"]
+        },
+        "parameter_defaults": {
+            "result_name": "capital-shocks-result"
         }
     },
     "studio-GalvestonCGEModel": {
@@ -1610,7 +2150,30 @@
                 }
             ]
         },
-        "after": {},
+        "after": {
+            "studio-CGEPostProcessTool": [
+                {
+                    "from": "household-count",
+                    "to": "Household Count"
+                },
+                {
+                    "from": "domestic-supply",
+                    "to": "Domestic supply"
+                },
+                {
+                    "from": "gross-income",
+                    "to": "Gross Income"
+                },
+                {
+                    "from": "pre-disaster-factor-demand",
+                    "to": "Pre Demand"
+                },
+                {
+                    "from": "post-disaster-factor-demand",
+                    "to": "Post Demand"
+                }
+            ]
+        },
         "pretty_name": "Galveston CGE Model",
         "tags": ["Economic"],
         "manual": "galveston_cge.html",
@@ -1624,6 +2187,10 @@
             "JOBCR": ["incore:CGEjobcr"],
             "OUTCR": ["incore:CGEoutcr"],
             "sector_shocks": ["incore:capitalShocks"]
+        },
+        "parameter_defaults": {
+            "model_iterations": 1,
+            "solver_path": null
         }
     },
     "studio-JoplinCGEModel": {
@@ -1635,7 +2202,30 @@
                 }
             ]
         },
-        "after": {},
+        "after": {
+            "studio-CGEPostProcessTool": [
+                {
+                    "from": "household-count",
+                    "to": "Household Count"
+                },
+                {
+                    "from": "domestic-supply",
+                    "to": "Domestic supply"
+                },
+                {
+                    "from": "gross-income",
+                    "to": "Gross Income"
+                },
+                {
+                    "from": "pre-disaster-factor-demand",
+                    "to": "Pre Demand"
+                },
+                {
+                    "from": "post-disaster-factor-demand",
+                    "to": "Post Demand"
+                }
+            ]
+        },
         "pretty_name": "Joplin CGE Model",
         "tags": ["Economic"],
         "manual": "joplin_cge.html",
@@ -1652,6 +2242,10 @@
             "JOBCR": ["incore:CGEjobcr"],
             "OUTCR": ["incore:CGEoutcr"],
             "sector_shocks": ["incore:capitalShocks"]
+        },
+        "parameter_defaults": {
+            "model_iterations": 1,
+            "solver_path": null
         }
     },
     "studio-MlEnabledCgeSlc": {
@@ -1663,12 +2257,38 @@
                 }
             ]
         },
-        "after": {},
+        "after": {
+            "studio-CGEPostProcessTool": [
+                {
+                    "from": "household-count",
+                    "to": "Household Count"
+                },
+                {
+                    "from": "domestic-supply",
+                    "to": "Domestic supply"
+                },
+                {
+                    "from": "gross-income",
+                    "to": "Gross Income"
+                },
+                {
+                    "from": "pre-disaster-factor-demand",
+                    "to": "Pre Demand"
+                },
+                {
+                    "from": "post-disaster-factor-demand",
+                    "to": "Post Demand"
+                }
+            ]
+        },
         "pretty_name": "Machine Learning Enabled CGE SLC",
         "tags": ["Economic"],
         "manual": "ml_slc_cge.html",
         "inputs": {
             "sector_shocks": ["incore:capitalShocks"]
+        },
+        "parameter_defaults": {
+            "result_name": "salt-lake-ml-enabled-cge"
         }
     },
     "studio-MlEnabledCgeJoplin": {
@@ -1680,12 +2300,38 @@
                 }
             ]
         },
-        "after": {},
+        "after": {
+            "studio-CGEPostProcessTool": [
+                {
+                    "from": "household-count",
+                    "to": "Household Count"
+                },
+                {
+                    "from": "domestic-supply",
+                    "to": "Domestic supply"
+                },
+                {
+                    "from": "gross-income",
+                    "to": "Gross Income"
+                },
+                {
+                    "from": "pre-disaster-factor-demand",
+                    "to": "Pre Demand"
+                },
+                {
+                    "from": "post-disaster-factor-demand",
+                    "to": "Post Demand"
+                }
+            ]
+        },
         "pretty_name": "Machine Learning Enabled CGE Joplin",
         "tags": ["Economic"],
         "manual": "ml_joplin_cge.html",
         "inputs": {
             "sector_shocks": ["incore:capitalShocks"]
+        },
+        "parameter_defaults": {
+            "result_name": "joplin-ml-enabled-cge"
         }
     },
     "studio-SaltLakeCGEModel": {
@@ -1697,7 +2343,30 @@
                 }
             ]
         },
-        "after": {},
+        "after": {
+            "studio-CGEPostProcessTool": [
+                {
+                    "from": "household-count",
+                    "to": "Household Count"
+                },
+                {
+                    "from": "domestic-supply",
+                    "to": "Domestic supply"
+                },
+                {
+                    "from": "gross-income",
+                    "to": "Gross Income"
+                },
+                {
+                    "from": "pre-disaster-factor-demand",
+                    "to": "Pre Demand"
+                },
+                {
+                    "from": "post-disaster-factor-demand",
+                    "to": "Post Demand"
+                }
+            ]
+        },
         "pretty_name": "Salt Lake CGE Model",
         "tags": ["Economic"],
         "manual": "slc_cge.html",
@@ -1711,6 +2380,10 @@
             "JOBCR": ["incore:CGEjobcr"],
             "OUTCR": ["incore:CGEoutcr"],
             "sector_shocks": ["incore:capitalShocks"]
+        },
+        "parameter_defaults": {
+            "model_iterations": 1,
+            "solver_path": null
         }
     },
     "studio-SeasideCGEModel": {
@@ -1734,151 +2407,25 @@
             "JOBCR": ["incore:SeasideCGEjobcr"],
             "SIMS": ["incore:SeasideCGEsim"],
             "sector_shocks": ["incore:capitalShocks"]
+        },
+        "parameter_defaults": {
+            "print_solver_output": false,
+            "solver_path": null
         }
     },
-    "studio-CombinedWindWaveSurgeBuildingDamage": {
+    "studio-ResidentialBuildingRecovery": {
         "before": {
-            "studio-CombinedWindWaveSurgeBuildingDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "wind_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "surge_wave_damage"
-                }
-            ],
-            "studio-BuildingStructuralDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "surge_wave_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "wind_damage"
-                }
-            ],
-            "studio-BuildingNonStructDamage": [
-                {
-                    "from": "result",
-                    "to": "flood_damage"
-                }
-            ]
-        },
-        "after": {
-            "studio-BuyoutDecision": [
-                {
-                    "from": "ds_result",
-                    "to": "past_building_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "future_building_damage"
-                }
-            ],
             "studio-MonteCarloLimitStateProbability": [
                 {
-                    "from": "ds_result",
-                    "to": "damage"
-                }
-            ],
-            "studio-CombinedWindWaveSurgeBuildingLoss": [
-                {
-                    "from": "ds_result",
-                    "to": "wind_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "surge_wave_damage"
-                }
-            ],
-            "studio-CombinedWindWaveSurgeBuildingDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "surge_wave_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "wind_damage"
-                }
-            ],
-            "studio-CumulativeBuildingDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "tsunami_bldg_dmg"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "eq_bldg_dmg"
-                }
-            ],
-            "studio-PopulationDislocation": [
-                {
-                    "from": "ds_result",
-                    "to": "building_dmg"
-                }
-            ],
-            "studio-JoplinEmpiricalBuildingRestoration": [
-                {
-                    "from": "ds_result",
-                    "to": "building_dmg"
-                }
-            ],
-            "studio-MeanDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "damage"
-                }
-            ],
-            "studio-CommercialBuildingRecovery": [
-                {
-                    "from": "ds_result",
-                    "to": "building_dmg"
-                }
-            ]
-        },
-        "pretty_name": "Combined Wind Wave Surge Building Damage",
-        "tags": ["Building"],
-        "manual": "combined_wind_wave_surge_building_dmg.html",
-        "inputs": {
-            "wind_damage": ["ergo:buildingDamageVer6"],
-            "surge_wave_damage": ["ergo:buildingDamageVer6"],
-            "flood_damage": ["ergo:nsBuildingInventoryDamageVer4"]
-        }
-    },
-    "studio-CombinedWindWaveSurgeBuildingLoss": {
-        "before": {
-            "studio-CombinedWindWaveSurgeBuildingDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "wind_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "surge_wave_damage"
-                }
-            ],
-            "studio-BuildingStructuralDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "surge_wave_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "wind_damage"
-                }
-            ],
-            "studio-BuildingNonStructDamage": [
-                {
-                    "from": "result",
-                    "to": "flood_damage"
+                    "from": "sample_damage_states",
+                    "to": "sample_damage_states"
                 }
             ]
         },
         "after": {},
-        "pretty_name": "Combined Wind Wave Surge Building Loss",
-        "tags": ["Building"],
-        "manual": "combined_wind_wave_surge_building_loss.html",
+        "pretty_name": "Residential Building Recovery",
+        "tags": ["Socioeconomic", "Decision Support"],
+        "manual": "residential_building_recovery.html",
         "inputs": {
             "buildings": [
                 "ergo:buildingInventoryVer4",
@@ -1886,19 +2433,52 @@
                 "ergo:buildingInventoryVer6",
                 "ergo:buildingInventoryVer7"
             ],
-            "wind_damage": ["ergo:buildingDamageVer6"],
-            "surge_wave_damage": ["ergo:buildingDamageVer6"],
-            "flood_damage": ["ergo:nsBuildingInventoryDamageVer4"],
-            "structural_cost": ["incore:structuralCostRatio"],
-            "content_cost": ["incore:contentCostRatio"]
+            "dfr3_mapping_set": ["incore:dfr3MappingSet"],
+            "sample_damage_states": ["incore:sampleDamageState"],
+            "socio_demographic_data": ["incore:socioDemograhicData"],
+            "financial_resources": ["incore:householdFinancialResources"],
+            "delay_factors": ["incore:buildingRecoveryFactors"]
+        },
+        "parameter_defaults": {
+            "result_name": "residential-building-recovery-result",
+            "num_samples": 10,
+            "repair_key": null,
+            "seed": 1234
+        }
+    },
+    "studio-PipelineDamage": {
+        "after": {
+            "studio-MonteCarloLimitStateProbability": [
+                {
+                    "from": "result",
+                    "to": "damage"
+                }
+            ]
+        },
+        "before": {},
+        "pretty_name": "Pipeline Damage",
+        "tags": ["Lifeline"],
+        "manual": "pipeline_dmg.html",
+        "inputs": {
+            "hazard": ["earthquake", "tsunami"],
+            "pipeline": ["ergo:buriedPipelineTopology", "ergo:pipeline"],
+            "dfr3_mapping_set": ["incore:dfr3MappingSet"]
+        },
+        "parameter_defaults": {
+            "result_name": "pipeline-damage-result",
+            "hazard_type": null,
+            "hazard_id": null,
+            "fragility_key": null,
+            "num_cpu": 1,
+            "liquefaction_geology_dataset_id": null
         }
     },
     "studio-BuildingNonStructDamage": {
         "after": {
-            "studio-CombinedWindWaveSurgeBuildingDamage": [
+            "studio-MonteCarloLimitStateProbability": [
                 {
                     "from": "result",
-                    "to": "flood_damage"
+                    "to": "damage"
                 }
             ],
             "studio-JoplinEmpiricalBuildingRestoration": [
@@ -1913,13 +2493,13 @@
                     "to": "damage"
                 }
             ],
-            "studio-MonteCarloLimitStateProbability": [
+            "studio-CombinedWindWaveSurgeBuildingLoss": [
                 {
                     "from": "result",
-                    "to": "damage"
+                    "to": "flood_damage"
                 }
             ],
-            "studio-CombinedWindWaveSurgeBuildingLoss": [
+            "studio-CombinedWindWaveSurgeBuildingDamage": [
                 {
                     "from": "result",
                     "to": "flood_damage"
@@ -1940,176 +2520,26 @@
             ],
             "dfr3_mapping_set": ["incore:dfr3MappingSet"],
             "retrofit_strategy": ["incore:retrofitStrategy"]
-        }
-    },
-    "studio-PipelineRepairCost": {
-        "after": {
-            "studio-INDP": [
-                {
-                    "from": "result",
-                    "to": "pipeline_repair_cost"
-                }
-            ]
         },
-        "before": {
-            "studio-PipelineDamageRepairRate": [
-                {
-                    "from": "result",
-                    "to": "pipeline_dmg"
-                }
-            ]
-        },
-        "pretty_name": "Pipeline Repair Cost",
-        "tags": ["Lifeline"],
-        "manual": "pipeline_repair_cost.html",
-        "inputs": {
-            "pipeline": ["ergo:buriedPipelineTopology", "ergo:pipeline"],
-            "replacement_cost": ["incore:replacementCost"],
-            "pipeline_dmg": ["ergo:pipelineDamageVer3"],
-            "pipeline_dmg_ratios": ["incore:pipelineDamageRatios"]
-        }
-    },
-    "studio-BuildingStructuralDamage": {
-        "after": {
-            "studio-BuyoutDecision": [
-                {
-                    "from": "ds_result",
-                    "to": "past_building_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "future_building_damage"
-                }
-            ],
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "ds_result",
-                    "to": "damage"
-                }
-            ],
-            "studio-CombinedWindWaveSurgeBuildingLoss": [
-                {
-                    "from": "ds_result",
-                    "to": "wind_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "surge_wave_damage"
-                }
-            ],
-            "studio-CombinedWindWaveSurgeBuildingDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "surge_wave_damage"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "wind_damage"
-                }
-            ],
-            "studio-CumulativeBuildingDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "tsunami_bldg_dmg"
-                },
-                {
-                    "from": "ds_result",
-                    "to": "eq_bldg_dmg"
-                }
-            ],
-            "studio-PopulationDislocation": [
-                {
-                    "from": "ds_result",
-                    "to": "building_dmg"
-                }
-            ],
-            "studio-JoplinEmpiricalBuildingRestoration": [
-                {
-                    "from": "ds_result",
-                    "to": "building_dmg"
-                }
-            ],
-            "studio-MeanDamage": [
-                {
-                    "from": "ds_result",
-                    "to": "damage"
-                }
-            ],
-            "studio-CommercialBuildingRecovery": [
-                {
-                    "from": "ds_result",
-                    "to": "building_dmg"
-                }
-            ]
-        },
-        "before": {},
-        "pretty_name": "Building Structural Damage",
-        "tags": ["Building"],
-        "manual": "building_structural_dmg.html",
-        "inputs": {
-            "hazard": ["earthquake", "tornado", "hurricane", "flood", "tsunami"],
-            "buildings": [
-                "ergo:buildingInventoryVer4",
-                "ergo:buildingInventoryVer5",
-                "ergo:buildingInventoryVer6",
-                "ergo:buildingInventoryVer7"
-            ],
-            "dfr3_mapping_set": ["incore:dfr3MappingSet"],
-            "retrofit_strategy": ["incore:retrofitStrategy"]
-        }
-    },
-    "studio-BuildingEconLoss": {
-        "before": {
-            "studio-MeanDamage": [
-                {
-                    "from": "result",
-                    "to": "building_mean_dmg"
-                }
-            ]
-        },
-        "after": {},
-        "pretty_name": "Building Economic Loss",
-        "tags": ["Building"],
-        "manual": "building_loss.html",
-        "inputs": {
-            "buildings": [
-                "ergo:buildingInventory",
-                "ergo:buildingInventoryVer4",
-                "ergo:buildingInventoryVer5",
-                "ergo:buildingInventoryVer6",
-                "ergo:buildingInventoryVer7"
-            ],
-            "building_mean_dmg": ["ergo:meanDamage"],
-            "occupancy_multiplier": ["incore:buildingOccupancyMultiplier"]
-        }
-    },
-    "studio-BridgeDamage": {
-        "after": {
-            "studio-MeanDamage": [
-                {
-                    "from": "result",
-                    "to": "damage"
-                }
-            ],
-            "studio-MonteCarloLimitStateProbability": [
-                {
-                    "from": "result",
-                    "to": "damage"
-                }
-            ]
-        },
-        "before": {},
-        "pretty_name": "Bridge Damage",
-        "tags": ["Bridge"],
-        "manual": "bridge_dmg.html",
-        "inputs": {
-            "hazard": ["earthquake", "tornado", "hurricane", "flood", "tsunami"],
-            "bridges": ["ergo:bridges", "ergo:bridgesVer2", "ergo:bridgesVer3"],
-            "dfr3_mapping_set": ["incore:dfr3MappingSet"]
+        "parameter_defaults": {
+            "result_name": "building-nonstruct-dmg-result",
+            "hazard_type": null,
+            "hazard_id": null,
+            "fragility_key": "Acceleration-Sensitive Fragility ID Code",
+            "use_liquefaction": true,
+            "liq_geology_dataset_id": null,
+            "use_hazard_uncertainty": false,
+            "num_cpu": 1
         }
     },
     "studio-EpfDamage": {
         "after": {
+            "studio-NciFunctionality": [
+                {
+                    "from": "result",
+                    "to": "epf_damage"
+                }
+            ],
             "studio-EpfRestoration": [
                 {
                     "from": "result",
@@ -2122,10 +2552,10 @@
                     "to": "damage"
                 }
             ],
-            "studio-NciFunctionality": [
+            "studio-MaxDamageStateTool": [
                 {
-                    "from": "result",
-                    "to": "epf_damage"
+                    "from": "ds_result",
+                    "to": "Output dataset"
                 }
             ]
         },
@@ -2137,37 +2567,17 @@
             "hazard": ["earthquake", "tornado", "hurricane", "flood", "tsunami"],
             "epfs": ["incore:epf", "ergo:epf", "incore:epfVer2"],
             "dfr3_mapping_set": ["incore:dfr3MappingSet"]
-        }
-    },
-    "studio-PipelineDamageRepairRate": {
-        "after": {
-            "studio-PipelineRestoration": [
-                {
-                    "from": "result",
-                    "to": "pipeline_damage"
-                }
-            ],
-            "studio-PipelineRepairCost": [
-                {
-                    "from": "result",
-                    "to": "pipeline_dmg"
-                }
-            ],
-            "studio-PipelineFunctionality": [
-                {
-                    "from": "result",
-                    "to": "pipeline_repair_rate_damage"
-                }
-            ]
         },
-        "before": {},
-        "pretty_name": "Pipeline Damage Repair Rate",
-        "tags": ["Lifeline"],
-        "manual": "pipeline_dmg_w_repair_rate.html",
-        "inputs": {
-            "hazard": ["earthquake", "tsunami"],
-            "pipeline": ["ergo:buriedPipelineTopology", "ergo:pipeline"],
-            "dfr3_mapping_set": ["incore:dfr3MappingSet"]
+        "parameter_defaults": {
+            "result_name": "epf-damage-result",
+            "hazard_type": null,
+            "hazard_id": null,
+            "fragility_key": null,
+            "liquefaction_fragility_key": null,
+            "use_liquefaction": false,
+            "liquefaction_geology_dataset_id": null,
+            "use_hazard_uncertainty": false,
+            "num_cpu": 1
         }
     },
     "studio-BuildingClusterRecovery": {
@@ -2184,6 +2594,14 @@
             "utility": ["incore:portfolioUtilityAvailability"],
             "utility_partial": ["incore:portfolioUtilityAvailability"],
             "coefFL": ["incore:portfolioCoefficients"]
+        },
+        "parameter_defaults": {
+            "result_name": "building-recovery-result",
+            "uncertainty": true,
+            "sample_size": 35,
+            "random_sample_size": 50,
+            "no_of_weeks": 100,
+            "num_cpu": 4
         }
     },
     "studio-GasFacilityDamage": {
@@ -2196,6 +2614,17 @@
             "hazard": ["earthquake"],
             "gas_facilities": ["ergo:gasFacilityInventory"],
             "dfr3_mapping_set": ["incore:dfr3MappingSet"]
+        },
+        "parameter_defaults": {
+            "result_name": "gas-facility-damage-result",
+            "fragility_key": null,
+            "liquefaction_fragility_key": null,
+            "use_liquefaction": false,
+            "liquefaction_geology_dataset_id": null,
+            "use_hazard_uncertainty": false,
+            "num_cpu": 1,
+            "hazard_id": null,
+            "hazard_type": null
         }
     },
     "studio-MultiObjectiveRetrofitOptimization": {
@@ -2207,6 +2636,16 @@
         "inputs": {
             "building_related_data": ["incore:multiobjectiveBuildingRelatedData"],
             "strategy_costs_data": ["incore:multiobjectiveStrategyCosts"]
+        },
+        "parameter_defaults": {
+            "result_name": "multiobjective-retrofit-optimization-result",
+            "model_solver": "ipopt",
+            "num_epsilon_steps": 2,
+            "max_budget": "default",
+            "budget_available": null,
+            "inactive_submodels": null,
+            "scale_data": null,
+            "scaling_factor": null
         }
     },
     "studio-TornadoEpnDamage": {
@@ -2219,6 +2658,11 @@
             "hazard": ["tornado"],
             "epn_network": ["incore:epnNetwork"],
             "tornado": ["incore:tornadoWindfield"]
+        },
+        "parameter_defaults": {
+            "result_name": "tornado-epn-damage-result",
+            "tornado_id": null,
+            "seed": 1234
         }
     },
     "studio-TrafficFlowRecovery": {
@@ -2234,6 +2678,15 @@
             "bridge_damage_value": ["incore:bridgeDamageValue"],
             "unrepaired_bridge": ["incore:unrepairedBridge"],
             "ADT": ["incore:ADT"]
+        },
+        "parameter_defaults": {
+            "num_cpu": 1,
+            "pm": 1,
+            "ini_num_population": 5,
+            "population_size": 3,
+            "num_generation": 2,
+            "mutation_rate": 0.1,
+            "crossover_rate": 1.0
         }
     },
     "studio-MaxDamageStateTool": {
@@ -2241,27 +2694,27 @@
             "studio-BuildingStructuralDamage": [
                 {
                     "from": "ds_result",
-                    "to": "output_dataset"
+                    "to": "Output dataset"
                 }
             ],
             "studio-EpfDamage": [
                 {
                     "from": "ds_result",
-                    "to": "output_dataset"
+                    "to": "Output dataset"
                 }
             ],
             "studio-BridgeDamage": [
                 {
                     "from": "ds_result",
-                    "to": "output_dataset"
+                    "to": "Output dataset"
                 }
             ]
         },
         "after": {
             "studio-BuildingDamageSummaryTool": [
                 {
-                    "from": "max_damage",
-                    "to": "max_damage_state"
+                    "from": "Max Damage",
+                    "to": "Max Damage State"
                 }
             ]
         },
@@ -2269,15 +2722,16 @@
         "tags": ["Pyincore Utility"],
         "manual": null,
         "inputs": {
-            "output_dataset": ["ergo:buildingDamageVer6"]
-        }
+            "Output dataset": ["ergo:buildingDamageVer6"]
+        },
+        "parameter_defaults": {}
     },
     "studio-BuildingDamageSummaryTool": {
         "before": {
             "studio-MaxDamageStateTool": [
                 {
-                    "from": "max_damage",
-                    "to": "max_damage_state"
+                    "from": "Max Damage",
+                    "to": "Max Damage State"
                 }
             ]
         },
@@ -2286,126 +2740,127 @@
         "tags": ["Pyincore Utility"],
         "manual": null,
         "inputs": {
-            "max_damage_state": ["Max damage State type"],
-            "buildings": [
+            "Max Damage State": ["Max damage State type"],
+            "Buildings": [
                 "ergo:buildingInventoryVer4",
                 "ergo:buildingInventoryVer5",
                 "ergo:buildingInventoryVer6",
                 "ergo:buildingInventoryVer7"
             ],
-            "archetype_mapping": ["Archetype Mapping type"]
-        }
+            "Archetype Mapping": ["Archetype Mapping type"]
+        },
+        "parameter_defaults": {}
     },
     "studio-CGEPostProcessTool": {
         "before": {
             "studio-SaltLakeCGEModel": [
                 {
                     "from": "household-count",
-                    "to": "household-count"
+                    "to": "Household Count"
                 },
                 {
                     "from": "domestic-supply",
-                    "to": "domestic-supply"
+                    "to": "Domestic supply"
                 },
                 {
                     "from": "gross-income",
-                    "to": "gross-income"
+                    "to": "Gross Income"
                 },
                 {
                     "from": "pre-disaster-factor-demand",
-                    "to": "pre-disaster-factor-demand"
+                    "to": "Pre Demand"
                 },
                 {
                     "from": "post-disaster-factor-demand",
-                    "to": "post-disaster-factor-demand"
+                    "to": "Post Demand"
                 }
             ],
             "studio-JoplinCGEModel": [
                 {
                     "from": "household-count",
-                    "to": "household-count"
+                    "to": "Household Count"
                 },
                 {
                     "from": "domestic-supply",
-                    "to": "domestic-supply"
+                    "to": "Domestic supply"
                 },
                 {
                     "from": "gross-income",
-                    "to": "gross-income"
+                    "to": "Gross Income"
                 },
                 {
                     "from": "pre-disaster-factor-demand",
-                    "to": "pre-disaster-factor-demand"
+                    "to": "Pre Demand"
                 },
                 {
                     "from": "post-disaster-factor-demand",
-                    "to": "post-disaster-factor-demand"
+                    "to": "Post Demand"
                 }
             ],
             "studio-GalvestonCGEModel": [
                 {
                     "from": "household-count",
-                    "to": "household-count"
+                    "to": "Household Count"
                 },
                 {
                     "from": "domestic-supply",
-                    "to": "domestic-supply"
+                    "to": "Domestic supply"
                 },
                 {
                     "from": "gross-income",
-                    "to": "gross-income"
+                    "to": "Gross Income"
                 },
                 {
                     "from": "pre-disaster-factor-demand",
-                    "to": "pre-disaster-factor-demand"
+                    "to": "Pre Demand"
                 },
                 {
                     "from": "post-disaster-factor-demand",
-                    "to": "post-disaster-factor-demand"
+                    "to": "Post Demand"
                 }
             ],
             "studio-MlEnabledCgeJoplin": [
                 {
                     "from": "household-count",
-                    "to": "household-count"
+                    "to": "Household Count"
                 },
                 {
                     "from": "domestic-supply",
-                    "to": "domestic-supply"
+                    "to": "Domestic supply"
                 },
                 {
                     "from": "gross-income",
-                    "to": "gross-income"
+                    "to": "Gross Income"
                 },
                 {
                     "from": "pre-disaster-factor-demand",
-                    "to": "pre-disaster-factor-demand"
+                    "to": "Pre Demand"
                 },
                 {
                     "from": "post-disaster-factor-demand",
-                    "to": "post-disaster-factor-demand"
+                    "to": "Post Demand"
                 }
             ],
             "studio-MlEnabledCgeSlc": [
                 {
                     "from": "household-count",
-                    "to": "household-count"
+                    "to": "Household Count"
                 },
                 {
                     "from": "domestic-supply",
-                    "to": "domestic-supply"
+                    "to": "Domestic supply"
                 },
                 {
                     "from": "gross-income",
-                    "to": "gross-income"
+                    "to": "Gross Income"
                 },
                 {
                     "from": "pre-disaster-factor-demand",
-                    "to": "pre-disaster-factor-demand"
+                    "to": "Pre Demand"
                 },
                 {
                     "from": "post-disaster-factor-demand",
-                    "to": "post-disaster-factor-demand"
+                    "to": "Post Demand"
                 }
             ]
         },
@@ -2414,19 +2869,20 @@
         "tags": ["Pyincore Utility"],
         "manual": null,
         "inputs": {
-            "household-count": ["incore:HouseholdCount"],
-            "domestic-supply": ["incore:Employment"],
-            "gross-income": ["incore:Employment"],
-            "pre-disaster-factor-demand": ["incore:FactorDemand"],
-            "post-disaster-factor-demand": ["incore:FactorDemand"]
-        }
+            "Household Count": ["incore:HouseholdCount"],
+            "Domestic supply": ["incore:Employment"],
+            "Gross Income": ["incore:Employment"],
+            "Pre Demand": ["incore:FactorDemand"],
+            "Post Demand": ["incore:FactorDemand"]
+        },
+        "parameter_defaults": {}
     },
     "studio-DislPostProcessTool": {
         "before": {
             "studio-PopulationDislocation": [
                 {
                     "from": "result",
-                    "to": "dislocation-output"
+                    "to": "Dislocation Output"
                 }
             ]
         },
@@ -2435,15 +2891,16 @@
         "tags": ["Pyincore Utility"],
         "manual": null,
         "inputs": {
-            "dislocation-output": ["incore:popDislocation"]
-        }
+            "Dislocation Output": ["incore:popDislocation"]
+        },
+        "parameter_defaults": {}
     },
     "studio-BuildingFailureClusterTool": {
         "before": {
             "studio-MonteCarloLimitStateProbability": [
                 {
                     "from": "failure_probability",
-                    "to": "building_failure_probability"
+                    "to": "Building Failure Probability"
                 }
             ]
         },
@@ -2452,22 +2909,23 @@
         "tags": ["Pyincore Utility"],
         "manual": null,
         "inputs": {
-            "building_failure_probability": ["incore:failureProbability"],
-            "buildings": [
+            "Building Failure Probability": ["incore:failureProbability"],
+            "Buildings": [
                 "ergo:buildingInventoryVer4",
                 "ergo:buildingInventoryVer5",
                 "ergo:buildingInventoryVer6",
                 "ergo:buildingInventoryVer7"
             ],
-            "archetype_mapping": ["Archetype Mapping type"]
-        }
+            "Archetype Mapping": ["Archetype Mapping type"]
+        },
+        "parameter_defaults": {}
     },
     "studio-BuildingFunctionalityClusterTool": {
         "before": {
             "studio-BuildingFunctionality": [
                 {
                     "from": "functionality_probability",
-                    "to": "functionality_probability"
+                    "to": "Functionality Probability"
                 }
             ]
         },
@@ -2476,14 +2934,15 @@
         "tags": ["Pyincore Utility"],
         "manual": null,
         "inputs": {
-            "functionality_probability": ["incore:funcProbability"],
-            "buildings": [
+            "Functionality Probability": ["incore:funcProbability"],
+            "Buildings": [
                 "ergo:buildingInventoryVer4",
                 "ergo:buildingInventoryVer5",
                 "ergo:buildingInventoryVer6",
                 "ergo:buildingInventoryVer7"
             ],
-            "archetype_mapping": ["Archetype Mapping type"]
-        }
+            "Archetype Mapping": ["Archetype Mapping type"]
+        },
+        "parameter_defaults": {}
     }
 }
