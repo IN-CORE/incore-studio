@@ -205,7 +205,8 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                         </Stack>
                         <Box>
                             <Typography level="body-sm" sx={{ color: "#172B4D", fontWeight: 500 }}>
-                                {currentAnalysisCount} Analysis{currentAnalysisCount !== 1 ? "es" : ""} found
+                                {currentAnalysisCount}{" "}
+                                {selectedTag === "Pyincore Utility" ? "Utility Tools" : "Analyses"} found
                             </Typography>
                         </Box>
                         <Box sx={{ height: "400px", overflow: "auto", padding: "10px" }}>
