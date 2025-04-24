@@ -98,7 +98,7 @@ const LayoutedWorkflow = ({
                     setNodesReady(true); // Trigger layout after delay
                 }
             }
-        }, 250); // Adjust the delay as necessary based on render performance
+        }, 1000); // Adjust the delay as necessary based on render performance
 
         return () => clearTimeout(timer);
     }, [nodes, layoutApplied]);
