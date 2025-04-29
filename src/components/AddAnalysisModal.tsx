@@ -7,6 +7,7 @@ import {
     CardContent,
     CardActions,
     Checkbox,
+    Chip,
     FormControl,
     FormLabel,
     List,
@@ -234,7 +235,36 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                                 size="sm"
                                                 disableIcon
                                                 overlay
-                                                label={dependencyGraph[analysis].pretty_name}
+                                                label={
+                                                    <Stack
+                                                        direction="row"
+                                                        spacing={2}
+                                                        alignItems="center"
+                                                        justifyContent="space-between"
+                                                    >
+                                                        <Typography>{dependencyGraph[analysis].pretty_name}</Typography>
+                                                        <Stack direction="row" spacing={1} alignItems="center">
+                                                            {dependencyGraph[analysis].tags &&
+                                                                dependencyGraph[analysis].tags.map((tag) => (
+                                                                    <Chip
+                                                                        key={tag}
+                                                                        variant="soft"
+                                                                        size="sm"
+                                                                        color="neutral"
+                                                                        sx={{
+                                                                            backgroundColor: "#F4F5F7",
+                                                                            color: "#172B4D",
+                                                                            fontSize: "12px",
+                                                                            fontWeight: 500,
+                                                                            borderRadius: "8px"
+                                                                        }}
+                                                                    >
+                                                                        {tag}
+                                                                    </Chip>
+                                                                ))}
+                                                        </Stack>
+                                                    </Stack>
+                                                }
                                                 checked={selectedAnalysis === analysis}
                                                 variant={selectedAnalysis === analysis ? "soft" : "outlined"}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
