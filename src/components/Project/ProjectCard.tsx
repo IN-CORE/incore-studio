@@ -100,7 +100,11 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
                     </MenuItem>
                 </Menu>
             </Dropdown>
-            <EditProjectDialog open={editProjectDialogOpen} onClose={() => setEditProjectDialogOpen(false)} />
+            <EditProjectDialog
+                open={editProjectDialogOpen}
+                onClose={() => setEditProjectDialogOpen(false)}
+                project={project}
+            />
             <IncoreDialog
                 open={openDeleteDialog}
                 onClose={handleCloseDialog}

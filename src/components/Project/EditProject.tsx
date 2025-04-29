@@ -14,36 +14,27 @@ import {
     Textarea,
     Typography
 } from "@mui/joy";
-// import { editProject } from "@app/reducer/projectSlice";
-// import { useAppDispatch } from "@app/store/hooks";
-// import { useNavigate } from "react-router-dom";
+import { editProject } from "@app/reducer/projectSlice";
+import { useAppDispatch } from "@app/store/hooks";
 import { handleBlur } from "@app/utils";
 
 interface EditProjectDialogProps {
     open: boolean;
     onClose: () => void;
+    project: Project;
 }
 
 export const EditProjectDialog = (props: EditProjectDialogProps) => {
-    const { open, onClose } = props;
-    const [name, setName] = useState("");
-    const [region, setRegion] = useState("");
-    const [description, setDescription] = useState("");
+    const { open, onClose, project } = props;
+    const [name, setName] = useState(project.name);
+    const [region, setRegion] = useState(project.region);
+    const [description, setDescription] = useState(project.description);
 
-    // const appDispatch = useAppDispatch();
-    // const navigate = useNavigate();
+    const appDispatch = useAppDispatch();
 
     const handleEdit = async () => {
         try {
-            // const result = await appDispatch(editProject({ project: { name, region, description } }));
-            // const newProjectId = result?.payload?.id;
-
-            // if (newProjectId) {
-            //     Navigate to the new project page
-            // navigate(`/project/${newProjectId}`);
-            // } else {
-            //     console.error("Error creating project");
-            // }
+            appDispatch(editProject({ projectId: project.id, name, region, description }));
             onClose();
         } catch (error) {
             console.error("Error editing project:", error);
@@ -66,8 +57,8 @@ export const EditProjectDialog = (props: EditProjectDialogProps) => {
                         Edit Project
                     </Typography>
                     <Stack spacing={2} sx={{ mt: 2 }}>
-                        <FormControl required>
-                            <FormLabel>Name your project</FormLabel>
+                        <FormControl>
+                            <FormLabel>Name</FormLabel>
                             <Input
                                 placeholder="Name"
                                 value={name}
@@ -84,8 +75,8 @@ export const EditProjectDialog = (props: EditProjectDialogProps) => {
                             </FormHelperText>
                             <FormHelperText>e.g. Hurricane Harvey, Flood 2023, etc.</FormHelperText>
                         </FormControl>
-                        <FormControl required>
-                            <FormLabel>Set region</FormLabel>
+                        <FormControl>
+                            <FormLabel>Region</FormLabel>
                             <Input
                                 placeholder="Region e.g. MMSA, Seaside, Joplin, Galveston, etc"
                                 value={region}
@@ -98,8 +89,8 @@ export const EditProjectDialog = (props: EditProjectDialogProps) => {
                                 }}
                             />
                         </FormControl>
-                        <FormControl required>
-                            <FormLabel>Add description</FormLabel>
+                        <FormControl>
+                            <FormLabel>Description</FormLabel>
                             <Textarea
                                 placeholder="Add description"
                                 minRows={5}
@@ -123,7 +114,7 @@ export const EditProjectDialog = (props: EditProjectDialogProps) => {
                             disabled={!name || !description || !region} // Ensure required fields are filled
                             onClick={handleEdit}
                         >
-                            Edit Project
+                            Save
                         </Button>
                     </Stack>
                 </Box>
