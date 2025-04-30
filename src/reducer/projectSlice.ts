@@ -82,6 +82,35 @@ export const deleteProject = createAsyncThunk("projects/deleteProject", async (p
     return projectId;
 });
 
+export const editProject = createAsyncThunk(
+    "projects/editProject",
+    async ({
+        projectId,
+        name,
+        description,
+        region
+    }: {
+        projectId: string;
+        name: string;
+        description: string;
+        region: string;
+    }) => {
+        const data = new URLSearchParams();
+        data.append("name", name);
+        data.append("description", description);
+        data.append("region", region);
+
+        const response = await axios.patch(`${PROJECT_API_URL}/${projectId}`, data, {
+            headers: {
+                ...getHeaders(), // includes User credentials, User groups
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+
+        return response.data;
+    }
+);
+
 export const getProjectDatasets = createAsyncThunk(
     "projects/getProjectDatasets",
     async ({
@@ -510,6 +539,34 @@ const projectSlice = createSlice({
             .addCase(getProject.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project";
+            })
+            // Edit project
+            .addCase(editProject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = null;
+            })
+            .addCase(editProject.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectDFR3Mappings = action.payload.dfr3Mappings;
+                state.projectHazards = action.payload.hazards;
+                state.projectDatasets = action.payload.datasets;
+                state.projectWorkflows = action.payload.workflows;
+                state.project = action.payload;
+                state.success = "Successfully edited the project";
+
+                // Update project list as well
+                const updatedProjectIndex = state.projects.findIndex((p) => p.id === action.payload.id);
+                if (updatedProjectIndex !== -1) {
+                    state.projects[updatedProjectIndex] = {
+                        ...state.projects[updatedProjectIndex],
+                        ...action.payload
+                    };
+                }
+            })
+            .addCase(editProject.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to edit the project";
             })
             // Handle GET_PROJECT_DATASETS
             .addCase(getProjectDatasets.pending, (state) => {

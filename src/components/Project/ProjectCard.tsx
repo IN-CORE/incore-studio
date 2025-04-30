@@ -1,5 +1,17 @@
 import React, { useState } from "react";
-import { Button, Card, CardContent, Typography, Box, Chip, IconButton } from "@mui/joy";
+import {
+    Button,
+    Card,
+    CardContent,
+    Typography,
+    Box,
+    Chip,
+    IconButton,
+    Dropdown,
+    Menu,
+    MenuButton,
+    MenuItem
+} from "@mui/joy";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 import DFR3Icon from "@mui/icons-material/ShowChart";
@@ -7,10 +19,11 @@ import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import { parseDateTime } from "@app/utils";
 import { useNavigate } from "react-router-dom";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { deleteProject } from "@app/reducer/projectSlice";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { useDispatch } from "react-redux";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { EditProjectDialog } from "@app/components/Project/EditProject";
 
 interface ProjectCardProps {
     project: Project;
@@ -28,6 +41,9 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 
     const navigate = useNavigate();
 
+    // edit
+    const [editProjectDialogOpen, setEditProjectDialogOpen] = useState(false);
+
     // delete
     const dispatch = useDispatch();
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -44,16 +60,51 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 
     return (
         <Card sx={{ width: 430, position: "relative" }}>
-            <IconButton
-                sx={{ position: "absolute", top: 8, right: 8, zIndex: 1000 }}
-                variant="plain"
-                color="neutral"
-                onClick={() => {
-                    setOpenDeleteDialog(true);
-                }}
-            >
-                <DeleteOutlineOutlinedIcon />
-            </IconButton>
+            {/* Menu Icon */}
+            <Dropdown>
+                <MenuButton
+                    onClick={(e) => {
+                        e.stopPropagation(); // prevent selection on menu click
+                    }}
+                    slots={{ root: IconButton }}
+                    slotProps={{
+                        root: {
+                            sx: { position: "absolute", top: 8, right: 8, zIndex: 15 },
+                            variant: "plain",
+                            color: "neutral"
+                        }
+                    }}
+                >
+                    <MoreVertIcon />
+                </MenuButton>
+                <Menu placement="bottom-start">
+                    <MenuItem
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                        }}
+                        onClick={() => {
+                            setEditProjectDialogOpen(true);
+                        }}
+                    >
+                        Edit
+                    </MenuItem>
+                    <MenuItem
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                        }}
+                        onClick={() => {
+                            setOpenDeleteDialog(true);
+                        }}
+                    >
+                        Delete
+                    </MenuItem>
+                </Menu>
+            </Dropdown>
+            <EditProjectDialog
+                open={editProjectDialogOpen}
+                onClose={() => setEditProjectDialogOpen(false)}
+                project={project}
+            />
             <IncoreDialog
                 open={openDeleteDialog}
                 onClose={handleCloseDialog}
