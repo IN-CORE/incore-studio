@@ -7,6 +7,9 @@ import {
     CardContent,
     CardActions,
     Checkbox,
+    Chip,
+    FormControl,
+    FormLabel,
     List,
     ListItem,
     IconButton,
@@ -14,6 +17,8 @@ import {
     Modal,
     ModalClose,
     Stack,
+    Select,
+    Option,
     Typography
 } from "@mui/joy";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -42,6 +47,10 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
     const [selectedAnalysis, setSelectedAnalysis] = React.useState<string>("");
     const [searchAnalysisTerm, setSearchAnalysisTerm] = React.useState<string>("");
     const [availableAnalyses, setAvailableAnalyses] = React.useState<string[]>([]);
+    const [groupedAnalyses, setGroupedAnalyses] = React.useState<Record<string, string[]>>({});
+    const [selectedTag, setSelectedTag] = React.useState<string>("all");
+    const [currentAnalysesList, setCurrentAnalysesList] = React.useState<string[]>([]);
+    const [currentAnalysisCount, setCurrentAnalysisCount] = React.useState<number>(0);
 
     const { addNodes } = useStore(useShallow(selector));
     const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
@@ -62,7 +71,43 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                     (tool) =>
                         dependencyGraph[tool].pretty_name.toLowerCase().search(searchAnalysisTerm.toLowerCase()) !== -1
                 );
+            // get unique tags for all tools from dependencyGraph
+            const tags = new Set<string>();
+            for (const tool of toolNames) {
+                if (dependencyGraph[tool].tags) {
+                    dependencyGraph[tool].tags.forEach((tag: string) => tags.add(tag));
+                }
+            }
+            // sort tags
+            const sortedTags = Array.from(tags).sort();
+            // group tools by tags
+            const groupedTools: Record<string, string[]> = {};
+            sortedTags.forEach((tag) => {
+                groupedTools[tag] = [];
+            });
+            toolNames.forEach((tool) => {
+                if (dependencyGraph[tool].tags) {
+                    dependencyGraph[tool].tags.forEach((tag: string) => groupedTools[tag].push(tool));
+                }
+            });
+            // sort grouped tools
+            Object.keys(groupedTools).forEach((tag) => {
+                groupedTools[tag].sort((a, b) => {
+                    const nameA = dependencyGraph[a].pretty_name.toLowerCase();
+                    const nameB = dependencyGraph[b].pretty_name.toLowerCase();
+                    if (nameA < nameB) {
+                        return -1;
+                    }
+                    if (nameA > nameB) {
+                        return 1;
+                    }
+                    return 0;
+                });
+            });
+            setGroupedAnalyses(groupedTools);
             setAvailableAnalyses(toolNames);
+            setCurrentAnalysesList(selectedTag === "all" ? toolNames : groupedTools[selectedTag]);
+            setCurrentAnalysisCount(selectedTag === "all" ? toolNames.length : groupedTools[selectedTag].length);
         }
     }, [datawolfTools, searchAnalysisTerm]);
 
@@ -76,11 +121,12 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
         >
             <Card
                 sx={{
-                    width: 800,
-                    maxHeight: 800,
+                    width: "75%",
+                    maxHeight: "75%",
                     backgroundColor: "white",
                     padding: "24px"
                 }}
+                size="lg"
             >
                 <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
                     <TrendingUpRoundedIcon sx={{ color: "#EF6C00", marginRight: "10px" }} />
@@ -100,24 +146,69 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                 </Box>
                 <CardContent>
                     <Stack direction="column" spacing={3}>
-                        <Box>
-                            <Input
-                                startDecorator={<SearchRoundedIcon />}
-                                endDecorator={
-                                    searchAnalysisTerm.length > 0 ? (
-                                        <IconButton variant="plain" onClick={() => setSearchAnalysisTerm("")}>
-                                            <CloseRoundedIcon />
-                                        </IconButton>
-                                    ) : null
-                                }
-                                placeholder="Search Analysis"
-                                value={searchAnalysisTerm}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
-                                        setSearchAnalysisTerm(e.target.value.toLowerCase());
+                        <Stack direction="row" spacing={1} sx={{ width: "100%" }}>
+                            <FormControl sx={{ width: "50%" }}>
+                                <FormLabel sx={{ color: "#172B4D" }}>Filter by Category</FormLabel>
+                                <Select
+                                    placeholder="Select Category"
+                                    value={selectedTag}
+                                    onChange={(_, newTag: string | null) => {
+                                        setSelectedTag(newTag ?? "all");
+                                        if (newTag !== "all" && newTag !== null) {
+                                            setCurrentAnalysesList(groupedAnalyses[newTag]);
+                                            setCurrentAnalysisCount(groupedAnalyses[newTag].length);
+                                        } else {
+                                            setCurrentAnalysesList(availableAnalyses);
+                                            setCurrentAnalysisCount(availableAnalyses.length);
+                                        }
+                                    }}
+                                    sx={{
+                                        "backgroundColor": "white",
+                                        "border": "1px solid",
+                                        "borderColor": "neutral.300",
+                                        "borderRadius": "8px",
+                                        "&:hover": {
+                                            borderColor: "neutral.500"
+                                        },
+                                        "&:focus-within": {
+                                            borderColor: "primary.500"
+                                        }
+                                    }}
+                                >
+                                    <Option value="all">All</Option>
+                                    {Object.keys(groupedAnalyses).map((tag) => (
+                                        <Option key={tag} value={tag}>
+                                            {tag}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl sx={{ width: "50%" }}>
+                                <FormLabel sx={{ color: "#172B4D" }}>Search by Name</FormLabel>
+                                <Input
+                                    startDecorator={<SearchRoundedIcon />}
+                                    endDecorator={
+                                        searchAnalysisTerm.length > 0 ? (
+                                            <IconButton variant="plain" onClick={() => setSearchAnalysisTerm("")}>
+                                                <CloseRoundedIcon />
+                                            </IconButton>
+                                        ) : null
                                     }
-                                }}
-                            />
+                                    placeholder="Search Analysis"
+                                    value={searchAnalysisTerm}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                            setSearchAnalysisTerm(e.target.value.toLowerCase());
+                                        }
+                                    }}
+                                />
+                            </FormControl>
+                        </Stack>
+                        <Box>
+                            <Typography level="body-sm" sx={{ color: "#172B4D", fontWeight: 500 }}>
+                                {currentAnalysisCount}{" "}
+                                {selectedTag === "Pyincore Utility" ? "Utility Tools" : "Analyses"} found
+                            </Typography>
                         </Box>
                         <Box sx={{ height: "400px", overflow: "auto", padding: "10px" }}>
                             <List
@@ -128,7 +219,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                 }}
                             >
                                 {dependencyGraph !== null &&
-                                    availableAnalyses.map((analysis) => (
+                                    currentAnalysesList.map((analysis) => (
                                         <ListItem key={analysis}>
                                             {analysis === selectedAnalysis && (
                                                 <Done
@@ -144,7 +235,36 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                                 size="sm"
                                                 disableIcon
                                                 overlay
-                                                label={dependencyGraph[analysis].pretty_name}
+                                                label={
+                                                    <Stack
+                                                        direction="row"
+                                                        spacing={2}
+                                                        alignItems="center"
+                                                        justifyContent="space-between"
+                                                    >
+                                                        <Typography>{dependencyGraph[analysis].pretty_name}</Typography>
+                                                        <Stack direction="row" spacing={1} alignItems="center">
+                                                            {dependencyGraph[analysis].tags &&
+                                                                dependencyGraph[analysis].tags.map((tag) => (
+                                                                    <Chip
+                                                                        key={tag}
+                                                                        variant="soft"
+                                                                        size="sm"
+                                                                        color="neutral"
+                                                                        sx={{
+                                                                            backgroundColor: "#F4F5F7",
+                                                                            color: "#172B4D",
+                                                                            fontSize: "12px",
+                                                                            fontWeight: 500,
+                                                                            borderRadius: "8px"
+                                                                        }}
+                                                                    >
+                                                                        {tag}
+                                                                    </Chip>
+                                                                ))}
+                                                        </Stack>
+                                                    </Stack>
+                                                }
                                                 checked={selectedAnalysis === analysis}
                                                 variant={selectedAnalysis === analysis ? "soft" : "outlined"}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
