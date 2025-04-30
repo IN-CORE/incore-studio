@@ -2048,7 +2048,7 @@
             ]
         },
         "pretty_name": "Electric Power Facility Restoration",
-        "tags": ["LifeLine"],
+        "tags": ["Lifeline"],
         "manual": "epf_restoration.html",
         "inputs": {
             "epfs": ["incore:epf", "ergo:epf"],
