@@ -55,7 +55,8 @@ import OutputFileDisplay from "./OutputFileDisplay";
 const getInitialParametersState = (
     sidePanelData: ExecutionSidePandelData,
     dependencyGraph: DependencyGraph | null,
-    createExecution: ExecutionCreate
+    createExecution: ExecutionCreate,
+    createMode: boolean = false
 ): { [key: string]: string | boolean } => {
     let initialState: { [key: string]: string | boolean } = {};
     sidePanelData.currentAnalysis.inputParameters.forEach((inputParameter) => {
@@ -64,7 +65,8 @@ const getInitialParametersState = (
         if (
             dependencyGraph &&
             dependencyGraph[sidePanelData.currentAnalysis.depGName].parameter_defaults[inputParameter.label] !==
-                undefined
+                undefined &&
+            createMode
         ) {
             if (inputParameter.type === "boolean") {
                 initialState[inputParameter.execFileEntryId] =
@@ -150,14 +152,14 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
 
     const [datasetSelect, setDatasetSelect] = React.useState<{ [key: string]: string } | null>(null);
     const [parameters, setParameters] = React.useState<{ [key: string]: string | boolean | null }>(
-        getInitialParametersState(sidePanelData, dependencyGraph, createExecution)
+        getInitialParametersState(sidePanelData, dependencyGraph, createExecution, createMode)
     );
     const [selectedHazardType, setSelectedHazardType] = React.useState<string | null>(null);
     const [selectedDFR3HazardType, setSelectedDFR3HazardType] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         setDatasetSelect(getInputDatasetInitialState());
-        setParameters(getInitialParametersState(sidePanelData, dependencyGraph, createExecution));
+        setParameters(getInitialParametersState(sidePanelData, dependencyGraph, createExecution, createMode));
     }, [sidePanelData, createExecution, dependencyGraph]);
 
     const handleResetDatasets = () => {
@@ -167,7 +169,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     };
 
     const handleResetParameters = () => {
-        setParameters(getInitialParametersState(sidePanelData, dependencyGraph, createExecution));
+        setParameters(getInitialParametersState(sidePanelData, dependencyGraph, createExecution, createMode));
     };
 
     const updateParameter = (execFileEntryId: string, value: string | boolean | null) => {

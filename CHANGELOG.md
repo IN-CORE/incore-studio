@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Implement basic chart visualization using vega-lite [#152](https://github.com/IN-CORE/incore-studio/issues/152)
 - Add default parameters when setting execution. [#153](https://github.com/IN-CORE/incore-studio/issues/153)
 - Ability to rerun the workflow with same parameters. [#144](https://github.com/IN-CORE/incore-studio/issues/144)
+- Group analyses in the workflow editor by tags [#32](https://github.com/IN-CORE/incore-studio/issues/32)
 
 ### Fixed
 
