@@ -20,8 +20,8 @@ import { RootState } from "@app/store";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAppDispatch } from "@app/store/hooks";
 import { createProjectVisualization, fetchInfiniteProjectVisualizations } from "@app/reducer/projectSlice";
-import config from "@app/app.config";
 import { handleBlur } from "@app/utils";
+import { StyledSelector } from "@app/components/StyleSelector";
 
 interface VisualizationDialogProps {
     projectId: string;
@@ -159,19 +159,7 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                                     </Select>
                                 </FormControl>
                                 <FormControl>
-                                    <FormLabel>Select a style</FormLabel>
-                                    <Select
-                                        placeholder="Select a style"
-                                        onChange={(_: React.SyntheticEvent | null, newValue: string | null) => {
-                                            setStyleName(newValue || "");
-                                        }}
-                                    >
-                                        {config.sytles.map((style: string) => (
-                                            <Option key={style} value={style}>
-                                                {style}
-                                            </Option>
-                                        ))}
-                                    </Select>
+                                    <StyledSelector styleName={styleName} setStyleName={setStyleName} />
                                 </FormControl>
                                 <Button
                                     variant="soft"

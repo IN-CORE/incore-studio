@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Fix inconsistency in styling [#156](https://github.com/IN-CORE/incore-studio/issues/156)
 
+### Changed
+
+- Update GeoServer style selection [#168](https://github.com/IN-CORE/incore-studio/issues/168)
+
 ## [Alpha-4] - 04-11-2025
 
 ### Fixed
