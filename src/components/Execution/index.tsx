@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector, useExecutionTemplate, useExecutionPolli
 import withLoading from "@app/components/hocs/withLoading";
 import withErrorHandling from "@app/components/hocs/withErrorHandling";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
+import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import ConfirmationDialog from "@app/components/ConfirmationDialog";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import Workflow from "@app/components/Workflow";
@@ -49,6 +50,7 @@ const ExecutionComponent: React.FC<{
     );
     const [openExecutionDialog, setOpenExecutionDialog] = React.useState(false);
     const [saveExecutionModalConfirmation, setSaveExecutionModalConfirmation] = React.useState(false);
+    const [reRunFlow, setReRunFlow] = React.useState(false);
 
     // Prevent Browser Refresh / Close
     useEffect(() => {
@@ -190,7 +192,7 @@ const ExecutionComponent: React.FC<{
                             </Box>
                         </Stack>
                     </Box>
-                    <Box>
+                    <Stack direction="row" spacing={2} alignItems="center">
                         <Button
                             variant="solid"
                             disabled={
@@ -233,7 +235,26 @@ const ExecutionComponent: React.FC<{
                         >
                             {create ? "Execute Workflow" : "Create new"}
                         </Button>
-                    </Box>
+                        {!create && (
+                            <Button
+                                variant="solid"
+                                startDecorator={<RestartAltRoundedIcon sx={{ fontSize: "25px" }} />}
+                                sx={{
+                                    backgroundColor: "primary.main",
+                                    border: "1px",
+                                    display: "flex", // Ensures proper alignment within the button
+                                    alignItems: "center", // Aligns text and icon vertically
+                                    gap: "8px"
+                                }}
+                                onClick={() => {
+                                    setReRunFlow(true);
+                                    setOpenExecutionDialog(true);
+                                }}
+                            >
+                                Re-Run With same Parameters
+                            </Button>
+                        )}
+                    </Stack>
                 </Stack>
             </Box>
             <CreateExecutionDialog
@@ -241,6 +262,8 @@ const ExecutionComponent: React.FC<{
                 onClose={() => setOpenExecutionDialog(false)}
                 wfId={wfID}
                 id={id}
+                reRun={reRunFlow}
+                resetReRun={() => setReRunFlow(false)}
             />
 
             <Box sx={{ display: "flex", flexGrow: 1, position: "relative" }}>
