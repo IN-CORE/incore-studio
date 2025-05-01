@@ -28,7 +28,7 @@ import { IncoreDialog } from "@app/components/IncoreDialog";
 import { getOidcUser } from "@app/utils";
 import config from "@app/app.config";
 
-import { GeoExplorer, GeoExplorerProvider } from "@ncsa/geo-explorer";
+import { GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
 import "@ncsa/geo-explorer/index.css";
 
 const DatasetPage = (): JSX.Element => {
@@ -238,20 +238,18 @@ const DatasetPage = (): JSX.Element => {
                                             .filter((dataset) => dataset.format === "shapefile")
                                             .map((dataset) => ({
                                                 layer_id: dataset.id,
+                                                layer_type: "polygon",
                                                 display_name: dataset.title,
                                                 description: dataset.description,
-                                                dataset_info: {
-                                                    dataset_type: "vector",
-                                                    dataset_category: "power",
-                                                    feature_type: "polygon",
-                                                    timestamps: []
-                                                },
+                                                timestamps: [],
                                                 default_style_name: "",
                                                 ogc_service_url: `${config.hostname}/geoserver`,
-                                                geometry_column: "the_geom"
+                                                labels: {
+                                                    dataset_category: "power"
+                                                }
                                             })),
                                         temporal_layers: []
-                                    }}
+                                    } as GeoExplorerConfig}
                                     accessToken={getOidcUser()?.access_token}
                                     isProtectedResource={(url) => /geoserver/.test(url)}
                                 >
