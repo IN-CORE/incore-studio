@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [Beta-1] - 05-01-2025
 
 ### Added
 
@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Fix inconsistency in styling [#156](https://github.com/IN-CORE/incore-studio/issues/156)
+
+### Changed
+
+- Update GeoServer style selection [#168](https://github.com/IN-CORE/incore-studio/issues/168)
 
 ## [Alpha-4] - 04-11-2025
 
