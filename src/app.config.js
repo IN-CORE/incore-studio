@@ -24,49 +24,59 @@ config.dataService = `${hostname}/data/api/datasets`;
 config.semanticService = `${hostname}/semantics/api/types`;
 
 // TODO replace this with dynamically pulling from GeoServer
-config.sytles = [
-    "incore:earthquake-pga-g",
-    "incore:tornado",
-    "incore:hurricane-wave-direction",
-    "incore:hurricane-wave-height",
-    "incore:hurricane-wave-period",
-    "incore:hurricane-wind",
-    "incore:hurricane-inundation-depth",
-    "incore:hurricane-inundation-duration",
-    "incore:hurricane-surge-level",
-    "incore:hurricane-water-velocity",
-    "incore:heatmap",
-    "incore:failure_probability"
-];
+config.styles = {
+    "Inventory": [
+        "studio:building",
+        "studio:substations-label",
+        "studio:joplin-bldg-substations",
+        "studio:point-red",
+        "studio:point-green",
+        "studio:point-blue",
+        "studio:point-black",
+        "studio:point-white",
+        "studio:point-gray"
+    ],
+    "Damage Analysis": ["studio:bldg-dmg", "studio:galveston-bldg-dmg-fema", "studio:epf-dmg-summary"],
+    "Functionality": ["studio:bldg-func", "studio:joplin-bldg-func", "studio:bldg-mcs"],
+    "Population Dislocation": ["studio:joplin-pop-dis", "studio:galveston-pop-dis", "studio:slc-pop-dis"],
+    "Mean Damage": ["studio:mean-damage"],
+    "Economic Loss": ["studio:economic-loss"],
+    "Flood": ["studio:water-depth"],
+    "Hurricane": [
+        "studio:hurricane-wave-height",
+        "studio:hurricane-surge-level",
+        "studio:hurricane-inundation-duration",
+        "studio:hurricane-inundation-depth",
+        "studio:hurricane-wave-period",
+        "studio:hurricane-wave-direction",
+        "studio:hurricane-water-velocity",
+        "studio:hurricane-wind"
+    ],
+    "Tsunami": ["studio:tsunami"],
+    "Earthquake": ["studio:earthquake-pga-g"],
+    "Tornado": ["studio:tornado", "studio:tornado1"],
+    "Retrofit": ["studio:retrofit-rules", "studio:retrofit-rules-highlight"],
+    "Zone": ["studio:zone"]
+};
 
 config.defaultLayerStyles = {
-    RetrofitStrategy: "incore:retrofit-rules",
-    RetrofitStrategyHighlight: "incore:retrofit-rules-highlight",
-    BldgDamage: "incore:galveston-bldg-dmg-fema",
-    BldgFunctionality: "incore:bldg-func",
-    BldgMCS: "incore:bldg-mcs",
-    Interdependency: "incore:substations-label",
-    PoleDamage: "incore:epf-dmg-summary",
-    PopulationDislocation: "incore:galveston-pop-dis",
-    SubstationDamage: "incore:epf-dmg-summary",
-    Zone: "incore:polygon",
     MapUtil: {
-        earthquake: "incore:earthquake-pga-g",
-        tornado: "incore:tornado",
+        earthquake: "studio:earthquake-pga-g",
+        tornado: "studio:tornado",
         hurricane: {
-            waveHeight: "incore:hurricane-wave-height",
-            surgeLevel: "incore:hurricane-surge-level",
-            inundationDuration: "incore:hurricane-inundation-duration",
-            inundationDepth: "incore:hurricane-inundation-depth",
-            wavePeriod: "incore:hurricane-wave-period",
-            waveDirection: "incore:hurricane-wave-direction",
-            waterVelocity: "incore:hurricane-water-velocity",
-            windVelocity: "incore:hurricane-wind"
+            waveHeight: "studio:hurricane-wave-height",
+            surgeLevel: "studio:hurricane-surge-level",
+            inundationDuration: "studio:hurricane-inundation-duration",
+            inundationDepth: "studio:hurricane-inundation-depth",
+            wavePeriod: "studio:hurricane-wave-period",
+            waveDirection: "studio:hurricane-wave-direction",
+            waterVelocity: "studio:hurricane-water-velocity",
+            windVelocity: "studio:hurricane-wind"
         },
-        tsunami: "incore:tsunami",
+        tsunami: "studio:tsunami",
         flood: {
-            inundationDepth: "incore:hurricane-inundation-depth",
-            waterSurfaceElevation: "incore:hurricane-surge-level"
+            inundationDepth: "studio:water-depth",
+            waterSurfaceElevation: "studio:water-depth"
         }
     }
 };
