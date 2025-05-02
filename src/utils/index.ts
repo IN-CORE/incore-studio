@@ -2,6 +2,7 @@ import { User } from "oidc-client";
 import config from "@app/app.config";
 
 import axios from "axios";
+import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 
 export function getOidcUser() {
     const oidcStorage = sessionStorage.getItem(
@@ -731,3 +732,45 @@ export const handleBlur = <T extends string>(value: T, setValue: React.Dispatch<
     const trimmedValue = value.trim() as T;
     setValue(trimmedValue);
 };
+
+// For the Vega Chart
+export type VegaDataType = "quantitative" | "temporal" | "ordinal" | "nominal" | "geojson" | "unknown";
+
+export function guessDataType(inputString: string): VegaDataType {
+    const quantitativePattern = /^[-+]?\d+(\.\d+)?$/;
+    const temporalPattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
+    const ordinalPattern = /[a-zA-Z]/;
+    const nominalPattern = /[a-zA-Z]/;
+    const geojsonPattern = /^(\{"type": "Feature".*?\}|{"type": "FeatureCollection".*?})$/;
+
+    if (quantitativePattern.test(inputString)) {
+        return "quantitative";
+    }
+    if (temporalPattern.test(inputString)) {
+        return "temporal";
+    }
+    if (geojsonPattern.test(inputString)) {
+        return "geojson";
+    }
+    if (ordinalPattern.test(inputString)) {
+        return "ordinal";
+    }
+    if (nominalPattern.test(inputString)) {
+        return "nominal";
+    }
+    return "unknown";
+}
+
+export function convertGridToVegaData(rows: GridRowsProp, columns: GridColDef[]): Record<string, any>[] {
+    const headerMap = Object.fromEntries(columns.map((col) => [col.field, col.headerName || col.field]));
+
+    return rows.map((row) => {
+        const vegaData: Record<string, any> = {};
+        columns.forEach((col) => {
+            const value = row[col.field];
+            const vegaKey = headerMap[col.field];
+            vegaData[vegaKey] = value;
+        });
+        return vegaData;
+    });
+}

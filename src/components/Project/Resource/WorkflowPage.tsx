@@ -17,6 +17,7 @@ import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflow";
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 import Snackbar from "@mui/joy/Snackbar";
 import { useAppDispatch } from "@app/store/hooks";
+import { IncoreDialog } from "@app/components/IncoreDialog";
 
 const WorkflowPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -103,8 +104,34 @@ const WorkflowPage = (): JSX.Element => {
         }
     }, [success, error]);
 
+    // batch delete
+    const [selectedWorkflows, setSelectedWorkflows] = useState<Workflow[]>([]);
+    const [openBatchDeleteDialog, setOpenBatchDeleteDialog] = useState(false);
+    const handleBatchDelete = async () => {
+        if (project?.id && selectedWorkflows.length > 0) {
+            await appDispatch(
+                deleteProjectWorkflows({
+                    projectId: project.id,
+                    workflowIds: selectedWorkflows.map((w) => w.id)
+                })
+            );
+            setSelectedWorkflows([]);
+        }
+        setOpenBatchDeleteDialog(false);
+    };
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+            <IncoreDialog
+                open={openBatchDeleteDialog}
+                onClose={() => {
+                    setOpenBatchDeleteDialog(false);
+                }}
+                onAction={handleBatchDelete}
+                message="Are you sure you want to delete the selected items? This action cannot be undone."
+                dialogTitle="Confirm Deletion"
+                actionButtonName="Batch Delete"
+            />
             <Box sx={{ flexShrink: 0 }} mt={5}>
                 {!project ? (
                     <Typography>Loading...</Typography>
@@ -132,6 +159,9 @@ const WorkflowPage = (): JSX.Element => {
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Create Workflow"
+                                    selectedItemsCount={selectedWorkflows.length}
+                                    onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
+                                    onSelectionChange={(selected) => setSelectedWorkflows(selected as Workflow[])}
                                 />
                                 <CreateWorkflowDialog
                                     open={openCreateWorkflowDialog}
@@ -144,6 +174,8 @@ const WorkflowPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteWorkflowFunc}
                                         resourceType="workflow"
+                                        onSelectionChange={(selected) => setSelectedWorkflows(selected as Workflow[])}
+                                        selectedItems={selectedWorkflows}
                                     />
                                 ) : (
                                     <ResourceCards
@@ -151,6 +183,8 @@ const WorkflowPage = (): JSX.Element => {
                                         cardPerRow={4}
                                         projectId={project.id}
                                         deleteFunc={deleteWorkflowFunc}
+                                        onSelectionChange={(selected) => setSelectedWorkflows(selected as Workflow[])}
+                                        selectedItems={selectedWorkflows}
                                     />
                                 )}
                                 <Box mt={4} display="flex" justifyContent="center">

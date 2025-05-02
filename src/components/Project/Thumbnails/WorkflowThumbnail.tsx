@@ -5,13 +5,10 @@ export const WorkflowThumbnail = () => {
     return (
         <div
             style={{
-                position: "relative",
-                width: "100%",
                 height: 160,
                 display: "flex",
                 justifyContent: "center",
-                alignItems: "center",
-                padding: 20
+                alignItems: "center"
             }}
         >
             <img

@@ -60,6 +60,8 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
             label: string;
             value: string;
             required: boolean;
+            hidden: boolean;
+            type: string;
         }[] = [];
         if (data.stepData !== undefined) {
             data.stepData.tool.parameters.forEach((param) => {
@@ -69,6 +71,8 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         execFileEntryId,
                         label: param.title,
                         required: !param.allowNull,
+                        hidden: param.hidden,
+                        type: param.type,
                         value:
                             currentExecution !== null
                                 ? currentExecution.parameters[execFileEntryId] !== undefined

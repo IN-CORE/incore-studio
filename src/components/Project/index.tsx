@@ -112,6 +112,9 @@ const Project = (): JSX.Element => {
     // Create project
     const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
 
+    // Tabs
+    const [selectedIndex, setSelectedIndex] = React.useState<number>(0);
+
     return (
         <Box sx={{ flexShrink: 0 }} mt={5}>
             {/* Header Section */}
@@ -137,14 +140,67 @@ const Project = (): JSX.Element => {
             </Box>
             <CreateProjectDialog open={createProjectDialogOpen} onClose={() => setCreateProjectDialogOpen(false)} />
             {/* Tabs and Filters in the same flexbox */}
-            <Tabs aria-label="Project Tabs" defaultValue={0} sx={{ flexGrow: 1 }}>
+            <Tabs
+                ria-label="Project Tabs"
+                defaultValue={0}
+                sx={{ flexGrow: 1 }}
+                value={selectedIndex}
+                onChange={(_, newValue) => {
+                    if (typeof newValue === "number") {
+                        setSelectedIndex(newValue);
+                    }
+                }}
+            >
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} sx={{ gap: 2 }}>
                     {/* Tabs */}
                     <TabList>
-                        <Tab>All</Tab>
-                        <Tab>Recent</Tab>
-                        <Tab>Shared With Me</Tab>
-                        <Tab>Archived</Tab>
+                        <Tab
+                            value={0}
+                            sx={{
+                                "&.Mui-selected": {
+                                    color: "primary.main",
+                                    fontWeight: "bold"
+                                }
+                            }}
+                        >
+                            All
+                        </Tab>
+                        <Tab
+                            value={1}
+                            disabled
+                            sx={{
+                                "&.Mui-selected": {
+                                    color: "primary.main",
+                                    fontWeight: "bold"
+                                }
+                            }}
+                        >
+                            Recent
+                        </Tab>
+                        <Tab
+                            value={2}
+                            disabled
+                            sx={{
+                                "&.Mui-selected": {
+                                    color: "primary.main",
+                                    fontWeight: "bold"
+                                }
+                            }}
+                        >
+                            Shared With Me
+                        </Tab>
+                        <Tab
+                            value={3}
+                            disabled
+                            sx={{
+                                "&.Mui-selected": {
+                                    color: "primary.main",
+                                    fontWeight: "bold"
+                                }
+                            }}
+                        >
+                            Archived
+                        </Tab>
                     </TabList>
 
                     {/* Filter Dropdowns aligned to the right */}

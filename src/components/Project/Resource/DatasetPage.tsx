@@ -24,6 +24,8 @@ import Snackbar from "@mui/joy/Snackbar";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
+import TableDataModal from "@app/components/TableDataModal";
+import { IncoreDialog } from "@app/components/IncoreDialog";
 
 const DatasetPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -32,6 +34,8 @@ const DatasetPage = (): JSX.Element => {
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
     const deletedDatasetIds = useSelector((state: RootState) => state.project.deletedDatasetIds);
+    const [openTableDataModal, setOpenTableDataModal] = useState(false); // State to control the visibility of the table data modal
+    const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null); // State to store the selected dataset
 
     // Pagination states
     const [datasetPageNumber, setDatasetPageNumber] = useState(1);
@@ -141,8 +145,35 @@ const DatasetPage = (): JSX.Element => {
     const onCreateDataset = () => {
         setOpenCreateDatasetDialog(true);
     };
+
+    // batch delete
+    const [selectedDatasets, setSelectedDatasets] = useState<Dataset[]>([]);
+    const [openBatchDeleteDialog, setOpenBatchDeleteDialog] = useState(false);
+    const handleBatchDelete = async () => {
+        if (project?.id && selectedDatasets.length > 0) {
+            await appDispatch(
+                deleteProjectDatasets({
+                    projectId: project.id,
+                    datasetIds: selectedDatasets.map((w) => w.id)
+                })
+            );
+            setSelectedDatasets([]);
+        }
+        setOpenBatchDeleteDialog(false);
+    };
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+            <IncoreDialog
+                open={openBatchDeleteDialog}
+                onClose={() => {
+                    setOpenBatchDeleteDialog(false);
+                }}
+                onAction={handleBatchDelete}
+                message="Are you sure you want to delete the selected items? This action cannot be undone."
+                dialogTitle="Confirm Deletion"
+                actionButtonName="Batch Delete"
+            />
             <Box sx={{ flexShrink: 0 }} mt={5}>
                 {!project ? (
                     <Typography>Loading...</Typography>
@@ -172,6 +203,9 @@ const DatasetPage = (): JSX.Element => {
                                     createLabel="Add from Service"
                                     addtionalCreateLabel="Upload Dataset"
                                     additionalCreateClick={onCreateDataset}
+                                    selectedItemsCount={selectedDatasets.length}
+                                    onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
+                                    onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}
@@ -196,6 +230,12 @@ const DatasetPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
                                         addVisualizationFunc={addDatasetVisualizationFunc}
+                                        viewFunc={(dataset: Dataset) => {
+                                            setOpenTableDataModal(true);
+                                            setSelectedDataset(dataset);
+                                        }}
+                                        onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
+                                        selectedItems={selectedDatasets}
                                     />
                                 ) : (
                                     <ResourceCards
@@ -204,6 +244,12 @@ const DatasetPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
                                         addVisualizationFunc={addDatasetVisualizationFunc}
+                                        viewFunc={(dataset: Dataset) => {
+                                            setOpenTableDataModal(true);
+                                            setSelectedDataset(dataset);
+                                        }}
+                                        onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
+                                        selectedItems={selectedDatasets}
                                     />
                                 )}
                                 <Box mt={4} display="flex" justifyContent="center">
@@ -220,6 +266,15 @@ const DatasetPage = (): JSX.Element => {
                     </>
                 )}
             </Box>
+            {selectedDataset && (
+                <TableDataModal
+                    open={openTableDataModal}
+                    onClose={() => {
+                        setOpenTableDataModal(false);
+                    }}
+                    dataset={selectedDataset}
+                />
+            )}
             <Snackbar
                 anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 open={snackbarOpen}

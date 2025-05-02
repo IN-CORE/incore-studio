@@ -18,6 +18,7 @@ import { useAppDispatch } from "@app/store/hooks";
 
 import VisualizationIcon from "@mui/icons-material/Map";
 import Snackbar from "@mui/joy/Snackbar";
+import { IncoreDialog } from "@app/components/IncoreDialog";
 
 const VisualizationPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -115,8 +116,34 @@ const VisualizationPage = (): JSX.Element => {
         }
     }, [success, error]);
 
+    // batch delete
+    const [selectedVisualizations, setSelectedVisualizations] = useState<Visualization[]>([]);
+    const [openBatchDeleteDialog, setOpenBatchDeleteDialog] = useState(false);
+    const handleBatchDelete = async () => {
+        if (project?.id && selectedVisualizations.length > 0) {
+            await appDispatch(
+                deleteProjectVisualizations({
+                    projectId: project.id,
+                    visualizationIds: selectedVisualizations.map((w) => w.id)
+                })
+            );
+            setSelectedVisualizations([]);
+        }
+        setOpenBatchDeleteDialog(false);
+    };
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
+            <IncoreDialog
+                open={openBatchDeleteDialog}
+                onClose={() => {
+                    setOpenBatchDeleteDialog(false);
+                }}
+                onAction={handleBatchDelete}
+                message="Are you sure you want to delete the selected items? This action cannot be undone."
+                dialogTitle="Confirm Deletion"
+                actionButtonName="Batch Delete"
+            />
             <Box sx={{ flexShrink: 0 }} mt={5}>
                 {!project ? (
                     <Typography>Loading...</Typography>
@@ -144,6 +171,11 @@ const VisualizationPage = (): JSX.Element => {
                                     onViewChangeClick={onViewChangeClick}
                                     isTableView={isTableView}
                                     createLabel="Create Visualization"
+                                    selectedItemsCount={selectedVisualizations.length}
+                                    onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
+                                    onSelectionChange={(selected) =>
+                                        setSelectedVisualizations(selected as Visualization[])
+                                    }
                                 />
                                 <CreateVisualizationDialog
                                     projectId={project.id}
@@ -167,6 +199,10 @@ const VisualizationPage = (): JSX.Element => {
                                             setSelectedVisualization(visualization);
                                             setOpenVisualziationView(true);
                                         }}
+                                        onSelectionChange={(selected) =>
+                                            setSelectedVisualizations(selected as Visualization[])
+                                        }
+                                        selectedItems={selectedVisualizations}
                                     />
                                 ) : (
                                     <ResourceCards
@@ -178,6 +214,10 @@ const VisualizationPage = (): JSX.Element => {
                                             setSelectedVisualization(visualization);
                                             setOpenVisualziationView(true);
                                         }}
+                                        onSelectionChange={(selected) =>
+                                            setSelectedVisualizations(selected as Visualization[])
+                                        }
+                                        selectedItems={selectedVisualizations}
                                     />
                                 )}
                                 <Box mt={4} display="flex" justifyContent="center">

@@ -1,6 +1,6 @@
 import {
     Card,
-    Link,
+    Button,
     Typography,
     Box,
     CardContent,
@@ -12,7 +12,6 @@ import {
     MenuItem,
     Grid
 } from "@mui/joy";
-import { Link as RouterLink } from "react-router-dom";
 import React, { useState } from "react";
 import { parseDateTime } from "@app/utils";
 import { MapThumbnail } from "@app/components/Project/Thumbnails/MapThumbnail";
@@ -22,6 +21,9 @@ import { DefaultThumbnail } from "@app/components/Project/Thumbnails/DefaultThum
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
+
+import CheckIcon from "@mui/icons-material/Check";
+import { useNavigate } from "react-router-dom";
 
 function isHazard(resource: any): resource is Hazard {
     return "hazardDatasets" in resource;
@@ -56,7 +58,18 @@ export const ResourceCards: React.FC<{
     addVisualizationFunc?: any;
     viewFunc?: any;
     projectId: string;
-}> = ({ resources, cardPerRow, deleteFunc, addVisualizationFunc, projectId, viewFunc }) => {
+    onSelectionChange?: (selectedItems: (Hazard | Visualization | Dataset | Workflow)[]) => void;
+    selectedItems?: (Hazard | Visualization | Dataset | Workflow)[];
+}> = ({
+    resources,
+    cardPerRow,
+    deleteFunc,
+    addVisualizationFunc,
+    projectId,
+    viewFunc,
+    onSelectionChange,
+    selectedItems = []
+}) => {
     const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | null>(null);
     const handleOpenMenu = (item: Hazard | Visualization | Dataset | Workflow) => {
         setSelectedItem(item);
@@ -92,6 +105,35 @@ export const ResourceCards: React.FC<{
         setOpenVisDialog(false);
     };
 
+    // batch selection
+    const toggleSelection = (item: Hazard | Visualization | Dataset | Workflow) => {
+        const exists = selectedItems.find((i) => i.id === item.id);
+        const updated = exists ? selectedItems.filter((i) => i.id !== item.id) : [...selectedItems, item];
+
+        onSelectionChange?.(updated); // always notify parent
+    };
+
+    const isSelected = (item: Hazard | Visualization | Dataset | Workflow) => {
+        return selectedItems.some((i) => i.id === item.id);
+    };
+
+    const navigate = useNavigate();
+
+    const handleClick = (
+        event: React.MouseEvent<HTMLDivElement>,
+        resource: Hazard | Visualization | Dataset | Workflow
+    ) => {
+        // Prevent triggering when clicking inside a button
+        if ((event.target as HTMLElement).closest("button")) return;
+
+        toggleSelection(resource); // Deselect if already selected, otherwise select
+    };
+
+    const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+        // Prevent default browser context menu
+        event.preventDefault();
+    };
+
     return (
         <Grid container spacing={3}>
             <VisualizationDialog
@@ -108,125 +150,206 @@ export const ResourceCards: React.FC<{
                 dialogTitle="Confirm Deletion"
                 actionButtonName="Delete"
             />
-            {resources.map((resource) => (
-                <Grid
-                    key={resource.id}
-                    xs={12}
-                    sm={12}
-                    md={Math.ceil(12 / (cardPerRow ?? 2))}
-                    lg={Math.ceil(12 / (cardPerRow ?? 2))}
-                >
-                    <Card
-                        variant="plain"
-                        sx={{
-                            position: "relative",
-                            display: "flex",
-                            flexDirection: "column",
-                            height: "100%",
-                            padding: 0
-                        }}
+            {resources.map((resource) => {
+                const selected = isSelected(resource);
+                return (
+                    <Grid
+                        key={resource.id}
+                        xs={12}
+                        sm={12}
+                        md={Math.ceil(12 / (cardPerRow ?? 2))}
+                        lg={Math.ceil(12 / (cardPerRow ?? 2))}
                     >
-                        {/* Menu Icon on Top-Right */}
-                        <Dropdown>
-                            <MenuButton
-                                slots={{ root: IconButton }}
-                                slotProps={{
-                                    root: {
-                                        sx: { position: "absolute", top: 8, right: -10, zIndex: 5 },
-                                        variant: "plain",
-                                        color: "neutral"
-                                    }
-                                }}
-                                onClick={() => handleOpenMenu(resource)}
-                            >
-                                <MoreVertIcon />
-                            </MenuButton>
-                            <Menu onClose={handleCloseMenu} placement="bottom-start">
-                                {isWorkflow(resource) && (
-                                    <MenuItem>
-                                        <Link
-                                            component={RouterLink}
-                                            textColor="primary.main"
-                                            underline="none"
-                                            to={`/project/${projectId}/workflows/${resource.id}`}
-                                        >
-                                            Open
-                                        </Link>
-                                    </MenuItem>
-                                )}
-                                {addVisualizationFunc && (
-                                    <MenuItem
-                                        onClick={() => {
-                                            setOpenVisDialog(true);
-                                        }}
-                                    >
-                                        Add to Visualization
-                                    </MenuItem>
-                                )}
-                                {viewFunc && (
-                                    <MenuItem
-                                        onClick={() => {
-                                            viewFunc(resource);
-                                        }}
-                                    >
-                                        View
-                                    </MenuItem>
-                                )}
-                                <MenuItem
-                                    onClick={() => {
-                                        setOpenDeleteDialog(true);
+                        <Box sx={{ position: "relative" }}>
+                            {/* Selection overlay */}
+                            {selected && (
+                                <Box
+                                    sx={{
+                                        position: "absolute",
+                                        top: 0,
+                                        left: 0,
+                                        width: "100%",
+                                        height: "100%",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        zIndex: 10,
+                                        borderRadius: "8px",
+                                        pointerEvents: "none"
                                     }}
                                 >
-                                    Delete
-                                </MenuItem>
-                            </Menu>
-                        </Dropdown>
-                        <CardContent>
-                            {isHazard(resource) ? (
-                                <MapThumbnail />
-                            ) : isVisualization(resource) ? (
-                                <MapThumbnail />
-                            ) : isDatasetTable(resource) ? (
-                                <TableThumbnail />
-                            ) : isDatasetMap(resource) ? (
-                                <MapThumbnail />
-                            ) : isWorkflow(resource) ? (
-                                <WorkflowThumbnail />
-                            ) : (
-                                <DefaultThumbnail />
+                                    <CheckIcon sx={{ color: "neutral.info", fontSize: 48 }} />
+                                </Box>
                             )}
-                            <Box sx={{ p: 1, flexGrow: 1, height: 80, overflow: "auto" }}>
-                                <Typography level="body-sm" mb={1} textColor="primary.main">
-                                    {isDataset(resource) || isWorkflow(resource)
-                                        ? resource.title
-                                        : resource.name || "Name not" + " provided"}
-                                </Typography>
-                                <Typography level="body-sm">
-                                    {resource.description || "Description not provided"}
-                                </Typography>
-                            </Box>
-                        </CardContent>
-                        <Box
-                            sx={{
-                                mt: "auto",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center"
-                            }}
-                        >
-                            {/* Pill for resource type */}
-                            <Chip size="sm" sx={{ borderRadius: 0 }}>
-                                {isDataset(resource) ? resource.format : resource.type || "Type not provided"}
-                            </Chip>
 
-                            {/* Date on the right */}
-                            <Typography level="body-sm">
-                                {resource.date ? parseDateTime(resource.date) : "Date not provided"}
-                            </Typography>
+                            {/* Card */}
+                            <Card
+                                sx={{
+                                    "position": "relative",
+                                    "display": "flex",
+                                    "flexDirection": "column",
+                                    "height": "100%",
+                                    "padding": "1em",
+                                    "boxShadow": selected ? "0 0 8px rgba(66, 82, 110, 0.5)" : "none",
+                                    "transition": "all 0.3s ease",
+                                    "opacity": selected ? 0.7 : 1,
+                                    "&:hover": {
+                                        boxShadow: "0 0 8px rgba(66, 82, 110, 0.5)",
+                                        cursor: "pointer"
+                                    }
+                                }}
+                                onMouseDown={(e) => handleClick(e, resource)}
+                                onContextMenu={handleContextMenu}
+                            >
+                                {/* Menu Icon */}
+                                <Dropdown>
+                                    <MenuButton
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // prevent selection on menu click
+                                            handleOpenMenu(resource);
+                                        }}
+                                        slots={{ root: IconButton }}
+                                        slotProps={{
+                                            root: {
+                                                sx: { position: "absolute", top: 8, right: 8, zIndex: 15 },
+                                                variant: "plain",
+                                                color: "neutral"
+                                            }
+                                        }}
+                                    >
+                                        <MoreVertIcon />
+                                    </MenuButton>
+                                    <Menu onClose={handleCloseMenu} placement="bottom-start">
+                                        {addVisualizationFunc && (
+                                            <MenuItem
+                                                onMouseDown={(e) => {
+                                                    e.stopPropagation();
+                                                }}
+                                                onClick={() => {
+                                                    setOpenVisDialog(true);
+                                                }}
+                                            >
+                                                Add to Visualization
+                                            </MenuItem>
+                                        )}
+                                        <MenuItem
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation();
+                                            }}
+                                            onClick={() => {
+                                                setOpenDeleteDialog(true);
+                                            }}
+                                        >
+                                            Delete
+                                        </MenuItem>
+                                        <MenuItem
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation();
+                                            }}
+                                            onClick={() => {
+                                                toggleSelection(resource);
+                                            }}
+                                        >
+                                            {isSelected(resource) ? "Deselect" : "Select"}
+                                        </MenuItem>
+                                    </Menu>
+                                </Dropdown>
+
+                                {/* Card Content */}
+                                <CardContent>
+                                    <Box>
+                                        {isHazard(resource) || isVisualization(resource) || isDatasetMap(resource) ? (
+                                            <MapThumbnail />
+                                        ) : isDatasetTable(resource) ? (
+                                            <TableThumbnail />
+                                        ) : isWorkflow(resource) ? (
+                                            <WorkflowThumbnail />
+                                        ) : (
+                                            <DefaultThumbnail />
+                                        )}
+                                    </Box>
+                                    <Box sx={{ p: 1, flexGrow: 1, height: "50px" }}>
+                                        <Typography
+                                            level="body-sm"
+                                            mb={1}
+                                            textColor="primary.main"
+                                            sx={{
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis"
+                                            }}
+                                        >
+                                            {isDataset(resource) || isWorkflow(resource)
+                                                ? resource.title
+                                                : resource.name || "Name not provided"}
+                                        </Typography>
+                                        <Typography
+                                            level="body-sm"
+                                            sx={{
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis"
+                                            }}
+                                        >
+                                            {resource.description || "Description not provided"}
+                                        </Typography>
+                                    </Box>
+                                </CardContent>
+
+                                <Box
+                                    sx={{
+                                        mt: "auto",
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        p: 1
+                                    }}
+                                >
+                                    {/* Left: Chip + time stacked */}
+                                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                                        <Chip size="sm" sx={{ borderRadius: 0 }}>
+                                            {isDataset(resource)
+                                                ? resource.format
+                                                : resource.type || "Type not provided"}
+                                        </Chip>
+                                        <Typography level="body-xs" mt={0.5}>
+                                            {resource.date ? parseDateTime(resource.date) : "Date not provided"}
+                                        </Typography>
+                                    </Box>
+
+                                    {/* Right: Open button */}
+                                    {isWorkflow(resource) && (
+                                        <Button
+                                            variant="solid"
+                                            size="md"
+                                            sx={{ backgroundColor: "primary.main" }}
+                                            aria-label="Open"
+                                            onClick={() => {
+                                                navigate(`/project/${projectId}/workflows/${resource.id}`);
+                                            }}
+                                        >
+                                            Open
+                                        </Button>
+                                    )}
+                                    {viewFunc && (
+                                        <Button
+                                            variant="solid"
+                                            size="md"
+                                            sx={{ backgroundColor: "primary.main" }}
+                                            aria-label="View"
+                                            onClick={() => {
+                                                viewFunc(resource);
+                                            }}
+                                        >
+                                            View
+                                        </Button>
+                                    )}
+                                </Box>
+                            </Card>
                         </Box>
-                    </Card>
-                </Grid>
-            ))}
+                    </Grid>
+                );
+            })}
         </Grid>
     );
 };
