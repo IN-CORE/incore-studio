@@ -21,7 +21,8 @@ import {
     useOutputDatasetsSynchronizationPolling,
     useWorkflowAndExecutionCount,
     useUserUsageStats,
-    useHazardStats
+    useHazardStats,
+    useElementSize
 } from "@app/store/hooks";
 import {
     getProject,
@@ -51,6 +52,21 @@ import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazar
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 
 const ProjectDashboardComponent: React.FC = (): JSX.Element => {
+    const [hazardEntityRef, hazardEntitySize] = useElementSize<HTMLDivElement>();
+    const hazardEntityDiameter = `${Math.min(hazardEntitySize.width, hazardEntitySize.height, 100).toString()}px`;
+
+    const [hazardDiskRef, hazardDiskSize] = useElementSize<HTMLDivElement>();
+    const hazardDiskDiameter = `${Math.min(hazardDiskSize.width, hazardDiskSize.height, 100).toString()}px`;
+
+    const [datasetEntityRef, datasetEntitySize] = useElementSize<HTMLDivElement>();
+    const datasetEntityDiameter = `${Math.min(datasetEntitySize.width, datasetEntitySize.height, 100).toString()}px`;
+
+    const [datasetDiskRef, datasetDiskSize] = useElementSize<HTMLDivElement>();
+    const datasetDiskDiameter = `${Math.min(datasetDiskSize.width, datasetDiskSize.height, 100).toString()}px`;
+
+    const [dfr3EntityRef, dfr3EntitySize] = useElementSize<HTMLDivElement>();
+    const dfr3EntityDiameter = `${Math.min(dfr3EntitySize.width, dfr3EntitySize.height, 100).toString()}px`;
+
     const appDispatch = useAppDispatch();
 
     const project = useAppSelector((state) => state.project.project);
@@ -67,7 +83,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
 
     const { hazardStats, hazardCounts } = useHazardStats(project ? project.hazards : []);
     const userUsageStats = useUserUsageStats();
-    const usageRingSize = "100px";
+    // const usageRingSize = "100px";
 
     const getDatasetsCountsByType = (datasets: Dataset[]): { label: string; value: number }[] => {
         const datasetCounts = datasets.reduce(
@@ -313,7 +329,15 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 spacing={2}
                                                 divider={<Divider orientation="vertical" />}
                                             >
-                                                <Box sx={{ width: "100%" }}>
+                                                <Box
+                                                    ref={hazardEntityRef}
+                                                    sx={{
+                                                        flex: 1,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
                                                     <CircularProgress
                                                         determinate
                                                         value={userUsageStats.hazards.entities.value}
@@ -321,7 +345,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: usageRingSize
+                                                                md: hazardEntityDiameter
                                                             },
                                                             "mb": 1
                                                         }}
@@ -339,7 +363,15 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                     </CircularProgress>
                                                     <Typography level="title-md">Entities</Typography>
                                                 </Box>
-                                                <Box sx={{ width: "100%" }}>
+                                                <Box
+                                                    ref={hazardDiskRef}
+                                                    sx={{
+                                                        flex: 1,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
                                                     <CircularProgress
                                                         determinate
                                                         value={userUsageStats.hazards.disk.value}
@@ -347,7 +379,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: usageRingSize
+                                                                md: hazardDiskDiameter
                                                             },
                                                             "mb": 1
                                                         }}
@@ -469,7 +501,15 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 sx={{ width: "100%" }}
                                                 divider={<Divider orientation="vertical" />}
                                             >
-                                                <Box sx={{ width: "100%" }}>
+                                                <Box
+                                                    ref={datasetEntityRef}
+                                                    sx={{
+                                                        flex: 1,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
                                                     <CircularProgress
                                                         determinate
                                                         value={userUsageStats.datasets.entities.value}
@@ -477,7 +517,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: usageRingSize
+                                                                md: datasetEntityDiameter
                                                             },
                                                             "mb": 1
                                                         }}
@@ -495,7 +535,15 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                     </CircularProgress>
                                                     <Typography level="title-md">Entities</Typography>
                                                 </Box>
-                                                <Box sx={{ width: "100%" }}>
+                                                <Box
+                                                    ref={datasetDiskRef}
+                                                    sx={{
+                                                        flex: 1,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
                                                     <CircularProgress
                                                         determinate
                                                         value={userUsageStats.datasets.disk.value}
@@ -503,7 +551,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: usageRingSize
+                                                                md: datasetDiskDiameter
                                                             },
                                                             "mb": 1
                                                         }}
@@ -629,7 +677,15 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 sx={{ width: "100%" }}
                                                 divider={<Divider orientation="vertical" />}
                                             >
-                                                <Box sx={{ width: "100%" }}>
+                                                <Box
+                                                    ref={dfr3EntityRef}
+                                                    sx={{
+                                                        flex: 1,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
                                                     <CircularProgress
                                                         determinate
                                                         value={userUsageStats.dfr3.entities.value}
@@ -637,7 +693,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: usageRingSize
+                                                                md: dfr3EntityDiameter
                                                             },
                                                             "mb": 1
                                                         }}
