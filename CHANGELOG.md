@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
+
 ## [Beta-1] - 05-01-2025
 
 ### Added
