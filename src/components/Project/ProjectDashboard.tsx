@@ -52,20 +52,14 @@ import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazar
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 
 const ProjectDashboardComponent: React.FC = (): JSX.Element => {
-    const [hazardEntityRef, hazardEntitySize] = useElementSize<HTMLDivElement>();
-    const hazardEntityDiameter = Math.min(hazardEntitySize.width, hazardEntitySize.height, 100);
+    const [hazardRef, hazardSize] = useElementSize<HTMLDivElement>();
+    const hazardDiameter = Math.min(hazardSize.width, hazardSize.height, 100) / 2;
 
-    const [hazardDiskRef, hazardDiskSize] = useElementSize<HTMLDivElement>();
-    const hazardDiskDiameter = Math.min(hazardDiskSize.width, hazardDiskSize.height, 100);
+    const [datasetRef, datasetSize] = useElementSize<HTMLDivElement>();
+    const datasetDiameter = Math.min(datasetSize.width, datasetSize.height, 100) / 2;
 
-    const [datasetEntityRef, datasetEntitySize] = useElementSize<HTMLDivElement>();
-    const datasetEntityDiameter = Math.min(datasetEntitySize.width, datasetEntitySize.height, 100);
-
-    const [datasetDiskRef, datasetDiskSize] = useElementSize<HTMLDivElement>();
-    const datasetDiskDiameter = Math.min(datasetDiskSize.width, datasetDiskSize.height, 100);
-
-    const [dfr3EntityRef, dfr3EntitySize] = useElementSize<HTMLDivElement>();
-    const dfr3EntityDiameter = Math.min(dfr3EntitySize.width, dfr3EntitySize.height, 100);
+    const [dfr3Ref, dfr3Size] = useElementSize<HTMLDivElement>();
+    const dfr3Diameter = Math.min(dfr3Size.width, dfr3Size.height, 100);
 
     const appDispatch = useAppDispatch();
 
@@ -328,9 +322,9 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 direction={{ sm: "column", md: "row" }}
                                                 spacing={2}
                                                 divider={<Divider orientation="vertical" />}
+                                                ref={hazardRef}
                                             >
                                                 <Box
-                                                    ref={hazardEntityRef}
                                                     sx={{
                                                         flex: 1,
                                                         display: "flex",
@@ -345,7 +339,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: `${hazardEntityDiameter.toString()}px`
+                                                                md: `${hazardDiameter.toString()}px`
                                                             },
                                                             "mb": 1
                                                         }}
@@ -357,11 +351,11 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                                 whiteSpace: "pre-line",
                                                                 display: { sm: "none", md: "block" },
                                                                 fontSize:
-                                                                    hazardEntityDiameter < 60
+                                                                    hazardDiameter < 60
                                                                         ? "0.25rem"
-                                                                        : hazardEntityDiameter < 80
-                                                                          ? "0.5rem"
-                                                                          : "0.75rem"
+                                                                        : hazardDiameter < 80
+                                                                        ? "0.5rem"
+                                                                        : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.hazards.entities.text}
@@ -370,7 +364,6 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                     <Typography level="title-md">Entities</Typography>
                                                 </Box>
                                                 <Box
-                                                    ref={hazardDiskRef}
                                                     sx={{
                                                         flex: 1,
                                                         display: "flex",
@@ -385,7 +378,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: `${hazardDiskDiameter.toString()}px`
+                                                                md: `${hazardDiameter.toString()}px`
                                                             },
                                                             "mb": 1
                                                         }}
@@ -397,11 +390,11 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                                 whiteSpace: "pre-line",
                                                                 display: { sm: "none", md: "block" },
                                                                 fontSize:
-                                                                    hazardDiskDiameter < 60
+                                                                    hazardDiameter < 60
                                                                         ? "0.25rem"
-                                                                        : hazardDiskDiameter < 80
-                                                                          ? "0.5rem"
-                                                                          : "0.75rem"
+                                                                        : hazardDiameter < 80
+                                                                        ? "0.5rem"
+                                                                        : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.hazards.disk.text}
@@ -510,11 +503,10 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                             <Stack
                                                 direction={{ sm: "column", md: "row" }}
                                                 spacing={2}
-                                                // sx={{ width: "100%" }}
                                                 divider={<Divider orientation="vertical" />}
+                                                ref={datasetRef}
                                             >
                                                 <Box
-                                                    ref={datasetEntityRef}
                                                     sx={{
                                                         flex: 1,
                                                         display: "flex",
@@ -529,7 +521,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: `${datasetEntityDiameter.toString()}px`
+                                                                md: `${datasetDiameter.toString()}px`
                                                             },
                                                             "mb": 1
                                                         }}
@@ -541,11 +533,11 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                                 whiteSpace: "pre-line",
                                                                 display: { sm: "none", md: "block" },
                                                                 fontSize:
-                                                                    datasetEntityDiameter < 60
+                                                                    datasetDiameter < 60
                                                                         ? "0.25rem"
-                                                                        : datasetEntityDiameter < 80
-                                                                          ? "0.5rem"
-                                                                          : "0.75rem"
+                                                                        : datasetDiameter < 80
+                                                                        ? "0.5rem"
+                                                                        : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.datasets.entities.text}
@@ -554,7 +546,6 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                     <Typography level="title-md">Entities</Typography>
                                                 </Box>
                                                 <Box
-                                                    ref={datasetDiskRef}
                                                     sx={{
                                                         flex: 1,
                                                         display: "flex",
@@ -569,7 +560,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: `${datasetDiskDiameter.toString()}px`
+                                                                md: `${datasetDiameter.toString()}px`
                                                             },
                                                             "mb": 1
                                                         }}
@@ -581,11 +572,11 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                                 whiteSpace: "pre-line",
                                                                 display: { sm: "none", md: "block" },
                                                                 fontSize:
-                                                                    datasetDiskDiameter < 60
+                                                                    datasetDiameter < 60
                                                                         ? "0.25rem"
-                                                                        : datasetDiskDiameter < 80
-                                                                          ? "0.5rem"
-                                                                          : "0.75rem"
+                                                                        : datasetDiameter < 80
+                                                                        ? "0.5rem"
+                                                                        : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.datasets.disk.text}
@@ -700,9 +691,9 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 spacing={2}
                                                 sx={{ width: "100%" }}
                                                 divider={<Divider orientation="vertical" />}
+                                                ref={dfr3Ref}
                                             >
                                                 <Box
-                                                    ref={dfr3EntityRef}
                                                     sx={{
                                                         flex: 1,
                                                         display: "flex",
@@ -717,7 +708,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: `${dfr3EntityDiameter.toString()}px`
+                                                                md: `${dfr3Diameter.toString()}px`
                                                             },
                                                             "mb": 1
                                                         }}
@@ -729,11 +720,11 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                                 whiteSpace: "pre-line",
                                                                 display: { sm: "none", md: "block" },
                                                                 fontSize:
-                                                                    dfr3EntityDiameter < 60
+                                                                    dfr3Diameter < 60
                                                                         ? "0.25rem"
-                                                                        : dfr3EntityDiameter < 80
-                                                                          ? "0.5rem"
-                                                                          : "0.75rem"
+                                                                        : dfr3Diameter < 80
+                                                                        ? "0.5rem"
+                                                                        : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.dfr3.entities.text}
