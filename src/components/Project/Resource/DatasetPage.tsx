@@ -215,6 +215,10 @@ const DatasetPage = (): JSX.Element => {
                                         setOpenAddDatasetFromServiceDialog(false);
                                     }}
                                     onAddClick={addDatasetFunc}
+                                    previewFunc={(resource) => {
+                                        setSelectedDataset(resource as Dataset);
+                                        setOpenTableDataModal(true);
+                                    }}
                                 />
                                 <CreateDatasetDialog
                                     projectId={project.id}
