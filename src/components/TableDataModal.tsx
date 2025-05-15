@@ -169,8 +169,8 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
                             <CSVVegaChart data={convertGridToVegaData([...tableData.rows], tableData.columns)} />
                         </TabPanel>
                     </Tabs>
-                ) // eslint-disable-next-line no-nested-ternary
-                : dataset?.format === "json" ? (
+                ) : // eslint-disable-next-line no-nested-ternary
+                dataset?.format === "json" ? (
                     <Sheet sx={{ padding: 2, overflow: "auto" }}>
                         <pre>{JSON.stringify(jsonData, null, 2)}</pre>
                     </Sheet>
