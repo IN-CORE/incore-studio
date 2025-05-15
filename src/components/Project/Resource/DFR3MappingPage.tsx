@@ -22,7 +22,7 @@ import DFR3Icon from "@mui/icons-material/ShowChart";
 import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { IncoreDialog } from "@app/components/IncoreDialog";
-import { DFR3MappingModal } from "@app/components/DFR3MappingModal";
+import { DFR3PreviewModal } from "@app/components/DFR3PreviewModal";
 
 const DFR3MappingPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -220,7 +220,7 @@ const DFR3MappingPage = (): JSX.Element => {
                 )}
             </Box>
             {selectedDFR3Mapping && (
-                <DFR3MappingModal
+                <DFR3PreviewModal
                     open={openDFR3PreviewModal}
                     onClose={() => {
                         setOpenDFR3PreviewModal(false);

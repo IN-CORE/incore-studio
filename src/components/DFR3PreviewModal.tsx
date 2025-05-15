@@ -7,7 +7,7 @@ interface DFR3MappingPropsModal {
     dfr3mapping?: DFR3Mapping | null;
 }
 
-export const DFR3MappingModal: React.FC<DFR3MappingPropsModal> = ({ open, onClose, dfr3mapping }) => {
+export const DFR3PreviewModal: React.FC<DFR3MappingPropsModal> = ({ open, onClose, dfr3mapping }) => {
     if (!dfr3mapping) {
         return null;
     }
