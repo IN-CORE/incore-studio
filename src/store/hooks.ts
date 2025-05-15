@@ -351,13 +351,16 @@ export const useWorkflowAndExecutionCount = (projectWorkflows: Workflow[]) => {
         const fetchExecutionCount = async () => {
             try {
                 const requests = wfIds.map((id) =>
-                    axios.get<DatawolfExecutionFile[]>(`${config.datawolfApi}/executions/${id}`, {
+                    axios.get<DatawolfExecutionFile[]>(`${config.datawolfApi}/workflows/${id}/executions`, {
                         headers: getHeaders()
                     })
                 );
                 const responses = await Promise.all(requests);
-                const executionCount = responses.reduce((acc, response) => acc + response.data.length, 0);
-                setExecutionCount(executionCount);
+                let execCount = responses.reduce((acc, response) => {
+                    const dataLength = Array.isArray(response.data) ? response.data.length : 0;
+                    return acc + dataLength;
+                }, 0);
+                setExecutionCount(execCount);
             } catch (error) {
                 console.error("Error fetching execution count: ", error);
             }
