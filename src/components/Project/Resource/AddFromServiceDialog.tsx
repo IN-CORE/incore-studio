@@ -193,7 +193,7 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                                                     <Button
                                                         variant="outlined"
                                                         sx={{ color: "primary.main", borderColor: "primary.main" }}
-                                                        onClick={() => resource && previewFunc(resource)}
+                                                        onClick={() => result && previewFunc(result)}
                                                     >
                                                         Preview
                                                     </Button>
