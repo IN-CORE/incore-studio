@@ -199,7 +199,6 @@ const SimpleMap = ({
                 [maxLng, maxLat]
             ],
             {
-                padding: 20,
                 animate: true,
                 duration: 1000
             }
