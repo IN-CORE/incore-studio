@@ -188,7 +188,7 @@
         "manual": "mean_dmg.html",
         "parameter_defaults": {
             "result_name": "mean-damage-result",
-            "damage_interval_keys": "DS_0,DS_1,DS_2,DS_3,DS_4",
+            "damage_interval_keys": "DS_0 DS_1 DS_2 DS_3 DS_4",
             "num_cpu": 1
         },
         "inputs": {
@@ -275,7 +275,7 @@
         "manual": "mean_dmg.html",
         "parameter_defaults": {
             "result_name": "mean-damage-result",
-            "damage_interval_keys": "DS_0,DS_1,DS_2,DS_3,DS_4",
+            "damage_interval_keys": "DS_0 DS_1 DS_2 DS_3 DS_4",
             "num_cpu": 1
         },
         "inputs": {
@@ -468,8 +468,8 @@
             "result_name": "monte_carlo_limit_state_probability-result",
             "num_cpu": 8,
             "num_samples": 10,
-            "damage_interval_keys": "DS_0,DS_1,DS_2,DS_3",
-            "failure_state_keys": "DS_1,DS_2,DS_3",
+            "damage_interval_keys": "DS_0 DS_1 DS_2 DS_3",
+            "failure_state_keys": "DS_1 DS_2 DS_3",
             "seed": 1234
         },
         "inputs": {
@@ -675,8 +675,8 @@
             "result_name": "monte_carlo_limit_state_probability-result",
             "num_cpu": 8,
             "num_samples": 10,
-            "damage_interval_keys": "DS_0,DS_1,DS_2,DS_3",
-            "failure_state_keys": "DS_1,DS_2,DS_3",
+            "damage_interval_keys": "DS_0 DS_1 DS_2 DS_3",
+            "failure_state_keys": "DS_1 DS_2 DS_3",
             "seed": 1234
         },
         "inputs": {
