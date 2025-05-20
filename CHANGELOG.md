@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Implement Adding of parent dataset id to a dataset of table format. [#179](https://github.com/IN-CORE/incore-studio/issues/179)
+
 ## [Beta-1] - 05-01-2025
 
 ### Added

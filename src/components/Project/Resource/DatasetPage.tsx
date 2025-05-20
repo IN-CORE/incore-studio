@@ -99,7 +99,7 @@ const DatasetPage = (): JSX.Element => {
         dataset: Dataset,
         styleName?: string
     ) => {
-        if (dataset.format === "shapefile") {
+        if (dataset.format === "shapefile" || dataset.format === "table") {
             const layers = [
                 {
                     workspace: "incore",
@@ -111,7 +111,7 @@ const DatasetPage = (): JSX.Element => {
             // Dispatch the action with the new layers array
             appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
         } else {
-            alert("Only shapefiles can be added to a visualization for now!");
+            alert("Only shapefiles and tables can be added to a visualization for now!");
         }
     };
 
