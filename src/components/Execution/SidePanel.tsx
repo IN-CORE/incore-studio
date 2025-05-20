@@ -30,6 +30,7 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import InsertChartOutlinedRoundedIcon from "@mui/icons-material/InsertChartOutlinedRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { useShallow } from "zustand/react/shallow";
 
 import {
     updateCreateExecutionTemplateDatasetAndParams,
@@ -48,9 +49,15 @@ import { VisualizationView } from "@app/components/Project/Resource/Visaualizati
 import CompatibleTypeTooltip from "./CompatibleTypeTooltip";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import { extractStatus } from "@app/utils";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import OutputFileDisplay from "./OutputFileDisplay";
+
+const selector = (state: ReactFlowAppState) => ({
+    nodes: state.nodes,
+    setNodes: state.setNodes
+});
 
 const getInitialParametersState = (
     sidePanelData: ExecutionSidePandelData,
@@ -88,6 +95,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const appDispatch = useAppDispatch();
 
     const { id } = useParams<{ id: string }>();
+    const { setNodes, nodes } = useStore(useShallow(selector));
 
     const sidePanelData = useAppSelector((state) => state.execution.sidePanelData);
     const project = useAppSelector((state) => state.project.project);
@@ -185,6 +193,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     };
 
     const handleClose = () => {
+        // clear selected node
+        setNodes(nodes.map((node) => ({ ...node, selected: false })));
         appDispatch(clearSidePanelData());
     };
 
