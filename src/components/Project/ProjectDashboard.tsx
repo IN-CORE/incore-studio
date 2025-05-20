@@ -21,7 +21,8 @@ import {
     useOutputDatasetsSynchronizationPolling,
     useWorkflowAndExecutionCount,
     useUserUsageStats,
-    useHazardStats
+    useHazardStats,
+    useElementSize
 } from "@app/store/hooks";
 import {
     getProject,
@@ -51,6 +52,15 @@ import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazar
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 
 const ProjectDashboardComponent: React.FC = (): JSX.Element => {
+    const [hazardRef, hazardSize] = useElementSize<HTMLDivElement>();
+    const hazardDiameter = Math.min(hazardSize.width, hazardSize.height, 100) / 2;
+
+    const [datasetRef, datasetSize] = useElementSize<HTMLDivElement>();
+    const datasetDiameter = Math.min(datasetSize.width, datasetSize.height, 100) / 2;
+
+    const [dfr3Ref, dfr3Size] = useElementSize<HTMLDivElement>();
+    const dfr3Diameter = Math.min(dfr3Size.width, dfr3Size.height, 100);
+
     const appDispatch = useAppDispatch();
 
     const project = useAppSelector((state) => state.project.project);
@@ -67,7 +77,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
 
     const { hazardStats, hazardCounts } = useHazardStats(project ? project.hazards : []);
     const userUsageStats = useUserUsageStats();
-    const usageRingSize = "100px";
+    // const usageRingSize = "100px";
 
     const getDatasetsCountsByType = (datasets: Dataset[]): { label: string; value: number }[] => {
         const datasetCounts = datasets.reduce(
@@ -312,8 +322,16 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 direction={{ sm: "column", md: "row" }}
                                                 spacing={2}
                                                 divider={<Divider orientation="vertical" />}
+                                                ref={hazardRef}
                                             >
-                                                <Box sx={{ width: "100%" }}>
+                                                <Box
+                                                    sx={{
+                                                        flex: 1,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
                                                     <CircularProgress
                                                         determinate
                                                         value={userUsageStats.hazards.entities.value}
@@ -321,7 +339,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: usageRingSize
+                                                                md: `${hazardDiameter.toString()}px`
                                                             },
                                                             "mb": 1
                                                         }}
@@ -331,7 +349,13 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                             level="body-xs"
                                                             sx={{
                                                                 whiteSpace: "pre-line",
-                                                                display: { sm: "none", md: "block" }
+                                                                display: { sm: "none", md: "block" },
+                                                                fontSize:
+                                                                    hazardDiameter < 60
+                                                                        ? "0.25rem"
+                                                                        : hazardDiameter < 80
+                                                                          ? "0.5rem"
+                                                                          : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.hazards.entities.text}
@@ -339,7 +363,14 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                     </CircularProgress>
                                                     <Typography level="title-md">Entities</Typography>
                                                 </Box>
-                                                <Box sx={{ width: "100%" }}>
+                                                <Box
+                                                    sx={{
+                                                        flex: 1,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
                                                     <CircularProgress
                                                         determinate
                                                         value={userUsageStats.hazards.disk.value}
@@ -347,7 +378,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: usageRingSize
+                                                                md: `${hazardDiameter.toString()}px`
                                                             },
                                                             "mb": 1
                                                         }}
@@ -357,7 +388,13 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                             level="body-xs"
                                                             sx={{
                                                                 whiteSpace: "pre-line",
-                                                                display: { sm: "none", md: "block" }
+                                                                display: { sm: "none", md: "block" },
+                                                                fontSize:
+                                                                    hazardDiameter < 60
+                                                                        ? "0.25rem"
+                                                                        : hazardDiameter < 80
+                                                                          ? "0.5rem"
+                                                                          : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.hazards.disk.text}
@@ -464,12 +501,19 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 </Tooltip>
                                             </Stack>
                                             <Stack
-                                                direction="row"
+                                                direction={{ sm: "column", md: "row" }}
                                                 spacing={2}
-                                                sx={{ width: "100%" }}
                                                 divider={<Divider orientation="vertical" />}
+                                                ref={datasetRef}
                                             >
-                                                <Box sx={{ width: "100%" }}>
+                                                <Box
+                                                    sx={{
+                                                        flex: 1,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
                                                     <CircularProgress
                                                         determinate
                                                         value={userUsageStats.datasets.entities.value}
@@ -477,7 +521,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: usageRingSize
+                                                                md: `${datasetDiameter.toString()}px`
                                                             },
                                                             "mb": 1
                                                         }}
@@ -487,7 +531,13 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                             level="body-xs"
                                                             sx={{
                                                                 whiteSpace: "pre-line",
-                                                                display: { sm: "none", md: "block" }
+                                                                display: { sm: "none", md: "block" },
+                                                                fontSize:
+                                                                    datasetDiameter < 60
+                                                                        ? "0.25rem"
+                                                                        : datasetDiameter < 80
+                                                                          ? "0.5rem"
+                                                                          : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.datasets.entities.text}
@@ -495,7 +545,14 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                     </CircularProgress>
                                                     <Typography level="title-md">Entities</Typography>
                                                 </Box>
-                                                <Box sx={{ width: "100%" }}>
+                                                <Box
+                                                    sx={{
+                                                        flex: 1,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
                                                     <CircularProgress
                                                         determinate
                                                         value={userUsageStats.datasets.disk.value}
@@ -503,7 +560,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: usageRingSize
+                                                                md: `${datasetDiameter.toString()}px`
                                                             },
                                                             "mb": 1
                                                         }}
@@ -513,7 +570,13 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                             level="body-xs"
                                                             sx={{
                                                                 whiteSpace: "pre-line",
-                                                                display: { sm: "none", md: "block" }
+                                                                display: { sm: "none", md: "block" },
+                                                                fontSize:
+                                                                    datasetDiameter < 60
+                                                                        ? "0.25rem"
+                                                                        : datasetDiameter < 80
+                                                                          ? "0.5rem"
+                                                                          : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.datasets.disk.text}
@@ -628,8 +691,16 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 spacing={2}
                                                 sx={{ width: "100%" }}
                                                 divider={<Divider orientation="vertical" />}
+                                                ref={dfr3Ref}
                                             >
-                                                <Box sx={{ width: "100%" }}>
+                                                <Box
+                                                    sx={{
+                                                        flex: 1,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
                                                     <CircularProgress
                                                         determinate
                                                         value={userUsageStats.dfr3.entities.value}
@@ -637,7 +708,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         sx={{
                                                             "--CircularProgress-size": {
                                                                 sm: "50px",
-                                                                md: usageRingSize
+                                                                md: `${dfr3Diameter.toString()}px`
                                                             },
                                                             "mb": 1
                                                         }}
@@ -647,7 +718,13 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                             level="body-xs"
                                                             sx={{
                                                                 whiteSpace: "pre-line",
-                                                                display: { sm: "none", md: "block" }
+                                                                display: { sm: "none", md: "block" },
+                                                                fontSize:
+                                                                    dfr3Diameter < 60
+                                                                        ? "0.25rem"
+                                                                        : dfr3Diameter < 80
+                                                                          ? "0.5rem"
+                                                                          : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.dfr3.entities.text}

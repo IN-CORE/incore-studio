@@ -468,7 +468,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                 );
                                 appDispatch(updateExecutionSidePanelCheckStatus(sidePanelData.currentAnalysis.id));
                                 appDispatch(clearSidePanelData());
-                                console.log(actualDatasets, actualParameters);
                             }}
                         >
                             {sidePanelData.currentAnalysis.inputDatasets.length > 0 && datasetSelect !== null && (
@@ -806,8 +805,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 name={inputParameter.execFileEntryId}
                                                                 type={inputParameter.type.toLocaleLowerCase()}
                                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                                    console.log(typeof e.target.value);
-                                                                    console.log(parseFloat(e.target.value));
                                                                     if (
                                                                         inputParameter.label !== "Analysis" &&
                                                                         !inputParameter.label.includes("Service") &&
