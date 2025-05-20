@@ -9,7 +9,7 @@ interface CGEDataProps {
     cgeHouseholdIncomeContent: CGEChartData;
 }
 
-export const CGEChart: React.FC<CGEDataProps> = ({
+export const CGE: React.FC<CGEDataProps> = ({
     cgeDomesticSupplyContent,
     cgeEmploymentContent,
     cgeHouseholdIncomeContent
