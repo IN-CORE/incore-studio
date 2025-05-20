@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import axios from "axios";
 import { getHeaders, getOutputDatasetIDsFromWorkflows } from "@app/utils";
 import config from "@app/app.config";
@@ -120,7 +120,7 @@ export const useOutputDatasetsSynchronizationPolling = (
         if (projectWorkflows.length === 0 || !interval || projectId === undefined) return;
 
         const fetchAndSync = async () => {
-            let wfids = projectWorkflows.map((wf) => wf.id);
+            const wfids = projectWorkflows.map((wf) => wf.id);
             // fetch all workflow files
             try {
                 const wfFiles = await fetchWorkflowFiles(wfids);
@@ -130,7 +130,7 @@ export const useOutputDatasetsSynchronizationPolling = (
                 datasetIdsNotInProject = datasetIdsNotInProject.filter((id) => !id.includes("-"));
                 if (datasetIdsNotInProject.length > 0) {
                     const newDatasets = await fetchDatasetsFromService(datasetIdsNotInProject);
-                    appDispatch(addDatasetToProject({ projectId: projectId, datasets: newDatasets }));
+                    appDispatch(addDatasetToProject({ projectId, datasets: newDatasets }));
                 }
             } catch (error) {
                 console.error("Error fetching Dataset files: ", error);
@@ -194,52 +194,47 @@ export const useUserUsageStats = () => {
                 const usage = responses[0].data;
                 const allocations = responses[1].data;
 
-                let usageValue = {
+                const usageValue = {
                     hazards: {
                         entities: {
-                            text: `${usage["total_number_of_hazards"] ?? 0}\n/\n${
-                                allocations["total_number_of_hazards"] ?? 0
+                            text: `${usage.total_number_of_hazards ?? 0}\n/\n${
+                                allocations.total_number_of_hazards ?? 0
                             }`,
                             value: getValue(
-                                usage["total_number_of_hazards"] ?? 0,
-                                allocations["total_number_of_hazards"] ?? 0
+                                usage.total_number_of_hazards ?? 0,
+                                allocations.total_number_of_hazards ?? 0
                             )
                         },
                         disk: {
-                            text: `${usage["total_file_size_of_hazard_datasets"]}\n of\n ${allocations["total_file_size_of_hazard_datasets"]}`,
+                            text: `${usage.total_file_size_of_hazard_datasets}\n of\n ${allocations.total_file_size_of_hazard_datasets}`,
                             value: getValue(
-                                usage["total_file_size_of_hazard_datasets_byte"] ?? 0,
-                                allocations["total_file_size_of_hazard_datasets_byte"] ?? 0
+                                usage.total_file_size_of_hazard_datasets_byte ?? 0,
+                                allocations.total_file_size_of_hazard_datasets_byte ?? 0
                             )
                         }
                     },
                     datasets: {
                         entities: {
-                            text: `${usage["total_number_of_datasets"] ?? 0}\n/\n${
-                                allocations["total_number_of_datasets"] ?? 0
+                            text: `${usage.total_number_of_datasets ?? 0}\n/\n${
+                                allocations.total_number_of_datasets ?? 0
                             }`,
                             value: getValue(
-                                usage["total_number_of_datasets"] ?? 0,
-                                allocations["total_number_of_datasets"] ?? 0
+                                usage.total_number_of_datasets ?? 0,
+                                allocations.total_number_of_datasets ?? 0
                             )
                         },
                         disk: {
-                            text: `${usage["total_file_size_of_datasets"]}\n of\n ${allocations["total_file_size_of_datasets"]}`,
+                            text: `${usage.total_file_size_of_datasets}\n of\n ${allocations.total_file_size_of_datasets}`,
                             value: getValue(
-                                usage["total_file_size_of_datasets_byte"] ?? 0,
-                                allocations["total_file_size_of_datasets_byte"] ?? 0
+                                usage.total_file_size_of_datasets_byte ?? 0,
+                                allocations.total_file_size_of_datasets_byte ?? 0
                             )
                         }
                     },
                     dfr3: {
                         entities: {
-                            text: `${usage["total_number_of_dfr3"] ?? 0}\n/\n${
-                                allocations["total_number_of_dfr3"] ?? 0
-                            }`,
-                            value: getValue(
-                                usage["total_number_of_dfr3"] ?? 0,
-                                allocations["total_number_of_dfr3"] ?? 0
-                            )
+                            text: `${usage.total_number_of_dfr3 ?? 0}\n/\n${allocations.total_number_of_dfr3 ?? 0}`,
+                            value: getValue(usage.total_number_of_dfr3 ?? 0, allocations.total_number_of_dfr3 ?? 0)
                         }
                     }
                 };
@@ -274,7 +269,7 @@ export const useHazardStats = (projectHazards: Hazard[]) => {
         let tsunamiCount = 0;
         let hurricaneWFCount = 0;
         const fetchStats = async () => {
-            for (let hazard of projectHazards) {
+            for (const hazard of projectHazards) {
                 if (hazard.type === "earthquake") {
                     earthquakeCount++;
                     try {
@@ -282,8 +277,8 @@ export const useHazardStats = (projectHazards: Hazard[]) => {
                             headers: getHeaders()
                         });
                         if (response.data) {
-                            if (response.data["eqType"] === "dataset") {
-                                datasetCount = datasetCount + 1;
+                            if (response.data.eqType === "dataset") {
+                                datasetCount += 1;
                             } else {
                                 modelCount++;
                             }
@@ -298,8 +293,8 @@ export const useHazardStats = (projectHazards: Hazard[]) => {
                             headers: getHeaders()
                         });
                         if (response.data) {
-                            if (response.data["tornadoType"] === "dataset") {
-                                datasetCount = datasetCount + 1;
+                            if (response.data.tornadoType === "dataset") {
+                                datasetCount += 1;
                             } else {
                                 modelCount++;
                             }
@@ -309,16 +304,16 @@ export const useHazardStats = (projectHazards: Hazard[]) => {
                     }
                 } else if (hazard.type === "hurricane") {
                     hurricaneCount++;
-                    datasetCount = datasetCount + 1;
+                    datasetCount += 1;
                 } else if (hazard.type === "flood") {
                     floodCount++;
-                    datasetCount = datasetCount + 1;
+                    datasetCount += 1;
                 } else if (hazard.type === "tsunami") {
                     tsunamiCount++;
-                    datasetCount = datasetCount + 1;
+                    datasetCount += 1;
                 } else if (hazard.type === "hurricaneWindfield") {
                     hurricaneWFCount++;
-                    datasetCount = datasetCount + 1;
+                    datasetCount += 1;
                 }
             }
             setHazardStats({ model: modelCount, dataset: datasetCount });
@@ -387,3 +382,21 @@ export const useWorkflowAutoSave = (workflow: DatawolfWorkflowFile, workflowID: 
         return () => clearInterval(intervalId);
     }, [workflow, workflowID, interval, appDispatch]);
 };
+
+export function useElementSize<T extends HTMLElement>() {
+    const ref = useRef<T>(null);
+    const [size, setSize] = useState({ width: 0, height: 0 });
+
+    useEffect(() => {
+        if (!ref.current) return;
+        const observer = new ResizeObserver(([entry]) => {
+            const { width, height } = entry.contentRect;
+            setSize({ width, height });
+        });
+        observer.observe(ref.current);
+        // eslint-disable-next-line consistent-return
+        return () => observer.disconnect();
+    }, []);
+
+    return [ref, size] as const;
+}

@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Fixed
-
 - Execution count not showing up issue. [#172](https://github.com/IN-CORE/incore-studio/issues/172)
+- Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
 
 ## [Beta-1] - 05-01-2025
 
