@@ -14,7 +14,11 @@ const Tally: React.FC<TallyProps> = ({ title, tallyList, totalCount }) => {
             <Typography level="title-lg" sx={{ mb: 2 }}>
                 {`${title}${totalCount ? `: ${totalCount}` : ""}`}
             </Typography>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={3} divider={<Divider orientation="vertical" />}>
+            <Stack
+                direction={{ xs: "column", sm: "column", md: "row" }}
+                spacing={2}
+                divider={<Divider orientation="vertical" />}
+            >
                 {tallyList.map((tally, index) => (
                     <Box key={index} sx={{ width: "100%" }}>
                         <Typography level="title-md">{tally.label}</Typography>
