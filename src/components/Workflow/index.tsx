@@ -193,7 +193,7 @@ const LayoutedWorkflow = ({ sidePanelOpen }: { sidePanelOpen: boolean }) => {
                     setNodesReady(true); // Trigger layout after delay
                 }
             }
-        }, 1000); // Adjust the delay as necessary based on render performance
+        }, 800); // Adjust the delay as necessary based on render performance
 
         return () => clearTimeout(timer);
     }, [nodes, layoutApplied]);

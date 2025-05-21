@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Implement Adding of parent dataset id to a dataset of table format. [#179](https://github.com/IN-CORE/incore-studio/issues/179)
 
+### Fixed
+
+- Bug where we cannot edit fields that were prepopulated with not allowed characters in execution sidepanel. [#174](https://github.com/IN-CORE/incore-studio/issues/174)
+- Execution count not showing up issue. [#172](https://github.com/IN-CORE/incore-studio/issues/172)
+- Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
+
 ## [Beta-1] - 05-01-2025
 
 ### Added

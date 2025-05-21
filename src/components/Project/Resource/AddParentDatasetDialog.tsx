@@ -50,7 +50,7 @@ const AddParentDatasetDialog: React.FC<AddParentDatasetDialogProps> = ({
             appDispatch(getProject(projectId));
         }
     }, [project]);
-    console.log("project", project?.datasets);
+
     const handleAddParentDataset = async () => {
         if (selectedDataset && resource && project) {
             try {
@@ -65,12 +65,6 @@ const AddParentDatasetDialog: React.FC<AddParentDatasetDialogProps> = ({
 
                 // Append it as a key-value pair under "update"
                 formData.append("update", updatePayload);
-                console.log({
-                    ...getHeaders(),
-                    "Content-Type": "multipart/form-data"
-                });
-                console.log("rssid", resource.id);
-                console.log("selected dataset if", selectedDataset);
                 const response = await axios.put(`${DATA_API_URL}/datasets/${resource.id}`, formData, {
                     headers: {
                         ...getHeaders(),
