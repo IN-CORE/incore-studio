@@ -44,6 +44,7 @@ const AddParentDatasetDialog: React.FC<AddParentDatasetDialogProps> = ({
     const [loading, setLoading] = React.useState(false);
     const [serviceError, setServiceError] = React.useState<string | null>(null);
     const error = useAppSelector((state) => state.project.error);
+    const [addSuccess, setAddSuccess] = React.useState(false);
 
     React.useEffect(() => {
         if (!project) {
@@ -78,29 +79,49 @@ const AddParentDatasetDialog: React.FC<AddParentDatasetDialogProps> = ({
                             datasets: project.datasets.map((ds) => (ds.id === response.data.id ? response.data : ds))
                         })
                     );
-                    setLoading(false);
-                    setServiceError(null);
-                    setSelectedDataset(null);
+                    setAddSuccess(true);
                 } else {
                     setServiceError("Failed to add parent dataset. Please try again.\nReason: " + response.statusText);
                 }
             } catch (err) {
                 console.error("Error adding parent dataset:", err);
                 setServiceError("Failed to add parent dataset. Please try again.\nReason: " + (err as Error).message);
+                setLoading(false);
             }
         }
     };
 
-    React.useEffect(() => {}, []);
+    React.useEffect(() => {
+        if (addSuccess) {
+            setLoading(false);
+            setServiceError(null);
+            setSelectedDataset(null);
+            setAddSuccess(false);
+            onClose();
+            handleOpenVisDialog();
+        }
+    }, [addSuccess]);
+
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal
+            open={open}
+            onClose={(_event: React.MouseEvent<HTMLButtonElement>, reason: string) => {
+                if (reason !== "backdropClick") {
+                    setLoading(false);
+                    setServiceError(null);
+                    setSelectedDataset(null);
+                    setAddSuccess(false);
+                    onClose();
+                }
+            }}
+        >
             <ModalDialog
                 aria-labelledby="add-parent-dataset-dialog-title"
                 aria-describedby="add-parent-dataset-dialog-description"
                 size="lg"
                 sx={{ mx: "auto", backgroundColor: "#fff" }}
             >
-                <ModalClose />
+                <ModalClose disabled={loading} />
                 <Typography id="add-parent-dataset-dialog-title" component="h2" fontSize="lg" fontWeight="bold">
                     Add Parent Dataset
                 </Typography>
@@ -148,10 +169,10 @@ const AddParentDatasetDialog: React.FC<AddParentDatasetDialogProps> = ({
                         }}
                         onClick={async () => {
                             await handleAddParentDataset();
-                            if (!error && !serviceError) {
-                                onClose();
-                                handleOpenVisDialog();
-                            }
+                            // if (!error && !serviceError) {
+                            //     onClose();
+                            //     handleOpenVisDialog();
+                            // }
                         }}
                         disabled={!selectedDataset || loading}
                     >
