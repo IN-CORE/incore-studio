@@ -10,20 +10,23 @@ import dislocationByTenureContent from "@app/components/Visualization/mocks/HUA_
 import dislocationByIncomeContent from "@app/components/Visualization/mocks/HUA_dislocation_by_income.json";
 import dislocationByHousingTypeContent from "@app/components/Visualization/mocks/HUA_dislocation_by_housing_type.json";
 import totalDislTableContent from "@app/components/Visualization/mocks/HUA_total_dislocation.json";
+import HHSBarChartContent from "@app/components/Visualization/mocks/HHS_stage_count.json";
+
 import { PopDislocationTable } from "@app/components/Visualization/PopDislocationTable";
 import { HuaResultsTable } from "@app/components/Visualization/HuaResultsTable";
 import { CGEBarChart } from "@app/components/Visualization/CGEBarChart";
 import { CGEResultsTable } from "@app/components/Visualization/CGEResultsTable";
+import { HHS } from "@app/components/Visualization/HHS";
 
 const MockVisualization: React.FC = () => {
     return (
-        <Box sx={{ px: 4, py: 4 }}>
+        <Box sx={{ px: 20, py: 10 }}>
             <Typography level="h2" sx={{ mb: 3 }}>
                 Mock Visualizations
             </Typography>
 
             {/* /!* TODO include HHS *!/ */}
-            {/* <HHS HHSBarChartContent={HHSBarChartContent} /> */}
+            <HHS HHSBarChartContent={HHSBarChartContent} />
 
             {/* Population Dislocation */}
             <PopDislocationTable
