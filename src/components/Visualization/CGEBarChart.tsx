@@ -1,5 +1,6 @@
 import React from "react";
 import Chart from "react-google-charts";
+import { Typography } from "@mui/joy";
 
 interface CGEBarChartProps {
     height: string | number;
@@ -47,6 +48,17 @@ export const CGEBarChart: React.FC<CGEBarChartProps> = ({
 }) => {
     return (
         <div className="barChart">
+            <Typography
+                sx={{
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    padding: "12px 8px",
+                    marginBottom: "17px",
+                    display: "block"
+                }}
+            >
+                {title}
+            </Typography>
             <Chart
                 width={width}
                 height={height}
@@ -54,7 +66,7 @@ export const CGEBarChart: React.FC<CGEBarChartProps> = ({
                 loader={<div>Loading Chart</div>}
                 data={ParseData(data, region, yAxisLegend)}
                 options={{
-                    title,
+                    title: undefined,
                     legend: { position: "right" },
                     colors: ["#A1BE2E", "#DB4F60"],
                     hAxis: {

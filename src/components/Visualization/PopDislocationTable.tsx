@@ -1,5 +1,5 @@
 import React from "react";
-import { Table } from "@mui/joy";
+import { Table, Typography } from "@mui/joy";
 import { round } from "@app/utils";
 
 interface PopDislocationTableTableProps {
@@ -29,21 +29,17 @@ export const PopDislocationTable: React.FC<PopDislocationTableTableProps> = ({
 
     return (
         <>
-            <div
+            <Typography
                 style={{
-                    height: "19px",
-                    color: "#2E384D",
                     fontSize: "16px",
                     fontWeight: 500,
-                    letterSpacing: "0.6px",
-                    lineHeight: "19px",
                     padding: "12px 8px",
                     marginBottom: "17px",
                     display: "block"
                 }}
             >
                 {title}
-            </div>
+            </Typography>
             <Table size="sm">
                 <thead>
                     <tr>

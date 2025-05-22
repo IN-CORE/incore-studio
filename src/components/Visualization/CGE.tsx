@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Grid, Typography, Select, Option } from "@mui/joy";
+import { Box, Typography, Select, Option } from "@mui/joy";
 import { CGEBarChart } from "@app/components/Visualization/CGEBarChart";
 import { CGEResultsTable } from "@app/components/Visualization/CGEResultsTable";
 
@@ -30,52 +30,53 @@ export const CGE: React.FC<CGEDataProps> = ({
                     <Option value="Employment">Employment</Option>
                 </Select>
             </Box>
-
-            <Grid container spacing={4}>
-                <Grid xs={12} md={6}>
-                    <Typography level="h4" sx={{ mb: 2 }}>
-                        {selectedView} Chart
-                    </Typography>
-                    {selectedView === "Total Household Income" && (
-                        <CGEBarChart
-                            data={cgeHouseholdIncomeContent}
-                            xAxisLegend="Million of $"
-                            yAxisLegend="Household Groups"
-                            title="Total Household Income"
-                            height="25em"
-                        />
-                    )}
-                    {selectedView === "Domestic Supply" && (
-                        <CGEBarChart
-                            data={cgeDomesticSupplyContent}
-                            xAxisLegend="Million of $"
-                            yAxisLegend="Sectors"
-                            title="Domestic Supply"
-                            height="25em"
-                        />
-                    )}
-                    {selectedView === "Employment" && (
-                        <CGEBarChart
-                            data={cgeEmploymentContent}
-                            title="Employment"
-                            height="25em"
-                            xAxisLegend="# of workers"
-                            yAxisLegend="Sectors"
-                        />
-                    )}
-                </Grid>
-
-                <Grid xs={12} md={6}>
-                    <Typography level="h4" sx={{ mb: 2 }}>
-                        {selectedView} Table
-                    </Typography>
-                    {selectedView === "Total Household Income" && (
-                        <CGEResultsTable resultsJson={cgeHouseholdIncomeContent} />
-                    )}
-                    {selectedView === "Domestic Supply" && <CGEResultsTable resultsJson={cgeDomesticSupplyContent} />}
-                    {selectedView === "Employment" && <CGEResultsTable resultsJson={cgeEmploymentContent} />}
-                </Grid>
-            </Grid>
+            <Box>
+                {selectedView === "Total Household Income" && (
+                    <CGEBarChart
+                        data={cgeHouseholdIncomeContent}
+                        xAxisLegend="Million of $"
+                        yAxisLegend="Household Groups"
+                        title="Total Household Income"
+                        height="25em"
+                    />
+                )}
+                {selectedView === "Domestic Supply" && (
+                    <CGEBarChart
+                        data={cgeDomesticSupplyContent}
+                        xAxisLegend="Million of $"
+                        yAxisLegend="Sectors"
+                        title="Domestic Supply"
+                        height="25em"
+                    />
+                )}
+                {selectedView === "Employment" && (
+                    <CGEBarChart
+                        data={cgeEmploymentContent}
+                        title="Employment"
+                        height="25em"
+                        xAxisLegend="# of workers"
+                        yAxisLegend="Sectors"
+                    />
+                )}
+            </Box>
+            <Box>
+                <Typography
+                    sx={{
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        padding: "12px 8px",
+                        marginBottom: "17px",
+                        display: "block"
+                    }}
+                >
+                    {selectedView} Table
+                </Typography>
+                {selectedView === "Total Household Income" && (
+                    <CGEResultsTable resultsJson={cgeHouseholdIncomeContent} />
+                )}
+                {selectedView === "Domestic Supply" && <CGEResultsTable resultsJson={cgeDomesticSupplyContent} />}
+                {selectedView === "Employment" && <CGEResultsTable resultsJson={cgeEmploymentContent} />}
+            </Box>
         </>
     );
 };
