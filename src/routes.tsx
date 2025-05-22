@@ -13,7 +13,7 @@ const LazyProjectWorkflowExecutionSummaryPage = lazy(
     () => import("@app/components/Project/Resource/WorkflowExecutionSummaryPage")
 );
 const LazyExecutionPage = lazy(() => import("@app/components/Execution"));
-
+const LazyMockVisualization = lazy(() => import("@app/components/Visualization/mocks/MockVisualization"));
 /**
  A mapping of routes to `RouteProps`.
  The required property for each route is `element`, which must be a valid React component.
@@ -96,6 +96,14 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
         element: (
             <Suspense fallback={<Loading />}>
                 <LazyProjectDFR3MappingPage />
+            </Suspense>
+        )
+    },
+    // TODO remove me later
+    "mock-visualization": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyMockVisualization />
             </Suspense>
         )
     }
