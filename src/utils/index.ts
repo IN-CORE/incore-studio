@@ -774,3 +774,11 @@ export function convertGridToVegaData(rows: GridRowsProp, columns: GridColDef[])
         return vegaData;
     });
 }
+
+export function csvToArray(str: string, delimiter = ",", includeHeader = true): string[][] {
+    const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+    const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+    const rowsArr = rows.filter(Boolean).map((row) => row.split(delimiter));
+
+    return includeHeader ? [headers, ...rowsArr] : rowsArr;
+}
