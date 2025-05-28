@@ -14,10 +14,6 @@ import {
 } from "@mui/joy";
 import React, { useState } from "react";
 import { parseDateTime } from "@app/utils";
-import { MapThumbnail } from "@app/components/Project/Thumbnails/MapThumbnail";
-import { TableThumbnail } from "@app/components/Project/Thumbnails/TableThumbnail";
-import { WorkflowThumbnail } from "@app/components/Project/Thumbnails/WorkflowThumbnail";
-import { DefaultThumbnail } from "@app/components/Project/Thumbnails/DefaultThumbnail";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
@@ -25,26 +21,8 @@ import { VisualizationDialog } from "@app/components/Project/Resource/Visualizat
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
 
-function isHazard(resource: any): resource is Hazard {
-    return "hazardDatasets" in resource;
-}
-
-function isVisualization(resource: any): resource is Visualization {
-    return "layers" in resource;
-}
-
 function isDataset(resource: any): resource is Dataset {
     return "dataType" in resource;
-}
-
-function isDatasetTable(resource: any): resource is Dataset {
-    return "dataType" in resource && "format" in resource && (resource.format === "table" || resource.format === "csv");
-}
-
-function isDatasetMap(resource: any): resource is Dataset {
-    return (
-        "dataType" in resource && "format" in resource && (resource.format === "shapefile" || resource.format === "tif")
-    );
 }
 
 function isWorkflow(resource: any): resource is Workflow {
@@ -257,26 +235,16 @@ export const ResourceCards: React.FC<{
 
                                 {/* Card Content */}
                                 <CardContent>
-                                    <Box>
-                                        {isHazard(resource) || isVisualization(resource) || isDatasetMap(resource) ? (
-                                            <MapThumbnail />
-                                        ) : isDatasetTable(resource) ? (
-                                            <TableThumbnail />
-                                        ) : isWorkflow(resource) ? (
-                                            <WorkflowThumbnail />
-                                        ) : (
-                                            <DefaultThumbnail />
-                                        )}
-                                    </Box>
-                                    <Box sx={{ p: 1, flexGrow: 1, height: "50px" }}>
+                                    <Box sx={{ p: 1, flexGrow: 1, height: "100px" }}>
                                         <Typography
-                                            level="body-sm"
+                                            level="h4"
                                             mb={1}
                                             textColor="primary.main"
                                             sx={{
                                                 whiteSpace: "nowrap",
                                                 overflow: "hidden",
-                                                textOverflow: "ellipsis"
+                                                textOverflow: "ellipsis",
+                                                wordBreak: "break-word"
                                             }}
                                         >
                                             {isDataset(resource) || isWorkflow(resource)
@@ -288,7 +256,8 @@ export const ResourceCards: React.FC<{
                                             sx={{
                                                 whiteSpace: "nowrap",
                                                 overflow: "hidden",
-                                                textOverflow: "ellipsis"
+                                                textOverflow: "ellipsis",
+                                                wordBreak: "break-word"
                                             }}
                                         >
                                             {resource.description || "Description not provided"}
@@ -333,9 +302,9 @@ export const ResourceCards: React.FC<{
                                     )}
                                     {viewFunc && (
                                         <Button
-                                            variant="solid"
+                                            variant="soft"
                                             size="md"
-                                            sx={{ backgroundColor: "primary.main" }}
+                                            sx={{ color: "primary.main", border: "1px solid primary.main" }}
                                             aria-label="View"
                                             onClick={() => {
                                                 viewFunc(resource);
