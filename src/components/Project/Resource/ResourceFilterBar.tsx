@@ -56,13 +56,13 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                 {onViewChangeClick && (
                     <ButtonGroup variant="soft" sx={{ ml: 1 }}>
                         <IconButton onClick={onViewChangeClick}>
-                            <GridViewOutlinedIcon
-                                sx={{ color: !isTableView ? theme.colorSchemes.light.palette.primary[700] : "inherit" }}
+                            <FormatListBulletedIcon
+                                sx={{ color: isTableView ? theme.colorSchemes.light.palette.primary[700] : "inherit" }}
                             />
                         </IconButton>
                         <IconButton onClick={onViewChangeClick}>
-                            <FormatListBulletedIcon
-                                sx={{ color: isTableView ? theme.colorSchemes.light.palette.primary[700] : "inherit" }}
+                            <GridViewOutlinedIcon
+                                sx={{ color: !isTableView ? theme.colorSchemes.light.palette.primary[700] : "inherit" }}
                             />
                         </IconButton>
                     </ButtonGroup>
