@@ -241,10 +241,13 @@ export const ResourceCards: React.FC<{
                                             mb={1}
                                             textColor="primary.main"
                                             sx={{
-                                                whiteSpace: "nowrap",
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis",
-                                                wordBreak: "break-word"
+                                                whiteSpace: "normal",
+                                                overflowWrap: "break-word",
+                                                wordBreak: "break-word",
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 1, // optional: limit lines
+                                                WebkitBoxOrient: "vertical",
+                                                overflow: "hidden"
                                             }}
                                         >
                                             {isDataset(resource) || isWorkflow(resource)
@@ -254,10 +257,13 @@ export const ResourceCards: React.FC<{
                                         <Typography
                                             level="body-sm"
                                             sx={{
-                                                whiteSpace: "nowrap",
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis",
-                                                wordBreak: "break-word"
+                                                whiteSpace: "normal",
+                                                overflowWrap: "break-word",
+                              d                  wordBreak: "break-word",
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 3, // optional: limit lines
+                                                WebkitBoxOrient: "vertical",
+                                                overflow: "hidden"
                                             }}
                                         >
                                             {resource.description || "Description not provided"}
