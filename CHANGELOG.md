@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Execution count not showing up issue. [#172](https://github.com/IN-CORE/incore-studio/issues/172)
 - Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
 
+### Changed
+- Improve resource card layout [#65](https://github.com/IN-CORE/incore-studio/issues/65)
+
 ## [Beta-1] - 05-01-2025
 
 ### Added
