@@ -30,6 +30,7 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import InsertChartOutlinedRoundedIcon from "@mui/icons-material/InsertChartOutlinedRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { useShallow } from "zustand/react/shallow";
 
 import {
     updateCreateExecutionTemplateDatasetAndParams,
@@ -48,9 +49,15 @@ import { VisualizationView } from "@app/components/Project/Resource/Visaualizati
 import CompatibleTypeTooltip from "./CompatibleTypeTooltip";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import { extractStatus } from "@app/utils";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import OutputFileDisplay from "./OutputFileDisplay";
+
+const selector = (state: ReactFlowAppState) => ({
+    nodes: state.nodes,
+    setNodes: state.setNodes
+});
 
 const getInitialParametersState = (
     sidePanelData: ExecutionSidePandelData,
@@ -88,6 +95,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const appDispatch = useAppDispatch();
 
     const { id } = useParams<{ id: string }>();
+    const { setNodes, nodes } = useStore(useShallow(selector));
 
     const sidePanelData = useAppSelector((state) => state.execution.sidePanelData);
     const project = useAppSelector((state) => state.project.project);
@@ -185,6 +193,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     };
 
     const handleClose = () => {
+        // clear selected node
+        setNodes(nodes.map((node) => ({ ...node, selected: false })));
         appDispatch(clearSidePanelData());
     };
 
@@ -458,7 +468,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                 );
                                 appDispatch(updateExecutionSidePanelCheckStatus(sidePanelData.currentAnalysis.id));
                                 appDispatch(clearSidePanelData());
-                                console.log(actualDatasets, actualParameters);
                             }}
                         >
                             {sidePanelData.currentAnalysis.inputDatasets.length > 0 && datasetSelect !== null && (
@@ -571,8 +580,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                     inputDataset.label.includes("Hazard")
                                                                         ? "Hazard"
                                                                         : inputDataset.label.includes("DFR3")
-                                                                          ? "DFR3 Mapping"
-                                                                          : "Dataset"
+                                                                        ? "DFR3 Mapping"
+                                                                        : "Dataset"
                                                                 }`}
                                                                 name={inputDataset.execFileEntryId}
                                                                 required={
@@ -619,33 +628,31 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 {inputDataset.label.includes("Hazard")
                                                                     ? options?.projectHazardOptions
                                                                     : inputDataset.label.includes("DFR3")
-                                                                      ? options?.projectDFR3MappingOptions
-                                                                      : options?.projectDatasetOptions?.filter(
-                                                                            (option: JSX.Element) => {
-                                                                                if (
-                                                                                    dependencyGraph &&
-                                                                                    dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ] &&
-                                                                                    dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ].inputs[inputDataset.label] &&
-                                                                                    option.key
-                                                                                ) {
-                                                                                    return dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ].inputs[
-                                                                                        inputDataset.label
-                                                                                    ].includes(
-                                                                                        option.key.split("|")[1]
-                                                                                    ); // show datasets that are compatible with the input
-                                                                                }
-                                                                                return true; // if the property is not found, show all datasets
-                                                                            }
-                                                                        )}
+                                                                    ? options?.projectDFR3MappingOptions
+                                                                    : options?.projectDatasetOptions?.filter(
+                                                                          (option: JSX.Element) => {
+                                                                              if (
+                                                                                  dependencyGraph &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ] &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label] &&
+                                                                                  option.key
+                                                                              ) {
+                                                                                  return dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label].includes(
+                                                                                      option.key.split("|")[1]
+                                                                                  ); // show datasets that are compatible with the input
+                                                                              }
+                                                                              return true; // if the property is not found, show all datasets
+                                                                          }
+                                                                      )}
                                                             </Select>
                                                         </Box>
                                                         {createMode && (
@@ -655,12 +662,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         inputDataset.label.includes("Hazard")
                                                                             ? setOpenAddHazardFromServiceDialog(true)
                                                                             : inputDataset.label.includes("DFR3")
-                                                                              ? setOpenAddDFR3MappingFromServiceDialog(
-                                                                                    true
-                                                                                )
-                                                                              : setOpenAddDatasetFromServiceDialog(
-                                                                                    true
-                                                                                );
+                                                                            ? setOpenAddDFR3MappingFromServiceDialog(
+                                                                                  true
+                                                                              )
+                                                                            : setOpenAddDatasetFromServiceDialog(true);
                                                                     }}
                                                                 >
                                                                     <AddIcon />
@@ -800,8 +805,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 name={inputParameter.execFileEntryId}
                                                                 type={inputParameter.type.toLocaleLowerCase()}
                                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                                    console.log(typeof e.target.value);
-                                                                    console.log(parseFloat(e.target.value));
                                                                     if (
                                                                         inputParameter.label !== "Analysis" &&
                                                                         !inputParameter.label.includes("Service") &&
