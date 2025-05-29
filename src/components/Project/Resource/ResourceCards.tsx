@@ -259,7 +259,7 @@ export const ResourceCards: React.FC<{
                                             sx={{
                                                 whiteSpace: "normal",
                                                 overflowWrap: "break-word",
-                              d                  wordBreak: "break-word",
+                                                wordBreak: "break-word",
                                                 display: "-webkit-box",
                                                 WebkitLineClamp: 3, // optional: limit lines
                                                 WebkitBoxOrient: "vertical",
