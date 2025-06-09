@@ -30,6 +30,10 @@ function isWorkflow(resource: any): resource is Workflow {
     return "type" in resource && (resource.type === "workflow" || resource.type === "execution");
 }
 
+function isDatasetTable(resource: any): resource is Dataset {
+    return "dataType" in resource && "format" in resource && (resource.format === "table" || resource.format === "csv");
+}
+
 export const ResourceCards: React.FC<{
     resources: Hazard[] | Visualization[] | Dataset[] | Workflow[];
     cardPerRow?: number;
