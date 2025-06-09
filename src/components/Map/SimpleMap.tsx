@@ -133,7 +133,7 @@ const SimpleMap = ({
         const map = mapRef.current;
         const existingLayers = new Set(map.getStyle()?.layers?.map((l) => l.id));
 
-        layers.forEach((layer) => {
+        layers.forEach((layer, index) => {
             const layerId = `incore-${layer.layerId}`;
             const layerName = `${layer.workspace}:${layer.layerId}`;
 
@@ -158,10 +158,15 @@ const SimpleMap = ({
                     id: layerId,
                     type: "raster",
                     source: layerId,
-                    layout: { visibility: activeLayers[layerId] ? "visible" : "none" }
+                    layout: {
+                        visibility: index === 0 ? "visible" : "none" // First layer visible
+                    }
                 });
 
-                setActiveLayers((prev) => ({ ...prev, [layerId]: prev[layerId] ?? false }));
+                setActiveLayers((prev) => ({
+                    ...prev,
+                    [layerId]: index === 0 // First layer enabled
+                }));
             }
         });
 
@@ -194,7 +199,6 @@ const SimpleMap = ({
                 [maxLng, maxLat]
             ],
             {
-                padding: 20,
                 animate: true,
                 duration: 1000
             }

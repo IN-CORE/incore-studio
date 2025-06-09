@@ -27,6 +27,7 @@ interface AddFromServiceDialogProps {
     open: boolean;
     onClose: () => void;
     onAddClick: any;
+    previewFunc?: (resource: Dataset | Hazard | DFR3Mapping | null) => void;
 }
 
 export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
@@ -34,7 +35,8 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
     resourceType,
     open,
     onClose,
-    onAddClick
+    onAddClick,
+    previewFunc
 }) => {
     const [hazardType, setHazardType] = useState("");
     const [message, setMessage] = useState<string | null>(null);
@@ -187,12 +189,15 @@ export const AddFromServiceDialog: React.FC<AddFromServiceDialogProps> = ({
                                                 >
                                                     Select
                                                 </Button>
-                                                <Button
-                                                    variant="outlined"
-                                                    sx={{ color: "primary.main", borderColor: "primary.main" }}
-                                                >
-                                                    Preview
-                                                </Button>
+                                                {previewFunc && (
+                                                    <Button
+                                                        variant="outlined"
+                                                        sx={{ color: "primary.main", borderColor: "primary.main" }}
+                                                        onClick={() => result && previewFunc(result)}
+                                                    >
+                                                        Preview
+                                                    </Button>
+                                                )}
                                                 <Button
                                                     variant="outlined"
                                                     sx={{ color: "primary.main", borderColor: "primary.main" }}
