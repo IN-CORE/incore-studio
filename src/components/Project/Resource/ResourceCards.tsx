@@ -17,6 +17,7 @@ import { parseDateTime } from "@app/utils";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
+import AddParentDatasetDialog from "@app/components/Project/Resource/AddParentDatasetDialog";
 
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +28,10 @@ function isDataset(resource: any): resource is Dataset {
 
 function isWorkflow(resource: any): resource is Workflow {
     return "type" in resource && (resource.type === "workflow" || resource.type === "execution");
+}
+
+function isDatasetTable(resource: any): resource is Dataset {
+    return "dataType" in resource && "format" in resource && (resource.format === "table" || resource.format === "csv");
 }
 
 export const ResourceCards: React.FC<{
@@ -82,6 +87,15 @@ export const ResourceCards: React.FC<{
         }
         setOpenVisDialog(false);
     };
+    const handleOpenVisDialog = () => {
+        setOpenVisDialog(true);
+    };
+
+    // Update Source Dataset if they want to add a dataset to visualization
+    const [openAddParentDatasetDialog, setOpenAddParentDatasetDialog] = useState(false);
+    const handleCloseAddParentDatasetDialog = () => {
+        setOpenAddParentDatasetDialog(false);
+    };
 
     // batch selection
     const toggleSelection = (item: Hazard | Visualization | Dataset | Workflow) => {
@@ -119,6 +133,13 @@ export const ResourceCards: React.FC<{
                 open={openVisDialog}
                 onClose={handleCloseVisDialog}
                 onAddVisualization={handleAddVisualization}
+            />
+            <AddParentDatasetDialog
+                projectId={projectId}
+                open={openAddParentDatasetDialog}
+                onClose={handleCloseAddParentDatasetDialog}
+                resource={selectedItem}
+                handleOpenVisDialog={handleOpenVisDialog}
             />
             <IncoreDialog
                 open={openDeleteDialog}
@@ -204,7 +225,11 @@ export const ResourceCards: React.FC<{
                                                     e.stopPropagation();
                                                 }}
                                                 onClick={() => {
-                                                    setOpenVisDialog(true);
+                                                    if (isDatasetTable(resource) && !resource.sourceDataset) {
+                                                        setOpenAddParentDatasetDialog(true);
+                                                    } else {
+                                                        setOpenVisDialog(true);
+                                                    }
                                                 }}
                                             >
                                                 Add to Visualization

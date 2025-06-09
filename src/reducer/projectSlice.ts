@@ -72,6 +72,21 @@ export const createProject = createAsyncThunk("projects/createProject", async ({
     return response.data;
 });
 
+export const updateProjectDatasetsParent = createAsyncThunk(
+    "projects/updateProjectDatasetsParent",
+    async ({ projectId, datasets }: { projectId: string; datasets: Dataset[] }) => {
+        const params = new URLSearchParams();
+        datasets.forEach((ds) => {
+            params.append("datasets", JSON.stringify(ds));
+        });
+        // params.append("datasets", JSON.stringify(datasets.map((ds) => JSON.stringify(ds))));
+        const response = await axios.patch(`${PROJECT_API_URL}/${projectId}`, params, {
+            headers: { ...getHeaders(), "Content-Type": "application/x-www-form-urlencoded" }
+        });
+        return response.data;
+    }
+);
+
 export const getProject = createAsyncThunk("projects/getProject", async (projectId: string) => {
     const response = await axios.get(`${PROJECT_API_URL}/${projectId}`, { headers: getHeaders() });
     return response.data;
@@ -539,6 +554,25 @@ const projectSlice = createSlice({
             .addCase(getProject.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to load the project";
+            })
+            // Handle update parent dataset id
+            .addCase(updateProjectDatasetsParent.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = null;
+            })
+            .addCase(updateProjectDatasetsParent.fulfilled, (state, action) => {
+                state.loading = false;
+                state.project = action.payload;
+                state.projectDFR3Mappings = action.payload.dfr3Mappings;
+                state.projectHazards = action.payload.hazards;
+                state.projectDatasets = action.payload.datasets;
+                state.projectWorkflows = action.payload.workflows;
+                state.success = "Successfully updated the project datasets parent";
+            })
+            .addCase(updateProjectDatasetsParent.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to update the project datasets parent";
             })
             // Edit project
             .addCase(editProject.pending, (state) => {
