@@ -25,6 +25,7 @@ import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazardDialog";
 import { IncoreDialog } from "@app/components/IncoreDialog";
+import { HazardPreviewModal } from "@app/components/HazardPreivewModal";
 
 const HazardPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -82,7 +83,7 @@ const HazardPage = (): JSX.Element => {
     };
 
     // Table view vs Card view
-    const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
+    const [isTableView, setIsTableView] = useState(true); // Toggle state for view mode
     const onViewChangeClick = () => {
         setIsTableView((prev) => !prev); // Toggle between table and card view
     };
@@ -156,6 +157,11 @@ const HazardPage = (): JSX.Element => {
         setOpenBatchDeleteDialog(false);
     };
 
+    // Preview
+    const [selectedHazard, setSelectedHazard] = useState<Hazard | null>(null);
+    const [openHazardPreviewModal, setOpenHazardPreviewModal] = useState(false); // State to control the visibility
+    // of the
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <IncoreDialog
@@ -209,6 +215,10 @@ const HazardPage = (): JSX.Element => {
                                         setOpenAddHazardFromServiceDialog(false);
                                     }}
                                     onAddClick={addHazardFunc}
+                                    previewFunc={(hazard) => {
+                                        setSelectedHazard(hazard as Hazard);
+                                        setOpenHazardPreviewModal(true);
+                                    }}
                                 />
                                 <CreateHazardDialog
                                     projectId={project.id}
@@ -220,13 +230,17 @@ const HazardPage = (): JSX.Element => {
                                 />
                                 {isTableView ? (
                                     <ResourceTable
-                                        columns={["name", "description", "date", "creator"]}
+                                        columns={["name", "description", "type", "date", "creator"]}
                                         data={projectHazards}
                                         projectId={project.id}
                                         deleteFunc={deleteHazardFunc}
                                         addVisualizationFunc={addHazardVisualizationFunc}
                                         onSelectionChange={(selected) => setSelectedHazards(selected as Hazard[])}
                                         selectedItems={selectedHazards}
+                                        viewFunc={(hazard: Hazard) => {
+                                            setSelectedHazard(hazard as Hazard);
+                                            setOpenHazardPreviewModal(true);
+                                        }}
                                     />
                                 ) : (
                                     <ResourceCards
@@ -237,6 +251,10 @@ const HazardPage = (): JSX.Element => {
                                         addVisualizationFunc={addHazardVisualizationFunc}
                                         onSelectionChange={(selected) => setSelectedHazards(selected as Hazard[])}
                                         selectedItems={selectedHazards}
+                                        viewFunc={(hazard: Hazard) => {
+                                            setSelectedHazard(hazard as Hazard);
+                                            setOpenHazardPreviewModal(true);
+                                        }}
                                     />
                                 )}
                                 <Box mt={4} display="flex" justifyContent="center">
@@ -253,6 +271,15 @@ const HazardPage = (): JSX.Element => {
                     </>
                 )}
             </Box>
+            {selectedHazard && (
+                <HazardPreviewModal
+                    open={openHazardPreviewModal}
+                    onClose={() => {
+                        setOpenHazardPreviewModal(false);
+                    }}
+                    hazard={selectedHazard}
+                />
+            )}
             <Snackbar
                 anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 open={snackbarOpen}

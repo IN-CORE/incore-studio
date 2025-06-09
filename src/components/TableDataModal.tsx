@@ -7,6 +7,7 @@ import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import config from "@app/app.config";
 import { convertGridToVegaData, getHeaders } from "@app/utils";
 import { CSVVegaChart } from "@app/components/CSVVegaChart";
+import SimpleMap from "@app/components/Map/SimpleMap";
 import DataTable from "./DataTable";
 
 interface TableDataModalProps {
@@ -168,10 +169,27 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
                             <CSVVegaChart data={convertGridToVegaData([...tableData.rows], tableData.columns)} />
                         </TabPanel>
                     </Tabs>
-                ) : dataset?.format === "json" ? (
+                ) : // eslint-disable-next-line no-nested-ternary
+                dataset?.format === "json" ? (
                     <Sheet sx={{ padding: 2, overflow: "auto" }}>
                         <pre>{JSON.stringify(jsonData, null, 2)}</pre>
                     </Sheet>
+                ) : dataset?.format === "shapefile" ? (
+                    <SimpleMap
+                        layers={[
+                            {
+                                workspace: "incore",
+                                layerId: dataset.id,
+                                boundingBox: dataset.boundingBox
+                            }
+                        ]}
+                        mapOptions={{
+                            minZoom: 1
+                        }}
+                        navigation
+                        onLoad={() => {}}
+                        initialBounds={dataset.boundingBox ? dataset.boundingBox : config.DEFAULT_MAP_BOUNDS}
+                    />
                 ) : (
                     <Typography level="body-md" sx={{ padding: 2 }}>
                         {dataset?.format} is not supported for table view.
