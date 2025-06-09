@@ -1,0 +1,29 @@
+[
+    {
+        "household_characteristics": "Single Family",
+        "household_dislocated": 2075,
+        "total_households": 9359,
+        "percent_household_dislocated": 22.171172133774977,
+        "population_dislocated": 4696,
+        "total_population": 21720,
+        "percent_population_dislocated": 21.620626151012893
+    },
+    {
+        "household_characteristics": "Multi Family",
+        "household_dislocated": 2868,
+        "total_households": 16707,
+        "percent_household_dislocated": 17.16645717363979,
+        "population_dislocated": 6004,
+        "total_population": 34391,
+        "percent_population_dislocated": 17.458055886714547
+    },
+    {
+        "household_characteristics": "Total",
+        "household_dislocated": 4943,
+        "total_households": 26066,
+        "percent_household_dislocated": 18.963400598480778,
+        "population_dislocated": 10700,
+        "total_population": 56111,
+        "percent_population_dislocated": 19.06934469177167
+    }
+]

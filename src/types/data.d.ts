@@ -481,3 +481,9 @@ interface EarthquakeMetadata {
         amplifyHazard: string;
     };
 }
+
+interface CGEChartData {
+    "beforeEvent": Record<string, number>;
+    "afterEvent": Record<string, number>;
+    "%_change": Record<string, number>;
+}
