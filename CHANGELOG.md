@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+
+- CSS for Submitting exeuction dialog. [#185](https://github.com/IN-CORE/incore-studio/issues/185)
 - Bug where we cannot edit fields that were prepopulated with not allowed characters in execution sidepanel. [#174](https://github.com/IN-CORE/incore-studio/issues/174)
 - Execution count not showing up issue. [#172](https://github.com/IN-CORE/incore-studio/issues/172)
 - Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
