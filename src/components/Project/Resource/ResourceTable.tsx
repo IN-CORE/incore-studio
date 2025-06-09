@@ -128,7 +128,13 @@ export const ResourceTable = ({
                     }
 
                     return (
-                        <td key={`${resource.id.toString()}-${column}`}>
+                        <td
+                            key={`${resource.id.toString()}-${column}`}
+                            style={{
+                                wordBreak: "break-word",
+                                whiteSpace: "normal"
+                            }}
+                        >
                             {(resource as any)[column] || `No ${column} provided`}
                         </td>
                     );
@@ -213,7 +219,7 @@ export const ResourceTable = ({
                                 textAlign: "center",
                                 verticalAlign: "middle"
                             }}
-                        ></th>
+                        />
                         {columns.map((column) => (
                             <th key={column} style={{ backgroundColor: "white" }}>
                                 {formatHeaderName(column)}
