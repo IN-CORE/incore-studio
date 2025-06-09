@@ -146,9 +146,6 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
                     </Stack>
 
                     <Stack direction="row" spacing={1} sx={{ mt: 3, justifyContent: "flex-end" }}>
-                        <Button variant="solid" sx={{ backgroundColor: "primary.main" }} onClick={onClose}>
-                            Cancel
-                        </Button>
                         <Button
                             variant="outlined"
                             sx={{
@@ -156,6 +153,13 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
                                 color: "primary.subtle",
                                 backgroundColor: "white"
                             }}
+                            onClick={onClose}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="solid"
+                            sx={{ backgroundColor: "primary.main" }}
                             disabled={!name || !description} // Ensure required fields are filled
                             onClick={handleCreateNew}
                         >

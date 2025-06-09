@@ -80,7 +80,7 @@ const DatasetPage = (): JSX.Element => {
     };
 
     // Table view vs Card view
-    const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
+    const [isTableView, setIsTableView] = useState(true); // Toggle state for view mode
     const onViewChangeClick = () => {
         setIsTableView((prev) => !prev); // Toggle between table and card view
     };
@@ -229,7 +229,7 @@ const DatasetPage = (): JSX.Element => {
                                 />
                                 {isTableView ? (
                                     <ResourceTable
-                                        columns={["title", "description", "date", "owner"]}
+                                        columns={["title", "description", "type", "date", "owner"]}
                                         data={projectDatasets}
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}

@@ -5,12 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+
+## [Unreleased]
 
 ### Added
 
 - Add preview support for DFR3Mapping, Dataset, and Hazard when selecting resources from services [#180](https://github.com/IN-CORE/incore-studio/issues/180)
 
+### Fixed
+
+- CSS for Submitting exeuction dialog. [#185](https://github.com/IN-CORE/incore-studio/issues/185)
+- Bug where we cannot edit fields that were prepopulated with not allowed characters in execution sidepanel. [#174](https://github.com/IN-CORE/incore-studio/issues/174)
+- Execution count not showing up issue. [#172](https://github.com/IN-CORE/incore-studio/issues/172)
+- Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
+
+### Changed
+- Improve resource card layout [#65](https://github.com/IN-CORE/incore-studio/issues/65)
 
 ## [Beta-1] - 05-01-2025
 
