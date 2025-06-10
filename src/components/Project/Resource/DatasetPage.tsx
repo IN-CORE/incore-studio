@@ -24,6 +24,7 @@ import Snackbar from "@mui/joy/Snackbar";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
+import TableDataModal from "@app/components/TableDataModal";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { getOidcUser } from "@app/utils";
 import config from "@app/app.config";
@@ -38,6 +39,8 @@ const DatasetPage = (): JSX.Element => {
     // Redux state
     const project = useSelector((state: RootState) => state.project.project);
     const deletedDatasetIds = useSelector((state: RootState) => state.project.deletedDatasetIds);
+    const [openTableDataModal, setOpenTableDataModal] = useState(false); // State to control the visibility of the table data modal
+    const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null); // State to store the selected dataset
 
     // Pagination states
     const [datasetPageNumber, setDatasetPageNumber] = useState(1);
@@ -82,7 +85,7 @@ const DatasetPage = (): JSX.Element => {
     };
 
     // Table view vs Card view
-    const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
+    const [isTableView, setIsTableView] = useState(true); // Toggle state for view mode
     const onViewChangeClick = () => {
         setIsTableView((prev) => !prev); // Toggle between table and card view
     };
@@ -101,7 +104,7 @@ const DatasetPage = (): JSX.Element => {
         dataset: Dataset,
         styleName?: string
     ) => {
-        if (dataset.format === "shapefile") {
+        if (dataset.format === "shapefile" || dataset.format === "table") {
             const layers = [
                 {
                     workspace: "incore",
@@ -113,7 +116,7 @@ const DatasetPage = (): JSX.Element => {
             // Dispatch the action with the new layers array
             appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
         } else {
-            alert("Only shapefiles can be added to a visualization for now!");
+            alert("Only shapefiles and tables can be added to a visualization for now!");
         }
     };
 
@@ -207,6 +210,7 @@ const DatasetPage = (): JSX.Element => {
                                     additionalCreateClick={onCreateDataset}
                                     selectedItemsCount={selectedDatasets.length}
                                     onBatchDeleteClick={() => setOpenBatchDeleteDialog(true)}
+                                    onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
                                 />
                                 <AddFromServiceDialog
                                     projectId={project.id}
@@ -216,6 +220,10 @@ const DatasetPage = (): JSX.Element => {
                                         setOpenAddDatasetFromServiceDialog(false);
                                     }}
                                     onAddClick={addDatasetFunc}
+                                    previewFunc={(dataset) => {
+                                        setSelectedDataset(dataset as Dataset);
+                                        setOpenTableDataModal(true);
+                                    }}
                                 />
                                 <CreateDatasetDialog
                                     projectId={project.id}
@@ -225,31 +233,34 @@ const DatasetPage = (): JSX.Element => {
                                     }}
                                 />
                                 <GeoExplorerProvider
-                                    config={{
-                                        basemaps: [
-                                            {
-                                                layer_id: "OSM",
-                                                display_name: "OpenStreetMap",
-                                                tile_url_template: "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                                                thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
-                                            }
-                                        ],
-                                        simple_layers: projectDatasets
-                                            .filter((dataset) => dataset.format === "shapefile")
-                                            .map((dataset) => ({
-                                                layer_id: dataset.id,
-                                                layer_type: "polygon",
-                                                display_name: dataset.title,
-                                                description: dataset.description,
-                                                timestamps: [],
-                                                default_style_name: "",
-                                                ogc_service_url: `${config.hostname}/geoserver`,
-                                                labels: {
-                                                    dataset_category: "power"
+                                    config={
+                                        {
+                                            basemaps: [
+                                                {
+                                                    layer_id: "OSM",
+                                                    display_name: "OpenStreetMap",
+                                                    tile_url_template:
+                                                        "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                                    thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
                                                 }
-                                            })),
-                                        temporal_layers: []
-                                    } as GeoExplorerConfig}
+                                            ],
+                                            simple_layers: projectDatasets
+                                                .filter((dataset) => dataset.format === "shapefile")
+                                                .map((dataset) => ({
+                                                    layer_id: dataset.id,
+                                                    layer_type: "polygon",
+                                                    display_name: dataset.title,
+                                                    description: dataset.description,
+                                                    timestamps: [],
+                                                    default_style_name: "",
+                                                    ogc_service_url: `${config.hostname}/geoserver`,
+                                                    labels: {
+                                                        dataset_category: "power"
+                                                    }
+                                                })),
+                                            temporal_layers: []
+                                        } as GeoExplorerConfig
+                                    }
                                     accessToken={getOidcUser()?.access_token}
                                     isProtectedResource={(url) => /geoserver/.test(url)}
                                 >
@@ -259,11 +270,15 @@ const DatasetPage = (): JSX.Element => {
                                 </GeoExplorerProvider>
                                 {isTableView ? (
                                     <ResourceTable
-                                        columns={["title", "description", "date", "owner"]}
+                                        columns={["title", "description", "type", "date", "owner"]}
                                         data={projectDatasets}
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
                                         addVisualizationFunc={addDatasetVisualizationFunc}
+                                        viewFunc={(dataset: Dataset) => {
+                                            setOpenTableDataModal(true);
+                                            setSelectedDataset(dataset);
+                                        }}
                                         onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
                                         selectedItems={selectedDatasets}
                                     />
@@ -274,6 +289,10 @@ const DatasetPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
                                         addVisualizationFunc={addDatasetVisualizationFunc}
+                                        viewFunc={(dataset: Dataset) => {
+                                            setOpenTableDataModal(true);
+                                            setSelectedDataset(dataset);
+                                        }}
                                         onSelectionChange={(selected) => setSelectedDatasets(selected as Dataset[])}
                                         selectedItems={selectedDatasets}
                                     />
@@ -292,6 +311,15 @@ const DatasetPage = (): JSX.Element => {
                     </>
                 )}
             </Box>
+            {selectedDataset && (
+                <TableDataModal
+                    open={openTableDataModal}
+                    onClose={() => {
+                        setOpenTableDataModal(false);
+                    }}
+                    dataset={selectedDataset}
+                />
+            )}
             <Snackbar
                 anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 open={snackbarOpen}

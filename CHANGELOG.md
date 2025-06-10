@@ -5,11 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
 ## [Unreleased]
 
 ### Added
 
+- Implement Adding of parent dataset id to a dataset of table format. [#179](https://github.com/IN-CORE/incore-studio/issues/179)
+
+### Fixed
+
+- Add preview support for DFR3Mapping, Dataset, and Hazard when selecting resources from services [#180](https://github.com/IN-CORE/incore-studio/issues/180)
+- CSS for Submitting exeuction dialog. [#185](https://github.com/IN-CORE/incore-studio/issues/185)
+- Bug where we cannot edit fields that were prepopulated with not allowed characters in execution sidepanel. [#174](https://github.com/IN-CORE/incore-studio/issues/174)
+- Execution count not showing up issue. [#172](https://github.com/IN-CORE/incore-studio/issues/172)
+- Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
+
+### Changed
+- Improve resource card layout [#65](https://github.com/IN-CORE/incore-studio/issues/65)
+
+## [Beta-1] - 05-01-2025
+
+### Added
+
 - Batch select and delete resources [#140](https://github.com/IN-CORE/incore-studio/issues/140)
+- Implement basic chart visualization using vega-lite [#152](https://github.com/IN-CORE/incore-studio/issues/152)
+- Add default parameters when setting execution. [#153](https://github.com/IN-CORE/incore-studio/issues/153)
+- Edit project metadata [#148](https://github.com/IN-CORE/incore-studio/issues/148)
+- Ability to rerun the workflow with same parameters. [#144](https://github.com/IN-CORE/incore-studio/issues/144)
+- Group analyses in the workflow editor by tags [#32](https://github.com/IN-CORE/incore-studio/issues/32)
+
+### Fixed
+
+- Fix inconsistency in styling [#156](https://github.com/IN-CORE/incore-studio/issues/156)
+
+### Changed
+
+- Update GeoServer style selection [#168](https://github.com/IN-CORE/incore-studio/issues/168)
 
 ## [Alpha-4] - 04-11-2025
 

@@ -136,6 +136,9 @@ interface DependencyGraph {
         inputs: {
             [key: string]: string[];
         };
+        parameter_defaults: {
+            [key: string]: string | int | boolean | null;
+        };
     };
 }
 
@@ -349,6 +352,39 @@ interface ExecutionCreate {
     };
 }
 
+interface ExecutionSidePandelData {
+    open: boolean;
+
+    currentAnalysis: {
+        name: string;
+        depGName: string;
+        id: string;
+        inputDatasets: {
+            execFileEntryId: string;
+            label: string;
+            fromExisting: {
+                analysisName: string;
+                outputName: string;
+            } | null;
+            required: boolean;
+            datasetId?: string;
+        }[];
+        inputParameters: {
+            execFileEntryId: string;
+            label: string;
+            value: string;
+            required: boolean;
+            hidden: boolean;
+            type: string;
+        }[];
+        outputDatasets: {
+            execFileEntryId: string;
+            label: string;
+            datasetId: string;
+        }[];
+    };
+}
+
 interface ExecutionState {
     executionReactFlowState: ReactFlowWorkflow;
     currentExecution: DatawolfExecutionFile | null;
@@ -357,36 +393,7 @@ interface ExecutionState {
     executionParametersAndInputsChecked: {
         [key: string]: boolean; // key is analysis node id
     };
-    sidePanelData: {
-        open: boolean;
-
-        currentAnalysis: {
-            name: string;
-            depGName: string;
-            id: string;
-            inputDatasets: {
-                execFileEntryId: string;
-                label: string;
-                fromExisting: {
-                    analysisName: string;
-                    outputName: string;
-                } | null;
-                required: boolean;
-                datasetId?: string;
-            }[];
-            inputParameters: {
-                execFileEntryId: string;
-                label: string;
-                value: string;
-                required: boolean;
-            }[];
-            outputDatasets: {
-                execFileEntryId: string;
-                label: string;
-                datasetId: string;
-            }[];
-        };
-    };
+    sidePanelData: ExecutionSidePandelData;
     createExecution: ExecutionCreate;
 }
 
@@ -473,4 +480,10 @@ interface EarthquakeMetadata {
         numPoints: string;
         amplifyHazard: string;
     };
+}
+
+interface CGEChartData {
+    "beforeEvent": Record<string, number>;
+    "afterEvent": Record<string, number>;
+    "%_change": Record<string, number>;
 }

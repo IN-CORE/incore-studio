@@ -24,11 +24,13 @@ interface CreateExecutionDialogProps {
     open: boolean;
     wfId: string | null | undefined;
     id: string | null | undefined;
+    reRun: boolean;
+    resetReRun: () => void;
     onClose: () => void;
 }
 
 const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
-    const { open, onClose, id, wfId } = props;
+    const { open, onClose, id, wfId, reRun, resetReRun } = props;
     const auth = useAuth();
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -38,6 +40,7 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
 
     const datawolfUser = useAppSelector((state) => state.workflow.datawolfUser);
     const createExecution = useAppSelector((state) => state.execution.createExecution);
+    const currentExecution = useAppSelector((state) => state.execution.currentExecution);
 
     React.useEffect(() => {
         if (datawolfUser === null) {
@@ -56,21 +59,36 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
 
     const handleCreateNew = async () => {
         try {
-            const result = await appDispatch(
-                createNewExecution({
-                    ...createExecution,
+            let newExecutionId: string | undefined = undefined;
+            if (reRun && currentExecution && wfId) {
+                // If reRun is true, we need to create a new execution based on the current one
+                const newExecution = {
                     title: name,
-                    creatorId: datawolfUser?.id ?? "", // TODO: Fix this
-                    // creatorId: "4de8e6fa-5adc-4afd-bf40-b4d12f27e551",
-                    description
-                })
-            );
-            const newExecutionId = result?.payload;
+                    creatorId: datawolfUser?.id ?? "",
+                    description,
+                    workflowId: wfId,
+                    deleted: false,
+                    parameters: currentExecution.parameters,
+                    datasets: currentExecution.datasets
+                };
+                const result = await appDispatch(createNewExecution(newExecution));
+                resetReRun();
+                newExecutionId = result?.payload;
+            } else {
+                const result = await appDispatch(
+                    createNewExecution({
+                        ...createExecution,
+                        title: name,
+                        creatorId: datawolfUser?.id ?? "",
+                        description
+                    })
+                );
+                newExecutionId = result?.payload;
+            }
 
             if (newExecutionId) {
-                // Navigate to the new project page
                 appDispatch(clearSidePanelData());
-                navigate(`/project/${id}/workflows/${wfId}/execution/${newExecutionId}`);
+                navigate(`/project/${id}/workflows/${wfId}`);
             } else {
                 console.error("Error creating Execution");
             }
@@ -126,11 +144,20 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
                     </Stack>
 
                     <Stack direction="row" spacing={1} sx={{ mt: 3, justifyContent: "flex-end" }}>
-                        <Button variant="plain" onClick={onClose}>
+                        <Button
+                            variant="outlined"
+                            sx={{
+                                borderColor: "primary.subtle",
+                                color: "primary.subtle",
+                                backgroundColor: "white"
+                            }}
+                            onClick={onClose}
+                        >
                             Cancel
                         </Button>
                         <Button
                             variant="solid"
+                            sx={{ backgroundColor: "primary.main" }}
                             disabled={!name || !description} // Ensure required fields are filled
                             onClick={handleCreateNew}
                         >

@@ -6,6 +6,7 @@ import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 
 import { SvgIconProps } from "@mui/material";
 import SearchFilterSortDropdown from "@app/components/Project/Resource/SearchFilterSortDropdown";
+import { theme } from "@app/theme";
 
 interface ResourceFilterBarProps {
     title: string;
@@ -22,6 +23,7 @@ interface ResourceFilterBarProps {
     selectedItemsCount?: number;
     resetSelectedItemsCount?: () => void;
     onBatchDeleteClick?: () => void;
+    onSelectionChange?: (selectedItems: (Hazard | Visualization | Dataset | Workflow)[]) => void;
 }
 
 const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
@@ -37,7 +39,8 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
     createLabel = "Create Item", // Default label for the create button
     addtionalCreateLabel = "Additional Create Item",
     selectedItemsCount,
-    onBatchDeleteClick
+    onBatchDeleteClick,
+    onSelectionChange
 }) => {
     return (
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -53,10 +56,14 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                 {onViewChangeClick && (
                     <ButtonGroup variant="soft" sx={{ ml: 1 }}>
                         <IconButton onClick={onViewChangeClick}>
-                            <GridViewOutlinedIcon sx={{ color: !isTableView ? "primary.light" : "primary.main" }} />
+                            <FormatListBulletedIcon
+                                sx={{ color: isTableView ? theme.colorSchemes.light.palette.primary[700] : "inherit" }}
+                            />
                         </IconButton>
                         <IconButton onClick={onViewChangeClick}>
-                            <FormatListBulletedIcon sx={{ color: isTableView ? "primary.light" : "text.secondary" }} />
+                            <GridViewOutlinedIcon
+                                sx={{ color: !isTableView ? theme.colorSchemes.light.palette.primary[700] : "inherit" }}
+                            />
                         </IconButton>
                     </ButtonGroup>
                 )}
@@ -78,6 +85,17 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                         sx={{ ml: 1 }}
                     >
                         {addtionalCreateLabel}
+                    </Button>
+                )}
+                {Boolean(selectedItemsCount) && (
+                    <Button
+                        variant="soft"
+                        color="neutral"
+                        sx={{ ml: 1 }}
+                        onClick={() => onSelectionChange?.([])}
+                        size="sm"
+                    >
+                        Unselect All ({selectedItemsCount})
                     </Button>
                 )}
                 {Boolean(selectedItemsCount) && (

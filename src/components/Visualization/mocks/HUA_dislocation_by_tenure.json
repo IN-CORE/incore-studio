@@ -1,0 +1,74 @@
+[
+    {
+        "household_characteristics": "Owner occupied",
+        "household_dislocated": 2428,
+        "total_households": 13065,
+        "percent_household_dislocated": 18.584003061615,
+        "population_dislocated": 5690,
+        "total_population": 31111,
+        "percent_population_dislocated": 18.289351033396546
+    },
+    {
+        "household_characteristics": "Renter occupied",
+        "household_dislocated": 2060,
+        "total_households": 10291,
+        "percent_household_dislocated": 20.0174910115635,
+        "population_dislocated": 4682,
+        "total_population": 22968,
+        "percent_population_dislocated": 20.384883315917797
+    },
+    {
+        "household_characteristics": "Nursing facilities",
+        "household_dislocated": 5,
+        "total_households": 10,
+        "percent_household_dislocated": 50.0,
+        "population_dislocated": 310,
+        "total_population": 688,
+        "percent_population_dislocated": 45.05813953488372
+    },
+    {
+        "household_characteristics": "Other group quarters",
+        "household_dislocated": 1,
+        "total_households": 19,
+        "percent_household_dislocated": 5.263157894736842,
+        "population_dislocated": 18,
+        "total_population": 1344,
+        "percent_population_dislocated": 1.3392857142857142
+    },
+    {
+        "household_characteristics": "Vacant for rent",
+        "household_dislocated": 181,
+        "total_households": 1084,
+        "percent_household_dislocated": 16.69741697416974,
+        "population_dislocated": 0,
+        "total_population": 0,
+        "percent_population_dislocated": null
+    },
+    {
+        "household_characteristics": "Vacant for sale",
+        "household_dislocated": 114,
+        "total_households": 608,
+        "percent_household_dislocated": 18.75,
+        "population_dislocated": 0,
+        "total_population": 0,
+        "percent_population_dislocated": null
+    },
+    {
+        "household_characteristics": "Vacant other",
+        "household_dislocated": 154,
+        "total_households": 989,
+        "percent_household_dislocated": 15.57128412537917,
+        "population_dislocated": 0,
+        "total_population": 0,
+        "percent_population_dislocated": null
+    },
+    {
+        "household_characteristics": "Total",
+        "household_dislocated": 4943,
+        "total_households": 26066,
+        "percent_household_dislocated": 18.963400598480778,
+        "population_dislocated": 10700,
+        "total_population": 56111,
+        "percent_population_dislocated": 19.06934469177167
+    }
+]

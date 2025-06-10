@@ -1,0 +1,65 @@
+[
+    {
+        "household_characteristics": "Vacant HU No Race or Ethnicity Data",
+        "household_dislocated": 449,
+        "total_households": 2681,
+        "percent_household_dislocated": 16.747482282730324,
+        "population_dislocated": 0,
+        "total_population": 0,
+        "percent_population_dislocated": null
+    },
+    {
+        "household_characteristics": "Not Hispanic/White",
+        "household_dislocated": 4061,
+        "total_households": 20889,
+        "percent_household_dislocated": 19.440854038010436,
+        "population_dislocated": 9160,
+        "total_population": 47637,
+        "percent_population_dislocated": 19.228750760963116
+    },
+    {
+        "household_characteristics": "Not Hispanic/Black",
+        "household_dislocated": 90,
+        "total_households": 638,
+        "percent_household_dislocated": 14.106583072100312,
+        "population_dislocated": 249,
+        "total_population": 1540,
+        "percent_population_dislocated": 16.16883116883117
+    },
+    {
+        "household_characteristics": "Not Hispanic/Other Race",
+        "household_dislocated": 224,
+        "total_households": 1224,
+        "percent_household_dislocated": 18.30065359477124,
+        "population_dislocated": 604,
+        "total_population": 2986,
+        "percent_population_dislocated": 20.227729403884794
+    },
+    {
+        "household_characteristics": "Hispanic",
+        "household_dislocated": 113,
+        "total_households": 605,
+        "percent_household_dislocated": 18.677685950413224,
+        "population_dislocated": 359,
+        "total_population": 1916,
+        "percent_population_dislocated": 18.73695198329854
+    },
+    {
+        "household_characteristics": "No Race or Ethnicity Data",
+        "household_dislocated": 6,
+        "total_households": 29,
+        "percent_household_dislocated": 20.689655172413794,
+        "population_dislocated": 328,
+        "total_population": 2032,
+        "percent_population_dislocated": 16.141732283464567
+    },
+    {
+        "household_characteristics": "Total",
+        "household_dislocated": 4943,
+        "total_households": 26066,
+        "percent_household_dislocated": 18.963400598480778,
+        "population_dislocated": 10700,
+        "total_population": 56111,
+        "percent_population_dislocated": 19.06934469177167
+    }
+]

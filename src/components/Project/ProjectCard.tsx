@@ -6,8 +6,8 @@ import {
     Typography,
     Box,
     Chip,
-    Dropdown,
     IconButton,
+    Dropdown,
     Menu,
     MenuButton,
     MenuItem
@@ -19,10 +19,11 @@ import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import { parseDateTime } from "@app/utils";
 import { useNavigate } from "react-router-dom";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { deleteProject } from "@app/reducer/projectSlice";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { useDispatch } from "react-redux";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { EditProjectDialog } from "@app/components/Project/EditProject";
 
 interface ProjectCardProps {
     project: Project;
@@ -40,6 +41,9 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 
     const navigate = useNavigate();
 
+    // edit
+    const [editProjectDialogOpen, setEditProjectDialogOpen] = useState(false);
+
     // delete
     const dispatch = useDispatch();
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -55,14 +59,17 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
     };
 
     return (
-        <Card sx={{ width: 440, position: "relative" }}>
-            {/* Menu Icon on Top-Right */}
+        <Card sx={{ width: 430, position: "relative" }}>
+            {/* Menu Icon */}
             <Dropdown>
                 <MenuButton
+                    onClick={(e) => {
+                        e.stopPropagation(); // prevent selection on menu click
+                    }}
                     slots={{ root: IconButton }}
                     slotProps={{
                         root: {
-                            sx: { position: "absolute", top: 8, right: 0, zIndex: 1000 },
+                            sx: { position: "absolute", top: 8, right: 8, zIndex: 15 },
                             variant: "plain",
                             color: "neutral"
                         }
@@ -72,6 +79,19 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
                 </MenuButton>
                 <Menu placement="bottom-start">
                     <MenuItem
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                        }}
+                        onClick={() => {
+                            setEditProjectDialogOpen(true);
+                        }}
+                    >
+                        Edit
+                    </MenuItem>
+                    <MenuItem
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                        }}
                         onClick={() => {
                             setOpenDeleteDialog(true);
                         }}
@@ -80,6 +100,11 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
                     </MenuItem>
                 </Menu>
             </Dropdown>
+            <EditProjectDialog
+                open={editProjectDialogOpen}
+                onClose={() => setEditProjectDialogOpen(false)}
+                project={project}
+            />
             <IncoreDialog
                 open={openDeleteDialog}
                 onClose={handleCloseDialog}
@@ -221,7 +246,8 @@ export const ProjectCard = (props: ProjectCardProps): JSX.Element => {
                         position: "absolute",
                         bottom: 15,
                         right: 15,
-                        fontWeight: 600
+                        fontWeight: 600,
+                        backgroundColor: "primary.main"
                     }}
                     onClick={() => {
                         navigate(`/project/${project.id}`);

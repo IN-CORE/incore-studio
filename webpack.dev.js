@@ -78,7 +78,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 resolve: {
-                    fullySpecified: false,
+                    fullySpecified: false
                 }
             },
             {

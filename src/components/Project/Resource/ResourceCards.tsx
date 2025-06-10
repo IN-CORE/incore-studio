@@ -14,41 +14,24 @@ import {
 } from "@mui/joy";
 import React, { useState } from "react";
 import { parseDateTime } from "@app/utils";
-import { MapThumbnail } from "@app/components/Project/Thumbnails/MapThumbnail";
-import { TableThumbnail } from "@app/components/Project/Thumbnails/TableThumbnail";
-import { WorkflowThumbnail } from "@app/components/Project/Thumbnails/WorkflowThumbnail";
-import { DefaultThumbnail } from "@app/components/Project/Thumbnails/DefaultThumbnail";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
+import AddParentDatasetDialog from "@app/components/Project/Resource/AddParentDatasetDialog";
 
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
-
-function isHazard(resource: any): resource is Hazard {
-    return "hazardDatasets" in resource;
-}
-
-function isVisualization(resource: any): resource is Visualization {
-    return "layers" in resource;
-}
 
 function isDataset(resource: any): resource is Dataset {
     return "dataType" in resource;
 }
 
-function isDatasetTable(resource: any): resource is Dataset {
-    return "dataType" in resource && "format" in resource && (resource.format === "table" || resource.format === "csv");
-}
-
-function isDatasetMap(resource: any): resource is Dataset {
-    return (
-        "dataType" in resource && "format" in resource && (resource.format === "shapefile" || resource.format === "tif")
-    );
-}
-
 function isWorkflow(resource: any): resource is Workflow {
     return "type" in resource && (resource.type === "workflow" || resource.type === "execution");
+}
+
+function isDatasetTable(resource: any): resource is Dataset {
+    return "dataType" in resource && "format" in resource && (resource.format === "table" || resource.format === "csv");
 }
 
 export const ResourceCards: React.FC<{
@@ -104,6 +87,15 @@ export const ResourceCards: React.FC<{
         }
         setOpenVisDialog(false);
     };
+    const handleOpenVisDialog = () => {
+        setOpenVisDialog(true);
+    };
+
+    // Update Source Dataset if they want to add a dataset to visualization
+    const [openAddParentDatasetDialog, setOpenAddParentDatasetDialog] = useState(false);
+    const handleCloseAddParentDatasetDialog = () => {
+        setOpenAddParentDatasetDialog(false);
+    };
 
     // batch selection
     const toggleSelection = (item: Hazard | Visualization | Dataset | Workflow) => {
@@ -119,6 +111,21 @@ export const ResourceCards: React.FC<{
 
     const navigate = useNavigate();
 
+    const handleClick = (
+        event: React.MouseEvent<HTMLDivElement>,
+        resource: Hazard | Visualization | Dataset | Workflow
+    ) => {
+        // Prevent triggering when clicking inside a button
+        if ((event.target as HTMLElement).closest("button")) return;
+
+        toggleSelection(resource); // Deselect if already selected, otherwise select
+    };
+
+    const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+        // Prevent default browser context menu
+        event.preventDefault();
+    };
+
     return (
         <Grid container spacing={3}>
             <VisualizationDialog
@@ -126,6 +133,13 @@ export const ResourceCards: React.FC<{
                 open={openVisDialog}
                 onClose={handleCloseVisDialog}
                 onAddVisualization={handleAddVisualization}
+            />
+            <AddParentDatasetDialog
+                projectId={projectId}
+                open={openAddParentDatasetDialog}
+                onClose={handleCloseAddParentDatasetDialog}
+                resource={selectedItem}
+                handleOpenVisDialog={handleOpenVisDialog}
             />
             <IncoreDialog
                 open={openDeleteDialog}
@@ -170,15 +184,21 @@ export const ResourceCards: React.FC<{
                             {/* Card */}
                             <Card
                                 sx={{
-                                    position: "relative",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    height: "100%",
-                                    padding: "1em",
-                                    boxShadow: selected ? "0 0 8px rgba(66, 82, 110, 0.5)" : "none",
-                                    transition: "all 0.3s ease",
-                                    opacity: selected ? 0.7 : 1
+                                    "position": "relative",
+                                    "display": "flex",
+                                    "flexDirection": "column",
+                                    "height": "100%",
+                                    "padding": "1em",
+                                    "boxShadow": selected ? "0 0 8px rgba(66, 82, 110, 0.5)" : "none",
+                                    "transition": "all 0.3s ease",
+                                    "opacity": selected ? 0.7 : 1,
+                                    "&:hover": {
+                                        boxShadow: "0 0 8px rgba(66, 82, 110, 0.5)",
+                                        cursor: "pointer"
+                                    }
                                 }}
+                                onMouseDown={(e) => handleClick(e, resource)}
+                                onContextMenu={handleContextMenu}
                             >
                                 {/* Menu Icon */}
                                 <Dropdown>
@@ -190,7 +210,7 @@ export const ResourceCards: React.FC<{
                                         slots={{ root: IconButton }}
                                         slotProps={{
                                             root: {
-                                                sx: { position: "absolute", top: 8, right: 0, zIndex: 15 },
+                                                sx: { position: "absolute", top: 8, right: 8, zIndex: 15 },
                                                 variant: "plain",
                                                 color: "neutral"
                                             }
@@ -201,14 +221,24 @@ export const ResourceCards: React.FC<{
                                     <Menu onClose={handleCloseMenu} placement="bottom-start">
                                         {addVisualizationFunc && (
                                             <MenuItem
+                                                onMouseDown={(e) => {
+                                                    e.stopPropagation();
+                                                }}
                                                 onClick={() => {
-                                                    setOpenVisDialog(true);
+                                                    if (isDatasetTable(resource) && !resource.sourceDataset) {
+                                                        setOpenAddParentDatasetDialog(true);
+                                                    } else {
+                                                        setOpenVisDialog(true);
+                                                    }
                                                 }}
                                             >
                                                 Add to Visualization
                                             </MenuItem>
                                         )}
                                         <MenuItem
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation();
+                                            }}
                                             onClick={() => {
                                                 setOpenDeleteDialog(true);
                                             }}
@@ -216,6 +246,9 @@ export const ResourceCards: React.FC<{
                                             Delete
                                         </MenuItem>
                                         <MenuItem
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation();
+                                            }}
                                             onClick={() => {
                                                 toggleSelection(resource);
                                             }}
@@ -227,26 +260,19 @@ export const ResourceCards: React.FC<{
 
                                 {/* Card Content */}
                                 <CardContent>
-                                    <Box>
-                                        {isHazard(resource) || isVisualization(resource) || isDatasetMap(resource) ? (
-                                            <MapThumbnail />
-                                        ) : isDatasetTable(resource) ? (
-                                            <TableThumbnail />
-                                        ) : isWorkflow(resource) ? (
-                                            <WorkflowThumbnail />
-                                        ) : (
-                                            <DefaultThumbnail />
-                                        )}
-                                    </Box>
-                                    <Box sx={{ p: 1, flexGrow: 1, height: "50px" }}>
+                                    <Box sx={{ p: 1, flexGrow: 1, height: "100px" }}>
                                         <Typography
-                                            level="body-sm"
+                                            level="h4"
                                             mb={1}
                                             textColor="primary.main"
                                             sx={{
-                                                whiteSpace: "nowrap",
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis"
+                                                whiteSpace: "normal",
+                                                overflowWrap: "break-word",
+                                                wordBreak: "break-word",
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 1, // optional: limit lines
+                                                WebkitBoxOrient: "vertical",
+                                                overflow: "hidden"
                                             }}
                                         >
                                             {isDataset(resource) || isWorkflow(resource)
@@ -256,9 +282,13 @@ export const ResourceCards: React.FC<{
                                         <Typography
                                             level="body-sm"
                                             sx={{
-                                                whiteSpace: "nowrap",
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis"
+                                                whiteSpace: "normal",
+                                                overflowWrap: "break-word",
+                                                wordBreak: "break-word",
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 3, // optional: limit lines
+                                                WebkitBoxOrient: "vertical",
+                                                overflow: "hidden"
                                             }}
                                         >
                                             {resource.description || "Description not provided"}
@@ -292,7 +322,7 @@ export const ResourceCards: React.FC<{
                                         <Button
                                             variant="solid"
                                             size="md"
-                                            color="primary"
+                                            sx={{ backgroundColor: "primary.main" }}
                                             aria-label="Open"
                                             onClick={() => {
                                                 navigate(`/project/${projectId}/workflows/${resource.id}`);
@@ -303,9 +333,9 @@ export const ResourceCards: React.FC<{
                                     )}
                                     {viewFunc && (
                                         <Button
-                                            variant="solid"
+                                            variant="soft"
                                             size="md"
-                                            color="primary"
+                                            sx={{ color: "primary.main", border: "1px solid primary.main" }}
                                             aria-label="View"
                                             onClick={() => {
                                                 viewFunc(resource);
