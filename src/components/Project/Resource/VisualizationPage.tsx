@@ -13,7 +13,7 @@ import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
-import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
+import { VisualizationView } from "@app/components/Project/Resource/VisualizationView";
 import { useAppDispatch } from "@app/store/hooks";
 
 import VisualizationIcon from "@mui/icons-material/Map";

@@ -26,11 +26,6 @@ import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromSe
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 import TableDataModal from "@app/components/TableDataModal";
 import { IncoreDialog } from "@app/components/IncoreDialog";
-import { getOidcUser } from "@app/utils";
-import config from "@app/app.config";
-
-import { GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
-import "@ncsa/geo-explorer/index.css";
 
 const DatasetPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -232,42 +227,6 @@ const DatasetPage = (): JSX.Element => {
                                         setOpenCreateDatasetDialog(false);
                                     }}
                                 />
-                                <GeoExplorerProvider
-                                    config={
-                                        {
-                                            basemaps: [
-                                                {
-                                                    layer_id: "OSM",
-                                                    display_name: "OpenStreetMap",
-                                                    tile_url_template:
-                                                        "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                                                    thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
-                                                }
-                                            ],
-                                            simple_layers: projectDatasets
-                                                .filter((dataset) => dataset.format === "shapefile")
-                                                .map((dataset) => ({
-                                                    layer_id: dataset.id,
-                                                    layer_type: "polygon",
-                                                    display_name: dataset.title,
-                                                    description: dataset.description,
-                                                    timestamps: [],
-                                                    default_style_name: "",
-                                                    ogc_service_url: `${config.hostname}/geoserver`,
-                                                    labels: {
-                                                        dataset_category: "power"
-                                                    }
-                                                })),
-                                            temporal_layers: []
-                                        } as GeoExplorerConfig
-                                    }
-                                    accessToken={getOidcUser()?.access_token}
-                                    isProtectedResource={(url) => /geoserver/.test(url)}
-                                >
-                                    <Box sx={{ height: 800, position: "relative", overflow: "hidden", my: "20px" }}>
-                                        <GeoExplorer />
-                                    </Box>
-                                </GeoExplorerProvider>
                                 {isTableView ? (
                                     <ResourceTable
                                         columns={["title", "description", "type", "date", "owner"]}
