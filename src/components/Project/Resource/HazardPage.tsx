@@ -27,6 +27,10 @@ import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazar
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { HazardPreviewModal } from "@app/components/HazardPreivewModal";
 
+import config from "@app/app.config";
+import { getHeaders, inferLayerType } from "@app/utils";
+import axios from "axios";
+
 const HazardPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
     const appDispatch = useAppDispatch();
@@ -95,24 +99,6 @@ const HazardPage = (): JSX.Element => {
         appDispatch(deleteProjectHazards({ projectId, hazardIds: [hazard.id] }));
     };
 
-    // add to visualization function
-    const addHazardVisualizationFunc = (
-        projectId: string,
-        visualizationId: string,
-        hazard: Hazard,
-        styleName?: string
-    ) => {
-        // Create layers array by mapping over each datasetId in hazard.HazardDatasets
-        const layers = hazard.hazardDatasets.map((hazardDataset: HazardDataset) => ({
-            workspace: "incore",
-            layerId: hazardDataset.datasetId,
-            ...(styleName && { styleName }) // Only include styleName if it's provided
-        }));
-
-        // Dispatch the action with the new layers array
-        appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
-    };
-
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
@@ -130,6 +116,43 @@ const HazardPage = (): JSX.Element => {
             setSnackbarOpen(true);
         }
     }, [success, error]);
+
+    // add to visualization function
+    const addHazardVisualizationFunc = async (
+        projectId: string,
+        visualizationId: string,
+        hazard: Hazard,
+        styleName?: string
+    ) => {
+        try {
+            // Need to query data api to get dataset details for each hazardDataset
+            const layers = await Promise.all(
+                hazard.hazardDatasets.map(async (hazardDataset: HazardDataset) => {
+                    const { data: dataset } = await axios.get(`${config.dataService}/${hazardDataset.datasetId}`, {
+                        headers: getHeaders()
+                    });
+
+                    return {
+                        workspace: "incore",
+                        layerId: dataset.id,
+                        displayName: dataset.title,
+                        description: dataset.description,
+                        datasetCategoryType: dataset.dataType,
+                        layerType: inferLayerType(dataset.dataType),
+                        boundingBox: dataset.boundingBox,
+                        ...(styleName && { styleName })
+                    };
+                })
+            );
+
+            appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
+        } catch (err) {
+            // TODO handle error with snackbar
+            setSnackbarMessage(`Error adding hazard visualization layers: ${err}`);
+            setSnackbarColor("danger");
+            setSnackbarOpen(true);
+        }
+    };
 
     // Add hazard to project from service
     const [openAddHazardFromServiceDialog, setOpenAddHazardFromServiceDialog] = useState(false);

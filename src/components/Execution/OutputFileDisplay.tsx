@@ -7,7 +7,7 @@ import BookmarkAddRoundedIcon from "@mui/icons-material/BookmarkAddRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 
 import config from "@app/app.config";
-import { getHeaders } from "@app/utils";
+import { getHeaders, inferLayerType } from "@app/utils";
 import { addLayerToVisualization } from "@app/reducer/projectSlice";
 import { useAppDispatch } from "@app/store/hooks";
 import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
@@ -57,11 +57,21 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId, projec
             setSnackbarMessage("Adding to Visualization...");
             setSnackbarColor("warning");
             setSnackbarOpen(true);
-            if (selectedDataset.format === "shapefile") {
+            if (
+                selectedDataset.format === "shapefile" ||
+                selectedDataset.format === "geotif" ||
+                selectedDataset.format === "raster" ||
+                selectedDataset.format === "table" // TODO: Need to rethink this logic
+            ) {
                 const layers = [
                     {
                         workspace: "incore",
-                        layerId: selectedDataset.id
+                        layerId: selectedDataset.id,
+                        displayName: selectedDataset.title,
+                        description: selectedDataset.description,
+                        datasetCategoryType: selectedDataset.dataType,
+                        layerType: inferLayerType(selectedDataset.dataType),
+                        boundingBox: selectedDataset.boundingBox
                     }
                 ];
                 try {

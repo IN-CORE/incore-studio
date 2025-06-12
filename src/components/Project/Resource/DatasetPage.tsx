@@ -93,40 +93,6 @@ const DatasetPage = (): JSX.Element => {
         appDispatch(deleteProjectDatasets({ projectId, datasetIds: [dataset.id] }));
     };
 
-    // add to visualization function
-    const addDatasetVisualizationFunc = (
-        projectId: string,
-        visualizationId: string,
-        dataset: Dataset,
-        styleName?: string
-    ) => {
-        if (
-            dataset.format === "shapefile" ||
-            dataset.format === "table" ||
-            dataset.format === "geotif" ||
-            dataset.format === "raster"
-        ) {
-            const layers = [
-                {
-                    workspace: "incore",
-                    layerId: dataset.id,
-                    displayName: dataset.title,
-                    description: dataset.description,
-                    datasetCategoryType: dataset.type,
-                    layerType: inferLayerType(dataset.type),
-                    boundingBox: dataset.boundingBox,
-                    ...(styleName && { styleName }) // Only include styleName if it's provided
-                }
-            ];
-
-            // Dispatch the action with the new layers array
-            appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
-        } else {
-            // TODO replace with proper error handling dialog
-            alert("Only shapefiles and tables can be added to a visualization for now!");
-        }
-    };
-
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
@@ -144,6 +110,42 @@ const DatasetPage = (): JSX.Element => {
             setSnackbarOpen(true);
         }
     }, [success, error]);
+
+    // add to visualization function
+    const addDatasetVisualizationFunc = (
+        projectId: string,
+        visualizationId: string,
+        dataset: Dataset,
+        styleName?: string
+    ) => {
+        if (
+            dataset.format === "shapefile" ||
+            dataset.format === "geotif" ||
+            dataset.format === "raster" ||
+            // Rethinking this, as we might want to allow adding tables to visualizations
+            dataset.format === "table"
+        ) {
+            const layers = [
+                {
+                    workspace: "incore",
+                    layerId: dataset.id,
+                    displayName: dataset.title,
+                    description: dataset.description,
+                    datasetCategoryType: dataset.dataType,
+                    layerType: inferLayerType(dataset.dataType),
+                    boundingBox: dataset.boundingBox,
+                    ...(styleName && { styleName }) // Only include styleName if it's provided
+                }
+            ];
+
+            // Dispatch the action with the new layers array
+            appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
+        } else {
+            setSnackbarMessage("Only shapefiles and tables can be added to a visualization for now!");
+            setSnackbarColor("danger");
+            setSnackbarOpen(true);
+        }
+    };
 
     // Add dataset to project from service
     const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = useState(false);
