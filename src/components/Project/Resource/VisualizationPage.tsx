@@ -191,7 +191,7 @@ const VisualizationPage = (): JSX.Element => {
                                 )}
                                 {isTableView ? (
                                     <ResourceTable
-                                        columns={["name", "description", "date"]}
+                                        columns={["name", "description", "type", "date"]}
                                         data={projectVisualizations}
                                         projectId={project.id}
                                         deleteFunc={deleteVisualizationFunc}

@@ -782,3 +782,51 @@ export function csvToArray(str: string, delimiter = ",", includeHeader = true): 
 
     return includeHeader ? [headers, ...rowsArr] : rowsArr;
 }
+
+export function inferLayerType(datasetType: string): "point" | "line" | "polygon" | "raster" {
+    const rasterSchemas = new Set([
+        "ergo:probabilisticEarthquakeRaster",
+        "ncsa:probabilisticEarthquakeRaster",
+        "ergo:deterministicEarthquakeRaster",
+        "ncsa:deterministicEarthquakeRaster",
+        "incore:probabilisticTsunamiRaster",
+        "ncsa:probabilisticTsunamiRaster",
+        "incore:deterministicTsunamiRaster",
+        "ncsa:deterministicTsunamiRaster",
+        "incore:probabilisticHurricaneRaster",
+        "ncsa:probabilisticHurricaneRaster",
+        "incore:deterministicHurricaneRaster",
+        "ncsa:deterministicHurricaneRaster",
+        "incore:hurricaneGridSnapshot",
+        "ncsa:hurricaneGridSnapshot",
+        "incore:deterministicFloodRaster",
+        "ncsa:deterministicFloodRaster",
+        "incore:probabilisticFloodRaster",
+        "ncsa:probabilisticFloodRaster"
+    ]);
+
+    const polygonSchemas = new Set(["incore:tornadoWindfield", "ncsa:boundary"]);
+
+    const lineSchemas = new Set([
+        "ncsa:lifelineWaterInventory",
+        "ergo:buriedPipelineTopology",
+        "ergo:pipeline",
+        "ncsa:lifelineElecInventory",
+        "ncsa:lifelineWaterInventory",
+        "ncsa:powerLineTopo"
+    ]);
+
+    if (rasterSchemas.has(datasetType)) {
+        return "raster";
+    }
+
+    if (lineSchemas.has(datasetType)) {
+        return "line";
+    }
+
+    if (polygonSchemas.has(datasetType)) {
+        return "polygon";
+    }
+
+    return "point";
+}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
-import { getOidcUser, parseDateTime } from "@app/utils";
+import { getOidcUser, inferLayerType, parseDateTime } from "@app/utils";
 import config from "@app/app.config";
 
 import { GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
@@ -44,32 +44,9 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                                         }
                                     ],
                                     simple_layers: visualization.layers.map((layer) => {
-                                        // TODO better ways to handle this
-                                        const rasterSchemas = [
-                                            "ergo:probabilisticEarthquakeRaster",
-                                            "ergo:deterministicEarthquakeRaster",
-                                            "incore:probabilisticTsunamiRaster",
-                                            "incore:deterministicTsunamiRaster",
-                                            "incore:probabilisticHurricaneRaster",
-                                            "incore:deterministicHurricaneRaster",
-                                            "incore:hurricaneGridSnapshot",
-                                            "incore:deterministicFloodRaster",
-                                            "incore:probabilisticFloodRaster"
-                                        ];
-                                        // TODO better ways to handle this
-                                        let layerType: "raster" | "polygon" | "point" = "point";
-                                        if (rasterSchemas.includes(layer.datasetCategoryType as string)) {
-                                            layerType = "raster";
-                                        } else if (layer.datasetCategoryType === "incore:tornadoWindfield") {
-                                            layerType = "polygon";
-                                        } else {
-                                            // more logic to determine layer type can be added here
-                                            layerType = "point";
-                                        }
-
                                         return {
                                             layer_id: layer.layerId,
-                                            layer_type: layerType,
+                                            layer_type: inferLayerType(layer.datasetCategoryType as string),
                                             display_name: layer.displayName ? layer.displayName : layer.layerId,
                                             description: layer.description || "",
                                             timestamps: [],

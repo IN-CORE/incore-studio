@@ -26,6 +26,7 @@ import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromSe
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 import TableDataModal from "@app/components/TableDataModal";
 import { IncoreDialog } from "@app/components/IncoreDialog";
+import { inferLayerType } from "@app/utils";
 
 const DatasetPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -99,11 +100,21 @@ const DatasetPage = (): JSX.Element => {
         dataset: Dataset,
         styleName?: string
     ) => {
-        if (dataset.format === "shapefile" || dataset.format === "table") {
+        if (
+            dataset.format === "shapefile" ||
+            dataset.format === "table" ||
+            dataset.format === "geotif" ||
+            dataset.format === "raster"
+        ) {
             const layers = [
                 {
                     workspace: "incore",
                     layerId: dataset.id,
+                    displayName: dataset.title,
+                    description: dataset.description,
+                    datasetCategoryType: dataset.type,
+                    layerType: inferLayerType(dataset.type),
+                    boundingBox: dataset.boundingBox,
                     ...(styleName && { styleName }) // Only include styleName if it's provided
                 }
             ];
@@ -111,6 +122,7 @@ const DatasetPage = (): JSX.Element => {
             // Dispatch the action with the new layers array
             appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
         } else {
+            // TODO replace with proper error handling dialog
             alert("Only shapefiles and tables can be added to a visualization for now!");
         }
     };
@@ -229,7 +241,7 @@ const DatasetPage = (): JSX.Element => {
                                 />
                                 {isTableView ? (
                                     <ResourceTable
-                                        columns={["title", "description", "type", "date", "owner"]}
+                                        columns={["title", "description", "format", "type", "date", "owner"]}
                                         data={projectDatasets}
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
