@@ -261,6 +261,11 @@ interface IncoreLayer {
     layerId: string;
     styleName?: string;
     boundingBox?: [number, number, number, number];
+    layerType?: string;
+    datasetCategoryType?: string;
+    displayName?: string;
+    description?: string;
+    unit?: string;
 }
 
 interface Visualization {

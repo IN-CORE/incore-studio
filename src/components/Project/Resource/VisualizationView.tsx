@@ -43,18 +43,43 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                                             thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
                                         }
                                     ],
-                                    simple_layers: visualization.layers.map((layer) => ({
-                                        layer_id: layer.layerId,
-                                        layer_type: "polygon",
-                                        display_name: layer.layerId,
-                                        description: layer.layerId,
-                                        timestamps: [],
-                                        default_style_name: layer.styleName,
-                                        ogc_service_url: `${config.hostname}/geoserver`,
-                                        labels: {
-                                            dataset_category: "power"
+                                    simple_layers: visualization.layers.map((layer) => {
+                                        // TODO better ways to handle this
+                                        const rasterSchemas = [
+                                            "ergo:probabilisticEarthquakeRaster",
+                                            "ergo:deterministicEarthquakeRaster",
+                                            "incore:probabilisticTsunamiRaster",
+                                            "incore:deterministicTsunamiRaster",
+                                            "incore:probabilisticHurricaneRaster",
+                                            "incore:deterministicHurricaneRaster",
+                                            "incore:hurricaneGridSnapshot",
+                                            "incore:deterministicFloodRaster",
+                                            "incore:probabilisticFloodRaster"
+                                        ];
+                                        // TODO better ways to handle this
+                                        let layerType: "raster" | "polygon" | "point" = "point";
+                                        if (rasterSchemas.includes(layer.datasetCategoryType as string)) {
+                                            layerType = "raster";
+                                        } else if (layer.datasetCategoryType === "incore:tornadoWindfield") {
+                                            layerType = "polygon";
+                                        } else {
+                                            // more logic to determine layer type can be added here
+                                            layerType = "point";
                                         }
-                                    })),
+
+                                        return {
+                                            layer_id: layer.layerId,
+                                            layer_type: layerType,
+                                            display_name: layer.displayName ? layer.displayName : layer.layerId,
+                                            description: layer.description || "",
+                                            timestamps: [],
+                                            default_style_name: layer.styleName,
+                                            ogc_service_url: `${config.hostname}/geoserver`,
+                                            labels: {
+                                                dataset_category: layer.datasetCategoryType
+                                            }
+                                        };
+                                    }),
                                     temporal_layers: []
                                 } as GeoExplorerConfig
                             }
