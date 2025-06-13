@@ -36,6 +36,12 @@ module.exports = {
                 use: "ts-loader"
             },
             {
+                test: /\.js$/,
+                resolve: {
+                    fullySpecified: false
+                }
+            },
+            {
                 test: /\.eot(\?v=\d+.\d+.\d+)?$/,
                 type: "asset/inline"
             },
