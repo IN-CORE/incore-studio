@@ -162,8 +162,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const [parameters, setParameters] = React.useState<{ [key: string]: string | boolean | null }>(
         getInitialParametersState(sidePanelData, dependencyGraph, createExecution, createMode)
     );
-    const [selectedHazardType, setSelectedHazardType] = React.useState<string | null>(null);
-    const [selectedDFR3HazardType, setSelectedDFR3HazardType] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         setDatasetSelect(getInputDatasetInitialState());
@@ -172,8 +170,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
 
     const handleResetDatasets = () => {
         setDatasetSelect(getInputDatasetInitialState());
-        setSelectedDFR3HazardType(null);
-        setSelectedHazardType(null);
     };
 
     const handleResetParameters = () => {
@@ -580,8 +576,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                     inputDataset.label.includes("Hazard")
                                                                         ? "Hazard"
                                                                         : inputDataset.label.includes("DFR3")
-                                                                          ? "DFR3 Mapping"
-                                                                          : "Dataset"
+                                                                        ? "DFR3 Mapping"
+                                                                        : "Dataset"
                                                                 }`}
                                                                 name={inputDataset.execFileEntryId}
                                                                 required={
@@ -607,12 +603,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                             hazard_type_exec_id ?? "hazard_type",
                                                                             pjHtype ?? ""
                                                                         );
-                                                                        setSelectedHazardType(pjHtype ?? null);
-                                                                    } else if (inputDataset.label.includes("DFR3")) {
-                                                                        let pjDFR3Htype = projectDFR3Mapping.find(
-                                                                            (dfr3Mapping) => dfr3Mapping.id === value
-                                                                        )?.hazardType;
-                                                                        setSelectedDFR3HazardType(pjDFR3Htype ?? null);
                                                                     }
                                                                     updateDatasetSelect(
                                                                         inputDataset.execFileEntryId,
@@ -628,33 +618,31 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 {inputDataset.label.includes("Hazard")
                                                                     ? options?.projectHazardOptions
                                                                     : inputDataset.label.includes("DFR3")
-                                                                      ? options?.projectDFR3MappingOptions
-                                                                      : options?.projectDatasetOptions?.filter(
-                                                                            (option: JSX.Element) => {
-                                                                                if (
-                                                                                    dependencyGraph &&
-                                                                                    dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ] &&
-                                                                                    dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ].inputs[inputDataset.label] &&
-                                                                                    option.key
-                                                                                ) {
-                                                                                    return dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ].inputs[
-                                                                                        inputDataset.label
-                                                                                    ].includes(
-                                                                                        option.key.split("|")[1]
-                                                                                    ); // show datasets that are compatible with the input
-                                                                                }
-                                                                                return true; // if the property is not found, show all datasets
-                                                                            }
-                                                                        )}
+                                                                    ? options?.projectDFR3MappingOptions
+                                                                    : options?.projectDatasetOptions?.filter(
+                                                                          (option: JSX.Element) => {
+                                                                              if (
+                                                                                  dependencyGraph &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ] &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label] &&
+                                                                                  option.key
+                                                                              ) {
+                                                                                  return dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label].includes(
+                                                                                      option.key.split("|")[1]
+                                                                                  ); // show datasets that are compatible with the input
+                                                                              }
+                                                                              return true; // if the property is not found, show all datasets
+                                                                          }
+                                                                      )}
                                                             </Select>
                                                         </Box>
                                                         {createMode && (
@@ -664,12 +652,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         inputDataset.label.includes("Hazard")
                                                                             ? setOpenAddHazardFromServiceDialog(true)
                                                                             : inputDataset.label.includes("DFR3")
-                                                                              ? setOpenAddDFR3MappingFromServiceDialog(
-                                                                                    true
-                                                                                )
-                                                                              : setOpenAddDatasetFromServiceDialog(
-                                                                                    true
-                                                                                );
+                                                                            ? setOpenAddDFR3MappingFromServiceDialog(
+                                                                                  true
+                                                                              )
+                                                                            : setOpenAddDatasetFromServiceDialog(true);
                                                                     }}
                                                                 >
                                                                     <AddIcon />
@@ -860,17 +846,9 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                             )}
                             {createMode && (
                                 <Box mt={4}>
-                                    {/* Check if the hazardtypes match when the user clicks submit. if they dont then show some error message */}
-                                    {selectedHazardType !== selectedDFR3HazardType && (
-                                        <Typography color="danger" sx={{ mb: 2 }}>
-                                            The selected hazard type do not match for DFR3 Mapping and Hazard. Please
-                                            ensure they are the same.
-                                        </Typography>
-                                    )}
                                     <Button
                                         type="submit"
                                         variant="solid"
-                                        disabled={selectedHazardType !== selectedDFR3HazardType}
                                         sx={{ backgroundColor: "primary.main", color: "white" }}
                                     >
                                         Save this configuration
