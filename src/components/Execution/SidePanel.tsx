@@ -162,6 +162,9 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const [parameters, setParameters] = React.useState<{ [key: string]: string | boolean | null }>(
         getInitialParametersState(sidePanelData, dependencyGraph, createExecution, createMode)
     );
+    const [selectedHazardType, setSelectedHazardType] = React.useState<string | null>(null);
+    const [selectedDFR3HazardType, setSelectedDFR3HazardType] = React.useState<string | null>(null);
+    const [selectedDFR3MappingType, setSelectedDFR3MappingType] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         setDatasetSelect(getInputDatasetInitialState());
@@ -170,6 +173,9 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
 
     const handleResetDatasets = () => {
         setDatasetSelect(getInputDatasetInitialState());
+        setSelectedDFR3HazardType(null);
+        setSelectedHazardType(null);
+        setSelectedDFR3MappingType(null);
     };
 
     const handleResetParameters = () => {
@@ -603,6 +609,18 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                             hazard_type_exec_id ?? "hazard_type",
                                                                             pjHtype ?? ""
                                                                         );
+                                                                        setSelectedHazardType(pjHtype ?? null);
+                                                                    } else if (inputDataset.label.includes("DFR3")) {
+                                                                        let pjDFR3Htype = projectDFR3Mapping.find(
+                                                                            (dfr3Mapping) => dfr3Mapping.id === value
+                                                                        );
+
+                                                                        setSelectedDFR3HazardType(
+                                                                            pjDFR3Htype?.hazardType ?? null
+                                                                        );
+                                                                        setSelectedDFR3MappingType(
+                                                                            pjDFR3Htype?.mappingType ?? null
+                                                                        );
                                                                     }
                                                                     updateDatasetSelect(
                                                                         inputDataset.execFileEntryId,
@@ -846,9 +864,23 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                             )}
                             {createMode && (
                                 <Box mt={4}>
+                                    {/* Check if the hazardtypes match when the user clicks submit. if they dont then show some error message */}
+                                    {selectedDFR3MappingType === "fragility" ? (
+                                        selectedHazardType !== selectedDFR3HazardType ? (
+                                            <Typography color="danger" sx={{ mb: 2 }}>
+                                                The selected hazard type do not match for DFR3 Mapping and Hazard.
+                                                Please ensure they are the same.
+                                            </Typography>
+                                        ) : null
+                                    ) : null}
                                     <Button
                                         type="submit"
                                         variant="solid"
+                                        disabled={
+                                            selectedDFR3MappingType === "fragility"
+                                                ? selectedHazardType !== selectedDFR3HazardType
+                                                : false
+                                        }
                                         sx={{ backgroundColor: "primary.main", color: "white" }}
                                     >
                                         Save this configuration
