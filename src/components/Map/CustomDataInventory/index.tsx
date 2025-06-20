@@ -1,8 +1,8 @@
 import { FilterAltOutlined, Search } from "@mui/icons-material";
 import { Box, IconButton, Tab, Tabs } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import { addLayer, useDispatch, useImplementation } from "@ncsa/geo-explorer";
+import { useImplementation } from "@ncsa/geo-explorer";
 import { DatabaseHeavy } from "@app/icons/DatabaseHeavy";
 import { DatasetLayerList } from "@app/components/Map/CustomDataInventory/DatasetLayerList";
 import { HazardLayerList } from "@app/components/Map/CustomDataInventory/HazardLayerList";
@@ -15,19 +15,6 @@ export const CustomDataInventory = ({ visualization }: CustomDataInventoryProps)
     const { SidebarSection } = useImplementation();
 
     const [tabIndex, setTabIndex] = useState(0);
-
-    const geoExplorerDispatch = useDispatch();
-
-    useEffect(() => {
-        if (Array.isArray(visualization?.layers)) {
-            visualization.layers.forEach((layer) => {
-                if (layer?.layerId) {
-                    console.log("Adding layer to GeoExplorer:", layer.layerId);
-                    geoExplorerDispatch(addLayer({ layer_id: layer.layerId }));
-                }
-            });
-        }
-    }, [visualization, geoExplorerDispatch]);
 
     return (
         <SidebarSection

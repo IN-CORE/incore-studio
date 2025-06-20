@@ -4,10 +4,10 @@ import { IconButton } from "@mui/material";
 import { AddCircleOutline, RemoveCircle, DescriptionOutlined } from "@mui/icons-material";
 
 import { useSelector, useDispatch, addLayer, removeLayer, selectDataset, RootState } from "@ncsa/geo-explorer";
-// import { inferLayerType } from "@app/utils";
-// import { addLayerToVisualization } from "@app/reducer/projectSlice";
-// import { useAppDispatch } from "@app/store/hooks";
-// import { useParams } from "react-router-dom";
+import { getHeaders, inferLayerType } from "@app/utils";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import config from "@app/app.config";
 
 export type DatasetLayerItemProps = {
     dataset: Dataset;
@@ -15,41 +15,61 @@ export type DatasetLayerItemProps = {
 };
 
 export const LayerItem = ({ dataset, visualization }: DatasetLayerItemProps) => {
-    // const { id } = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string }>();
 
     const geoExplorerDispatch = useDispatch();
-    // const incoreDispatch = useAppDispatch();
     const mapLayers = useSelector((state: RootState) => state.explore.mapLayers);
 
     const isSelected = mapLayers.some((layer) => layer.data.layer_id === dataset.id);
 
     const handleSelect = () => geoExplorerDispatch(selectDataset({ layer_id: dataset.id }));
 
-    const handleAdd = () => {
-        // const layers = [
-        //     {
-        //         workspace: "incore",
-        //         layerId: dataset.id,
-        //         displayName: dataset.title,
-        //         description: dataset.description,
-        //         datasetCategoryType: dataset.dataType,
-        //         layerType: inferLayerType(dataset.dataType),
-        //         boundingBox: dataset.boundingBox
-        //     }
-        // ];
-        //
-        // // Dispatch the action with the new layers array
-        // if (id) {
-        //     incoreDispatch(addLayerToVisualization({ projectId: id, visualizationId, layers }));
-        // }
-        // else{
-        //     console.error("Project ID is not defined. Cannot add layer to visualization.");
-        // }
+    const handleAdd = async () => {
+        const layers = [
+            {
+                workspace: "incore",
+                layerId: dataset.id,
+                displayName: dataset.title,
+                description: dataset.description,
+                datasetCategoryType: dataset.dataType,
+                layerType: inferLayerType(dataset.dataType),
+                boundingBox: dataset.boundingBox
+            }
+        ];
+
+        if (!id) {
+            console.error("Project ID is not defined. Cannot add layer to visualization.");
+            return;
+        }
+
+        try {
+            await axios.post(`${config.projectApi}/${id}/visualizations/${visualization.id}/layers`, layers, {
+                headers: getHeaders()
+            });
+            console.log("Layer added to visualization successfully.");
+        } catch (error) {
+            console.error("Failed to add layer to visualization:", error);
+        }
         geoExplorerDispatch(addLayer({ layer_id: dataset.id }));
-        console.log(visualization);
     };
 
-    const handleRemove = () => geoExplorerDispatch(removeLayer({ layer_id: dataset.id }));
+    const handleRemove = async () => {
+        if (!id) {
+            console.error("Project ID is not defined. Cannot delete layer from visualization.");
+            return;
+        }
+
+        try {
+            await axios.delete(`${config.projectApi}/${id}/visualizations/${visualization.id}/layers`, {
+                headers: getHeaders(),
+                data: [dataset.id]
+            });
+            console.log("Layer deleted from visualization successfully.");
+        } catch (error) {
+            console.error("Failed to delete layer from visualization:", error);
+        }
+    };
+    geoExplorerDispatch(removeLayer({ layer_id: dataset.id }));
 
     return (
         <div

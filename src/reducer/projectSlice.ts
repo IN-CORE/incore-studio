@@ -490,6 +490,28 @@ export const addLayerToVisualization = createAsyncThunk(
     }
 );
 
+export const deleteLayerToVisualization = createAsyncThunk(
+    "projects/deleteLayerToVisualization",
+    async ({
+        projectId,
+        visualizationId,
+        layerIds
+    }: {
+        projectId: string;
+        visualizationId: string;
+        layerIds: String[];
+    }) => {
+        const response = await axios.delete(
+            `${PROJECT_API_URL}/${projectId}/visualizations/${visualizationId}/layers`,
+            {
+                headers: getHeaders(),
+                data: layerIds
+            }
+        );
+        return response.data;
+    }
+);
+
 export const finalizeWorkflow = createAsyncThunk(
     "projects/finalizeWorkflow",
     async ({ projectId, workflowId }: { projectId: string; workflowId: string }) => {
@@ -845,7 +867,24 @@ const projectSlice = createSlice({
             })
             .addCase(addLayerToVisualization.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || "Failed to create the project visualizations";
+                state.error = action.error.message || "Failed to add layers to the project visualizations";
+            })
+            .addCase(deleteLayerToVisualization.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = null;
+            })
+            .addCase(deleteLayerToVisualization.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectVisualizations = action.payload?.visualizations;
+                if (state.project) {
+                    state.project.visualizations = action.payload?.visualizations;
+                }
+                state.success = "Successfully delete layers from the project visualizations";
+            })
+            .addCase(deleteLayerToVisualization.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to delete layers from the project visualizations.";
             })
             // Handle DELETE_PROJECT
             .addCase(deleteProject.pending, (state) => {
