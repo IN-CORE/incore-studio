@@ -11,10 +11,10 @@ import { useSelector, useDispatch, addLayer, removeLayer, selectDataset, RootSta
 
 export type DatasetLayerItemProps = {
     dataset: Dataset;
-    visualizationId: string;
+    visualization: Visualization;
 };
 
-export const LayerItem = ({ dataset, visualizationId }: DatasetLayerItemProps) => {
+export const LayerItem = ({ dataset, visualization }: DatasetLayerItemProps) => {
     // const { id } = useParams<{ id: string }>();
 
     const geoExplorerDispatch = useDispatch();
@@ -45,8 +45,15 @@ export const LayerItem = ({ dataset, visualizationId }: DatasetLayerItemProps) =
         // else{
         //     console.error("Project ID is not defined. Cannot add layer to visualization.");
         // }
-        geoExplorerDispatch(addLayer({ layer_id: dataset.id }));
-        console.log(visualizationId);
+        if (Array.isArray(visualization?.layers)) {
+            visualization.layers.forEach((layer) => {
+                if (layer?.layerId) {
+                    console.log("Adding layer to GeoExplorer:", layer.layerId);
+                    geoExplorerDispatch(addLayer({ layer_id: layer.layerId }));
+                }
+            });
+        }
+        // geoExplorerDispatch(addLayer({ layer_id: dataset.id }));
     };
 
     const handleRemove = () => geoExplorerDispatch(removeLayer({ layer_id: dataset.id }));

@@ -1,20 +1,33 @@
 import { FilterAltOutlined, Search } from "@mui/icons-material";
 import { Box, IconButton, Tab, Tabs } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { useImplementation } from "@ncsa/geo-explorer";
+import { addLayer, useDispatch, useImplementation } from "@ncsa/geo-explorer";
 import { DatabaseHeavy } from "@app/icons/DatabaseHeavy";
 import { DatasetLayerList } from "@app/components/Map/CustomDataInventory/DatasetLayerList";
 import { HazardLayerList } from "@app/components/Map/CustomDataInventory/HazardLayerList";
 
 type CustomDataInventoryProps = {
-    visualizationId: string;
+    visualization: Visualization;
 };
 
-export const CustomDataInventory = ({ visualizationId }: CustomDataInventoryProps) => {
+export const CustomDataInventory = ({ visualization }: CustomDataInventoryProps) => {
     const { SidebarSection } = useImplementation();
 
     const [tabIndex, setTabIndex] = useState(0);
+
+    const geoExplorerDispatch = useDispatch();
+
+    useEffect(() => {
+        if (Array.isArray(visualization?.layers)) {
+            visualization.layers.forEach((layer) => {
+                if (layer?.layerId) {
+                    console.log("Adding layer to GeoExplorer:", layer.layerId);
+                    geoExplorerDispatch(addLayer({ layer_id: layer.layerId }));
+                }
+            });
+        }
+    }, [visualization, geoExplorerDispatch]);
 
     return (
         <SidebarSection
@@ -44,8 +57,8 @@ export const CustomDataInventory = ({ visualizationId }: CustomDataInventoryProp
                         <Tab label="Hazards" className="flex-1 min-w-0 capitalize" />
                     </Tabs>
                 </Box>
-                {tabIndex === 0 && <DatasetLayerList visualizationId={visualizationId} />}
-                {tabIndex === 1 && <HazardLayerList visualizationId={visualizationId} />}
+                {tabIndex === 0 && <DatasetLayerList visualization={visualization} />}
+                {tabIndex === 1 && <HazardLayerList visualization={visualization} />}
             </Box>
         </SidebarSection>
     );

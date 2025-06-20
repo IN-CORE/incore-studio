@@ -12,10 +12,10 @@ import { LayerItem } from "@app/components/Map/CustomDataInventory/LayerItem";
 import config from "@app/app.config";
 
 type HazardLayerListProps = {
-    visualizationId: string;
+    visualization: Visualization;
 };
 
-export const HazardLayerList = ({ visualizationId }: HazardLayerListProps) => {
+export const HazardLayerList = ({ visualization }: HazardLayerListProps) => {
     const hazards = useSelector((state: RootState) => state.project.projectHazards);
 
     const groupByOptions = ["hazard_type", "feature_type"];
@@ -96,7 +96,7 @@ export const HazardLayerList = ({ visualizationId }: HazardLayerListProps) => {
 
                                             return dataset ? (
                                                 <Box key={dataset.id} className="flex justify-center px-[32px]">
-                                                    <LayerItem dataset={dataset} visualizationId={visualizationId} />
+                                                    <LayerItem dataset={dataset} visualization={visualization} />
                                                 </Box>
                                             ) : null;
                                         })}
