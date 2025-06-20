@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useImplementation } from "@ncsa/geo-explorer";
 import { DatabaseHeavy } from "@app/icons/DatabaseHeavy";
 import { DatasetLayerList } from "@app/components/Map/CustomDataInventory/DatasetLayerList";
+import { HazardLayerList } from "@app/components/Map/CustomDataInventory/HazardLayerList";
 
 export const CustomDataInventory = () => {
     const { SidebarSection } = useImplementation();
@@ -40,7 +41,7 @@ export const CustomDataInventory = () => {
                     </Tabs>
                 </Box>
                 {tabIndex === 0 && <DatasetLayerList />}
-                {tabIndex === 1 && <DatasetLayerList />}
+                {tabIndex === 1 && <HazardLayerList />}
             </Box>
         </SidebarSection>
     );

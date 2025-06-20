@@ -3,33 +3,29 @@ import { Box, InputAdornment, MenuItem, Select } from "@mui/material";
 import React, { useMemo, useState } from "react";
 
 import { layerTypeIcons } from "@app/utils/icons";
-import { DatasetLayerItem } from "@app/components/Map/CustomDataInventory/DatasetLayerItem";
+import { HazardLayerItem } from "@app/components/Map/CustomDataInventory/HazardLayerItem";
 import { RootState } from "@app/store";
 import { inferLayerType } from "@app/utils";
 import { useSelector } from "react-redux";
 
-export const DatasetLayerList = () => {
-    const datasets = useSelector((state: RootState) => state.project.projectDatasets).filter(
-        (dataset) =>
-            dataset.format === "shapefile" ||
-            (dataset.sourceDataset !== undefined && dataset.sourceDataset.trim() !== "")
-    );
+export const HazardLayerList = () => {
+    const hazards = useSelector((state: RootState) => state.project.projectHazards);
 
-    const groupByOptions = ["data_type", "feature_type"];
-    const [groupBy, setGroupBy] = useState("data_type");
+    const groupByOptions = ["hazard_type", "feature_type"];
+    const [groupBy, setGroupBy] = useState("hazard_type");
 
-    const datasetGroups: Record<string, Dataset[]> = useMemo(() => {
-        const groups: Record<string, Dataset[]> = {};
-        for (const dataset of datasets) {
-            const key = groupBy === "feature_type" ? inferLayerType(dataset.dataType) : dataset.dataType;
+    const hazardGroups: Record<string, Hazard[]> = useMemo(() => {
+        const groups: Record<string, Hazard[]> = {};
+        for (const hazard of hazards) {
+            const key = groupBy === "feature_type" ? inferLayerType(hazard.type) : hazard.type;
 
             if (!groups[key]) {
                 groups[key] = [];
             }
-            groups[key].push(dataset);
+            groups[key].push(hazard);
         }
         return groups;
-    }, [datasets, groupBy]);
+    }, [hazards, groupBy]);
 
     return (
         <>
@@ -55,7 +51,7 @@ export const DatasetLayerList = () => {
                 </Select>
             </Box>
             <Box className="flex-auto overflow-scroll no-scrollbar">
-                {Object.entries(datasetGroups).map(([groupKey, datasets]) => (
+                {Object.entries(hazardGroups).map(([groupKey, hazards]) => (
                     <Box className="my-[20px]" key={groupKey}>
                         <Box className="flex flex-row items-center gap-[6px] text-[#13294B99] text-[11px] px-[32px] capitalize font-bold">
                             {groupBy === "feature_type" &&
@@ -65,10 +61,10 @@ export const DatasetLayerList = () => {
                             {groupKey}
                         </Box>
                         <Box className="mt-[5px]">
-                            {datasets.length > 0 ? (
-                                datasets.map((dataset) => (
-                                    <Box key={dataset.id} className="flex justify-center px-[32px]">
-                                        <DatasetLayerItem dataset={dataset} />
+                            {hazards.length > 0 ? (
+                                hazards.map((hazard) => (
+                                    <Box key={hazard.id} className="flex justify-center px-[32px]">
+                                        <HazardLayerItem hazard={hazard} />
                                     </Box>
                                 ))
                             ) : (

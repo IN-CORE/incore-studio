@@ -802,10 +802,14 @@ export function inferLayerType(datasetType: string): "point" | "line" | "polygon
         "incore:deterministicFloodRaster",
         "ncsa:deterministicFloodRaster",
         "incore:probabilisticFloodRaster",
-        "ncsa:probabilisticFloodRaster"
+        "ncsa:probabilisticFloodRaster",
+        "earthquake",
+        "tsunami",
+        "hurricane",
+        "flood"
     ]);
 
-    const polygonSchemas = new Set(["incore:tornadoWindfield", "ncsa:boundary"]);
+    const polygonSchemas = new Set(["incore:tornadoWindfield", "ncsa:boundary", "tornado"]);
 
     const lineSchemas = new Set([
         "ncsa:lifelineWaterInventory",
