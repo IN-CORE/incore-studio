@@ -45,15 +45,8 @@ export const LayerItem = ({ dataset, visualization }: DatasetLayerItemProps) => 
         // else{
         //     console.error("Project ID is not defined. Cannot add layer to visualization.");
         // }
-        if (Array.isArray(visualization?.layers)) {
-            visualization.layers.forEach((layer) => {
-                if (layer?.layerId) {
-                    console.log("Adding layer to GeoExplorer:", layer.layerId);
-                    geoExplorerDispatch(addLayer({ layer_id: layer.layerId }));
-                }
-            });
-        }
-        // geoExplorerDispatch(addLayer({ layer_id: dataset.id }));
+        geoExplorerDispatch(addLayer({ layer_id: dataset.id }));
+        console.log(visualization);
     };
 
     const handleRemove = () => geoExplorerDispatch(removeLayer({ layer_id: dataset.id }));

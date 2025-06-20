@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
 import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset, parseDateTime } from "@app/utils";
 
-import { GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
+import { addLayer, GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
 import "@ncsa/geo-explorer/index.css";
 
 import { CustomDataInventory } from "@app/components/Map/CustomDataInventory";
@@ -11,7 +11,6 @@ import { RootState } from "@app/store";
 import axios from "axios";
 import config from "@app/app.config";
 import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
-// import { GeoExplorerLoader } from "@app/components/Map/GeoExplorerLoader";
 
 interface VisualizationViewProps {
     visualization: Visualization;
@@ -101,8 +100,17 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                             components={{
                                 DataInventory: CustomDataInventoryWithProps
                             }}
+                            onReady={({ store }) => {
+                                if (Array.isArray(visualization?.layers)) {
+                                    visualization.layers.forEach((layer) => {
+                                        if (layer?.layerId) {
+                                            store.dispatch(addLayer({ layer_id: layer.layerId }));
+                                        }
+                                    });
+                                }
+                            }}
                         >
-                            <Box sx={{ height: 800, position: "relative", overflow: "hidden", my: "20px" }}>
+                            <Box sx={{ height: 850, position: "relative", overflow: "hidden" }}>
                                 <GeoExplorer />
                             </Box>
                         </GeoExplorerProvider>
