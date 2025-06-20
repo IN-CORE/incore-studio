@@ -6,6 +6,8 @@ import config from "@app/app.config";
 import { GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
 import "@ncsa/geo-explorer/index.css";
 
+import {CustomDataInventory} from "@app/components/Map/CustomDataInventory";
+
 interface VisualizationViewProps {
     visualization: Visualization;
     open: boolean;
@@ -62,6 +64,9 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                             }
                             accessToken={getOidcUser()?.access_token}
                             isProtectedResource={(url) => /geoserver/.test(url)}
+                            components={{
+                                DataInventory: CustomDataInventory,
+                            }}
                         >
                             <Box sx={{ height: 800, position: "relative", overflow: "hidden", my: "20px" }}>
                                 <GeoExplorer />

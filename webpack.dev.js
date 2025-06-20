@@ -11,7 +11,6 @@ module.exports = {
         extensions: [".ts", ".tsx", ".js", ".jsx"],
         alias: {
             "@app": path.resolve(__dirname, "src/")
-            // "@mui/material": "@mui/joy",
         }
     },
     devtool: "eval-source-map",
