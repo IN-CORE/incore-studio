@@ -3,6 +3,7 @@ import config from "@app/app.config";
 
 import axios from "axios";
 import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
+import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
 
 export function getOidcUser() {
     const oidcStorage = sessionStorage.getItem(
@@ -833,4 +834,19 @@ export function inferLayerType(datasetType: string): "point" | "line" | "polygon
     }
 
     return "point";
+}
+
+export function mapIncoreDatasetToGeoExplorerDataset(dataset: Dataset, ogcServiceUrl: string): GeoExplorerDataset {
+    return {
+        layer_id: dataset.id,
+        layer_type: inferLayerType(dataset.dataType), // returns "point" | "line" | "polygon" | "raster"
+        display_name: dataset.title,
+        description: dataset.description,
+        default_style_name: undefined, // populate if available
+        ogc_service_url: ogcServiceUrl,
+        timestamps: [], // if available, populate from metadata
+        labels: {
+            dataset_category: dataset.dataType
+        }
+    };
 }

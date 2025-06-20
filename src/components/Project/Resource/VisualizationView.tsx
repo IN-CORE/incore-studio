@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
-import { getOidcUser, parseDateTime } from "@app/utils";
+import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset, parseDateTime } from "@app/utils";
 
 import { GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
 import "@ncsa/geo-explorer/index.css";
 
 import { CustomDataInventory } from "@app/components/Map/CustomDataInventory";
+import { useSelector } from "react-redux";
+import { RootState } from "@app/store";
+import axios from "axios";
+import config from "@app/app.config";
+import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
 
 interface VisualizationViewProps {
     visualization: Visualization;
@@ -14,6 +19,44 @@ interface VisualizationViewProps {
 }
 
 export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualization, open, onClose }) => {
+    const [geoExplorerLayers, setGeoExplorerLayers] = useState<GeoExplorerDataset[]>([]);
+
+    const datasets = useSelector((state: RootState) => state.project.projectDatasets);
+    const hazards = useSelector((state: RootState) => state.project.projectHazards);
+
+    useEffect(() => {
+        const fetchAndBuildLayers = async () => {
+            const datasetIdsFromHazards = hazards
+                .flatMap((hazard) => hazard.hazardDatasets || [])
+                .map((ds) => ds.datasetId);
+
+            const datasetIdsFromProject = datasets
+                .filter((ds) => ds.format === "shapefile" || (ds.sourceDataset && ds.sourceDataset.trim() !== ""))
+                .map((ds) => ds.id);
+
+            const allDatasetIds = Array.from(new Set([...datasetIdsFromProject, ...datasetIdsFromHazards]));
+
+            const datasetResponses = await Promise.all(
+                allDatasetIds.map((id) =>
+                    axios
+                        .get(`${config.dataService}/${id}`, { headers: getHeaders() })
+                        .then((res) => res.data)
+                        .catch(() => null)
+                )
+            );
+
+            const validDatasets = datasetResponses.filter(Boolean);
+
+            const mapped = validDatasets.map((ds) =>
+                mapIncoreDatasetToGeoExplorerDataset(ds, `${config.hostname}/geoserver`)
+            );
+
+            setGeoExplorerLayers(mapped);
+        };
+
+        fetchAndBuildLayers();
+    }, [hazards, datasets]);
+
     return (
         <Modal open={open} onClose={onClose}>
             <ModalDialog layout="fullscreen" size="lg" sx={{ backgroundColor: "#fff" }}>
@@ -44,7 +87,7 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                                             thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
                                         }
                                     ],
-                                    simple_layers: [],
+                                    simple_layers: geoExplorerLayers, // set in the custom layer list component
                                     temporal_layers: []
                                 } as GeoExplorerConfig
                             }
