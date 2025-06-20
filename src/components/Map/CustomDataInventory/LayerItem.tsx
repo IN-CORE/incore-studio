@@ -68,8 +68,8 @@ export const LayerItem = ({ dataset, visualization }: DatasetLayerItemProps) => 
         } catch (error) {
             console.error("Failed to delete layer from visualization:", error);
         }
+        geoExplorerDispatch(removeLayer({ layer_id: dataset.id }));
     };
-    geoExplorerDispatch(removeLayer({ layer_id: dataset.id }));
 
     return (
         <div
