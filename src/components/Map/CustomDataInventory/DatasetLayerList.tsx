@@ -1,35 +1,39 @@
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, InputAdornment, MenuItem, Select } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useMemo, useState } from "react";
 
 import { layerTypeIcons } from "@app/utils/icons";
-import { RootState } from "@app/store";
 import { DatasetLayerItem } from "@app/components/Map/CustomDataInventory/DatasetLayerItem";
+import { RootState } from "@app/store";
+import { inferLayerType } from "@app/utils";
+import { useSelector } from "react-redux";
 
 export const DatasetLayerList = () => {
-    const datasets = useSelector((state: RootState) => state.project.projectDatasets);
+    const datasets = useSelector((state: RootState) => state.project.projectDatasets).filter(
+        (dataset) =>
+            dataset.format === "shapefile" ||
+            (dataset.sourceDataset !== undefined && dataset.sourceDataset.trim() !== "")
+    );
+    // const datasets = incoreStudioStore
+    //     .getState()
+    //     .project.projectDatasets.filter(
+    //         (dataset) =>
+    //             dataset.format === "shapefile" ||
+    //             (dataset.sourceDataset !== undefined && dataset.sourceDataset.trim() !== "")
+    //     );
 
-    const groupByOptions = useMemo(() => {
-        return Array.from(new Set(datasets.flatMap((dataset: Dataset) => Object.keys(dataset.dataType))));
-    }, [datasets]);
-
-    const [groupBy, setGroupBy] = useState("");
-    useEffect(() => {
-        if (!groupBy && groupByOptions[0]) {
-            setGroupBy(groupByOptions[0]);
-        }
-    }, [groupByOptions]);
+    const groupByOptions = ["data_type", "feature_type"];
+    const [groupBy, setGroupBy] = useState("data_type");
 
     const datasetGroups: Record<string, Dataset[]> = useMemo(() => {
         const groups: Record<string, Dataset[]> = {};
         for (const dataset of datasets) {
-            // @ts-ignore
-            const groupKey = dataset.dataType[groupBy] ?? "";
-            if (!groups[groupKey]) {
-                groups[groupKey] = [];
+            const key = groupBy === "feature_type" ? inferLayerType(dataset.dataType) : dataset.dataType;
+
+            if (!groups[key]) {
+                groups[key] = [];
             }
-            groups[groupKey].push(dataset);
+            groups[key].push(dataset);
         }
         return groups;
     }, [datasets, groupBy]);
