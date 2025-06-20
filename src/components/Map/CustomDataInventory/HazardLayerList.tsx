@@ -11,7 +11,11 @@ import { Typography } from "@mui/joy";
 import { LayerItem } from "@app/components/Map/CustomDataInventory/LayerItem";
 import config from "@app/app.config";
 
-export const HazardLayerList = () => {
+type HazardLayerListProps = {
+    visualizationId: string;
+};
+
+export const HazardLayerList = ({ visualizationId }: HazardLayerListProps) => {
     const hazards = useSelector((state: RootState) => state.project.projectHazards);
 
     const groupByOptions = ["hazard_type", "feature_type"];
@@ -92,7 +96,7 @@ export const HazardLayerList = () => {
 
                                             return dataset ? (
                                                 <Box key={dataset.id} className="flex justify-center px-[32px]">
-                                                    <LayerItem dataset={dataset} />
+                                                    <LayerItem dataset={dataset} visualizationId={visualizationId} />
                                                 </Box>
                                             ) : null;
                                         })}

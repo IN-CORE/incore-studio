@@ -11,6 +11,7 @@ import { RootState } from "@app/store";
 import axios from "axios";
 import config from "@app/app.config";
 import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
+import { GeoExplorerLoader } from "@app/components/Map/GeoExplorerLoader";
 
 interface VisualizationViewProps {
     visualization: Visualization;
@@ -23,6 +24,10 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
 
     const datasets = useSelector((state: RootState) => state.project.projectDatasets);
     const hazards = useSelector((state: RootState) => state.project.projectHazards);
+
+    const CustomDataInventoryWithProps = () => {
+        return <CustomDataInventory visualizationId={visualization.id} />;
+    };
 
     useEffect(() => {
         const fetchAndBuildLayers = async () => {
@@ -94,10 +99,11 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                             accessToken={getOidcUser()?.access_token}
                             isProtectedResource={(url) => /geoserver/.test(url)}
                             components={{
-                                DataInventory: CustomDataInventory
+                                DataInventory: CustomDataInventoryWithProps
                             }}
                         >
                             <Box sx={{ height: 800, position: "relative", overflow: "hidden", my: "20px" }}>
+                                <GeoExplorerLoader visualization={visualization} />
                                 <GeoExplorer />
                             </Box>
                         </GeoExplorerProvider>

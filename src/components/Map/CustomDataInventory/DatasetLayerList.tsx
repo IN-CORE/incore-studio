@@ -8,7 +8,11 @@ import { RootState } from "@app/store";
 import { inferLayerType } from "@app/utils";
 import { useSelector } from "react-redux";
 
-export const DatasetLayerList = () => {
+type DatasetLayerListProps = {
+    visualizationId: string;
+};
+
+export const DatasetLayerList = ({ visualizationId }: DatasetLayerListProps) => {
     const datasets = useSelector((state: RootState) => state.project.projectDatasets).filter(
         (dataset) =>
             dataset.format === "shapefile" ||
@@ -68,7 +72,7 @@ export const DatasetLayerList = () => {
                             {datasets.length > 0 ? (
                                 datasets.map((dataset) => (
                                     <Box key={dataset.id} className="flex justify-center px-[32px]">
-                                        <LayerItem dataset={dataset} />
+                                        <LayerItem dataset={dataset} visualizationId={visualizationId} />
                                     </Box>
                                 ))
                             ) : (

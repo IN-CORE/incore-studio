@@ -7,7 +7,11 @@ import { DatabaseHeavy } from "@app/icons/DatabaseHeavy";
 import { DatasetLayerList } from "@app/components/Map/CustomDataInventory/DatasetLayerList";
 import { HazardLayerList } from "@app/components/Map/CustomDataInventory/HazardLayerList";
 
-export const CustomDataInventory = () => {
+type CustomDataInventoryProps = {
+    visualizationId: string;
+};
+
+export const CustomDataInventory = ({ visualizationId }: CustomDataInventoryProps) => {
     const { SidebarSection } = useImplementation();
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -40,8 +44,8 @@ export const CustomDataInventory = () => {
                         <Tab label="Hazards" className="flex-1 min-w-0 capitalize" />
                     </Tabs>
                 </Box>
-                {tabIndex === 0 && <DatasetLayerList />}
-                {tabIndex === 1 && <HazardLayerList />}
+                {tabIndex === 0 && <DatasetLayerList visualizationId={visualizationId} />}
+                {tabIndex === 1 && <HazardLayerList visualizationId={visualizationId} />}
             </Box>
         </SidebarSection>
     );
