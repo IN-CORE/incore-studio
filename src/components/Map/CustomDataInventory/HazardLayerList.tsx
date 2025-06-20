@@ -1,12 +1,15 @@
+import axios from "axios";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, InputAdornment, MenuItem, Select } from "@mui/material";
 import React, { useMemo, useState } from "react";
 
 import { layerTypeIcons } from "@app/utils/icons";
-import { HazardLayerItem } from "@app/components/Map/CustomDataInventory/HazardLayerItem";
 import { RootState } from "@app/store";
-import { inferLayerType } from "@app/utils";
+import { inferLayerType, getHeaders } from "@app/utils";
 import { useSelector } from "react-redux";
+import { Typography } from "@mui/joy";
+import { LayerItem } from "@app/components/Map/CustomDataInventory/LayerItem";
+import config from "@app/app.config";
 
 export const HazardLayerList = () => {
     const hazards = useSelector((state: RootState) => state.project.projectHazards);
@@ -63,9 +66,37 @@ export const HazardLayerList = () => {
                         <Box className="mt-[5px]">
                             {hazards.length > 0 ? (
                                 hazards.map((hazard) => (
-                                    <Box key={hazard.id} className="flex justify-center px-[32px]">
-                                        <HazardLayerItem hazard={hazard} />
-                                    </Box>
+                                    <>
+                                        <Typography ml={4} fontSize={13} fontWeight="bold">
+                                            {hazard.name}
+                                        </Typography>
+                                        {hazard.hazardDatasets?.map((hazardDataset) => {
+                                            const [dataset, setDataset] = React.useState<any>(null);
+
+                                            React.useEffect(() => {
+                                                const fetchDataset = async () => {
+                                                    try {
+                                                        const response = await axios.get(
+                                                            `${config.dataService}/${hazardDataset.datasetId}`,
+                                                            {
+                                                                headers: getHeaders()
+                                                            }
+                                                        );
+                                                        setDataset(response.data);
+                                                    } catch (err) {
+                                                        console.error("Failed to fetch dataset:", err);
+                                                    }
+                                                };
+                                                fetchDataset();
+                                            }, [hazardDataset.datasetId]);
+
+                                            return dataset ? (
+                                                <Box key={dataset.id} className="flex justify-center px-[32px]">
+                                                    <LayerItem dataset={dataset} />
+                                                </Box>
+                                            ) : null;
+                                        })}
+                                    </>
                                 ))
                             ) : (
                                 <Box className="text-gray-400 text-sm italic px-[32px]">

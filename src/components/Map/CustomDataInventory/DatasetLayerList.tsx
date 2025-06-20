@@ -3,7 +3,7 @@ import { Box, InputAdornment, MenuItem, Select } from "@mui/material";
 import React, { useMemo, useState } from "react";
 
 import { layerTypeIcons } from "@app/utils/icons";
-import { DatasetLayerItem } from "@app/components/Map/CustomDataInventory/DatasetLayerItem";
+import { LayerItem } from "@app/components/Map/CustomDataInventory/LayerItem";
 import { RootState } from "@app/store";
 import { inferLayerType } from "@app/utils";
 import { useSelector } from "react-redux";
@@ -68,7 +68,7 @@ export const DatasetLayerList = () => {
                             {datasets.length > 0 ? (
                                 datasets.map((dataset) => (
                                     <Box key={dataset.id} className="flex justify-center px-[32px]">
-                                        <DatasetLayerItem dataset={dataset} />
+                                        <LayerItem dataset={dataset} />
                                     </Box>
                                 ))
                             ) : (

@@ -1,7 +1,6 @@
 import React from "react";
 import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
-import { getOidcUser, inferLayerType, parseDateTime } from "@app/utils";
-import config from "@app/app.config";
+import { getOidcUser, parseDateTime } from "@app/utils";
 
 import { GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
 import "@ncsa/geo-explorer/index.css";
@@ -45,20 +44,7 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                                             thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
                                         }
                                     ],
-                                    simple_layers: visualization.layers.map((layer) => {
-                                        return {
-                                            layer_id: layer.layerId,
-                                            layer_type: inferLayerType(layer.datasetCategoryType as string),
-                                            display_name: layer.displayName ? layer.displayName : layer.layerId,
-                                            description: layer.description || "",
-                                            timestamps: [],
-                                            default_style_name: layer.styleName,
-                                            ogc_service_url: `${config.hostname}/geoserver`,
-                                            labels: {
-                                                dataset_category: layer.datasetCategoryType
-                                            }
-                                        };
-                                    }),
+                                    simple_layers: [],
                                     temporal_layers: []
                                 } as GeoExplorerConfig
                             }

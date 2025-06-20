@@ -3,24 +3,15 @@ import classNames from "classnames";
 import { IconButton } from "@mui/material";
 import { AddCircleOutline, RemoveCircle, DescriptionOutlined } from "@mui/icons-material";
 
-import {
-    useSelector,
-    useDispatch,
-    addLayer,
-    removeLayer,
-    selectDataset,
-    store as geoExplorerStore
-} from "@ncsa/geo-explorer";
+import { useSelector, useDispatch, addLayer, removeLayer, selectDataset, RootState } from "@ncsa/geo-explorer";
 
 export type DatasetLayerItemProps = {
     dataset: Dataset;
 };
 
-type GeoExplorerRootState = ReturnType<typeof geoExplorerStore.getState>;
-
-export const DatasetLayerItem = ({ dataset }: DatasetLayerItemProps) => {
+export const LayerItem = ({ dataset }: DatasetLayerItemProps) => {
     const dispatch = useDispatch();
-    const mapLayers = useSelector((state: GeoExplorerRootState) => state.explore.mapLayers);
+    const mapLayers = useSelector((state: RootState) => state.explore.mapLayers);
 
     const isSelected = mapLayers.some((layer) => layer.data.layer_id === dataset.id);
 
