@@ -1,5 +1,4 @@
-import { FilterAltOutlined, Search } from "@mui/icons-material";
-import { Box, IconButton, Tab, Tabs } from "@mui/material";
+import { Box, Tab, Tabs } from "@mui/material";
 import React, { useState } from "react";
 
 import { useImplementation } from "@ncsa/geo-explorer";
@@ -17,21 +16,7 @@ export const CustomDataInventory = ({ visualization }: CustomDataInventoryProps)
     const [tabIndex, setTabIndex] = useState(0);
 
     return (
-        <SidebarSection
-            icon={<DatabaseHeavy size={16} />}
-            weight={2}
-            title="Data Inventory"
-            extras={
-                <Box className="flex flex-row gap-[6px]">
-                    <IconButton size="small" onClick={(e) => e.stopPropagation()}>
-                        <Search className="text-[#0000008A]" />
-                    </IconButton>
-                    <IconButton size="small" onClick={(e) => e.stopPropagation()}>
-                        <FilterAltOutlined className="text-[#0000008A]" />
-                    </IconButton>
-                </Box>
-            }
-        >
+        <SidebarSection icon={<DatabaseHeavy size={16} />} weight={2} title="Data Inventory">
             <Box className="flex flex-col h-full">
                 <Box className="flex-none px-[32px]">
                     <Tabs
