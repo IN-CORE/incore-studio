@@ -971,7 +971,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                     </Tooltip>
                                                 </Box>
                                             </Stack>
-                                            <OutputFileDisplay datasetId={outputDataset.datasetId} projectId={id} />
+                                            <OutputFileDisplay datasetId={outputDataset.datasetId} />
                                         </Box>
                                     ))}
                                 </Stack>

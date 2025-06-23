@@ -3,13 +3,7 @@ import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import {
-    getProject,
-    getProjectDatasets,
-    deleteProjectDatasets,
-    addLayerToVisualization,
-    addDatasetToProject
-} from "@app/reducer/projectSlice";
+import { getProject, getProjectDatasets, deleteProjectDatasets, addDatasetToProject } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -26,7 +20,6 @@ import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromSe
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
 import TableDataModal from "@app/components/TableDataModal";
 import { IncoreDialog } from "@app/components/IncoreDialog";
-import { inferLayerType } from "@app/utils";
 
 const DatasetPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -110,42 +103,6 @@ const DatasetPage = (): JSX.Element => {
             setSnackbarOpen(true);
         }
     }, [success, error]);
-
-    // add to visualization function
-    const addDatasetVisualizationFunc = (
-        projectId: string,
-        visualizationId: string,
-        dataset: Dataset,
-        styleName?: string
-    ) => {
-        if (
-            dataset.format === "shapefile" ||
-            dataset.format === "geotif" ||
-            dataset.format === "raster" ||
-            // Rethinking this, as we might want to allow adding tables to visualizations
-            dataset.format === "table"
-        ) {
-            const layers = [
-                {
-                    workspace: "incore",
-                    layerId: dataset.id,
-                    displayName: dataset.title,
-                    description: dataset.description,
-                    datasetCategoryType: dataset.dataType,
-                    layerType: inferLayerType(dataset.dataType),
-                    boundingBox: dataset.boundingBox,
-                    ...(styleName && { styleName }) // Only include styleName if it's provided
-                }
-            ];
-
-            // Dispatch the action with the new layers array
-            appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
-        } else {
-            setSnackbarMessage("Only shapefiles and tables can be added to a visualization for now!");
-            setSnackbarColor("danger");
-            setSnackbarOpen(true);
-        }
-    };
 
     // Add dataset to project from service
     const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = useState(false);
@@ -247,7 +204,6 @@ const DatasetPage = (): JSX.Element => {
                                         data={projectDatasets}
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
-                                        addVisualizationFunc={addDatasetVisualizationFunc}
                                         viewFunc={(dataset: Dataset) => {
                                             setOpenTableDataModal(true);
                                             setSelectedDataset(dataset);
@@ -261,7 +217,6 @@ const DatasetPage = (): JSX.Element => {
                                         cardPerRow={4}
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
-                                        addVisualizationFunc={addDatasetVisualizationFunc}
                                         viewFunc={(dataset: Dataset) => {
                                             setOpenTableDataModal(true);
                                             setSelectedDataset(dataset);

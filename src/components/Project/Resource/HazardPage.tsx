@@ -3,13 +3,7 @@ import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import {
-    addHazardToProject,
-    addLayerToVisualization,
-    deleteProjectHazards,
-    getProject,
-    getProjectHazards
-} from "@app/reducer/projectSlice";
+import { addHazardToProject, deleteProjectHazards, getProject, getProjectHazards } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -26,10 +20,6 @@ import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromSe
 import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazardDialog";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import { HazardPreviewModal } from "@app/components/HazardPreivewModal";
-
-import config from "@app/app.config";
-import { getHeaders, inferLayerType } from "@app/utils";
-import axios from "axios";
 
 const HazardPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -116,43 +106,6 @@ const HazardPage = (): JSX.Element => {
             setSnackbarOpen(true);
         }
     }, [success, error]);
-
-    // add to visualization function
-    const addHazardVisualizationFunc = async (
-        projectId: string,
-        visualizationId: string,
-        hazard: Hazard,
-        styleName?: string
-    ) => {
-        try {
-            // Need to query data api to get dataset details for each hazardDataset
-            const layers = await Promise.all(
-                hazard.hazardDatasets.map(async (hazardDataset: HazardDataset) => {
-                    const { data: dataset } = await axios.get(`${config.dataService}/${hazardDataset.datasetId}`, {
-                        headers: getHeaders()
-                    });
-
-                    return {
-                        workspace: "incore",
-                        layerId: dataset.id,
-                        displayName: dataset.title,
-                        description: dataset.description,
-                        datasetCategoryType: dataset.dataType,
-                        layerType: inferLayerType(dataset.dataType),
-                        boundingBox: dataset.boundingBox,
-                        ...(styleName && { styleName })
-                    };
-                })
-            );
-
-            appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
-        } catch (err) {
-            // TODO handle error with snackbar
-            setSnackbarMessage(`Error adding hazard visualization layers: ${err}`);
-            setSnackbarColor("danger");
-            setSnackbarOpen(true);
-        }
-    };
 
     // Add hazard to project from service
     const [openAddHazardFromServiceDialog, setOpenAddHazardFromServiceDialog] = useState(false);
@@ -257,7 +210,6 @@ const HazardPage = (): JSX.Element => {
                                         data={projectHazards}
                                         projectId={project.id}
                                         deleteFunc={deleteHazardFunc}
-                                        addVisualizationFunc={addHazardVisualizationFunc}
                                         onSelectionChange={(selected) => setSelectedHazards(selected as Hazard[])}
                                         selectedItems={selectedHazards}
                                         viewFunc={(hazard: Hazard) => {
@@ -271,7 +223,6 @@ const HazardPage = (): JSX.Element => {
                                         cardPerRow={4}
                                         projectId={project.id}
                                         deleteFunc={deleteHazardFunc}
-                                        addVisualizationFunc={addHazardVisualizationFunc}
                                         onSelectionChange={(selected) => setSelectedHazards(selected as Hazard[])}
                                         selectedItems={selectedHazards}
                                         viewFunc={(hazard: Hazard) => {
