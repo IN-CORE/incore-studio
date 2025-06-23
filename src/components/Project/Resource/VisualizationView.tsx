@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
 import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset, parseDateTime } from "@app/utils";
 
@@ -26,15 +26,23 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
     const datasets = useSelector((state: RootState) => state.project.projectDatasets);
     const hazards = useSelector((state: RootState) => state.project.projectHazards);
 
-    const CustomDataInventoryWithProps = () => {
-        return <CustomDataInventory visualization={visualization} />;
-    };
-    const CustomDatasetPreviewWithProps = () => {
-        return <CustomDatasetPreview visualization={visualization} />;
-    };
-    const CustomMapLayerSettingsWithProps = () => {
-        return <CustomMapLayerSettings visualization={visualization} />;
-    };
+    const CustomDataInventoryWithProps = useMemo(() => {
+        return function Wrapped() {
+            return <CustomDataInventory visualization={visualization} />;
+        };
+    }, [visualization]);
+
+    const CustomDatasetPreviewWithProps = useMemo(() => {
+        return function Wrapped() {
+            return <CustomDatasetPreview visualization={visualization} />;
+        };
+    }, [visualization]);
+
+    const CustomMapLayerSettingsWithProps = useMemo(() => {
+        return function Wrapped() {
+            return <CustomMapLayerSettings visualization={visualization} />;
+        };
+    }, [visualization]);
 
     useEffect(() => {
         const fetchAndBuildLayers = async () => {
