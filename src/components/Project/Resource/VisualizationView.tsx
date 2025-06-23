@@ -6,6 +6,7 @@ import { addLayer, GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@
 import "@ncsa/geo-explorer/index.css";
 
 import { CustomDataInventory } from "@app/components/Map/CustomDataInventory";
+import { CustomDatasetPreview } from "@app/components/Map/CustomDatasetPreview";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import axios from "axios";
@@ -26,6 +27,9 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
 
     const CustomDataInventoryWithProps = () => {
         return <CustomDataInventory visualization={visualization} />;
+    };
+    const CustomDatasetPreviewWithProps = () => {
+        return <CustomDatasetPreview visualization={visualization} />;
     };
 
     useEffect(() => {
@@ -98,7 +102,8 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                             accessToken={getOidcUser()?.access_token}
                             isProtectedResource={(url) => /geoserver/.test(url)}
                             components={{
-                                DataInventory: CustomDataInventoryWithProps
+                                DataInventory: CustomDataInventoryWithProps,
+                                DatasetPreview: CustomDatasetPreviewWithProps
                             }}
                             onReady={({ store }) => {
                                 if (Array.isArray(visualization?.layers)) {
