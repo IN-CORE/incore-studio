@@ -24,6 +24,12 @@ import { useAppDispatch } from "@app/store/hooks";
 import VisualizationIcon from "@mui/icons-material/Map";
 import Snackbar from "@mui/joy/Snackbar";
 import { IncoreDialog } from "@app/components/IncoreDialog";
+import config from "@app/app.config";
+import { addLayer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
+import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
+import { CustomDataInventory } from "@app/components/Map/CustomDataInventory";
+import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
+import axios from "axios";
 
 const VisualizationPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -101,6 +107,43 @@ const VisualizationPage = (): JSX.Element => {
     const handleCloseVisualizationView = () => {
         setOpenVisualizationView(false);
     };
+    // Populate the geo explorer provider
+    const [geoExplorerLayers, setGeoExplorerLayers] = useState<GeoExplorerDataset[]>([]);
+    const datasets = useSelector((state: RootState) => state.project.projectDatasets);
+    const hazards = useSelector((state: RootState) => state.project.projectHazards);
+    const visualization = useSelector((state: RootState) => state.project.selectedVisualization);
+    useEffect(() => {
+        const fetchAndBuildLayers = async () => {
+            const datasetIdsFromHazards = hazards
+                .flatMap((hazard) => hazard.hazardDatasets || [])
+                .map((ds) => ds.datasetId);
+
+            const datasetIdsFromProject = datasets
+                .filter((ds) => ds.format === "shapefile" || (ds.sourceDataset && ds.sourceDataset.trim() !== ""))
+                .map((ds) => ds.id);
+
+            const allDatasetIds = Array.from(new Set([...datasetIdsFromProject, ...datasetIdsFromHazards]));
+
+            const datasetResponses = await Promise.all(
+                allDatasetIds.map((id) =>
+                    axios
+                        .get(`${config.dataService}/${id}`, { headers: getHeaders() })
+                        .then((res) => res.data)
+                        .catch(() => null)
+                )
+            );
+
+            const validDatasets = datasetResponses.filter(Boolean);
+
+            const mapped = validDatasets.map((ds) =>
+                mapIncoreDatasetToGeoExplorerDataset(ds, `${config.hostname}/geoserver`)
+            );
+
+            setGeoExplorerLayers(mapped);
+        };
+
+        fetchAndBuildLayers();
+    }, [hazards, datasets]);
 
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
@@ -186,10 +229,53 @@ const VisualizationPage = (): JSX.Element => {
                                     open={openCreateVisDialog}
                                     onClose={handleCloseCreateVisDialog}
                                 />
-                                <VisualizationView
-                                    open={openVisualizationView}
-                                    onClose={handleCloseVisualizationView}
-                                />
+                                <GeoExplorerProvider
+                                    config={
+                                        {
+                                            basemaps: [
+                                                {
+                                                    layer_id: "OSM",
+                                                    display_name: "OpenStreetMap",
+                                                    tile_url_template:
+                                                        "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                                    thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
+                                                }
+                                            ],
+                                            simple_layers: geoExplorerLayers, // set in the custom layer list component
+                                            temporal_layers: [],
+                                            mapConfig: {
+                                                center: config.DEFAULT_MAP_CENTER as [number, number],
+                                                zoom: config.DEFAULT_MAP_ZOOM
+                                            }
+                                        } as GeoExplorerConfig
+                                    }
+                                    accessToken={getOidcUser()?.access_token}
+                                    isProtectedResource={(url) => /geoserver/.test(url)}
+                                    components={{
+                                        DataInventory: CustomDataInventory
+                                    }}
+                                    onReady={({ store }) => {
+                                        if (
+                                            Array.isArray(visualization?.layers) &&
+                                            Array.isArray(visualization?.layerOrder)
+                                        ) {
+                                            const layerMap = new Map(
+                                                visualization.layers.map((layer) => [layer.layerId, layer])
+                                            );
+                                            [...visualization.layerOrder].reverse().forEach((layerId) => {
+                                                const layer = layerMap.get(layerId);
+                                                if (layer) {
+                                                    store.dispatch(addLayer({ layer_id: layer.layerId }));
+                                                }
+                                            });
+                                        }
+                                    }}
+                                >
+                                    <VisualizationView
+                                        open={openVisualizationView}
+                                        onClose={handleCloseVisualizationView}
+                                    />
+                                </GeoExplorerProvider>
                                 {isTableView ? (
                                     <ResourceTable
                                         columns={["name", "description", "type", "date"]}

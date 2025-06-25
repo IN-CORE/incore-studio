@@ -8,11 +8,6 @@ import { RootState } from "@app/store";
 import { inferLayerType } from "@app/utils";
 import { useSelector } from "react-redux";
 
-// type DatasetLayerListProps = {
-//     visualization: Visualization;
-// };
-
-// export const DatasetLayerList = ({ visualization }: DatasetLayerListProps) => {
 export const DatasetLayerList = () => {
     const datasets = useSelector((state: RootState) => state.project.projectDatasets).filter(
         (dataset) =>
@@ -73,7 +68,6 @@ export const DatasetLayerList = () => {
                             {datasets.length > 0 ? (
                                 datasets.map((dataset) => (
                                     <Box key={dataset.id} className="flex justify-center px-[32px]">
-                                        {/* <LayerItem dataset={dataset} visualization={visualization} /> */}
                                         <LayerItem dataset={dataset} />
                                     </Box>
                                 ))

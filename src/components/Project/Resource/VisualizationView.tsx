@@ -1,18 +1,19 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
 import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
-import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset, parseDateTime } from "@app/utils";
+import { parseDateTime } from "@app/utils";
 
-import { addLayer, GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
+import {
+    GeoExplorer,
+    useSelector as geoExplorerUseSelector,
+    RootState as GeoExplorerRootState
+} from "@ncsa/geo-explorer";
 import "@ncsa/geo-explorer/index.css";
 
-import { createCustomDataInventory } from "@app/components/Map/CustomDataInventory";
-// import { CustomDatasetPreview } from "@app/components/Map/CustomDatasetPreview";
-// import { CustomMapLayerSettings } from "@app/components/Map/CustomMapLayerSettings";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import axios from "axios";
-import config from "@app/app.config";
-import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
+import { useAppDispatch } from "@app/store/hooks";
+import { patchVisualization } from "@app/reducer/projectSlice";
+import { useParams } from "react-router-dom";
 
 interface VisualizationViewProps {
     open: boolean;
@@ -20,63 +21,61 @@ interface VisualizationViewProps {
 }
 
 export const VisualizationView: React.FC<VisualizationViewProps> = ({ open, onClose }) => {
-    const [geoExplorerLayers, setGeoExplorerLayers] = useState<GeoExplorerDataset[]>([]);
+    const { id } = useParams<{ id: string }>();
 
-    const datasets = useSelector((state: RootState) => state.project.projectDatasets);
-    const hazards = useSelector((state: RootState) => state.project.projectHazards);
+    // incore studio redux store
     const visualization = useSelector((state: RootState) => state.project.selectedVisualization);
+    const appDispatch = useAppDispatch();
 
-    const CustomDataInventoryWithProps = useMemo(() => {
-        return createCustomDataInventory(visualization);
-    }, [visualization]);
+    // geo explorer redux store
+    const mapLayers = geoExplorerUseSelector((state: GeoExplorerRootState) => state.explore.mapLayers);
 
-    // const CustomDatasetPreviewWithProps = useMemo(() => {
-    //     return function Wrapped() {
-    //         return <CustomDatasetPreview visualization={visualization} />;
-    //     };
-    // }, [visualization]);
-    //
-    // const CustomMapLayerSettingsWithProps = useMemo(() => {
-    //     return function Wrapped() {
-    //         return <CustomMapLayerSettings visualization={visualization} />;
-    //     };
-    // }, [visualization]);
-
-    useEffect(() => {
-        const fetchAndBuildLayers = async () => {
-            const datasetIdsFromHazards = hazards
-                .flatMap((hazard) => hazard.hazardDatasets || [])
-                .map((ds) => ds.datasetId);
-
-            const datasetIdsFromProject = datasets
-                .filter((ds) => ds.format === "shapefile" || (ds.sourceDataset && ds.sourceDataset.trim() !== ""))
-                .map((ds) => ds.id);
-
-            const allDatasetIds = Array.from(new Set([...datasetIdsFromProject, ...datasetIdsFromHazards]));
-
-            const datasetResponses = await Promise.all(
-                allDatasetIds.map((id) =>
-                    axios
-                        .get(`${config.dataService}/${id}`, { headers: getHeaders() })
-                        .then((res) => res.data)
-                        .catch(() => null)
-                )
-            );
-
-            const validDatasets = datasetResponses.filter(Boolean);
-
-            const mapped = validDatasets.map((ds) =>
-                mapIncoreDatasetToGeoExplorerDataset(ds, `${config.hostname}/geoserver`)
-            );
-
-            setGeoExplorerLayers(mapped);
+    const handleModalClose = async () => {
+        const getLayerOrder = (): string[] => {
+            return mapLayers.map((layer) => layer.data.layer_id);
         };
 
-        fetchAndBuildLayers();
-    }, [hazards, datasets]);
+        const getLayers = (): IncoreLayer[] => {
+            return mapLayers.map((layer) => ({
+                workspace: "incore", // adjust if dynamic
+                layerId: layer.data.layer_id,
+                layerType: layer.data.layer_type,
+                datasetCategoryType: layer.data.labels.dataset_category,
+                displayName: layer.data.display_name,
+                description: layer.data.description,
+                unit: layer.data.unit
+            }));
+        };
+
+        if (!id) {
+            console.error("Project ID is not defined. Cannot patch visualization.");
+            return;
+        }
+        try {
+            const layerOrder: string[] = getLayerOrder(); // replace with your actual logic
+            const layers: IncoreLayer[] = getLayers(); // replace with your actual logic
+
+            const visualizationId = visualization.id;
+
+            await appDispatch(
+                patchVisualization({
+                    projectId: id,
+                    visualizationId,
+                    patchData: {
+                        layerOrder: JSON.stringify(layerOrder),
+                        layers: JSON.stringify(layers)
+                    }
+                })
+            );
+        } catch (error) {
+            console.error("Failed to patch visualization", error);
+        }
+
+        onClose();
+    };
 
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal open={open} onClose={handleModalClose}>
             <ModalDialog layout="fullscreen" size="lg" sx={{ backgroundColor: "#fff" }}>
                 <Box sx={{ padding: 2 }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -94,51 +93,9 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ open, onCl
                 </Box>
                 <Box>
                     {visualization.layers && (
-                        <GeoExplorerProvider
-                            config={
-                                {
-                                    basemaps: [
-                                        {
-                                            layer_id: "OSM",
-                                            display_name: "OpenStreetMap",
-                                            tile_url_template: "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                                            thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
-                                        }
-                                    ],
-                                    simple_layers: geoExplorerLayers, // set in the custom layer list component
-                                    temporal_layers: [],
-                                    mapConfig: {
-                                        center: config.DEFAULT_MAP_CENTER as [number, number],
-                                        zoom: config.DEFAULT_MAP_ZOOM
-                                    }
-                                } as GeoExplorerConfig
-                            }
-                            accessToken={getOidcUser()?.access_token}
-                            isProtectedResource={(url) => /geoserver/.test(url)}
-                            components={{
-                                DataInventory: CustomDataInventoryWithProps
-                                // DatasetPreview: CustomDatasetPreviewWithProps,
-                                // MapLayerSettings: CustomMapLayerSettingsWithProps
-                            }}
-                            onReady={({ store }) => {
-                                if (Array.isArray(visualization?.layers) && Array.isArray(visualization?.layerOrder)) {
-                                    const layerMap = new Map(
-                                        visualization.layers.map((layer) => [layer.layerId, layer])
-                                    );
-
-                                    [...visualization.layerOrder].reverse().forEach((layerId) => {
-                                        const layer = layerMap.get(layerId);
-                                        if (layer) {
-                                            store.dispatch(addLayer({ layer_id: layer.layerId }));
-                                        }
-                                    });
-                                }
-                            }}
-                        >
-                            <Box sx={{ height: 850, position: "relative", overflow: "hidden" }}>
-                                <GeoExplorer />
-                            </Box>
-                        </GeoExplorerProvider>
+                        <Box sx={{ height: 850, position: "relative", overflow: "hidden" }}>
+                            <GeoExplorer />
+                        </Box>
                     )}
                 </Box>
             </ModalDialog>
