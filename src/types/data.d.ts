@@ -267,6 +267,7 @@ interface IncoreLayer {
     displayName?: string;
     description?: string;
     unit?: string;
+    visible?: boolean;
 }
 
 interface Visualization {

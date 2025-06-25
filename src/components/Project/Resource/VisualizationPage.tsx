@@ -25,7 +25,7 @@ import VisualizationIcon from "@mui/icons-material/Map";
 import Snackbar from "@mui/joy/Snackbar";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import config from "@app/app.config";
-import { addLayer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
+import { addLayer, GeoExplorerConfig, GeoExplorerProvider, toggleVisibility } from "@ncsa/geo-explorer";
 import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
 import { CustomDataInventory } from "@app/components/Map/CustomDataInventory";
 import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
@@ -243,9 +243,19 @@ const VisualizationPage = (): JSX.Element => {
                                             ],
                                             simple_layers: geoExplorerLayers, // set in the custom layer list component
                                             temporal_layers: [],
+                                            // naive approach to center the map on the visualization bounding box
                                             mapConfig: {
-                                                center: config.DEFAULT_MAP_CENTER as [number, number],
-                                                zoom: config.DEFAULT_MAP_ZOOM
+                                                center: visualization?.boundingBox
+                                                    ? [
+                                                          (visualization.boundingBox[0] +
+                                                              visualization.boundingBox[2]) /
+                                                              2, // center longitude
+                                                          (visualization.boundingBox[1] +
+                                                              visualization.boundingBox[3]) /
+                                                              2 // center latitude
+                                                      ]
+                                                    : (config.DEFAULT_MAP_CENTER as [number, number]),
+                                                zoom: visualization?.zoom ?? config.DEFAULT_MAP_ZOOM
                                             }
                                         } as GeoExplorerConfig
                                     }
@@ -266,6 +276,8 @@ const VisualizationPage = (): JSX.Element => {
                                                 const layer = layerMap.get(layerId);
                                                 if (layer) {
                                                     store.dispatch(addLayer({ layer_id: layer.layerId }));
+                                                    if (!layer.visible)
+                                                        store.dispatch(toggleVisibility({ layer_id: layer.layerId }));
                                                 }
                                             });
                                         }

@@ -539,7 +539,11 @@ export const patchVisualization = createAsyncThunk(
         const formData = new URLSearchParams();
         Object.entries(patchData).forEach(([key, value]) => {
             if (value !== undefined) {
-                formData.append(key, Array.isArray(value) ? JSON.stringify(value) : String(value));
+                if (key === "boundingBox" && Array.isArray(value)) {
+                    value.forEach((v) => formData.append("boundingBox", String(v)));
+                } else {
+                    formData.append(key, Array.isArray(value) ? JSON.stringify(value) : String(value));
+                }
             }
         });
 
