@@ -3,7 +3,12 @@ import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { deleteProjectVisualizations, getProject, getProjectVisualizations } from "@app/reducer/projectSlice";
+import {
+    deleteProjectVisualizations,
+    getProject,
+    getProjectVisualizations,
+    setSelectedVisualization
+} from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -92,10 +97,10 @@ const VisualizationPage = (): JSX.Element => {
     };
 
     // View visualization
-    const [selectedVisualization, setSelectedVisualization] = useState<Visualization>();
-    const [openVisualziationView, setOpenVisualziationView] = useState(true);
-    const handleCloseVisualziationView = () => {
-        setOpenVisualziationView(false);
+    const selectedVisualization = useSelector((state: RootState) => state.project.selectedVisualization);
+    const [openVisualizationView, setOpenVisualizationView] = useState(false);
+    const handleCloseVisualizationView = () => {
+        setOpenVisualizationView(false);
     };
 
     // snackbar
@@ -185,8 +190,8 @@ const VisualizationPage = (): JSX.Element => {
                                 {selectedVisualization && (
                                     <VisualizationView
                                         visualization={selectedVisualization}
-                                        open={openVisualziationView}
-                                        onClose={handleCloseVisualziationView}
+                                        open={openVisualizationView}
+                                        onClose={handleCloseVisualizationView}
                                     />
                                 )}
                                 {isTableView ? (
@@ -196,8 +201,8 @@ const VisualizationPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteVisualizationFunc}
                                         viewFunc={(visualization: Visualization) => {
-                                            setSelectedVisualization(visualization);
-                                            setOpenVisualziationView(true);
+                                            appDispatch(setSelectedVisualization(visualization.id));
+                                            setOpenVisualizationView(true);
                                         }}
                                         onSelectionChange={(selected) =>
                                             setSelectedVisualizations(selected as Visualization[])
@@ -211,8 +216,8 @@ const VisualizationPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteVisualizationFunc}
                                         viewFunc={(visualization: Visualization) => {
-                                            setSelectedVisualization(visualization);
-                                            setOpenVisualziationView(true);
+                                            appDispatch(setSelectedVisualization(visualization.id));
+                                            setOpenVisualizationView(true);
                                         }}
                                         onSelectionChange={(selected) =>
                                             setSelectedVisualizations(selected as Visualization[])

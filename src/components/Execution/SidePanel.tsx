@@ -43,13 +43,16 @@ import {
     addDFR3MappingToProject,
     addHazardToProject,
     getProject,
-    getProjectVisualizations
+    getProjectVisualizations,
+    setSelectedVisualization
 } from "@app/reducer/projectSlice";
 import { VisualizationView } from "@app/components/Project/Resource/VisualizationView";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
+import { useSelector } from "react-redux";
+import { RootState } from "@app/store";
 import CompatibleTypeTooltip from "./CompatibleTypeTooltip";
 import OutputFileDisplay from "./OutputFileDisplay";
 
@@ -239,10 +242,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     };
 
     // View visualization
-    const [selectedVisualization, setSelectedVisualization] = React.useState<Visualization>();
-    const [openVisualziationView, setOpenVisualziationView] = React.useState(true);
-    const handleCloseVisualziationView = () => {
-        setOpenVisualziationView(false);
+    const selectedVisualization = useSelector((state: RootState) => state.project.selectedVisualization);
+    const [openVisualizationView, setOpenVisualizationView] = React.useState(false);
+    const handleCloseVisualizationView = () => {
+        setOpenVisualizationView(false);
     };
 
     const downloadFile = async (datasetId: string) => {
@@ -579,8 +582,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                     inputDataset.label.includes("Hazard")
                                                                         ? "Hazard"
                                                                         : inputDataset.label.includes("DFR3")
-                                                                          ? "DFR3 Mapping"
-                                                                          : "Dataset"
+                                                                        ? "DFR3 Mapping"
+                                                                        : "Dataset"
                                                                 }`}
                                                                 name={inputDataset.execFileEntryId}
                                                                 required={
@@ -627,33 +630,31 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 {inputDataset.label.includes("Hazard")
                                                                     ? options?.projectHazardOptions
                                                                     : inputDataset.label.includes("DFR3")
-                                                                      ? options?.projectDFR3MappingOptions
-                                                                      : options?.projectDatasetOptions?.filter(
-                                                                            (option: JSX.Element) => {
-                                                                                if (
-                                                                                    dependencyGraph &&
-                                                                                    dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ] &&
-                                                                                    dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ].inputs[inputDataset.label] &&
-                                                                                    option.key
-                                                                                ) {
-                                                                                    return dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ].inputs[
-                                                                                        inputDataset.label
-                                                                                    ].includes(
-                                                                                        option.key.split("|")[1]
-                                                                                    ); // show datasets that are compatible with the input
-                                                                                }
-                                                                                return true; // if the property is not found, show all datasets
-                                                                            }
-                                                                        )}
+                                                                    ? options?.projectDFR3MappingOptions
+                                                                    : options?.projectDatasetOptions?.filter(
+                                                                          (option: JSX.Element) => {
+                                                                              if (
+                                                                                  dependencyGraph &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ] &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label] &&
+                                                                                  option.key
+                                                                              ) {
+                                                                                  return dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label].includes(
+                                                                                      option.key.split("|")[1]
+                                                                                  ); // show datasets that are compatible with the input
+                                                                              }
+                                                                              return true; // if the property is not found, show all datasets
+                                                                          }
+                                                                      )}
                                                             </Select>
                                                         </Box>
                                                         {createMode && (
@@ -663,12 +664,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         inputDataset.label.includes("Hazard")
                                                                             ? setOpenAddHazardFromServiceDialog(true)
                                                                             : inputDataset.label.includes("DFR3")
-                                                                              ? setOpenAddDFR3MappingFromServiceDialog(
-                                                                                    true
-                                                                                )
-                                                                              : setOpenAddDatasetFromServiceDialog(
-                                                                                    true
-                                                                                );
+                                                                            ? setOpenAddDFR3MappingFromServiceDialog(
+                                                                                  true
+                                                                              )
+                                                                            : setOpenAddDatasetFromServiceDialog(true);
                                                                     }}
                                                                 >
                                                                     <AddIcon />
@@ -1046,8 +1045,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                         <IconButton
                                                             aria-label="View visualization"
                                                             onClick={() => {
-                                                                setSelectedVisualization(visualization);
-                                                                setOpenVisualziationView(true);
+                                                                appDispatch(setSelectedVisualization(visualization.id));
+                                                                setOpenVisualizationView(true);
                                                             }}
                                                         >
                                                             <VisibilityRoundedIcon />
@@ -1058,8 +1057,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                             {selectedVisualization && (
                                                 <VisualizationView
                                                     visualization={selectedVisualization}
-                                                    open={openVisualziationView}
-                                                    onClose={handleCloseVisualziationView}
+                                                    open={openVisualizationView}
+                                                    onClose={handleCloseVisualizationView}
                                                 />
                                             )}
                                         </Box>

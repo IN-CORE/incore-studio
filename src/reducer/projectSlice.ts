@@ -19,6 +19,7 @@ const initialState: ProjectState = {
     deletedWorkflowIds: <string[]>[],
     projectVisualizations: <Visualization[]>[],
     deletedVisualizationIds: <string[]>[],
+    selectedVisualization: <Visualization>{},
     loading: false,
     error: null,
     success: null
@@ -339,7 +340,10 @@ export const getProjectVisualizations = createAsyncThunk(
 export const fetchInfiniteProjectVisualizations = async ({
     pageParam = 1,
     projectId
-}: any): Promise<{ data: Visualization[]; nextPage: number }> => {
+}: any): Promise<{
+    data: Visualization[];
+    nextPage: number;
+}> => {
     const response = await axios.get(`${PROJECT_API_URL}/${projectId}/visualizations`, {
         headers: getHeaders(),
         params: {
@@ -499,7 +503,7 @@ export const deleteLayerToVisualization = createAsyncThunk(
     }: {
         projectId: string;
         visualizationId: string;
-        layerIds: String[];
+        layerIds: string[];
     }) => {
         const response = await axios.delete(
             `${PROJECT_API_URL}/${projectId}/visualizations/${visualizationId}/layers`,
@@ -508,6 +512,48 @@ export const deleteLayerToVisualization = createAsyncThunk(
                 data: layerIds
             }
         );
+        return response.data;
+    }
+);
+
+export const patchVisualization = createAsyncThunk(
+    "projects/patchVisualization",
+    async ({
+        projectId,
+        visualizationId,
+        patchData
+    }: {
+        projectId: string;
+        visualizationId: string;
+        patchData: {
+            name?: string;
+            description?: string;
+            type?: string;
+            boundingBox?: number[];
+            zoom?: number;
+            vegaJson?: string;
+            layerOrder?: string;
+            layers?: string;
+        };
+    }) => {
+        const formData = new URLSearchParams();
+        Object.entries(patchData).forEach(([key, value]) => {
+            if (value !== undefined) {
+                formData.append(key, Array.isArray(value) ? JSON.stringify(value) : String(value));
+            }
+        });
+
+        const response = await axios.patch(
+            `${PROJECT_API_URL}/${projectId}/visualizations/${visualizationId}`,
+            formData,
+            {
+                headers: {
+                    ...getHeaders(),
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }
+        );
+
         return response.data;
     }
 );
@@ -526,7 +572,12 @@ const projectSlice = createSlice({
     name: "projects",
     initialState,
     reducers: {
-        // TODO define synchronous actions here if needed
+        setSelectedVisualization: (state, action: { payload: string }) => {
+            const target = state.projectVisualizations.find((v) => v.id === action.payload);
+            if (target) {
+                state.selectedVisualization = target;
+            }
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -852,6 +903,20 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to create the project visualizations";
             })
+            .addCase(patchVisualization.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = null;
+            })
+            .addCase(patchVisualization.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedVisualization = action.payload;
+                state.success = "Successfully patch the project visualization";
+            })
+            .addCase(patchVisualization.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to patch the visualizations";
+            })
             .addCase(addLayerToVisualization.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -919,3 +984,5 @@ const projectSlice = createSlice({
 });
 
 export default projectSlice.reducer;
+
+export const { setSelectedVisualization } = projectSlice.actions;

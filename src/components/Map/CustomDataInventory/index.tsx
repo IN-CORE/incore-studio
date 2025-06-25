@@ -6,9 +6,8 @@ import { DatabaseHeavy } from "@app/icons/DatabaseHeavy";
 import { DatasetLayerList } from "@app/components/Map/CustomDataInventory/DatasetLayerList";
 import { HazardLayerList } from "@app/components/Map/CustomDataInventory/HazardLayerList";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-import config from "@app/app.config";
-import { getHeaders } from "@app/utils";
+import { useAppDispatch } from "@app/store/hooks";
+import { patchVisualization } from "@app/reducer/projectSlice";
 
 export function createCustomDataInventory(visualization: Visualization) {
     return function CustomDataInventory() {
@@ -20,6 +19,8 @@ export function createCustomDataInventory(visualization: Visualization) {
         const [isEditing, setIsEditing] = useState(false);
 
         const mapLayers = useSelector((state: RootState) => state.explore.mapLayers);
+
+        const appDispatch = useAppDispatch();
 
         const getLayerOrder = (): string[] => {
             return mapLayers.map((layer) => layer.data.layer_id);
@@ -40,31 +41,27 @@ export function createCustomDataInventory(visualization: Visualization) {
         const handleToggle = async () => {
             if (isEditing) {
                 if (!id) {
-                    console.error("Project ID is not defined. Cannot add layer to visualization.");
+                    console.error("Project ID is not defined. Cannot patch visualization.");
                     return;
                 }
                 try {
-                    console.log("Saving changes...");
-
                     const layerOrder: string[] = getLayerOrder(); // replace with your actual logic
                     const layers: IncoreLayer[] = getLayers(); // replace with your actual logic
 
                     const visualizationId = visualization.id;
 
-                    await axios.patch(
-                        `${config.projectApi}/${id}/visualizations/${visualizationId}`,
-                        new URLSearchParams({
-                            layerOrder: JSON.stringify(layerOrder),
-                            layers: JSON.stringify(layers)
-                        }),
-                        {
-                            headers: getHeaders()
-                        }
+                    await appDispatch(
+                        patchVisualization({
+                            projectId: id,
+                            visualizationId,
+                            patchData: {
+                                layerOrder: JSON.stringify(layerOrder),
+                                layers: JSON.stringify(layers)
+                            }
+                        })
                     );
-
-                    console.log("Visualization saved.");
                 } catch (error) {
-                    console.error("Failed to save visualization", error);
+                    console.error("Failed to patch visualization", error);
                 }
             }
 

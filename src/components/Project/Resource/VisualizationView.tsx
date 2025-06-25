@@ -26,6 +26,10 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
     const datasets = useSelector((state: RootState) => state.project.projectDatasets);
     const hazards = useSelector((state: RootState) => state.project.projectHazards);
 
+    const selectedVisualization = useSelector(
+        (state: RootState) => state.project.selectedVisualization
+    );
+
     const CustomDataInventoryWithProps = useMemo(() => {
         return createCustomDataInventory(visualization);
     }, [visualization]);
@@ -121,12 +125,15 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                                 // MapLayerSettings: CustomMapLayerSettingsWithProps
                             }}
                             onReady={({ store }) => {
-                                if (Array.isArray(visualization?.layers) && Array.isArray(visualization?.layerOrder)) {
+                                if (
+                                    Array.isArray(selectedVisualization?.layers) &&
+                                    Array.isArray(selectedVisualization?.layerOrder)
+                                ) {
                                     const layerMap = new Map(
-                                        visualization.layers.map((layer) => [layer.layerId, layer])
+                                        selectedVisualization.layers.map((layer) => [layer.layerId, layer])
                                     );
 
-                                    [...visualization.layerOrder].reverse().forEach((layerId) => {
+                                    [...selectedVisualization.layerOrder].reverse().forEach((layerId) => {
                                         const layer = layerMap.get(layerId);
                                         if (layer) {
                                             store.dispatch(addLayer({ layer_id: layer.layerId }));

@@ -177,6 +177,7 @@ interface ProjectState {
     deletedWorkflowIds: string[];
     projectVisualizations: Visualization[];
     deletedVisualizationIds: string[];
+    selectedVisualization: Visualization;
     loading: boolean;
     error: string | null;
     success: string | null;
