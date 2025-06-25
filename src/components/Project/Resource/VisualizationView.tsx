@@ -5,9 +5,9 @@ import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset, parseDat
 import { addLayer, GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
 import "@ncsa/geo-explorer/index.css";
 
-import { CustomDataInventory } from "@app/components/Map/CustomDataInventory";
-import { CustomDatasetPreview } from "@app/components/Map/CustomDatasetPreview";
-import { CustomMapLayerSettings } from "@app/components/Map/CustomMapLayerSettings";
+import { createCustomDataInventory } from "@app/components/Map/CustomDataInventory";
+// import { CustomDatasetPreview } from "@app/components/Map/CustomDatasetPreview";
+// import { CustomMapLayerSettings } from "@app/components/Map/CustomMapLayerSettings";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
 import axios from "axios";
@@ -27,22 +27,20 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
     const hazards = useSelector((state: RootState) => state.project.projectHazards);
 
     const CustomDataInventoryWithProps = useMemo(() => {
-        return function Wrapped() {
-            return <CustomDataInventory visualization={visualization} />;
-        };
+        return createCustomDataInventory(visualization);
     }, [visualization]);
 
-    const CustomDatasetPreviewWithProps = useMemo(() => {
-        return function Wrapped() {
-            return <CustomDatasetPreview visualization={visualization} />;
-        };
-    }, [visualization]);
-
-    const CustomMapLayerSettingsWithProps = useMemo(() => {
-        return function Wrapped() {
-            return <CustomMapLayerSettings visualization={visualization} />;
-        };
-    }, [visualization]);
+    // const CustomDatasetPreviewWithProps = useMemo(() => {
+    //     return function Wrapped() {
+    //         return <CustomDatasetPreview visualization={visualization} />;
+    //     };
+    // }, [visualization]);
+    //
+    // const CustomMapLayerSettingsWithProps = useMemo(() => {
+    //     return function Wrapped() {
+    //         return <CustomMapLayerSettings visualization={visualization} />;
+    //     };
+    // }, [visualization]);
 
     useEffect(() => {
         const fetchAndBuildLayers = async () => {
@@ -108,20 +106,29 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                                         }
                                     ],
                                     simple_layers: geoExplorerLayers, // set in the custom layer list component
-                                    temporal_layers: []
+                                    temporal_layers: [],
+                                    mapConfig: {
+                                        center: config.DEFAULT_MAP_CENTER as [number, number],
+                                        zoom: config.DEFAULT_MAP_ZOOM
+                                    }
                                 } as GeoExplorerConfig
                             }
                             accessToken={getOidcUser()?.access_token}
                             isProtectedResource={(url) => /geoserver/.test(url)}
                             components={{
-                                DataInventory: CustomDataInventoryWithProps,
-                                DatasetPreview: CustomDatasetPreviewWithProps,
-                                MapLayerSettings: CustomMapLayerSettingsWithProps
+                                DataInventory: CustomDataInventoryWithProps
+                                // DatasetPreview: CustomDatasetPreviewWithProps,
+                                // MapLayerSettings: CustomMapLayerSettingsWithProps
                             }}
                             onReady={({ store }) => {
-                                if (Array.isArray(visualization?.layers)) {
-                                    visualization.layers.forEach((layer) => {
-                                        if (layer?.layerId) {
+                                if (Array.isArray(visualization?.layers) && Array.isArray(visualization?.layerOrder)) {
+                                    const layerMap = new Map(
+                                        visualization.layers.map((layer) => [layer.layerId, layer])
+                                    );
+
+                                    [...visualization.layerOrder].reverse().forEach((layerId) => {
+                                        const layer = layerMap.get(layerId);
+                                        if (layer) {
                                             store.dispatch(addLayer({ layer_id: layer.layerId }));
                                         }
                                     });

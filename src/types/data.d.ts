@@ -273,6 +273,8 @@ interface Visualization {
     type: string;
     name: string;
     description?: string;
+    zoom?: number;
+    layerOrder?: string[];
     date?: string;
     boundingBox?: [number, number, number, number];
     layers?: IncoreLayer[];
@@ -284,6 +286,8 @@ interface VisualizationIn {
     type: string;
     name: string;
     description?: string;
+    zoom?: number;
+    layerOrder?: string[];
     boundingBox?: number[];
     layers?: IncoreLayer[];
     vegaJson?: string;

@@ -83,7 +83,8 @@ config.defaultLayerStyles = {
 
 config.VALID_MAP_BOUNDS = [-180.0, -90, 180.0, 90];
 config.DEFAULT_MAP_BOUNDS = [-125.0, 24.396308, -66.93457, 49.384358];
-config.DEFAULT_MAP_CENTER = [39.8283, -98.5795];
+config.DEFAULT_MAP_CENTER = [-98.5795, 39.8283];
 config.basemapStyle = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+config.DEFAULT_MAP_ZOOM = 4;
 
 export default config;

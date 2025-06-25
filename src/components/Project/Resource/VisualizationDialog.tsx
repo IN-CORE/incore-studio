@@ -87,7 +87,8 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                 type: visualizationType,
                 description,
                 ...(boundingBox !== "" && { boundingBox: boundingBox.split(",").map(Number) }),
-                ...(visualizationType === "MAP" && { layers: [] }) // Add empty layers array if type is "MAP"
+                ...(visualizationType === "MAP" && { layers: [], layerOrder: [] }) // Add empty layers array if
+                // type is "MAP"
             }
         ];
         appDispatch(createProjectVisualization({ projectId, visualizations }));
