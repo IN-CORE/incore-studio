@@ -19,7 +19,6 @@ export function createCustomDataInventory(visualization: Visualization) {
         const [isEditing, setIsEditing] = useState(false);
 
         const mapLayers = useSelector((state: RootState) => state.explore.mapLayers);
-
         const appDispatch = useAppDispatch();
 
         const getLayerOrder = (): string[] => {

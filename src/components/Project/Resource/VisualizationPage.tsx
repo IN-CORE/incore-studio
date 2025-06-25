@@ -97,7 +97,6 @@ const VisualizationPage = (): JSX.Element => {
     };
 
     // View visualization
-    const selectedVisualization = useSelector((state: RootState) => state.project.selectedVisualization);
     const [openVisualizationView, setOpenVisualizationView] = useState(false);
     const handleCloseVisualizationView = () => {
         setOpenVisualizationView(false);
@@ -187,13 +186,10 @@ const VisualizationPage = (): JSX.Element => {
                                     open={openCreateVisDialog}
                                     onClose={handleCloseCreateVisDialog}
                                 />
-                                {selectedVisualization && (
-                                    <VisualizationView
-                                        visualization={selectedVisualization}
-                                        open={openVisualizationView}
-                                        onClose={handleCloseVisualizationView}
-                                    />
-                                )}
+                                <VisualizationView
+                                    open={openVisualizationView}
+                                    onClose={handleCloseVisualizationView}
+                                />
                                 {isTableView ? (
                                     <ResourceTable
                                         columns={["name", "description", "type", "date"]}

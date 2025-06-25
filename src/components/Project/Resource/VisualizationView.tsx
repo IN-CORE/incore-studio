@@ -15,20 +15,16 @@ import config from "@app/app.config";
 import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
 
 interface VisualizationViewProps {
-    visualization: Visualization;
     open: boolean;
     onClose: () => void;
 }
 
-export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualization, open, onClose }) => {
+export const VisualizationView: React.FC<VisualizationViewProps> = ({ open, onClose }) => {
     const [geoExplorerLayers, setGeoExplorerLayers] = useState<GeoExplorerDataset[]>([]);
 
     const datasets = useSelector((state: RootState) => state.project.projectDatasets);
     const hazards = useSelector((state: RootState) => state.project.projectHazards);
-
-    const selectedVisualization = useSelector(
-        (state: RootState) => state.project.selectedVisualization
-    );
+    const visualization = useSelector((state: RootState) => state.project.selectedVisualization);
 
     const CustomDataInventoryWithProps = useMemo(() => {
         return createCustomDataInventory(visualization);
@@ -125,15 +121,12 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ visualizat
                                 // MapLayerSettings: CustomMapLayerSettingsWithProps
                             }}
                             onReady={({ store }) => {
-                                if (
-                                    Array.isArray(selectedVisualization?.layers) &&
-                                    Array.isArray(selectedVisualization?.layerOrder)
-                                ) {
+                                if (Array.isArray(visualization?.layers) && Array.isArray(visualization?.layerOrder)) {
                                     const layerMap = new Map(
-                                        selectedVisualization.layers.map((layer) => [layer.layerId, layer])
+                                        visualization.layers.map((layer) => [layer.layerId, layer])
                                     );
 
-                                    [...selectedVisualization.layerOrder].reverse().forEach((layerId) => {
+                                    [...visualization.layerOrder].reverse().forEach((layerId) => {
                                         const layer = layerMap.get(layerId);
                                         if (layer) {
                                             store.dispatch(addLayer({ layer_id: layer.layerId }));

@@ -28,12 +28,12 @@ const initialState: ProjectState = {
 export const getProjects = createAsyncThunk(
     "projects/getProjects",
     async ({
-        skip = 0,
-        limit = 9,
-        filters = {},
-        sortBy = "date",
-        order = "desc"
-    }: {
+               skip = 0,
+               limit = 9,
+               filters = {},
+               sortBy = "date",
+               order = "desc"
+           }: {
         skip?: number;
         limit?: number;
         filters?: Record<string, string | number>;
@@ -66,7 +66,9 @@ export const getProjects = createAsyncThunk(
     }
 );
 
-export const createProject = createAsyncThunk("projects/createProject", async ({ project }: { project: ProjectIn }) => {
+export const createProject = createAsyncThunk("projects/createProject", async ({ project }: {
+    project: ProjectIn
+}) => {
     const response = await axios.post(`${PROJECT_API_URL}`, project, {
         headers: getHeaders()
     });
@@ -101,11 +103,11 @@ export const deleteProject = createAsyncThunk("projects/deleteProject", async (p
 export const editProject = createAsyncThunk(
     "projects/editProject",
     async ({
-        projectId,
-        name,
-        description,
-        region
-    }: {
+               projectId,
+               name,
+               description,
+               region
+           }: {
         projectId: string;
         name: string;
         description: string;
@@ -130,13 +132,13 @@ export const editProject = createAsyncThunk(
 export const getProjectDatasets = createAsyncThunk(
     "projects/getProjectDatasets",
     async ({
-        projectId,
-        skip = 0,
-        limit = 9,
-        filters = {},
-        sortBy = "date",
-        order = "desc"
-    }: {
+               projectId,
+               skip = 0,
+               limit = 9,
+               filters = {},
+               sortBy = "date",
+               order = "desc"
+           }: {
         projectId: string;
         skip?: number;
         limit?: number;
@@ -172,13 +174,13 @@ export const getProjectDatasets = createAsyncThunk(
 export const getProjectHazards = createAsyncThunk(
     "projects/getProjectHazards",
     async ({
-        projectId,
-        skip = 0,
-        limit = 9,
-        filters = {},
-        sortBy = "date",
-        order = "desc"
-    }: {
+               projectId,
+               skip = 0,
+               limit = 9,
+               filters = {},
+               sortBy = "date",
+               order = "desc"
+           }: {
         projectId: string;
         skip?: number;
         limit?: number;
@@ -214,13 +216,13 @@ export const getProjectHazards = createAsyncThunk(
 export const getProjectDRF3Mappings = createAsyncThunk(
     "projects/getProjectDRF3Mappings",
     async ({
-        projectId,
-        skip = 0,
-        limit = 9,
-        filters = {},
-        sortBy = "date",
-        order = "desc"
-    }: {
+               projectId,
+               skip = 0,
+               limit = 9,
+               filters = {},
+               sortBy = "date",
+               order = "desc"
+           }: {
         projectId: string;
         skip?: number;
         limit?: number;
@@ -256,13 +258,13 @@ export const getProjectDRF3Mappings = createAsyncThunk(
 export const getProjectWorkflows = createAsyncThunk(
     "projects/getProjectWorkflows",
     async ({
-        projectId,
-        skip = 0,
-        limit = 9,
-        filters = {},
-        sortBy = "date",
-        order = "desc"
-    }: {
+               projectId,
+               skip = 0,
+               limit = 9,
+               filters = {},
+               sortBy = "date",
+               order = "desc"
+           }: {
         projectId: string;
         skip?: number;
         limit?: number;
@@ -298,13 +300,13 @@ export const getProjectWorkflows = createAsyncThunk(
 export const getProjectVisualizations = createAsyncThunk(
     "projects/getProjectVisualizations",
     async ({
-        projectId,
-        skip = 0,
-        limit = 9,
-        filters = {},
-        sortBy = "date",
-        order = "desc"
-    }: {
+               projectId,
+               skip = 0,
+               limit = 9,
+               filters = {},
+               sortBy = "date",
+               order = "desc"
+           }: {
         projectId: string;
         skip?: number;
         limit?: number;
@@ -338,9 +340,9 @@ export const getProjectVisualizations = createAsyncThunk(
 );
 
 export const fetchInfiniteProjectVisualizations = async ({
-    pageParam = 1,
-    projectId
-}: any): Promise<{
+                                                             pageParam = 1,
+                                                             projectId
+                                                         }: any): Promise<{
     data: Visualization[];
     nextPage: number;
 }> => {
@@ -475,10 +477,10 @@ export const createProjectVisualization = createAsyncThunk(
 export const addLayerToVisualization = createAsyncThunk(
     "projects/addLayerToVisualization",
     async ({
-        projectId,
-        visualizationId,
-        layers
-    }: {
+               projectId,
+               visualizationId,
+               layers
+           }: {
         projectId: string;
         visualizationId: string;
         layers: IncoreLayer[];
@@ -497,10 +499,10 @@ export const addLayerToVisualization = createAsyncThunk(
 export const deleteLayerToVisualization = createAsyncThunk(
     "projects/deleteLayerToVisualization",
     async ({
-        projectId,
-        visualizationId,
-        layerIds
-    }: {
+               projectId,
+               visualizationId,
+               layerIds
+           }: {
         projectId: string;
         visualizationId: string;
         layerIds: string[];
@@ -519,10 +521,10 @@ export const deleteLayerToVisualization = createAsyncThunk(
 export const patchVisualization = createAsyncThunk(
     "projects/patchVisualization",
     async ({
-        projectId,
-        visualizationId,
-        patchData
-    }: {
+               projectId,
+               visualizationId,
+               patchData
+           }: {
         projectId: string;
         visualizationId: string;
         patchData: {
@@ -910,7 +912,14 @@ const projectSlice = createSlice({
             })
             .addCase(patchVisualization.fulfilled, (state, action) => {
                 state.loading = false;
-                state.selectedVisualization = action.payload;
+                const updated = action.payload;
+                // Replace the item in the list
+                const index = state.projectVisualizations.findIndex((v) => v.id === updated.id);
+                if (index !== -1) {
+                    state.projectVisualizations[index] = updated;
+                }
+                // update selected item
+                state.selectedVisualization = updated;
                 state.success = "Successfully patch the project visualization";
             })
             .addCase(patchVisualization.rejected, (state, action) => {
