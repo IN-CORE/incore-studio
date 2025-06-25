@@ -9,6 +9,7 @@ const LazyProjectHazardsPage = lazy(() => import("@app/components/Project/Resour
 const LazyProjectVisualizationsPage = lazy(() => import("@app/components/Project/Resource/VisualizationPage"));
 const LazyProjectWorkflowsPage = lazy(() => import("@app/components/Project/Resource/WorkflowPage"));
 const LazyProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Resource/DFR3MappingPage"));
+const LazyProjectToolsPage = lazy(() => import("@app/components/Project/Resource/ToolsPage"));
 const LazyProjectWorkflowExecutionSummaryPage = lazy(
     () => import("@app/components/Project/Resource/WorkflowExecutionSummaryPage")
 );
@@ -96,6 +97,13 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
         element: (
             <Suspense fallback={<Loading />}>
                 <LazyProjectDFR3MappingPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/tools": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyProjectToolsPage />
             </Suspense>
         )
     },
