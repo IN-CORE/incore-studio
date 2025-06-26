@@ -82,19 +82,26 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
             hazard: selectedHazard ?? "earthquake", // Default to flood if not selected
             fips_list: selectedEntries.map((entry) => entry.fips)
         };
+        // try {
+        //     axios.post(`${config.toolsApi}/tools/bld-inventory?projectid=${projectId}`, payload, {
+        //         headers: getHeaders()
+        //     })
+        //     handleSnackbar?.("success"); // Notify parent component
+        // } catch (error) {
+        //     console.log("Error creating NSI Dataset:", error);
+        //     handleSnackbar?.("failure"); // Notify parent component of error
+        // }
         axios
-            .post(`${config.toolsApi}/tools/bld-inventory?projectid=${projectId}`, payload, { headers: getHeaders() })
-            .then((response) => {
-                console.log("NSI Dataset created successfully:", response.data);
-                if (handleSnackbar) {
-                    handleSnackbar("success"); // Notify parent component
-                }
+            .post(`${config.toolsApi}/tools/bld-inventory?projectid=${projectId}`, payload, {
+                headers: getHeaders()
+            })
+            .then(() => {
+                console.log("NSI Dataset created successfully");
+                handleSnackbar?.("success"); // Notify parent component
             })
             .catch((error) => {
                 console.log("Error creating NSI Dataset:", error);
-                if (handleSnackbar) {
-                    handleSnackbar("failure"); // Notify parent component of error
-                }
+                handleSnackbar?.("failure"); // Notify parent component of error
             });
         onClose(); // Close the modal after submission
         // console.log("Payload to be sent:", payload);

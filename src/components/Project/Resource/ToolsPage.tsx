@@ -28,7 +28,7 @@ const ToolsPage: React.FC = () => {
     const [snackbarState, setSnackbarState] = React.useState({
         open: false,
         message: "",
-        severity: "success"
+        severity: "neutral"
     });
 
     const handleSnackbarStatus = (status: string) => {
@@ -40,7 +40,7 @@ const ToolsPage: React.FC = () => {
                 severity: "success"
             });
         } else if (status === "close") {
-            setSnackbarState({ ...snackbarState, open: false });
+            setSnackbarState({ open: false, message: "", severity: "neutral" });
         } else if (status === "failure") {
             setSnackbarState({
                 open: true,
@@ -97,12 +97,11 @@ const ToolsPage: React.FC = () => {
                             open={snackbarState.open}
                             onClose={() => handleSnackbarStatus("close")}
                             autoHideDuration={5000}
-                            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                             variant="outlined"
                             color={snackbarState.severity === "success" ? "success" : "danger"}
                         >
-                            Request submitted, the created project will be available in the project list once it is
-                            processed.
+                            {snackbarState.message}
                         </Snackbar>
                         <Grid container spacing={5} mt={3} ml={0}>
                             <Grid sm={2}>
