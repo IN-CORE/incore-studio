@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Box, Card, CardContent, Divider, Typography, Container, Grid } from "@mui/joy";
+import { Box, Card, CardContent, Divider, Typography, Container, Grid, Snackbar } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
@@ -25,6 +25,31 @@ const ToolsPage: React.FC = () => {
     const project = useSelector((state: RootState) => state.project.project);
 
     const [openNSITool, setOpenNSITool] = React.useState(false);
+    const [snackbarState, setSnackbarState] = React.useState({
+        open: false,
+        message: "",
+        severity: "success"
+    });
+
+    const handleSnackbarStatus = (status: string) => {
+        if (status === "success") {
+            setSnackbarState({
+                open: true,
+                message:
+                    "Request submitted, the created project will be available in the project list once it is processed.",
+                severity: "success"
+            });
+        } else if (status === "close") {
+            setSnackbarState({ ...snackbarState, open: false });
+        } else if (status === "failure") {
+            setSnackbarState({
+                open: true,
+                message: "Failed to submit the request. Please try again.",
+                severity: "danger"
+            });
+        }
+    };
+
     const handleOpenNSITool = () => {
         setOpenNSITool(true);
     };
@@ -50,7 +75,12 @@ const ToolsPage: React.FC = () => {
 
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
-            <NSIBuildingInventoryTool open={openNSITool} onClose={handleCloseNSITool} projectId={id ?? ""} />
+            <NSIBuildingInventoryTool
+                open={openNSITool}
+                onClose={handleCloseNSITool}
+                projectId={id ?? ""}
+                handleSnackbar={handleSnackbarStatus}
+            />
             <Box sx={{ flexShrink: 0 }} mt={5}>
                 {!project ? (
                     <Typography>Loading...</Typography>
@@ -63,6 +93,17 @@ const ToolsPage: React.FC = () => {
                         />
                         <ProjectHeader project={project} />
                         <Divider />
+                        <Snackbar
+                            open={snackbarState.open}
+                            onClose={() => handleSnackbarStatus("close")}
+                            autoHideDuration={5000}
+                            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                            variant="outlined"
+                            color={snackbarState.severity === "success" ? "success" : "danger"}
+                        >
+                            Request submitted, the created project will be available in the project list once it is
+                            processed.
+                        </Snackbar>
                         <Grid container spacing={5} mt={3} ml={0}>
                             <Grid sm={2}>
                                 <ProjectSidebar id={project.id} />
