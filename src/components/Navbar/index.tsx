@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
                 >
                     <Box
                         component="img"
-                        src="/resilience-logo.png"
+                        src="./resilience-logo.png"
                         alt="Studio"
                         sx={{
                             width: "3em",
