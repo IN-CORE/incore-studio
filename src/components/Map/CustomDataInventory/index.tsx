@@ -1,14 +1,11 @@
-import { Box, Tab, Tabs, Button } from "@mui/material";
+import { Box, Tab, Tabs, Button, Dialog, IconButton } from "@mui/material";
 import React, { useState } from "react";
 
-import { useImplementation } from "@ncsa/geo-explorer";
-import { DatabaseHeavy } from "@app/icons/DatabaseHeavy";
 import { DatasetLayerList } from "@app/components/Map/CustomDataInventory/DatasetLayerList";
 import { HazardLayerList } from "@app/components/Map/CustomDataInventory/HazardLayerList";
+import CloseIcon from "@mui/icons-material/Close";
 
-export function CustomDataInventory() {
-    const { SidebarSection } = useImplementation();
-
+export const CustomDataInventory = () => {
     const [tabIndex, setTabIndex] = useState(0);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -23,8 +20,38 @@ export function CustomDataInventory() {
                     Add New Layers to Visualization
                 </Button>
             )}
-            {isEditing && (
-                <SidebarSection icon={<DatabaseHeavy size={16} />} weight={2} title="Data Inventory">
+            <Dialog
+                open={isEditing}
+                onClose={handleToggle}
+                maxWidth={false}
+                PaperProps={{
+                    sx: {
+                        minWidth: 800,
+                        width: "50vw",
+                        maxHeight: "90vh",
+                        position: "relative",
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: "hidden"
+                    }
+                }}
+            >
+                <IconButton
+                    onClick={handleToggle}
+                    sx={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}
+                    aria-label="close"
+                >
+                    <CloseIcon />
+                </IconButton>
+                <Box
+                    sx={{
+                        mt: 5,
+                        px: 3,
+                        pb: 3,
+                        overflowY: "auto",
+                        flexGrow: 1
+                    }}
+                >
                     <Box className="flex flex-col h-full">
                         <Box className="flex-none px-[32px]">
                             <Tabs
@@ -40,8 +67,8 @@ export function CustomDataInventory() {
                         {tabIndex === 0 && <DatasetLayerList />}
                         {tabIndex === 1 && <HazardLayerList />}
                     </Box>
-                </SidebarSection>
-            )}
+                </Box>
+            </Dialog>
         </>
     );
-}
+};

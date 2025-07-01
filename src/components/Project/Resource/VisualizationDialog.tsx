@@ -95,12 +95,6 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
         resetCreation();
     };
 
-    // TODO think of better way to get all visualizations
-    // useEffect(() => {
-    //     // temporary fix to get all visualizations
-    //     appDispatch(getProjectVisualizations({ projectId, skip: 0, limit: 100000 }));
-    // }, [projectId]);
-
     return (
         <Modal open={open} onClose={onClose}>
             <ModalDialog size="lg" sx={{ backgroundColor: "#fff" }}>

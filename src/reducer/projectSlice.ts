@@ -922,11 +922,11 @@ const projectSlice = createSlice({
                 }
                 // update selected item
                 state.selectedVisualization = updated;
-                state.success = "Successfully patch the project visualization";
+                state.success = "Successfully updated the project visualization";
             })
             .addCase(patchVisualization.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || "Failed to patch the visualizations";
+                state.error = action.error.message || "Failed to update the visualizations";
             })
             .addCase(addLayerToVisualization.pending, (state) => {
                 state.loading = true;
