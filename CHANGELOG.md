@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Bug where we cannot edit fields that were prepopulated with not allowed characters in execution sidepanel. [#174](https://github.com/IN-CORE/incore-studio/issues/174)
 - Execution count not showing up issue. [#172](https://github.com/IN-CORE/incore-studio/issues/172)
 - Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
+- The items in project dashboard to be default sorted by date in descending order. [#206](https://github.com/IN-CORE/incore-studio/issues/206)
 
 ### Changed
 - Improve resource card layout [#65](https://github.com/IN-CORE/incore-studio/issues/65)

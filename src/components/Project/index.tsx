@@ -123,7 +123,13 @@ const Project = (): JSX.Element => {
                     Projects
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Link to="/tutorials" component={RouterLink} underline="hover" sx={{ fontWeight: "medium" }}>
+                    <Link
+                        to="/tutorials"
+                        disabled
+                        component={RouterLink}
+                        underline="hover"
+                        sx={{ fontWeight: "medium" }}
+                    >
                         Tutorials
                     </Link>
                     <Button

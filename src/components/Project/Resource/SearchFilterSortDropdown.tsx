@@ -14,11 +14,15 @@ type SearchFilterSortDropdownProps = {
 const SearchFilterSortDropdown: React.FC<SearchFilterSortDropdownProps> = ({ filters, sortOptions, onApply }) => {
     const [selectedFilters, setSelectedFilters] = React.useState<Record<string, string>>({});
     const [searchText, setSearchText] = React.useState<string>(""); // Search text
-    const [sortBy, setSortBy] = React.useState<string>("");
-    const [order, setOrder] = React.useState<string>("");
+    const [sortBy, setSortBy] = React.useState<string>(sortOptions.includes("date") ? "date" : "created");
+    const [order, setOrder] = React.useState<string>("desc");
 
     const [showFilterDropdown, setShowFilterDropdown] = React.useState(false);
     const [showSortDropdown, setShowSortDropdown] = React.useState(false);
+
+    React.useEffect(() => {
+        triggerApply(selectedFilters, searchText, sortBy, order);
+    }, []);
 
     const handleSearchChange = (text: string) => {
         setSearchText(text);
