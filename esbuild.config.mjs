@@ -10,7 +10,6 @@ const commonConfig = {
     entryPoints: [
         "src/App.tsx",
         "node_modules/maplibre-gl/dist/maplibre-gl.css",
-        "src/index.css"
     ],
     outdir: "build",
     bundle: true,
@@ -37,7 +36,7 @@ const commonConfig = {
         ".ttf": "file",
         ".eot": "file",
         ".ico": "file",
-        ".css": "css"
+        ".css": "css",
     },
     plugins: [
         sassPlugin({
