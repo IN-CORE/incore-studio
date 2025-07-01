@@ -9,7 +9,8 @@ const isDev = process.argv.includes("--watch");
 const commonConfig = {
     entryPoints: [
         "src/App.tsx",
-        "node_modules/maplibre-gl/dist/maplibre-gl.css"
+        "node_modules/maplibre-gl/dist/maplibre-gl.css",
+        "src/index.css"
     ],
     outdir: "build",
     bundle: true,
@@ -35,7 +36,8 @@ const commonConfig = {
         ".woff2": "file",
         ".ttf": "file",
         ".eot": "file",
-        ".ico": "file"
+        ".ico": "file",
+        ".css": "css"
     },
     plugins: [
         sassPlugin({

@@ -1,3 +1,5 @@
+import "./index.css";
+
 import React, { StrictMode, Suspense, FC, useEffect } from "react";
 // eslint-disable-next-line import/no-unresolved
 import { createRoot } from "react-dom/client";

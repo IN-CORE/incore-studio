@@ -8,7 +8,6 @@ import SettingsIcon from "@mui/icons-material/Settings";
 // eslint-disable-next-line import/no-unresolved
 import config from "@app/app.config";
 import Gravatar from "react-gravatar";
-// import logo from "/public/resilience-logo.png";
 
 const Navbar: React.FC = () => {
     const auth = useAuth();
@@ -62,8 +61,7 @@ const Navbar: React.FC = () => {
                 >
                     <Box
                         component="img"
-                        // src={logo}
-                          src="/resilience-logo.png"
+                        src="/resilience-logo.png"
                         alt="Studio"
                         sx={{
                             width: "3em",
