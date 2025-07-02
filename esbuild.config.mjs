@@ -84,11 +84,11 @@ const run = async () => {
 
     if (isDev) {
         await ctx.watch();
-        await ctx.serve({
-            servedir: "build",
-            port: 3000
-        });
-        console.log("Serving at http://localhost:3000 (watch mode enabled)");
+        // await ctx.serve({
+        //     servedir: "build",
+        //     port: 3000
+        // });
+        console.log("watch mode enabled.");
     } else {
         await ctx.rebuild();
         await ctx.dispose();

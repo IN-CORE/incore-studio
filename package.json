@@ -64,6 +64,7 @@
         "@typescript-eslint/parser": "~5.46",
         "autoprefixer": "^10.4.21",
         "babel-eslint": "~10.1",
+        "concurrently": "^9.2.0",
         "core-js": "~3.32",
         "css-loader": "^6.8",
         "esbuild": "^0.25.5",
@@ -97,7 +98,7 @@
         "url-loader": "~4.1"
     },
     "scripts": {
-        "start:dev": "INCORE_REMOTE_HOSTNAME=https://dev.in-core.org node esbuild.config.mjs --watch",
+        "start:dev": "concurrently -k -n BUILD,SERVE -c yellow,cyan \"INCORE_REMOTE_HOSTNAME=https://dev.in-core.org node esbuild.config.mjs --watch\" \"npx serve build -l 3000 -s\"",
         "build": "NODE_ENV=production node esbuild.config.mjs",
         "eject": "react-scripts eject",
         "lint": "eslint src --color --ext=.tsx,.js",
