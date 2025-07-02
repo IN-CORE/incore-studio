@@ -48,7 +48,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
     const [searchAnalysisTerm, setSearchAnalysisTerm] = React.useState<string>("");
     const [availableAnalyses, setAvailableAnalyses] = React.useState<string[]>([]);
     const [groupedAnalyses, setGroupedAnalyses] = React.useState<Record<string, string[]>>({});
-    const [selectedTag, setSelectedTag] = React.useState<string>("all");
+    const [selectedTag, setSelectedTag] = React.useState<string>("All");
     const [currentAnalysesList, setCurrentAnalysesList] = React.useState<string[]>([]);
     const [currentAnalysisCount, setCurrentAnalysisCount] = React.useState<number>(0);
 
@@ -64,17 +64,14 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
 
     React.useEffect(() => {
         if (datawolfTools.length !== 0 && dependencyGraph !== null) {
-            let toolNames = datawolfTools.map((tool) => tool.title).sort();
-            toolNames = toolNames
-                .filter((tool) => dependencyGraph[tool] !== undefined)
-                .filter(
-                    (tool) =>
-                        dependencyGraph[tool].pretty_name.toLowerCase().search(searchAnalysisTerm.toLowerCase()) !== -1
-                );
+            let toolNames = datawolfTools
+                .filter((tool) => dependencyGraph[tool.title] !== undefined)
+                .map((tool) => tool.title)
+                .sort();
             // get unique tags for all tools from dependencyGraph
             const tags = new Set<string>();
             for (const tool of toolNames) {
-                if (dependencyGraph[tool].tags) {
+                if (dependencyGraph[tool].tags.length !== 0) {
                     dependencyGraph[tool].tags.forEach((tag: string) => tags.add(tag));
                 }
             }
@@ -86,10 +83,12 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                 groupedTools[tag] = [];
             });
             toolNames.forEach((tool) => {
-                if (dependencyGraph[tool].tags) {
+                if (dependencyGraph[tool].tags.length !== 0) {
                     dependencyGraph[tool].tags.forEach((tag: string) => groupedTools[tag].push(tool));
                 }
             });
+            // add all tools to a special "all" group
+            groupedTools["All"] = toolNames;
             // sort grouped tools
             Object.keys(groupedTools).forEach((tag) => {
                 groupedTools[tag].sort((a, b) => {
@@ -104,12 +103,38 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                     return 0;
                 });
             });
+
             setGroupedAnalyses(groupedTools);
             setAvailableAnalyses(toolNames);
-            setCurrentAnalysesList(selectedTag === "all" ? toolNames : groupedTools[selectedTag]);
-            setCurrentAnalysisCount(selectedTag === "all" ? toolNames.length : groupedTools[selectedTag].length);
+            setCurrentAnalysesList(groupedTools[selectedTag]);
+            setCurrentAnalysisCount(groupedTools[selectedTag].length);
         }
-    }, [datawolfTools, searchAnalysisTerm]);
+    }, [datawolfTools]);
+
+    React.useEffect(() => {
+        if (dependencyGraph !== null && groupedAnalyses[selectedTag]) {
+            const newAvailableAnalyses = groupedAnalyses[selectedTag].filter((analysis) =>
+                dependencyGraph[analysis].pretty_name.toLowerCase().includes(searchAnalysisTerm.toLowerCase())
+            );
+            setCurrentAnalysesList(newAvailableAnalyses);
+            setCurrentAnalysisCount(newAvailableAnalyses.length);
+        }
+    }, [selectedTag]);
+
+    React.useEffect(() => {
+        if (dependencyGraph !== null && groupedAnalyses[selectedTag]) {
+            if (searchAnalysisTerm.length === 0) {
+                setCurrentAnalysesList(groupedAnalyses[selectedTag]);
+                setCurrentAnalysisCount(groupedAnalyses[selectedTag].length);
+            } else {
+                const filteredAnalyses = groupedAnalyses[selectedTag].filter((analysis) =>
+                    dependencyGraph[analysis].pretty_name.toLowerCase().includes(searchAnalysisTerm.toLowerCase())
+                );
+                setCurrentAnalysesList(filteredAnalyses);
+                setCurrentAnalysisCount(filteredAnalyses.length);
+            }
+        }
+    }, [searchAnalysisTerm]);
 
     return (
         <Modal
@@ -121,8 +146,8 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
         >
             <Card
                 sx={{
-                    width: "75%",
-                    maxHeight: "75%",
+                    width: "50%",
+                    maxHeight: "50%",
                     backgroundColor: "white",
                     padding: "24px"
                 }}
@@ -146,43 +171,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                 </Box>
                 <CardContent>
                     <Stack direction="column" spacing={3}>
-                        <Stack direction="row" spacing={1} sx={{ width: "100%" }}>
-                            <FormControl sx={{ width: "50%" }}>
-                                <FormLabel sx={{ color: "#172B4D" }}>Filter by Category</FormLabel>
-                                <Select
-                                    placeholder="Select Category"
-                                    value={selectedTag}
-                                    onChange={(_, newTag: string | null) => {
-                                        setSelectedTag(newTag ?? "all");
-                                        if (newTag !== "all" && newTag !== null) {
-                                            setCurrentAnalysesList(groupedAnalyses[newTag]);
-                                            setCurrentAnalysisCount(groupedAnalyses[newTag].length);
-                                        } else {
-                                            setCurrentAnalysesList(availableAnalyses);
-                                            setCurrentAnalysisCount(availableAnalyses.length);
-                                        }
-                                    }}
-                                    sx={{
-                                        "backgroundColor": "white",
-                                        "border": "1px solid",
-                                        "borderColor": "neutral.300",
-                                        "borderRadius": "8px",
-                                        "&:hover": {
-                                            borderColor: "neutral.500"
-                                        },
-                                        "&:focus-within": {
-                                            borderColor: "primary.500"
-                                        }
-                                    }}
-                                >
-                                    <Option value="all">All</Option>
-                                    {Object.keys(groupedAnalyses).map((tag) => (
-                                        <Option key={tag} value={tag}>
-                                            {tag}
-                                        </Option>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                        <Stack direction="column" spacing={2} sx={{ width: "100%" }}>
                             <FormControl sx={{ width: "50%" }}>
                                 <FormLabel sx={{ color: "#172B4D" }}>Search by Name</FormLabel>
                                 <Input
@@ -203,6 +192,41 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                     }}
                                 />
                             </FormControl>
+                            <FormControl sx={{ width: "50%" }}>
+                                <FormLabel sx={{ color: "#172B4D" }}>Filter by Category</FormLabel>
+                                <Select
+                                    placeholder="Select Category"
+                                    value={selectedTag}
+                                    onChange={(_, newTag: string | null) => {
+                                        setSelectedTag(newTag ?? "All");
+                                        if (newTag !== null) {
+                                            setCurrentAnalysesList(groupedAnalyses[newTag]);
+                                            setCurrentAnalysisCount(groupedAnalyses[newTag].length);
+                                        } else {
+                                            setCurrentAnalysesList(availableAnalyses);
+                                            setCurrentAnalysisCount(availableAnalyses.length);
+                                        }
+                                    }}
+                                    sx={{
+                                        "backgroundColor": "white",
+                                        "border": "1px solid",
+                                        "borderColor": "neutral.300",
+                                        "borderRadius": "8px",
+                                        "&:hover": {
+                                            borderColor: "neutral.500"
+                                        },
+                                        "&:focus-within": {
+                                            borderColor: "primary.500"
+                                        }
+                                    }}
+                                >
+                                    {Object.keys(groupedAnalyses).map((tag) => (
+                                        <Option sx={{ textTransform: "capitalize" }} key={tag} value={tag}>
+                                            {tag}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Stack>
                         <Box>
                             <Typography level="body-sm" sx={{ color: "#172B4D", fontWeight: 500 }}>
@@ -210,7 +234,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                 {selectedTag === "Pyincore Utility" ? "Utility Tools" : "Analyses"} found
                             </Typography>
                         </Box>
-                        <Box sx={{ height: "400px", overflow: "auto", padding: "10px" }}>
+                        <Box sx={{ overflow: "auto", padding: "10px" }}>
                             <List
                                 sx={{
                                     "--List-gap": "8px",
