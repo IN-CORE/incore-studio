@@ -316,23 +316,12 @@ const WorkflowEditor = (): JSX.Element => {
                             </Box>
                             <Box>
                                 <Stack direction="row" spacing={2}>
-                                    <Tooltip
-                                        title="Export Workflow JSON"
-                                        variant="plain"
-                                        color="neutral"
-                                        sx={{ color: "#172B4D" }}
-                                    >
-                                        <IconButton aria-label="Export" variant="plain" onClick={handleExportJSONClick}>
-                                            <FileDownloadRoundedIcon sx={{ color: "#172B4D" }} />
-                                        </IconButton>
-                                    </Tooltip>
                                     <Button
                                         variant="solid"
                                         sx={{ backgroundColor: "primary.main" }}
-                                        onClick={() => setSelectAnalysisModalOpen(true)}
-                                        startDecorator={<AddRoundedIcon />}
+                                        onClick={handleSaveClick}
                                     >
-                                        Add another analysis
+                                        Save
                                     </Button>
                                     <Button
                                         variant="outlined"
@@ -341,13 +330,6 @@ const WorkflowEditor = (): JSX.Element => {
                                             color: "primary.subtle",
                                             backgroundColor: "white"
                                         }}
-                                        onClick={handleSaveClick}
-                                    >
-                                        Save
-                                    </Button>
-                                    <Button
-                                        variant="solid"
-                                        sx={{ backgroundColor: "primary.main" }}
                                         onClick={() => {
                                             if (
                                                 project?.workflows.find((wf: Workflow) => wf.id === wfID)?.isFinalized
@@ -362,6 +344,28 @@ const WorkflowEditor = (): JSX.Element => {
                                             ? "Create Execution"
                                             : "Finalize Workflow"}
                                     </Button>
+                                    <Button
+                                        variant="outlined"
+                                        sx={{
+                                            borderColor: "primary.subtle",
+                                            color: "primary.subtle",
+                                            backgroundColor: "white"
+                                        }}
+                                        onClick={() => setSelectAnalysisModalOpen(true)}
+                                        startDecorator={<AddRoundedIcon />}
+                                    >
+                                        Add another analysis
+                                    </Button>
+                                    <Tooltip
+                                        title="Export Workflow JSON"
+                                        variant="plain"
+                                        color="neutral"
+                                        sx={{ color: "#172B4D" }}
+                                    >
+                                        <IconButton aria-label="Export" variant="plain" onClick={handleExportJSONClick}>
+                                            <FileDownloadRoundedIcon sx={{ color: "#172B4D" }} />
+                                        </IconButton>
+                                    </Tooltip>
                                 </Stack>
                                 <Snackbar
                                     anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
