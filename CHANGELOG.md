@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-
 ## [Unreleased]
 
 ### Added
@@ -20,9 +19,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Execution count not showing up issue. [#172](https://github.com/IN-CORE/incore-studio/issues/172)
 - Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
 - Issue where user cannot submit jobs if dfr3 mapping and hazards don't match [#193](https://github.com/IN-CORE/incore-studio/issues/193)
+- The items in project dashboard to be default sorted by date in descending order. [#206](https://github.com/IN-CORE/incore-studio/issues/206)
 
 ### Changed
+
 - Improve resource card layout [#65](https://github.com/IN-CORE/incore-studio/issues/65)
+- Improve performance by switching from Webpack to ESBuild [#200](https://github.com/IN-CORE/incore-studio/issues/200)
 
 ## [Beta-1] - 05-01-2025
 

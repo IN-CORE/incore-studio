@@ -13,7 +13,7 @@ COPY package*.json /usr/src/app/
 RUN npm install
 
 # copy rest of application
-COPY .eslintrc .huskyrc .lintstagedrc .prettierrc *.js *.json /usr/src/app/
+COPY .eslintrc .huskyrc .lintstagedrc .prettierrc esbuild.config.mjs *.js *.json /usr/src/app/
 #COPY . /usr/src/app/
 COPY src /usr/src/app/src/
 COPY public /usr/src/app/public/
