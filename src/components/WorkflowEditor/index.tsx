@@ -95,13 +95,6 @@ const WorkflowEditor = (): JSX.Element => {
     };
 
     React.useEffect(() => {
-        if (confirmFinalize && wfID && id) {
-            appDispatch(finalizeWorkflow({ projectId: id, workflowId: wfID }));
-            navigate(`/project/${id}/workflows/${wfID}/execution/create`);
-        }
-    }, [confirmFinalize]);
-
-    React.useEffect(() => {
         if (saveWorkflowError) {
             setSnackbarMessage(`Couldn't save workflow. Error: ${saveWorkflowError}`);
             setSnackbarColor("danger");
@@ -228,6 +221,15 @@ const WorkflowEditor = (): JSX.Element => {
             updateLastSaved();
         } // else dispatch save workflow error
     };
+
+    React.useEffect(() => {
+        if (confirmFinalize && wfID && id) {
+            handleSaveClick();
+            appDispatch(finalizeWorkflow({ projectId: id, workflowId: wfID }));
+            navigate(`/project/${id}/workflows/${wfID}/execution/create`);
+        }
+    }, [confirmFinalize]);
+
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "94vh" }}>
             {workflowLoading || createdWorkflowLoading ? (

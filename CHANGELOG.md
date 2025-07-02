@@ -19,7 +19,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Bug where we cannot edit fields that were prepopulated with not allowed characters in execution sidepanel. [#174](https://github.com/IN-CORE/incore-studio/issues/174)
 - Execution count not showing up issue. [#172](https://github.com/IN-CORE/incore-studio/issues/172)
 - Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
+- Finalized workflows not being saved first issue. [#204](https://github.com/IN-CORE/incore-studio/issues/204)
 - The items in project dashboard to be default sorted by date in descending order. [#206](https://github.com/IN-CORE/incore-studio/issues/206)
+- Switch from webpack to esbuild and find alternative to serve app with SPA routes [#200](https://github.com/IN-CORE/incore-studio/issues/200)
 
 ### Changed
 
