@@ -1,14 +1,12 @@
 import React from "react";
-import { Box, Typography } from "@mui/joy";
 import { Link } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
-import { Divider, IconButton, Menu, MenuItem, Avatar } from "@mui/joy";
+import { Divider, IconButton, Menu, MenuItem, Avatar, Box, Typography } from "@mui/joy";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import HelpIcon from "@mui/icons-material/Help";
 import SettingsIcon from "@mui/icons-material/Settings";
 // eslint-disable-next-line import/no-unresolved
 import config from "@app/app.config";
-import logo from "/public/resilience-logo.png";
 import Gravatar from "react-gravatar";
 
 const Navbar: React.FC = () => {
@@ -63,7 +61,7 @@ const Navbar: React.FC = () => {
                 >
                     <Box
                         component="img"
-                        src={logo}
+                        src="./resilience-logo.png"
                         alt="Studio"
                         sx={{
                             width: "3em",
@@ -77,13 +75,13 @@ const Navbar: React.FC = () => {
             </Link>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mr: 2 }}>
-                <IconButton>
+                <IconButton disabled>
                     <NotificationsIcon className="icon" />
                 </IconButton>
-                <IconButton>
+                <IconButton disabled>
                     <HelpIcon className="icon" />
                 </IconButton>
-                <IconButton>
+                <IconButton disabled>
                     <SettingsIcon className="icon" />
                 </IconButton>
                 <IconButton
