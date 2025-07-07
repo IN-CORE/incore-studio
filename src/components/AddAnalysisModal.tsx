@@ -141,13 +141,13 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
             aria-labelledby="modal-title"
             aria-describedby="modal-desc"
             open={selectAnalysisModalOpen}
-            onClose={() => setSelectAnalysisModalOpen(false)}
+            onClose={clearItems}
             sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
         >
             <Card
                 sx={{
                     width: "50%",
-                    maxHeight: "50%",
+                    maxHeight: "75%",
                     backgroundColor: "white",
                     padding: "24px"
                 }}
@@ -172,7 +172,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                 <CardContent>
                     <Stack direction="column" spacing={3}>
                         <Stack direction="column" spacing={2} sx={{ width: "100%" }}>
-                            <FormControl sx={{ width: "50%" }}>
+                            <FormControl>
                                 <FormLabel sx={{ color: "#172B4D" }}>Search by Name</FormLabel>
                                 <Input
                                     startDecorator={<SearchRoundedIcon />}
@@ -192,7 +192,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                     }}
                                 />
                             </FormControl>
-                            <FormControl sx={{ width: "50%" }}>
+                            <FormControl>
                                 <FormLabel sx={{ color: "#172B4D" }}>Filter by Category</FormLabel>
                                 <Select
                                     placeholder="Select Category"
@@ -234,7 +234,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                 {selectedTag === "Pyincore Utility" ? "Utility Tools" : "Analyses"} found
                             </Typography>
                         </Box>
-                        <Box sx={{ overflow: "auto", padding: "10px" }}>
+                        <Box sx={{ height: "200px", overflow: "auto", padding: "10px" }}>
                             <List
                                 sx={{
                                     "--List-gap": "8px",
@@ -317,9 +317,16 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                     </Stack>
                 </CardContent>
                 <CardActions>
+                    <Button variant="solid" sx={{ backgroundColor: "primary.main", ml: "auto" }} onClick={clearItems}>
+                        Cancel
+                    </Button>
                     <Button
-                        variant="solid"
-                        sx={{ backgroundColor: "primary.main" }}
+                        variant="outlined"
+                        sx={{
+                            borderColor: "primary.subtle",
+                            color: "primary.subtle",
+                            backgroundColor: "white"
+                        }}
                         startDecorator={<AddRoundedIcon />}
                         onClick={() => {
                             if (selectedAnalysis !== "") {
