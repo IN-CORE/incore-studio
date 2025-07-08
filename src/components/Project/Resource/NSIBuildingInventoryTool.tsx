@@ -6,7 +6,6 @@ import {
     Box,
     Button,
     Chip,
-    Divider,
     FormControl,
     FormLabel,
     FormHelperText,
@@ -14,9 +13,6 @@ import {
     Modal,
     ModalDialog,
     ModalClose,
-    Select,
-    Stack,
-    Option,
     Textarea,
     Typography
 } from "@mui/joy";
@@ -40,31 +36,39 @@ interface FipsLookupModalProps {
     handleSnackbar?: (status: string) => void; // Optional callback for snackbar notification
 }
 
+const allowedStates = ["Tennessee", "Oregon", "California"];
+
 const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projectId, handleSnackbar }) => {
     const [inputValue, setInputValue] = React.useState<string>("");
     const [filteredOptions, setFilteredOptions] = React.useState<FipsEntry[]>([]);
-    const [selectedEntries, setSelectedEntries] = React.useState<FipsEntry[]>([]);
+    const [selectedFips, setSelectedFips] = React.useState<string | null>(null);
     const [title, setTitle] = React.useState<string>("");
     const [description, setDescription] = React.useState<string>("");
     const [touched, setTouched] = React.useState(false);
-    const [selectedHazard, setSelectedHazard] = React.useState<string | null>(null);
 
-    const isValid = selectedEntries.length > 0;
+    const allowedFipsData = (fipsData as FipsEntry[]).filter((entry) => allowedStates.includes(entry.state));
+
+    const isValid = selectedFips !== null;
     const showError = touched && !isValid;
 
     const handleBlur = () => {
         setTouched(true);
     };
 
+    React.useEffect(() => {
+        // Initialize filtered options with all FIPS data
+        setFilteredOptions(allowedFipsData as FipsEntry[]);
+    }, []);
+
     // Debounced filtering
     React.useEffect(() => {
         const handler = setTimeout(() => {
             const filter = inputValue.toLowerCase().trim();
             if (!filter) {
-                setFilteredOptions([]);
+                setFilteredOptions(allowedFipsData as FipsEntry[]);
                 return;
             }
-            const results = (fipsData as FipsEntry[]).filter(
+            const results = (allowedFipsData as FipsEntry[]).filter(
                 (entry) =>
                     entry.fips.includes(filter) ||
                     entry.state.toLowerCase().includes(filter) ||
@@ -77,44 +81,43 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
 
     const handleApply = () => {
         const payload = {
-            title: title + " - NSI Building Inventory",
+            title: title,
             description: description,
-            hazard: selectedHazard ?? "earthquake", // Default to flood if not selected
-            fips_list: selectedEntries.map((entry) => entry.fips)
+            hazardType: "earthquake", // Default to flood if not selected
+            fips_list: selectedFips ? [selectedFips] : []
         };
-        // try {
-        //     axios.post(`${config.toolsApi}/tools/bld-inventory?projectid=${projectId}`, payload, {
-        //         headers: getHeaders()
-        //     })
-        //     handleSnackbar?.("success"); // Notify parent component
-        // } catch (error) {
-        //     console.log("Error creating NSI Dataset:", error);
-        //     handleSnackbar?.("failure"); // Notify parent component of error
-        // }
-        axios
-            .post(`${config.toolsApi}/tools/bld-inventory?projectid=${projectId}`, payload, {
+
+        try {
+            axios.post(`${config.toolsApi}/bldg-inventory?projectid=${projectId}`, payload, {
                 headers: getHeaders()
-            })
-            .then(() => {
-                console.log("NSI Dataset created successfully");
-                handleSnackbar?.("success"); // Notify parent component
-            })
-            .catch((error) => {
-                console.log("Error creating NSI Dataset:", error);
-                handleSnackbar?.("failure"); // Notify parent component of error
             });
+            handleSnackbar?.("success"); // Notify parent component
+        } catch (error) {
+            handleSnackbar?.("failure"); // Notify parent component of error
+            console.error("Error creating building inventory dataset:", error);
+        }
         onClose(); // Close the modal after submission
-        // console.log("Payload to be sent:", payload);
     };
 
     return (
         <Modal open={open} onClose={onClose}>
-            <ModalDialog variant="outlined" sx={{ width: 500, maxWidth: "90vw" }}>
+            <ModalDialog variant="outlined" sx={{ maxWidth: "90vw" }}>
                 <ModalClose sx={{ zIndex: 20 }} />
-                <Typography id="create-nsi-dataset-dialog-title" component="h2" fontSize="lg" fontWeight="bold">
-                    Create NSI Dataset
-                </Typography>
-                <Stack spacing={2} mt={2}>
+                <Box sx={{ padding: 1 }}>
+                    <Typography
+                        id="create-nsi-dataset-dialog-title"
+                        component="h2"
+                        fontSize="lg"
+                        fontWeight="bold"
+                        sx={{ mb: 1 }}
+                    >
+                        Generate Building Inventory Dataset
+                    </Typography>
+                    <Typography level="body-sm" color="neutral" sx={{ mb: 2 }}>
+                        This tool will generate an IN-CORE building inventory dataset based on NSI (National Structure
+                        Inventory) for a FIPS code. The dataset is configured to work with fragility curves for IN-CORE.
+                        Currently, the tool supports the following hazards: Earthquake, Tsunami, Flood, Hurricane wind.
+                    </Typography>
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
@@ -122,7 +125,7 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                             onClose();
                         }}
                     >
-                        <FormControl required>
+                        <FormControl required sx={{ mb: 2 }}>
                             <FormLabel>Title</FormLabel>
                             <Input
                                 variant="outlined"
@@ -134,24 +137,14 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                         setTitle(e.target.value);
                                     }
                                 }}
-                                endDecorator={
-                                    <React.Fragment>
-                                        <Divider sx={{ mr: 1 }} orientation="vertical" />
-                                        <Typography color="neutral" level="body-sm" variant="plain">
-                                            - NSI Building Inventory
-                                        </Typography>
-                                    </React.Fragment>
-                                }
                             />
-                            <FormHelperText>
-                                Enter a title for the dataset. The prefix will be automatically added.
-                            </FormHelperText>
+                            <FormHelperText sx={{ mb: 1 }}>Enter a title for the dataset.</FormHelperText>
                             <Typography level="body-xs" color="neutral">
                                 Only Alpha-numeric characters, Underscores and Hyphens are allowed.
                             </Typography>
                         </FormControl>
 
-                        <FormControl sx={{ mt: 1 }}>
+                        <FormControl required sx={{ mb: 2 }}>
                             <FormLabel>Description</FormLabel>
                             <Textarea
                                 placeholder="Enter a description for the dataset"
@@ -164,44 +157,35 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                     }
                                 }}
                             />
-                            <FormHelperText>Provide a brief description of the dataset.</FormHelperText>
+                            <FormHelperText sx={{ mb: 1 }}>Provide a brief description of the dataset.</FormHelperText>
                             <Typography level="body-xs" color="neutral">
                                 Only Alpha-numeric characters, Underscores and Hyphens are allowed.
                             </Typography>
                         </FormControl>
 
-                        <FormControl sx={{ mt: 1 }}>
-                            <FormLabel>Hazard</FormLabel>
-                            <Select
-                                placeholder="Select a hazard"
-                                value={selectedHazard}
-                                onChange={(_, newValue) => setSelectedHazard(newValue)}
-                            >
-                                <Option value="earthquake">Earthquake</Option>
-                                <Option value="tsunami">Tsunami</Option>
-                            </Select>
-                            <FormHelperText>Select the hazard type for this dataset.</FormHelperText>
-                        </FormControl>
-
-                        <FormControl error={showError} sx={{ mt: 1 }}>
+                        <FormControl error={showError} sx={{ mb: 2 }}>
                             <FormLabel required>FIPS Lookup</FormLabel>
                             <Autocomplete
-                                multiple
                                 freeSolo
-                                limitTags={2}
                                 placeholder="Search by FIPS, state, or county"
                                 // Exclude already selected entries
-                                options={filteredOptions.filter(
-                                    (opt) => !selectedEntries.some((sel) => sel.fips === opt.fips)
-                                )}
+                                options={filteredOptions}
                                 getOptionLabel={(option) =>
                                     typeof option === "string"
                                         ? option
                                         : `${option.fips} - ${option.county}, ${option.state}`
                                 }
                                 onBlur={handleBlur}
-                                value={selectedEntries}
-                                onChange={(_e, newValue) => setSelectedEntries(newValue as FipsEntry[])}
+                                value={selectedFips}
+                                onChange={(_e, newValue) =>
+                                    setSelectedFips(
+                                        typeof newValue === "object" && newValue !== null && "fips" in newValue
+                                            ? (newValue as FipsEntry).fips
+                                            : typeof newValue === "string"
+                                            ? newValue
+                                            : null
+                                    )
+                                }
                                 inputValue={inputValue}
                                 onInputChange={(_e, newValue) => setInputValue(newValue)}
                                 renderTags={(value, getTagProps) =>
@@ -212,17 +196,18 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                     ))
                                 }
                             />
-                            <FormHelperText>
-                                Search by FIPS code, state, or county name. Select multiple entries.
+                            <FormHelperText sx={{ mb: 1 }}>
+                                Search by FIPS code, state, or county name. (Only California, Oregon, and Tennessee are
+                                available.)
                             </FormHelperText>
                             {showError && (
                                 <Typography fontSize="sm" color="danger">
-                                    Please select at least one FIPS entry.
+                                    Please select a FIPS entry.
                                 </Typography>
                             )}
                         </FormControl>
 
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 1 }}>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
                             <Button
                                 variant="outlined"
                                 sx={{
@@ -244,7 +229,7 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                             </Button>
                         </Box>
                     </form>
-                </Stack>
+                </Box>
             </ModalDialog>
         </Modal>
     );

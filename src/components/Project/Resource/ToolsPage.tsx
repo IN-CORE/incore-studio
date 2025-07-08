@@ -66,8 +66,7 @@ const ToolsPage: React.FC = () => {
     const TOOL_COMPONENTS = {
         "NSI Building Inventory": {
             label: "NSI Building Inventory",
-            description:
-                "A tool for managing and analyzing building inventory data from the National Structural Inventory.",
+            description: "A tool for generating building inventory data for IN-CORE based on NSI.",
             handleOpenTool: handleOpenNSITool
         }
         // Add other tools here as needed
@@ -127,6 +126,7 @@ const ToolsPage: React.FC = () => {
                                                         "display": "flex",
                                                         "flexDirection": "column",
                                                         "height": "100%",
+                                                        "width": "50%",
                                                         "padding": "1em",
                                                         "boxShadow": "none",
                                                         "transition": "all 0.3s ease",
