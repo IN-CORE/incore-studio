@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Stack, Typography } from "@mui/joy";
+import { Box, Stack, Typography } from "@mui/joy";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import StorageIcon from "@mui/icons-material/Storage";
 
@@ -20,7 +20,26 @@ const CheckboxLabel = ({ property, disabled, input }: { property: string; disabl
                 />
             )}
             <Stack direction="row" spacing={1} alignItems="center">
-                <StorageIcon sx={{ color: input ? "#007DFF" : "#AB47BC" }} />
+                <Box
+                    sx={{
+                        p: "1px",
+                        height: "20px",
+                        width: "20px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        pointerEvents: "none",
+                        borderRadius: "3px",
+                        backgroundColor: input ? "#007DFF" : "#AB47BC"
+                    }}
+                >
+                    <StorageIcon
+                        sx={{
+                            color: "white",
+                            fontSize: "16px"
+                        }}
+                    />
+                </Box>
                 <Typography level="body-sm">{property}</Typography>
             </Stack>
         </Stack>

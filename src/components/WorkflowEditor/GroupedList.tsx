@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Checkbox, List, ListItem, Stack, Typography } from "@mui/joy";
+import { Box, Checkbox, List, ListItem, Stack, Typography } from "@mui/joy";
 import StorageIcon from "@mui/icons-material/Storage";
 import Done from "@mui/icons-material/Done";
 import CheckboxLabel from "./CheckboxLabel";
@@ -68,13 +68,27 @@ const GroupedList = ({
     return (
         <Stack spacing={1} direction="column" sx={{ mb: "10px" }}>
             <Stack spacing={0} direction="row" alignItems="center">
-                <StorageIcon
+                <Box
                     sx={{
-                        color: previous ? "#007DFF" : "#AB47BC",
+                        p: "1px",
+                        height: "20px",
+                        width: "20px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        pointerEvents: "none",
                         marginRight: "5px",
-                        fontSize: "15px"
+                        borderRadius: "3px",
+                        backgroundColor: previous ? "#007DFF" : "#AB47BC"
                     }}
-                />
+                >
+                    <StorageIcon
+                        sx={{
+                            color: "white",
+                            fontSize: "16px"
+                        }}
+                    />
+                </Box>
                 <Typography level="body-lg" sx={{ color: "#172B4D" }}>
                     {propertyName}
                 </Typography>

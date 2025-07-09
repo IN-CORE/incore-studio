@@ -1,8 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import config from "@app/app.config";
-import { getHeaders } from "@app/utils";
-import axios from "axios";
 
 import {
     Box,
@@ -24,12 +22,9 @@ import {
 } from "@mui/joy";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import StorageIcon from "@mui/icons-material/Storage";
-import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 import AddIcon from "@mui/icons-material/Add";
-import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
-import InsertChartOutlinedRoundedIcon from "@mui/icons-material/InsertChartOutlinedRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
 import { useShallow } from "zustand/react/shallow";
 
 import {
@@ -37,15 +32,12 @@ import {
     updateExecutionSidePanelCheckStatus,
     clearSidePanelData
 } from "@app/reducer/executionSlice";
-import { Pagination } from "@app/components/Home/Pagination";
 import {
     addDatasetToProject,
     addDFR3MappingToProject,
     addHazardToProject,
-    getProject,
-    getProjectVisualizations
+    getProject
 } from "@app/reducer/projectSlice";
-import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
 import CompatibleTypeTooltip from "./CompatibleTypeTooltip";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
@@ -106,7 +98,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     const currentExecution = useAppSelector((state) => state.execution.currentExecution);
 
     const createExecution = useAppSelector((state) => state.execution.createExecution);
-    // const inputRef = React.useRef<HTMLInputElement>(null);
 
     const getInputDatasetInitialState = (): { [key: string]: string } => {
         let initialState: { [key: string]: string } = {};
@@ -198,26 +189,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         appDispatch(clearSidePanelData());
     };
 
-    // Pagination states
-    const [visualizationPageNumber, setVisualizationPageNumber] = React.useState(1);
-    const visualizationNextPage = () => {
-        setVisualizationPageNumber((prevPage) => prevPage + 1);
-    };
-    const visualizationPreviousPage = () => {
-        setVisualizationPageNumber((prevPage) => Math.max(prevPage - 1, 1)); // Prevent going below page 1
-    };
-
-    React.useEffect(() => {
-        if (id && !createMode) {
-            // get all visualizations
-            appDispatch(
-                getProjectVisualizations({ projectId: id, skip: (visualizationPageNumber - 1) * 10, limit: 10 })
-            );
-        }
-    }, [id, visualizationPageNumber]);
-
-    const projectVisualizations = useAppSelector((state) => state.project.projectVisualizations);
-
     // Add dataset to project from service
     const [openAddDatasetFromServiceDialog, setOpenAddDatasetFromServiceDialog] = React.useState(false);
     const addDatasetFunc = (projectId: string, resource: Dataset) => {
@@ -239,37 +210,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         setOpenAddDFR3MappingFromServiceDialog(false);
     };
 
-    // View visualization
-    const [selectedVisualization, setSelectedVisualization] = React.useState<Visualization>();
-    const [openVisualziationView, setOpenVisualziationView] = React.useState(true);
-    const handleCloseVisualziationView = () => {
-        setOpenVisualziationView(false);
-    };
-
-    const downloadFile = async (datasetId: string) => {
-        if (datasetId !== "") {
-            try {
-                const api = `${config.dataService}/${datasetId}/blob`;
-                const response = await axios.get(api, { headers: getHeaders(), responseType: "blob" });
-                // Create a URL for the Blob
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-
-                // Create a temporary anchor element to download the file
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `${datasetId}.zip`; // Name of the downloaded file
-                document.body.appendChild(a);
-                a.click();
-
-                // Clean up the URL object
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            } catch (error) {
-                console.error("Error downloading the file:", error);
-            }
-        }
-    };
-
     const getTooltip = (inputDataset: string) => {
         if (dependencyGraph && dependencyGraph[sidePanelData.currentAnalysis.depGName]) {
             if (
@@ -288,9 +228,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         placement="right"
                         sx={{ backgroundColor: "white" }}
                     >
-                        <IconButton size="sm">
-                            <InfoRoundedIcon />
-                        </IconButton>
+                        <HelpOutlineRoundedIcon sx={{ fontSize: "18px" }} />
                     </Tooltip>
                 );
             } else if (
@@ -309,9 +247,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         placement="right"
                         sx={{ backgroundColor: "white" }}
                     >
-                        <IconButton size="sm">
-                            <InfoRoundedIcon />
-                        </IconButton>
+                        <HelpOutlineRoundedIcon sx={{ fontSize: "18px" }} />
                     </Tooltip>
                 );
             } else if (dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs[inputDataset]) {
@@ -327,9 +263,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         placement="right"
                         sx={{ backgroundColor: "white" }}
                     >
-                        <IconButton size="sm">
-                            <InfoRoundedIcon />
-                        </IconButton>
+                        <HelpOutlineRoundedIcon sx={{ fontSize: "18px" }} />
                     </Tooltip>
                 );
             }
@@ -434,9 +368,6 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         <Tab variant="soft" sx={{ flexGrow: 1 }} disabled={createMode}>
                             Results
                         </Tab>
-                        <Tab variant="soft" sx={{ flexGrow: 1 }} disabled={createMode}>
-                            Visualizations
-                        </Tab>
                     </TabList>
 
                     <TabPanel sx={{ padding: "24px" }} value={0}>
@@ -467,21 +398,18 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                     })
                                 );
                                 appDispatch(updateExecutionSidePanelCheckStatus(sidePanelData.currentAnalysis.id));
+                                setNodes(nodes.map((node) => ({ ...node, selected: false })));
                                 appDispatch(clearSidePanelData());
                             }}
                         >
                             {sidePanelData.currentAnalysis.inputDatasets.length > 0 && datasetSelect !== null && (
                                 <Box mb={4}>
-                                    <Stack
-                                        direction="row"
-                                        spacing={2}
-                                        sx={{ justifyContent: "space-between", alignItems: "center", mb: "10px" }}
-                                    >
+                                    <Stack direction="row" spacing={2} sx={{ alignItems: "center", mb: 3 }}>
                                         <Typography
                                             level="h4"
                                             sx={{
                                                 fontWeight: 590,
-                                                fontSize: "18px",
+                                                fontSize: "20px",
                                                 lineHeight: "24px",
                                                 paragraph: "28px",
                                                 color: "#172B4D",
@@ -493,25 +421,24 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                             Input Datasets
                                         </Typography>
                                         {createMode && (
-                                            <Button
-                                                variant="outlined"
-                                                startDecorator={<RestartAltRoundedIcon />}
-                                                sx={{
-                                                    borderColor: "primary.subtle",
-                                                    color: "primary.subtle",
-                                                    backgroundColor: "white"
-                                                }}
-                                                onClick={handleResetDatasets}
-                                            >
-                                                Reset datasets
-                                            </Button>
+                                            <Tooltip title="Reset datasets" placement="right">
+                                                <IconButton onClick={handleResetDatasets} aria-label="Reset datasets">
+                                                    <RestartAltRoundedIcon />
+                                                </IconButton>
+                                            </Tooltip>
                                         )}
                                     </Stack>
-                                    <Stack direction="column" spacing={2}>
+                                    <Stack direction="column" spacing={4}>
                                         {sidePanelData.currentAnalysis.inputDatasets.map((inputDataset) => (
                                             <Box key={inputDataset.execFileEntryId}>
-                                                <Stack direction="row" spacing={2} alignItems="center" mb={1}>
-                                                    {inputDataset.required ? (
+                                                <Stack
+                                                    direction="row"
+                                                    spacing={1}
+                                                    alignItems="center"
+                                                    justifyContent={"space-between"}
+                                                    mb={1}
+                                                >
+                                                    <Stack direction="row" spacing={1} alignItems="center">
                                                         <Typography
                                                             level="h4"
                                                             component="label"
@@ -520,37 +447,39 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 display: "block",
                                                                 mb: 1,
                                                                 fontWeight: 400,
-                                                                fontSize: "14px",
+                                                                fontSize: "18px",
                                                                 lineHeight: "24px",
                                                                 paragraph: "28px",
                                                                 color: "#172B4D"
                                                             }}
                                                         >
                                                             {inputDataset.label}
-                                                            <Typography
-                                                                component="span"
-                                                                sx={{ color: "red", marginLeft: 0.5 }}
+                                                            {inputDataset.required && createMode ? (
+                                                                <Typography
+                                                                    component="span"
+                                                                    sx={{ color: "red", marginLeft: 0.5 }}
+                                                                >
+                                                                    *
+                                                                </Typography>
+                                                            ) : null}
+                                                        </Typography>
+                                                        {getTooltip(inputDataset.label)}
+                                                    </Stack>
+                                                    {createMode && (
+                                                        <Tooltip title="Add from Service" placement="top">
+                                                            <IconButton
+                                                                onClick={() => {
+                                                                    inputDataset.label.includes("Hazard")
+                                                                        ? setOpenAddHazardFromServiceDialog(true)
+                                                                        : inputDataset.label.includes("DFR3")
+                                                                        ? setOpenAddDFR3MappingFromServiceDialog(true)
+                                                                        : setOpenAddDatasetFromServiceDialog(true);
+                                                                }}
                                                             >
-                                                                *
-                                                            </Typography>
-                                                        </Typography>
-                                                    ) : (
-                                                        <Typography
-                                                            level="h4"
-                                                            sx={{
-                                                                display: "block",
-                                                                mb: 1,
-                                                                fontWeight: 400,
-                                                                fontSize: "14px",
-                                                                lineHeight: "24px",
-                                                                paragraph: "28px",
-                                                                color: "#172B4D"
-                                                            }}
-                                                        >
-                                                            {inputDataset.label}
-                                                        </Typography>
+                                                                <AddIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
                                                     )}
-                                                    {getTooltip(inputDataset.label)}
                                                 </Stack>
                                                 {inputDataset.fromExisting !== null ? (
                                                     <Input
@@ -580,8 +509,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                     inputDataset.label.includes("Hazard")
                                                                         ? "Hazard"
                                                                         : inputDataset.label.includes("DFR3")
-                                                                          ? "DFR3 Mapping"
-                                                                          : "Dataset"
+                                                                        ? "DFR3 Mapping"
+                                                                        : "Dataset"
                                                                 }`}
                                                                 name={inputDataset.execFileEntryId}
                                                                 required={
@@ -628,54 +557,33 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 {inputDataset.label.includes("Hazard")
                                                                     ? options?.projectHazardOptions
                                                                     : inputDataset.label.includes("DFR3")
-                                                                      ? options?.projectDFR3MappingOptions
-                                                                      : options?.projectDatasetOptions?.filter(
-                                                                            (option: JSX.Element) => {
-                                                                                if (
-                                                                                    dependencyGraph &&
-                                                                                    dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ] &&
-                                                                                    dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ].inputs[inputDataset.label] &&
-                                                                                    option.key
-                                                                                ) {
-                                                                                    return dependencyGraph[
-                                                                                        sidePanelData.currentAnalysis
-                                                                                            .depGName
-                                                                                    ].inputs[
-                                                                                        inputDataset.label
-                                                                                    ].includes(
-                                                                                        option.key.split("|")[1]
-                                                                                    ); // show datasets that are compatible with the input
-                                                                                }
-                                                                                return true; // if the property is not found, show all datasets
-                                                                            }
-                                                                        )}
+                                                                    ? options?.projectDFR3MappingOptions
+                                                                    : options?.projectDatasetOptions?.filter(
+                                                                          (option: JSX.Element) => {
+                                                                              if (
+                                                                                  dependencyGraph &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ] &&
+                                                                                  dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label] &&
+                                                                                  option.key
+                                                                              ) {
+                                                                                  return dependencyGraph[
+                                                                                      sidePanelData.currentAnalysis
+                                                                                          .depGName
+                                                                                  ].inputs[inputDataset.label].includes(
+                                                                                      option.key.split("|")[1]
+                                                                                  ); // show datasets that are compatible with the input
+                                                                              }
+                                                                              return true; // if the property is not found, show all datasets
+                                                                          }
+                                                                      )}
                                                             </Select>
                                                         </Box>
-                                                        {createMode && (
-                                                            <Tooltip title="Add from Service" placement="bottom">
-                                                                <IconButton
-                                                                    onClick={() => {
-                                                                        inputDataset.label.includes("Hazard")
-                                                                            ? setOpenAddHazardFromServiceDialog(true)
-                                                                            : inputDataset.label.includes("DFR3")
-                                                                              ? setOpenAddDFR3MappingFromServiceDialog(
-                                                                                    true
-                                                                                )
-                                                                              : setOpenAddDatasetFromServiceDialog(
-                                                                                    true
-                                                                                );
-                                                                    }}
-                                                                >
-                                                                    <AddIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        )}
                                                     </Stack>
                                                 )}
                                             </Box>
@@ -683,18 +591,15 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                     </Stack>
                                 </Box>
                             )}
+                            <Divider role="presentation" sx={{ mb: 3 }} />
                             {sidePanelData.currentAnalysis.inputParameters.length > 0 && (
                                 <Box>
-                                    <Stack
-                                        direction="row"
-                                        spacing={2}
-                                        sx={{ justifyContent: "space-between", alignItems: "center", mb: "10px" }}
-                                    >
+                                    <Stack direction="row" spacing={2} sx={{ alignItems: "center", mb: 3 }}>
                                         <Typography
                                             level="h4"
                                             sx={{
                                                 fontWeight: 590,
-                                                fontSize: "18px",
+                                                fontSize: "20px",
                                                 lineHeight: "24px",
                                                 paragraph: "28px",
                                                 color: "#172B4D",
@@ -706,64 +611,56 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                             Input Parameters
                                         </Typography>
                                         {createMode && (
-                                            <Button
-                                                variant="outlined"
-                                                startDecorator={<RestartAltRoundedIcon />}
-                                                sx={{
-                                                    borderColor: "primary.subtle",
-                                                    color: "primary.subtle",
-                                                    backgroundColor: "white"
-                                                }}
-                                                onClick={handleResetParameters}
-                                            >
-                                                Reset parameters
-                                            </Button>
+                                            <Tooltip title="Reset parameters" placement="right">
+                                                <IconButton
+                                                    onClick={handleResetParameters}
+                                                    sx={{
+                                                        "color": "primary.subtle",
+                                                        "&:hover": {
+                                                            backgroundColor: "primary.subtle",
+                                                            color: "white"
+                                                        }
+                                                    }}
+                                                    aria-label="Reset parameters"
+                                                >
+                                                    <RestartAltRoundedIcon />
+                                                </IconButton>
+                                            </Tooltip>
                                         )}
                                     </Stack>
-                                    <Stack direction="column" spacing={2}>
+                                    <Stack direction="column" spacing={4}>
                                         {sidePanelData.currentAnalysis.inputParameters.map((inputParameter) => {
-                                            if (!inputParameter.hidden) {
+                                            if (
+                                                !inputParameter.hidden &&
+                                                !inputParameter.label.includes("Service") &&
+                                                !inputParameter.label.includes("Analysis")
+                                            ) {
                                                 return (
                                                     <Box key={inputParameter.execFileEntryId}>
-                                                        {inputParameter.required ? (
-                                                            <Typography
-                                                                level="h4"
-                                                                component="label"
-                                                                htmlFor={`${inputParameter.label}-input`}
-                                                                sx={{
-                                                                    display: "block",
-                                                                    mb: 1,
-                                                                    fontWeight: 400,
-                                                                    fontSize: "14px",
-                                                                    lineHeight: "24px",
-                                                                    paragraph: "28px",
-                                                                    color: "#172B4D"
-                                                                }}
-                                                            >
-                                                                {inputParameter.label}
+                                                        <Typography
+                                                            level="h4"
+                                                            component="label"
+                                                            htmlFor={`${inputParameter.label}-input`}
+                                                            sx={{
+                                                                display: "block",
+                                                                mb: 1,
+                                                                fontWeight: 400,
+                                                                fontSize: "18px",
+                                                                lineHeight: "24px",
+                                                                paragraph: "28px",
+                                                                color: "#172B4D"
+                                                            }}
+                                                        >
+                                                            {inputParameter.label}
+                                                            {inputParameter.required && createMode ? (
                                                                 <Typography
                                                                     component="span"
                                                                     sx={{ color: "red", marginLeft: 0.5 }}
                                                                 >
                                                                     *
                                                                 </Typography>
-                                                            </Typography>
-                                                        ) : (
-                                                            <Typography
-                                                                level="h4"
-                                                                sx={{
-                                                                    display: "block",
-                                                                    mb: 1,
-                                                                    fontWeight: 400,
-                                                                    fontSize: "14px",
-                                                                    lineHeight: "24px",
-                                                                    paragraph: "28px",
-                                                                    color: "#172B4D"
-                                                                }}
-                                                            >
-                                                                {inputParameter.label}
-                                                            </Typography>
-                                                        )}
+                                                            ) : null}
+                                                        </Typography>
                                                         {inputParameter.type === "BOOLEAN" ? (
                                                             <Select
                                                                 disabled={!createMode}
@@ -913,23 +810,29 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                 </Typography>
                             </Box>
                         ) : (
-                            <Box>
-                                <Typography
-                                    level="h4"
-                                    sx={{
-                                        fontWeight: 590,
-                                        fontSize: "16px",
-                                        lineHeight: "24px",
-                                        paragraph: "28px",
-                                        color: "#172B4D",
-                                        letter: "5%",
-                                        textTransform: "uppercase",
-                                        mb: "10px"
-                                    }}
+                            <Box sx={{ p: 1 }}>
+                                <Stack
+                                    direction="row"
+                                    spacing={2}
+                                    sx={{ justifyContent: "space-between", alignItems: "center", mb: 3 }}
                                 >
-                                    Output Datasets
-                                </Typography>
-                                <Stack direction="column" spacing={2}>
+                                    <Typography
+                                        level="h4"
+                                        sx={{
+                                            fontWeight: 590,
+                                            fontSize: "20px",
+                                            lineHeight: "24px",
+                                            paragraph: "28px",
+                                            color: "#172B4D",
+                                            letter: "5%",
+                                            textTransform: "uppercase",
+                                            mb: "10px"
+                                        }}
+                                    >
+                                        Output Datasets
+                                    </Typography>
+                                </Stack>
+                                <Stack direction="column" spacing={4}>
                                     {sidePanelData.currentAnalysis.outputDatasets.map((outputDataset) => (
                                         <Box key={outputDataset.execFileEntryId}>
                                             <Stack
@@ -940,19 +843,33 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                 mb={1}
                                             >
                                                 <Stack direction="row" spacing={2} alignItems="center">
-                                                    <StorageIcon
+                                                    <Box
                                                         sx={{
-                                                            color: "#AB47BC",
-                                                            marginRight: "5px",
+                                                            p: "1px",
+                                                            height: "20px",
+                                                            width: "20px",
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "center",
                                                             pointerEvents: "none",
-                                                            fontSize: "15px"
+                                                            borderRadius: "3px",
+                                                            backgroundColor: "#AB47BC"
                                                         }}
-                                                    />
+                                                    >
+                                                        <StorageIcon
+                                                            sx={{
+                                                                color: "white",
+                                                                fontSize: "16px"
+                                                            }}
+                                                        />
+                                                    </Box>
                                                     <Typography
                                                         level="h4"
                                                         sx={{
+                                                            display: "block",
+                                                            mb: 1,
                                                             fontWeight: 400,
-                                                            fontSize: "14px",
+                                                            fontSize: "18px",
                                                             lineHeight: "24px",
                                                             paragraph: "28px",
                                                             color: "#172B4D"
@@ -961,124 +878,13 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                         {outputDataset.label}
                                                     </Typography>
                                                 </Stack>
-                                                <Box>
-                                                    <Tooltip title="Download file" placement="top-start">
-                                                        <IconButton
-                                                            aria-label="Download file"
-                                                            onClick={() => downloadFile(outputDataset.datasetId)}
-                                                        >
-                                                            <FileDownloadRoundedIcon />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </Box>
                                             </Stack>
-                                            <OutputFileDisplay datasetId={outputDataset.datasetId} projectId={id} />
+                                            <OutputFileDisplay datasetId={outputDataset.datasetId} />
                                         </Box>
                                     ))}
                                 </Stack>
                             </Box>
                         )}
-                    </TabPanel>
-                    <TabPanel value={2}>
-                        <Box>
-                            <Typography
-                                level="h4"
-                                sx={{
-                                    fontWeight: 590,
-                                    fontSize: "16px",
-                                    lineHeight: "24px",
-                                    paragraph: "28px",
-                                    color: "#172B4D",
-                                    letter: "5%",
-                                    textTransform: "uppercase",
-                                    mb: "5px"
-                                }}
-                            >
-                                Visualizations
-                            </Typography>
-                            <Typography
-                                level="h4"
-                                sx={{
-                                    fontWeight: 400,
-                                    fontSize: "12px",
-                                    lineHeight: "20px",
-                                    color: "#42526EB2",
-                                    mb: "10px"
-                                }}
-                            >
-                                All available visualizations in this project.
-                            </Typography>
-                            <Stack direction="column" spacing={2}>
-                                {projectVisualizations.length === 0 ? (
-                                    <Typography>No visualizations available</Typography>
-                                ) : (
-                                    projectVisualizations.map((visualization) => (
-                                        <Box key={visualization.id}>
-                                            <Stack
-                                                direction="row"
-                                                spacing={2}
-                                                alignItems="center"
-                                                justifyContent="space-between"
-                                                mb={1}
-                                            >
-                                                <Stack direction="row" spacing={2} alignItems="center">
-                                                    <InsertChartOutlinedRoundedIcon
-                                                        sx={{
-                                                            color: "#AB47BC",
-                                                            marginRight: "5px",
-                                                            pointerEvents: "none"
-                                                        }}
-                                                    />
-                                                    <Typography
-                                                        level="body-sm"
-                                                        sx={{
-                                                            fontWeight: 400,
-                                                            fontSize: "16px",
-                                                            lineHeight: "24px",
-                                                            paragraph: "28px",
-                                                            color: "#172B4D"
-                                                        }}
-                                                    >
-                                                        {visualization.name}
-                                                    </Typography>
-                                                </Stack>
-                                                <Box>
-                                                    <Tooltip title="View visualization" placement="top-start">
-                                                        <IconButton
-                                                            aria-label="View visualization"
-                                                            onClick={() => {
-                                                                setSelectedVisualization(visualization);
-                                                                setOpenVisualziationView(true);
-                                                            }}
-                                                        >
-                                                            <VisibilityRoundedIcon />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </Box>
-                                            </Stack>
-                                            {selectedVisualization && (
-                                                <VisualizationView
-                                                    visualization={selectedVisualization}
-                                                    open={openVisualziationView}
-                                                    onClose={handleCloseVisualziationView}
-                                                />
-                                            )}
-                                        </Box>
-                                    ))
-                                )}
-                                {projectVisualizations.length > 0 && (
-                                    <Box mt={4} display="flex" justifyContent="center">
-                                        <Pagination
-                                            pageNumber={visualizationPageNumber}
-                                            dataLength={projectVisualizations.length}
-                                            dataPerPage={10}
-                                            previous={visualizationPreviousPage}
-                                            next={visualizationNextPage}
-                                        />
-                                    </Box>
-                                )}
-                            </Stack>
-                        </Box>
                     </TabPanel>
                 </Tabs>
             </Stack>
