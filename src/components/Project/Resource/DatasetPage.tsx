@@ -162,6 +162,8 @@ const DatasetPage = (): JSX.Element => {
         setOpenBatchDeleteDialog(false);
     };
 
+    console.log("Project Datasets:", projectDatasets);
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <IncoreDialog

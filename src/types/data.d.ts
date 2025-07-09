@@ -207,6 +207,11 @@ interface Dataset {
     type: string;
     storedUrl: string;
     format: string;
+    workflowMetadata?: {
+        workflowId: string;
+        executionId: string;
+        role: string;
+    }[];
     sourceDataset?: string;
     boundingBox?: [number, number, number, number];
     networkDataset?: string | null;
