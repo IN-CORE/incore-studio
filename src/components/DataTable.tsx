@@ -23,7 +23,14 @@ const DataTable: React.FC<DataTableProps> = ({ rows = [], columns = [], loading 
                     pagination: { paginationModel: { pageSize: 10, page: 0 } }
                 }}
                 pagination
-                sx={{ height: "100%", width: "100%" }}
+                sx={{
+                    "height": "100%",
+                    "width": "100%",
+                    "backgroundColor": "#F5F5F5",
+                    "& .MuiDataGrid-footerContainer": {
+                        backgroundColor: "white"
+                    }
+                }}
             />
         </Box>
     );

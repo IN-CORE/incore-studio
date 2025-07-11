@@ -191,11 +191,11 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
             <ProjectHeader project={project} />
             <Divider />
             <Grid container spacing={5} sx={{ mt: 3, ml: 0 }}>
-                <Grid sm={2}>
+                <Grid sm={3}>
                     <ProjectSidebar id={project.id} />
                 </Grid>
                 {/* Left Column: Workflow, Hazard and Visualization Cards */}
-                <Grid sm={10}>
+                <Grid sm={9}>
                     <Stack
                         spacing={3}
                         direction={{ xs: "column", sm: "row" }}
@@ -354,8 +354,8 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                                     hazardDiameter < 60
                                                                         ? "0.25rem"
                                                                         : hazardDiameter < 80
-                                                                          ? "0.5rem"
-                                                                          : "0.75rem"
+                                                                        ? "0.5rem"
+                                                                        : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.hazards.entities.text}
@@ -393,8 +393,8 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                                     hazardDiameter < 60
                                                                         ? "0.25rem"
                                                                         : hazardDiameter < 80
-                                                                          ? "0.5rem"
-                                                                          : "0.75rem"
+                                                                        ? "0.5rem"
+                                                                        : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.hazards.disk.text}
@@ -536,8 +536,8 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                                     datasetDiameter < 60
                                                                         ? "0.25rem"
                                                                         : datasetDiameter < 80
-                                                                          ? "0.5rem"
-                                                                          : "0.75rem"
+                                                                        ? "0.5rem"
+                                                                        : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.datasets.entities.text}
@@ -575,8 +575,8 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                                     datasetDiameter < 60
                                                                         ? "0.25rem"
                                                                         : datasetDiameter < 80
-                                                                          ? "0.5rem"
-                                                                          : "0.75rem"
+                                                                        ? "0.5rem"
+                                                                        : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.datasets.disk.text}
@@ -723,8 +723,8 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                                     dfr3Diameter < 60
                                                                         ? "0.25rem"
                                                                         : dfr3Diameter < 80
-                                                                          ? "0.5rem"
-                                                                          : "0.75rem"
+                                                                        ? "0.5rem"
+                                                                        : "0.75rem"
                                                             }}
                                                         >
                                                             {userUsageStats.dfr3.entities.text}

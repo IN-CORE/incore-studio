@@ -162,8 +162,6 @@ const DatasetPage = (): JSX.Element => {
         setOpenBatchDeleteDialog(false);
     };
 
-    console.log("Project Datasets:", projectDatasets);
-
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <IncoreDialog
@@ -189,10 +187,10 @@ const DatasetPage = (): JSX.Element => {
                         <ProjectHeader project={project} />
                         <Divider />
                         <Grid container spacing={5} mt={3} ml={0}>
-                            <Grid sm={2}>
+                            <Grid sm={3}>
                                 <ProjectSidebar id={project.id} />
                             </Grid>
-                            <Grid sm={10}>
+                            <Grid sm={9}>
                                 <ResourceFilterBar
                                     title="Datasets"
                                     icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}

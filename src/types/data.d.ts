@@ -192,6 +192,12 @@ interface FileDescriptor {
     md5sum: string;
 }
 
+interface WorkflowMetadata {
+    workflowId: string;
+    executionId: string;
+    role: string;
+}
+
 interface Dataset {
     id: string;
     deleted: boolean;
@@ -207,11 +213,7 @@ interface Dataset {
     type: string;
     storedUrl: string;
     format: string;
-    workflowMetadata?: {
-        workflowId: string;
-        executionId: string;
-        role: string;
-    }[];
+    workflowMetadata?: WorkflowMetadata[];
     sourceDataset?: string;
     boundingBox?: [number, number, number, number];
     networkDataset?: string | null;
@@ -484,6 +486,16 @@ interface EarthquakeMetadata {
         maxY: number;
         numPoints: string;
         amplifyHazard: string;
+    };
+}
+
+interface DatasetsByExecutions {
+    [executionId: string]: {
+        executionName: string;
+        executionTime: string;
+        datasetIds: string[];
+        workflowId: string;
+        workflowName: string;
     };
 }
 
