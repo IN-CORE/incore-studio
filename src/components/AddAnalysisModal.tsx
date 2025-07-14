@@ -154,7 +154,22 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                 size="lg"
             >
                 <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
-                    <TrendingUpRoundedIcon sx={{ color: "#EF6C00", marginRight: "10px" }} />
+                    <Box
+                        sx={{
+                            p: "1px",
+                            height: "20px",
+                            width: "20px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            pointerEvents: "none",
+                            borderRadius: "3px",
+                            backgroundColor: "#EF6C00",
+                            marginRight: "10px"
+                        }}
+                    >
+                        <TrendingUpRoundedIcon sx={{ color: "white", fontSize: "16px" }} />
+                    </Box>
                     <Typography
                         level="title-lg"
                         sx={{
@@ -317,16 +332,21 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                     </Stack>
                 </CardContent>
                 <CardActions>
-                    <Button variant="solid" sx={{ backgroundColor: "primary.main", ml: "auto" }} onClick={clearItems}>
-                        Cancel
-                    </Button>
                     <Button
+                        onClick={clearItems}
                         variant="outlined"
                         sx={{
                             borderColor: "primary.subtle",
                             color: "primary.subtle",
-                            backgroundColor: "white"
+                            backgroundColor: "white",
+                            ml: "auto"
                         }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="solid"
+                        sx={{ backgroundColor: "primary.main" }}
                         startDecorator={<AddRoundedIcon />}
                         onClick={() => {
                             if (selectedAnalysis !== "") {

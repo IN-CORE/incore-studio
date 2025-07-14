@@ -67,15 +67,17 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                         </IconButton>
                     </ButtonGroup>
                 )}
-                <Button
-                    onClick={onCreateClick}
-                    variant="soft"
-                    startDecorator={<AddIcon />}
-                    color="neutral"
-                    sx={{ ml: 1 }}
-                >
-                    {createLabel}
-                </Button>
+                {onCreateClick && (
+                    <Button
+                        onClick={onCreateClick}
+                        variant="soft"
+                        startDecorator={<AddIcon />}
+                        color="neutral"
+                        sx={{ ml: 1 }}
+                    >
+                        {createLabel}
+                    </Button>
+                )}
                 {additionalCreateClick && (
                     <Button
                         onClick={additionalCreateClick}

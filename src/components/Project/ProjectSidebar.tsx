@@ -7,6 +7,7 @@ import DFR3Icon from "@mui/icons-material/ShowChart";
 import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import ConstructionRoundedIcon from "@mui/icons-material/ConstructionRounded";
 
 import { theme } from "@app/theme";
 
@@ -23,7 +24,8 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
             path: `/project/${id}/visualizations`,
             icon: <VisualizationIcon />
         },
-        { label: "DFR3 Mappings", path: `/project/${id}/dfr3Mappings`, icon: <DFR3Icon /> }
+        { label: "DFR3 Mappings", path: `/project/${id}/dfr3Mappings`, icon: <DFR3Icon /> },
+        { label: "Tools", path: `/project/${id}/tools`, icon: <ConstructionRoundedIcon /> }
     ];
 
     return (

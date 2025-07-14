@@ -66,7 +66,7 @@ const GroupedList = ({
     };
 
     return (
-        <Stack spacing={1} direction="column" sx={{ mb: "10px" }}>
+        <Stack spacing={1} direction="column">
             <Stack spacing={0} direction="row" alignItems="center">
                 <StorageIcon
                     sx={{
@@ -75,8 +75,8 @@ const GroupedList = ({
                         fontSize: "15px"
                     }}
                 />
-                <Typography level="body-lg" sx={{ color: "#172B4D" }}>
-                    {propertyName}
+                <Typography level="body-lg" sx={{ color: "#172B4D", fontWeight: 450 }}>
+                    {`${previous ? "To" : "From"}: ${propertyName}`}
                 </Typography>
             </Stack>
             {dependencyGraph !== null &&
@@ -85,7 +85,9 @@ const GroupedList = ({
                     return (
                         <Stack spacing={1} direction="column" key={key}>
                             <Typography level="body-md" sx={{ color: "#172B4D" }}>
-                                {dependencyGraph[key] !== undefined ? dependencyGraph[key].pretty_name : key}
+                                {`${previous ? "From" : "To"}: ${
+                                    dependencyGraph[key] !== undefined ? dependencyGraph[key].pretty_name : key
+                                }'s`}
                             </Typography>
                             <List
                                 sx={{
@@ -206,7 +208,9 @@ const GroupedList = ({
                     return (
                         <Stack spacing={1} direction="column" key={key}>
                             <Typography level="body-md" sx={{ color: "#172B4D" }}>
-                                {dependencyGraph[key] !== undefined ? dependencyGraph[key].pretty_name : key}
+                                {`${previous ? "From" : "To"}: ${
+                                    dependencyGraph[key] !== undefined ? dependencyGraph[key].pretty_name : key
+                                }'s`}
                             </Typography>
                             <List
                                 sx={{
