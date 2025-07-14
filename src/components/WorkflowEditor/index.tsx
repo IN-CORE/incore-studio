@@ -190,7 +190,7 @@ const WorkflowEditor = (): JSX.Element => {
         if (confirmFinalize && wfID && id) {
             handleSaveClick();
             appDispatch(finalizeWorkflow({ projectId: id, workflowId: wfID }));
-            navigate(`/project/${id}/workflows/${wfID}/execution/create`);
+            navigate(`/project/${id}/workflows/${wfID}`);
         }
     }, [confirmFinalize]);
 
