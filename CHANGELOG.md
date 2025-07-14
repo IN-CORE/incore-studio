@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Implement Adding of parent dataset id to a dataset of table format. [#179](https://github.com/IN-CORE/incore-studio/issues/179)
 - Datasets by Execution page to view all the datasets belonging to a visualization in one place [#222](https://github.com/IN-CORE/incore-studio/issues/222)
+- Add NSI Building Inventory tool. [#211](https://github.com/IN-CORE/incore-studio/issues/211)
 
 ### Fixed
 
