@@ -48,8 +48,8 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
             icon: <VisualizationIcon />,
             subMenu: []
         },
-        { label: "DFR3 Mappings", path: `/project/${id}/dfr3Mappings`, icon: <DFR3Icon />, subMenu: [] }
-        { label: "Tools", path: `/project/${id}/tools`, icon: <ConstructionRoundedIcon /> }
+        { label: "DFR3 Mappings", path: `/project/${id}/dfr3Mappings`, icon: <DFR3Icon />, subMenu: [] },
+        { label: "Tools", path: `/project/${id}/tools`, icon: <ConstructionRoundedIcon />, subMenu: [] }
     ];
 
     const getTreeItem = (item: MenuItem) => (
