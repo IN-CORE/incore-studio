@@ -125,7 +125,9 @@ export const useOutputDatasetsSynchronizationPolling = (
             try {
                 const wfFiles = await fetchWorkflowFiles(wfids);
                 const outputDatasetIDs = await getOutputDatasetIDsFromWorkflows(wfFiles);
-                let datasetIdsNotInProject = outputDatasetIDs.filter((id) => !projectDatasets.find((d) => d.id === id));
+                let datasetIdsNotInProject = outputDatasetIDs.filter(
+                    (id) => !projectDatasets.find((dataset) => dataset.id === id)
+                );
                 // filter out ids with "-"
                 datasetIdsNotInProject = datasetIdsNotInProject.filter((id) => !id.includes("-"));
                 if (datasetIdsNotInProject.length > 0) {
@@ -197,16 +199,14 @@ export const useUserUsageStats = () => {
                 const usageValue = {
                     hazards: {
                         entities: {
-                            text: `${usage.total_number_of_hazards ?? 0}\n/\n${
-                                allocations.total_number_of_hazards ?? 0
-                            }`,
+                            text: `${usage.total_number_of_hazards ?? 0}/${allocations.total_number_of_hazards ?? 0}`,
                             value: getValue(
                                 usage.total_number_of_hazards ?? 0,
                                 allocations.total_number_of_hazards ?? 0
                             )
                         },
                         disk: {
-                            text: `${usage.total_file_size_of_hazard_datasets}\n of\n ${allocations.total_file_size_of_hazard_datasets}`,
+                            text: `${usage.total_file_size_of_hazard_datasets} of ${allocations.total_file_size_of_hazard_datasets}`,
                             value: getValue(
                                 usage.total_file_size_of_hazard_datasets_byte ?? 0,
                                 allocations.total_file_size_of_hazard_datasets_byte ?? 0
@@ -215,16 +215,14 @@ export const useUserUsageStats = () => {
                     },
                     datasets: {
                         entities: {
-                            text: `${usage.total_number_of_datasets ?? 0}\n/\n${
-                                allocations.total_number_of_datasets ?? 0
-                            }`,
+                            text: `${usage.total_number_of_datasets ?? 0}/${allocations.total_number_of_datasets ?? 0}`,
                             value: getValue(
                                 usage.total_number_of_datasets ?? 0,
                                 allocations.total_number_of_datasets ?? 0
                             )
                         },
                         disk: {
-                            text: `${usage.total_file_size_of_datasets}\n of\n ${allocations.total_file_size_of_datasets}`,
+                            text: `${usage.total_file_size_of_datasets} of ${allocations.total_file_size_of_datasets}`,
                             value: getValue(
                                 usage.total_file_size_of_datasets_byte ?? 0,
                                 allocations.total_file_size_of_datasets_byte ?? 0
@@ -233,7 +231,7 @@ export const useUserUsageStats = () => {
                     },
                     dfr3: {
                         entities: {
-                            text: `${usage.total_number_of_dfr3 ?? 0}\n/\n${allocations.total_number_of_dfr3 ?? 0}`,
+                            text: `${usage.total_number_of_dfr3 ?? 0}/${allocations.total_number_of_dfr3 ?? 0}`,
                             value: getValue(usage.total_number_of_dfr3 ?? 0, allocations.total_number_of_dfr3 ?? 0)
                         }
                     }
@@ -339,9 +337,11 @@ export const useHazardStats = (projectHazards: Hazard[]) => {
 export const useWorkflowAndExecutionCount = (projectWorkflows: Workflow[]) => {
     const [workflowCount, setWorkflowCount] = React.useState<number>(0);
     const [executionCount, setExecutionCount] = React.useState<number>(0);
+    const [execByWorkflow, setExecByWorkflow] = React.useState<{ itemName: string; count: number }[]>([]);
 
     React.useEffect(() => {
         setWorkflowCount(projectWorkflows.length);
+        let execByWorkflowTemp: { itemName: string; count: number }[] = [];
         const wfIds = projectWorkflows.map((wf) => wf.id);
         const fetchExecutionCount = async () => {
             try {
@@ -356,6 +356,17 @@ export const useWorkflowAndExecutionCount = (projectWorkflows: Workflow[]) => {
                     return acc + dataLength;
                 }, 0);
                 setExecutionCount(execCount);
+                responses.forEach((response, i) => {
+                    if (!Array.isArray(response.data) || response.data.length === 0) {
+                        execByWorkflowTemp.push({ itemName: projectWorkflows[i]?.title || "Unknown", count: 0 });
+                    }
+                    const wfId = response.data[0]?.workflowId;
+                    const workflow = projectWorkflows.find((wf) => wf.id === wfId);
+                    if (workflow) {
+                        execByWorkflowTemp.push({ itemName: workflow.title, count: response.data.length });
+                    }
+                });
+                setExecByWorkflow(execByWorkflowTemp);
             } catch (error) {
                 console.error("Error fetching execution count: ", error);
             }
@@ -363,7 +374,7 @@ export const useWorkflowAndExecutionCount = (projectWorkflows: Workflow[]) => {
         fetchExecutionCount();
     }, [projectWorkflows]);
 
-    return { workflowCount, executionCount };
+    return { workflowCount, executionCount, execByWorkflow };
 };
 
 export const useWorkflowAutoSave = (workflow: DatawolfWorkflowFile, workflowID: string | null, interval: number) => {
