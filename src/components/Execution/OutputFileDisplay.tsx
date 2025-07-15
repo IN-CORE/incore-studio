@@ -7,7 +7,7 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 
 import config from "@app/app.config";
 import { getHeaders } from "@app/utils";
-import DatasetPreviewModal from "@app/components/DatasetPreviewModal";
+import DatasetPreviewModal from "@app/components/Preview/DatasetPreviewModal";
 
 interface OutputFileDisplayProps {
     datasetId: string;

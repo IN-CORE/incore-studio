@@ -6,7 +6,7 @@ import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 
 import config from "@app/app.config";
 import { convertGridToVegaData, getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
-import { CSVVegaChart } from "@app/components/CSVVegaChart";
+import { CSVVegaChart } from "@app/components/Preview/CSVVegaChart";
 import {
     addLayer,
     GeoExplorer,
@@ -15,7 +15,7 @@ import {
     selectMapLayer,
     setShowLayerSettings
 } from "@ncsa/geo-explorer";
-import DataTable from "./DataTable";
+import DataTable from "@app/components/Preview/DataTable";
 
 interface DatasetDatasetPreviewModalProps {
     open: boolean;

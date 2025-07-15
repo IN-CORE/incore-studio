@@ -19,7 +19,7 @@ import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateHazardDialog } from "@app/components/Project/Resource/CreateHazardDialog";
 import { IncoreDialog } from "@app/components/IncoreDialog";
-import { HazardPreviewModal } from "@app/components/HazardPreivewModal";
+import { HazardPreviewModal } from "@app/components/Preview/HazardPreivewModal";
 
 const HazardPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path

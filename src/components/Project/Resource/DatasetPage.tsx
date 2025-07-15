@@ -18,7 +18,7 @@ import Snackbar from "@mui/joy/Snackbar";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
-import DatasetPreviewModal from "@app/components/DatasetPreviewModal";
+import DatasetPreviewModal from "@app/components/Preview/DatasetPreviewModal";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 
 const DatasetPage = (): JSX.Element => {

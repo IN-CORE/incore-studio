@@ -22,7 +22,7 @@ import DFR3Icon from "@mui/icons-material/ShowChart";
 import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { IncoreDialog } from "@app/components/IncoreDialog";
-import { DFR3PreviewModal } from "@app/components/DFR3PreviewModal";
+import { DFR3PreviewModal } from "@app/components/Preview/DFR3PreviewModal";
 
 const DFR3MappingPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
