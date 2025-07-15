@@ -212,6 +212,9 @@ const DatasetPreviewModal: React.FC<DatasetDatasetPreviewModalProps> = ({ open, 
                         }
                         accessToken={getOidcUser()?.access_token}
                         isProtectedResource={(url) => /geoserver/.test(url)}
+                        components={{
+                            DataInventory: () => null
+                        }}
                         onReady={({ store }) => {
                             store.dispatch(addLayer({ layer_id: dataset.id }));
                             store.dispatch(selectMapLayer({ layer_id: dataset.id }));
