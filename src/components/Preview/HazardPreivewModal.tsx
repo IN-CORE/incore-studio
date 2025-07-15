@@ -97,7 +97,7 @@ export const HazardPreviewModal: React.FC<HazardPreviewModalProps> = ({ open, on
                     accessToken={getOidcUser()?.access_token}
                     isProtectedResource={(url) => /geoserver/.test(url)}
                     components={{
-                        DataInventory: () => <></>
+                        DataInventory: () => null
                     }}
                     onReady={({ store }) => {
                         hazardDatasets.forEach((hazardDataset) => {
