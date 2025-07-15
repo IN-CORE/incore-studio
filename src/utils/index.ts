@@ -813,7 +813,6 @@ export function inferLayerType(datasetType: string): "point" | "line" | "polygon
     const polygonSchemas = new Set(["incore:tornadoWindfield", "ncsa:boundary", "tornado"]);
 
     const lineSchemas = new Set([
-        "ncsa:lifelineWaterInventory",
         "ergo:buriedPipelineTopology",
         "ergo:pipeline",
         "ncsa:lifelineElecInventory",
