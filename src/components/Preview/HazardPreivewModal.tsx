@@ -3,14 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
 
 import config from "@app/app.config";
-import {
-    addLayer,
-    GeoExplorer,
-    GeoExplorerConfig,
-    GeoExplorerProvider,
-    selectMapLayer,
-    setShowLayerSettings
-} from "@ncsa/geo-explorer";
+import { addLayer, GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
 import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
 import axios from "axios";
 import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
@@ -76,25 +69,6 @@ export const HazardPreviewModal: React.FC<HazardPreviewModalProps> = ({ open, on
                         {new Intl.DateTimeFormat("en-US", options).format(new Date(hazard?.date))}
                     </Typography>
                 </Box>
-                {/* eslint-disable-next-line no-nested-ternary */}
-                {/* <SimpleMap */}
-                {/*    layers={ */}
-                {/*        hazard?.hazardDatasets?.map((dataset) => ({ */}
-                {/*            workspace: "incore", */}
-                {/*            layerId: dataset.datasetId */}
-                {/*        })) ?? [] */}
-                {/*    } */}
-                {/*    mapOptions={{ */}
-                {/*        minZoom: 1 */}
-                {/*    }} */}
-                {/*    navigation */}
-                {/*    onLoad={() => {}} */}
-                {/*    initialBounds={ */}
-                {/*        config.DEFAULT_MAP_BOUNDS.length === 4 */}
-                {/*            ? (config.DEFAULT_MAP_BOUNDS as [number, number, number, number]) */}
-                {/*            : undefined */}
-                {/*    } */}
-                {/* /> */}
                 <GeoExplorerProvider
                     config={
                         {
