@@ -7,18 +7,15 @@ import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import config from "@app/app.config";
 import { convertGridToVegaData, getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
 import { CSVVegaChart } from "@app/components/CSVVegaChart";
-import SimpleMap from "@app/components/Map/SimpleMap";
-import DataTable from "./DataTable";
 import {
     addLayer,
     GeoExplorer,
     GeoExplorerConfig,
     GeoExplorerProvider,
-    setLayerStyleName,
-    toggleVisibility
+    selectMapLayer,
+    setShowLayerSettings
 } from "@ncsa/geo-explorer";
-import { CustomDataInventory } from "@app/components/Map/CustomDataInventory";
-import { VisualizationView } from "@app/components/Project/Resource/VisualizationView";
+import DataTable from "./DataTable";
 
 interface PreviewModalProps {
     open: boolean;
@@ -185,22 +182,6 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ open, onClose, dataset }) =
                         <pre>{JSON.stringify(jsonData, null, 2)}</pre>
                     </Sheet>
                 ) : dataset?.format === "shapefile" || dataset?.format === "raster" || dataset?.format === "geotif" ? (
-                    // <SimpleMap
-                    //     layers={[
-                    //         {
-                    //             workspace: "incore",
-                    //             layerId: dataset.id,
-                    //             boundingBox: dataset.boundingBox
-                    //         }
-                    //     ]}
-                    //     mapOptions={{
-                    //         minZoom: 1
-                    //     }}
-                    //     navigation
-                    //     onLoad={() => {}}
-                    //     initialBounds={dataset.boundingBox ? dataset.boundingBox : config.DEFAULT_MAP_BOUNDS}
-                    // />
-
                     <GeoExplorerProvider
                         config={
                             {
@@ -235,6 +216,8 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ open, onClose, dataset }) =
                         }}
                         onReady={({ store }) => {
                             store.dispatch(addLayer({ layer_id: dataset.id }));
+                            store.dispatch(selectMapLayer({ layer_id: dataset.id }));
+                            store.dispatch(setShowLayerSettings({ show: true }));
                         }}
                     >
                         <GeoExplorer />
