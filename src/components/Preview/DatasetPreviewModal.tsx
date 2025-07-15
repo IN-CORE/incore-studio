@@ -13,7 +13,8 @@ import {
     GeoExplorerConfig,
     GeoExplorerProvider,
     selectMapLayer,
-    setShowLayerSettings
+    setShowLayerSettings,
+    setSidebarOpen
 } from "@ncsa/geo-explorer";
 import DataTable from "@app/components/Preview/DataTable";
 
@@ -211,13 +212,11 @@ const DatasetPreviewModal: React.FC<DatasetDatasetPreviewModalProps> = ({ open, 
                         }
                         accessToken={getOidcUser()?.access_token}
                         isProtectedResource={(url) => /geoserver/.test(url)}
-                        components={{
-                            Sidebar: () => <></>
-                        }}
                         onReady={({ store }) => {
                             store.dispatch(addLayer({ layer_id: dataset.id }));
                             store.dispatch(selectMapLayer({ layer_id: dataset.id }));
                             store.dispatch(setShowLayerSettings({ show: true }));
+                            store.dispatch(setSidebarOpen({ open: false }));
                         }}
                     >
                         <GeoExplorer />
