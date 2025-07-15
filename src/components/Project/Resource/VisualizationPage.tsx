@@ -25,7 +25,13 @@ import VisualizationIcon from "@mui/icons-material/Map";
 import Snackbar from "@mui/joy/Snackbar";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 import config from "@app/app.config";
-import { addLayer, GeoExplorerConfig, GeoExplorerProvider, toggleVisibility } from "@ncsa/geo-explorer";
+import {
+    addLayer,
+    GeoExplorerConfig,
+    GeoExplorerProvider,
+    setLayerStyleName,
+    toggleVisibility
+} from "@ncsa/geo-explorer";
 import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
 import { CustomDataInventory } from "@app/components/Map/CustomDataInventory";
 import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
@@ -278,6 +284,16 @@ const VisualizationPage = (): JSX.Element => {
                                                     store.dispatch(addLayer({ layer_id: layer.layerId }));
                                                     if (!layer.visible)
                                                         store.dispatch(toggleVisibility({ layer_id: layer.layerId }));
+                                                    if (layer.styleName) {
+                                                        store.dispatch(
+                                                            store.dispatch(
+                                                                setLayerStyleName({
+                                                                    layer_id: layer.layerId,
+                                                                    style_name: layer.styleName
+                                                                })
+                                                            )
+                                                        );
+                                                    }
                                                 }
                                             });
                                         }

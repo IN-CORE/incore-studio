@@ -73,7 +73,8 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ open, onCl
                 displayName: layer.data.display_name,
                 description: layer.data.description,
                 unit: layer.data.unit,
-                visible: layer.visible ?? true // default to true if not defined
+                visible: layer.visible ?? true, // default to true if not defined,
+                styleName: layer.style_name
             }));
         };
 

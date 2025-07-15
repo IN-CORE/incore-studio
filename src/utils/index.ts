@@ -846,6 +846,7 @@ export function mapIncoreDatasetToGeoExplorerDataset(dataset: Dataset, ogcServic
         timestamps: [], // if available, populate from metadata
         labels: {
             dataset_category: dataset.dataType
-        }
+        },
+        workspace: "incore"
     };
 }
