@@ -17,7 +17,6 @@ interface OutputFileDisplayProps {
 const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId }) => {
     const [copied, setCopied] = React.useState(false);
     const [dataset, setDataset] = React.useState<Dataset | null>(null);
-
     const [openTableDataModal, setOpenTableDataModal] = React.useState(false); // State to control the visibility of the table data modal
 
     const downloadFile = async (datasetId: string) => {

@@ -1,4 +1,4 @@
-import { IControl } from "maplibre-gl";
+import maplibregl, { IControl } from "maplibre-gl";
 
 export class MapControl implements IControl {
     map: maplibregl.Map | undefined;

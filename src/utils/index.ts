@@ -3,6 +3,7 @@ import config from "@app/app.config";
 
 import axios from "axios";
 import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
+import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
 
 export function getOidcUser() {
     const oidcStorage = sessionStorage.getItem(
@@ -781,4 +782,71 @@ export function csvToArray(str: string, delimiter = ",", includeHeader = true): 
     const rowsArr = rows.filter(Boolean).map((row) => row.split(delimiter));
 
     return includeHeader ? [headers, ...rowsArr] : rowsArr;
+}
+
+export function inferLayerType(datasetType: string): "point" | "line" | "polygon" | "raster" {
+    const rasterSchemas = new Set([
+        "ergo:probabilisticEarthquakeRaster",
+        "ncsa:probabilisticEarthquakeRaster",
+        "ergo:deterministicEarthquakeRaster",
+        "ncsa:deterministicEarthquakeRaster",
+        "incore:probabilisticTsunamiRaster",
+        "ncsa:probabilisticTsunamiRaster",
+        "incore:deterministicTsunamiRaster",
+        "ncsa:deterministicTsunamiRaster",
+        "incore:probabilisticHurricaneRaster",
+        "ncsa:probabilisticHurricaneRaster",
+        "incore:deterministicHurricaneRaster",
+        "ncsa:deterministicHurricaneRaster",
+        "incore:hurricaneGridSnapshot",
+        "ncsa:hurricaneGridSnapshot",
+        "incore:deterministicFloodRaster",
+        "ncsa:deterministicFloodRaster",
+        "incore:probabilisticFloodRaster",
+        "ncsa:probabilisticFloodRaster",
+        "earthquake",
+        "tsunami",
+        "hurricane",
+        "flood"
+    ]);
+
+    const polygonSchemas = new Set(["incore:tornadoWindfield", "ncsa:boundary", "tornado"]);
+
+    const lineSchemas = new Set([
+        "ergo:buriedPipelineTopology",
+        "ergo:pipeline",
+        "ncsa:lifelineElecInventory",
+        "ncsa:lifelineWaterInventory",
+        "ncsa:powerLineTopo"
+    ]);
+
+    if (rasterSchemas.has(datasetType)) {
+        return "raster";
+    }
+
+    if (lineSchemas.has(datasetType)) {
+        return "line";
+    }
+
+    if (polygonSchemas.has(datasetType)) {
+        return "polygon";
+    }
+
+    return "point";
+}
+
+export function mapIncoreDatasetToGeoExplorerDataset(dataset: Dataset, ogcServiceUrl: string): GeoExplorerDataset {
+    return {
+        layer_id: dataset.id,
+        layer_type: inferLayerType(dataset.dataType), // returns "point" | "line" | "polygon" | "raster"
+        display_name: dataset.title,
+        description: dataset.description,
+        default_style_name: undefined, // populate if available
+        ogc_service_url: ogcServiceUrl,
+        timestamps: [], // if available, populate from metadata
+        labels: {
+            dataset_category: dataset.dataType
+        },
+        workspace: "incore"
+    };
 }

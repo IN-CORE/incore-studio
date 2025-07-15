@@ -1,10 +1,9 @@
 import React from "react";
-import { Box, Typography, IconButton, Button, ButtonGroup } from "@mui/joy";
+import { Box, Typography, IconButton, Button, ButtonGroup, SvgIconProps } from "@mui/joy";
 import AddIcon from "@mui/icons-material/Add";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 
-import { SvgIconProps } from "@mui/material";
 import SearchFilterSortDropdown from "@app/components/Project/Resource/SearchFilterSortDropdown";
 import { theme } from "@app/theme";
 
@@ -67,15 +66,17 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = ({
                         </IconButton>
                     </ButtonGroup>
                 )}
-                <Button
-                    onClick={onCreateClick}
-                    variant="soft"
-                    startDecorator={<AddIcon />}
-                    color="neutral"
-                    sx={{ ml: 1 }}
-                >
-                    {createLabel}
-                </Button>
+                {onCreateClick && (
+                    <Button
+                        onClick={onCreateClick}
+                        variant="soft"
+                        startDecorator={<AddIcon />}
+                        color="neutral"
+                        sx={{ ml: 1 }}
+                    >
+                        {createLabel}
+                    </Button>
+                )}
                 {additionalCreateClick && (
                     <Button
                         onClick={additionalCreateClick}
