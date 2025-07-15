@@ -26,7 +26,7 @@ const DataTable: React.FC<DataTableProps> = ({ rows = [], columns = [], loading 
                 sx={{
                     "height": "100%",
                     "width": "100%",
-                    "backgroundColor": "#F5F5F5",
+                    "backgroundColor": "#F8F9FA",
                     "& .MuiDataGrid-footerContainer": {
                         backgroundColor: "white"
                     }
