@@ -11,14 +11,13 @@ import DFR3Icon from "@mui/icons-material/ShowChart";
 import HazardIcon from "@mui/icons-material/Storm";
 import VisualizationIcon from "@mui/icons-material/Map";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import ConstructionRoundedIcon from "@mui/icons-material/ConstructionRounded";
 
 import { theme } from "@app/theme";
 
 interface MenuItem {
     label: string;
     path: string;
-    icon: React.ReactElement;
+    icon?: React.ReactElement;
     subMenu: MenuItem[];
 }
 
@@ -37,7 +36,6 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
                 {
                     label: "Datasets by Execution",
                     path: `/project/${id}/datasets/execution`,
-                    icon: <DatasetIcon />,
                     subMenu: []
                 }
             ]
@@ -48,50 +46,47 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
             icon: <VisualizationIcon />,
             subMenu: []
         },
-        { label: "DFR3 Mappings", path: `/project/${id}/dfr3Mappings`, icon: <DFR3Icon />, subMenu: [] },
-        { label: "Tools", path: `/project/${id}/tools`, icon: <ConstructionRoundedIcon />, subMenu: [] }
+        { label: "DFR3 Mappings", path: `/project/${id}/dfr3Mappings`, icon: <DFR3Icon />, subMenu: [] }
     ];
 
-    const getTreeItem = (item: MenuItem) => (
-        <TreeItem
-            key={item.path}
-            itemId={item.label}
-            label={
-                <Link
-                    to={item.path}
-                    style={{
-                        padding: "1em",
-                        display: "flex",
-                        alignItems: "center",
-                        textDecoration: "none",
-                        fontWeight: location.pathname === item.path ? 500 : 400,
-                        color: "inherit"
-                    }}
-                    component={RouterLink}
-                >
-                    <Stack direction="row" spacing={1} alignItems="center">
-                        {React.cloneElement(item.icon, {
-                            sx: {
-                                color:
-                                    location.pathname === item.path
-                                        ? theme.colorSchemes.light.palette.primary[700]
-                                        : "black"
-                            }
-                        })}
-                        <Typography
-                            level="body-md"
-                            textColor={location.pathname === item.path ? "primary.main" : "black"}
-                        >
-                            {item.label}
-                        </Typography>
-                    </Stack>
-                </Link>
-            }
-        >
-            {item.subMenu && item.subMenu.map((subItem) => getTreeItem(subItem))}
-        </TreeItem>
-    );
-
+    const getTreeItem = (item: MenuItem, isChild: boolean) => {
+        const isActive = location.pathname === item.path;
+        return (
+            <TreeItem
+                key={item.path}
+                itemId={item.label}
+                label={
+                    <Link
+                        to={item.path}
+                        style={{
+                            padding: isChild ? "0.2em" : "1em",
+                            display: "flex",
+                            alignItems: "center",
+                            textDecoration: "none",
+                            fontWeight: isActive ? 600 : 400,
+                            color: "inherit",
+                            marginLeft: isChild ? "2em" : 0
+                        }}
+                        component={RouterLink}
+                    >
+                        <Stack direction="row" spacing={1} alignItems="center">
+                            {item.icon &&
+                                React.cloneElement(item.icon, {
+                                    sx: {
+                                        color: isActive ? theme.colorSchemes.light.palette.primary[700] : "black"
+                                    }
+                                })}
+                            <Typography level="body-md" textColor={isActive ? "primary.main" : "black"}>
+                                {item.label}
+                            </Typography>
+                        </Stack>
+                    </Link>
+                }
+            >
+                {item.subMenu?.map((subItem) => getTreeItem(subItem, true))}
+            </TreeItem>
+        );
+    };
     return (
         <Box mt={-2}>
             <Box sx={{ minHeight: 352, mt: 2 }}>
@@ -105,7 +100,7 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
                     }}
                     sx={{ flexGrow: 1, maxWidth: 400 }}
                 >
-                    {menuItems.map((item) => getTreeItem(item))}
+                    {menuItems.map((item) => getTreeItem(item, false))}
                 </SimpleTreeView>
             </Box>
         </Box>
