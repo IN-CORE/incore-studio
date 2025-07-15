@@ -136,6 +136,7 @@ const DatasetPage = (): JSX.Element => {
                                             paddingBlock: "1rem"
                                         }
                                     }}
+                                    mt={2}
                                 >
                                     <AccordionGroup
                                         sx={(theme) => ({
@@ -165,14 +166,14 @@ const DatasetPage = (): JSX.Element => {
                                                         direction="row"
                                                         sx={{ width: "100%" }}
                                                         spacing={1}
-                                                        justifyContent={"space-between"}
+                                                        justifyContent="space-between"
                                                     >
-                                                        <Stack direction="row" alignItems={"center"} spacing={1}>
+                                                        <Stack direction="row" alignItems="center" spacing={1}>
                                                             <Typography
                                                                 level="h4"
                                                                 sx={{
-                                                                    fontWeight: 590,
-                                                                    fontSize: "18px",
+                                                                    fontWeight: 300,
+                                                                    fontSize: "16px",
                                                                     lineHeight: "24px",
                                                                     paragraph: "28px",
                                                                     color: "#172B4D",
@@ -184,10 +185,10 @@ const DatasetPage = (): JSX.Element => {
                                                             <Typography
                                                                 level="h4"
                                                                 sx={{
-                                                                    fontWeight: 300,
+                                                                    fontWeight: 600,
                                                                     fontSize: "16px",
                                                                     lineHeight: "24px",
-                                                                    paragraph: "24px",
+                                                                    paragraph: "28px",
                                                                     color: "#172B4D",
                                                                     letter: "5%"
                                                                 }}
