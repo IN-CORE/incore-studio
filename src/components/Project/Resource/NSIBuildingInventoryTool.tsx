@@ -182,8 +182,8 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                         typeof newValue === "object" && newValue !== null && "fips" in newValue
                                             ? (newValue as FipsEntry).fips
                                             : typeof newValue === "string"
-                                            ? newValue
-                                            : null
+                                              ? newValue
+                                              : null
                                     )
                                 }
                                 inputValue={inputValue}

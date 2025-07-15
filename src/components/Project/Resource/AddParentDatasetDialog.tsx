@@ -28,16 +28,9 @@ interface AddParentDatasetDialogProps {
     open: boolean;
     onClose: () => void;
     resource: Dataset | Hazard | Visualization | Workflow | null;
-    handleOpenVisDialog: () => void;
 }
 
-const AddParentDatasetDialog: React.FC<AddParentDatasetDialogProps> = ({
-    projectId,
-    open,
-    onClose,
-    resource,
-    handleOpenVisDialog
-}) => {
+const AddParentDatasetDialog: React.FC<AddParentDatasetDialogProps> = ({ projectId, open, onClose, resource }) => {
     const appDispatch = useAppDispatch();
     const project = useAppSelector((state) => state.project.project);
     const [selectedDataset, setSelectedDataset] = React.useState<string | null>(null);
@@ -81,11 +74,11 @@ const AddParentDatasetDialog: React.FC<AddParentDatasetDialogProps> = ({
                     );
                     setAddSuccess(true);
                 } else {
-                    setServiceError("Failed to add parent dataset. Please try again.\nReason: " + response.statusText);
+                    setServiceError(`Failed to add parent dataset. Please try again.\nReason: ${response.statusText}`);
                 }
             } catch (err) {
                 console.error("Error adding parent dataset:", err);
-                setServiceError("Failed to add parent dataset. Please try again.\nReason: " + (err as Error).message);
+                setServiceError(`Failed to add parent dataset. Please try again.\nReason: ${(err as Error).message}`);
                 setLoading(false);
             }
         }
@@ -98,7 +91,6 @@ const AddParentDatasetDialog: React.FC<AddParentDatasetDialogProps> = ({
             setSelectedDataset(null);
             setAddSuccess(false);
             onClose();
-            handleOpenVisDialog();
         }
     }, [addSuccess]);
 
@@ -169,10 +161,6 @@ const AddParentDatasetDialog: React.FC<AddParentDatasetDialogProps> = ({
                         }}
                         onClick={async () => {
                             await handleAddParentDataset();
-                            // if (!error && !serviceError) {
-                            //     onClose();
-                            //     handleOpenVisDialog();
-                            // }
                         }}
                         disabled={!selectedDataset || loading}
                     >

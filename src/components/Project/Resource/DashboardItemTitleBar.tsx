@@ -1,8 +1,7 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { Box, Dropdown, IconButton, Link, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
-import { SvgIconProps } from "@mui/material";
+import { Box, Dropdown, IconButton, Link, Menu, MenuButton, MenuItem, Typography, SvgIconProps } from "@mui/joy";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 
 interface DashboardItemTitleBarProps {

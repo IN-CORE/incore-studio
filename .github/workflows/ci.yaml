@@ -42,6 +42,12 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      # configure npm auth for GitHub Packages
+      - name: Configure npm auth
+        run: |
+          echo "@ncsa:registry=https://npm.pkg.github.com/" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GEO_EXPLORER_GITHUB_TOKEN }}" >> ~/.npmrc
+
       # install dependencies
       - name: install dependencies
         run: npm install
