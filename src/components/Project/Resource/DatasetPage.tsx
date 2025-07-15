@@ -18,7 +18,7 @@ import Snackbar from "@mui/joy/Snackbar";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
-import PreviewModal from "@app/components/PreviewModal";
+import DatasetPreviewModal from "@app/components/DatasetPreviewModal";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 
 const DatasetPage = (): JSX.Element => {
@@ -240,7 +240,7 @@ const DatasetPage = (): JSX.Element => {
                 )}
             </Box>
             {selectedDataset && (
-                <PreviewModal
+                <DatasetPreviewModal
                     open={openTableDataModal}
                     onClose={() => {
                         setOpenTableDataModal(false);

@@ -17,7 +17,7 @@ import {
 } from "@ncsa/geo-explorer";
 import DataTable from "./DataTable";
 
-interface PreviewModalProps {
+interface DatasetDatasetPreviewModalProps {
     open: boolean;
     onClose: () => void;
     dataset?: Dataset | null;
@@ -54,7 +54,7 @@ const parseCSV = (csvText: string): { rows: GridRowsProp; columns: GridColDef[] 
     return { rows, columns };
 };
 
-const PreviewModal: React.FC<PreviewModalProps> = ({ open, onClose, dataset }) => {
+const DatasetPreviewModal: React.FC<DatasetDatasetPreviewModalProps> = ({ open, onClose, dataset }) => {
     if (!dataset) {
         return null;
     }
@@ -231,4 +231,4 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ open, onClose, dataset }) =
         </Modal>
     );
 };
-export default PreviewModal;
+export default DatasetPreviewModal;

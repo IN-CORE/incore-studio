@@ -7,7 +7,7 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 
 import config from "@app/app.config";
 import { getHeaders } from "@app/utils";
-import PreviewModal from "@app/components/PreviewModal";
+import DatasetPreviewModal from "@app/components/DatasetPreviewModal";
 
 interface OutputFileDisplayProps {
     datasetId: string;
@@ -90,7 +90,7 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId }) => {
                 </Tooltip>
             </Stack>
             {dataset && (
-                <PreviewModal
+                <DatasetPreviewModal
                     open={openTableDataModal}
                     onClose={() => setOpenTableDataModal(false)}
                     dataset={dataset}
