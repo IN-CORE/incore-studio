@@ -75,13 +75,13 @@ const Navbar: React.FC = () => {
             </Link>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mr: 2 }}>
-                <IconButton>
+                <IconButton disabled>
                     <NotificationsIcon className="icon" />
                 </IconButton>
-                <IconButton>
+                <IconButton disabled>
                     <HelpIcon className="icon" />
                 </IconButton>
-                <IconButton>
+                <IconButton disabled>
                     <SettingsIcon className="icon" />
                 </IconButton>
                 <IconButton

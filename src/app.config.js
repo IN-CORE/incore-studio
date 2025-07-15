@@ -7,6 +7,7 @@ config.tosURL = `${hostname}/doc/incore/termsofservice.html`;
 config.hostname = hostname;
 config.docBaseLink = `${hostname}/doc/incore/analyses`;
 config.projectApi = `${hostname}/project/api/projects`;
+config.toolsApi = `${hostname}/project/api/tools`;
 config.spaceApi = `${hostname}/space/api`;
 config.hazardApi = `${hostname}/hazard/api`;
 config.dataApi = `${hostname}/data/api`;
