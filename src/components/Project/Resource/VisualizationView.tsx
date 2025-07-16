@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
 import { parseDateTime } from "@app/utils";
 
@@ -33,16 +33,14 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ open, onCl
     // geo explorer redux store
     const mapLayers = geoExplorerUseSelector((state: GeoExplorerRootState) => state.explore.mapLayers);
 
-    const [mapBounds, setMapBounds] = useState<number[][] | null>(null);
-    const [zoomLevel, setZoomLevel] = useState<number | null>(null);
+    const mapBoundsRef = useRef<number[][] | null>(null);
 
     useEffect(() => {
         let cleanup: () => void;
 
         const onMapReady = (map: Map) => {
             const updateView = () => {
-                setMapBounds(map.getBounds().toArray()); // [[west, south], [east, north]]
-                setZoomLevel(map.getZoom());
+                mapBoundsRef.current = map.getBounds().toArray(); // [[west, south], [east, north]]
             };
 
             map.on("moveend", updateView);
@@ -87,6 +85,7 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ open, onCl
             const layers: IncoreLayer[] = getLayers(); // replace with your actual logic
 
             const visualizationId = visualization.id;
+            const mapBounds = mapBoundsRef.current;
 
             await appDispatch(
                 patchVisualization({
@@ -97,8 +96,7 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ open, onCl
                         layers: JSON.stringify(layers),
                         ...(mapBounds && {
                             boundingBox: [...mapBounds[0], ...mapBounds[1]] as [number, number, number, number]
-                        }),
-                        ...(zoomLevel !== null && { zoom: zoomLevel })
+                        })
                     }
                 })
             );
@@ -126,13 +124,7 @@ export const VisualizationView: React.FC<VisualizationViewProps> = ({ open, onCl
                         </Typography>
                     )}
                 </Box>
-                <Box>
-                    {visualization.layers && (
-                        <Box sx={{ height: 850, position: "relative", overflow: "hidden" }}>
-                            <GeoExplorer />
-                        </Box>
-                    )}
-                </Box>
+                {visualization.layers && <GeoExplorer key={visualization.id} />}
             </ModalDialog>
         </Modal>
     );

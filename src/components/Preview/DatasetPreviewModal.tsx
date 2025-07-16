@@ -5,12 +5,20 @@ import { Modal, ModalDialog, ModalClose, Box, Typography, Sheet, Tabs, Tab, TabL
 import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 
 import config from "@app/app.config";
-import { convertGridToVegaData, getHeaders } from "@app/utils";
-import { CSVVegaChart } from "@app/components/CSVVegaChart";
-import SimpleMap from "@app/components/Map/SimpleMap";
-import DataTable from "./DataTable";
+import { convertGridToVegaData, getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
+import { CSVVegaChart } from "@app/components/Preview/CSVVegaChart";
+import {
+    addLayer,
+    GeoExplorer,
+    GeoExplorerConfig,
+    GeoExplorerProvider,
+    selectMapLayer,
+    setShowLayerSettings,
+    setSidebarOpen
+} from "@ncsa/geo-explorer";
+import DataTable from "@app/components/Preview/DataTable";
 
-interface TableDataModalProps {
+interface DatasetDatasetPreviewModalProps {
     open: boolean;
     onClose: () => void;
     dataset?: Dataset | null;
@@ -47,7 +55,7 @@ const parseCSV = (csvText: string): { rows: GridRowsProp; columns: GridColDef[] 
     return { rows, columns };
 };
 
-const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset }) => {
+const DatasetPreviewModal: React.FC<DatasetDatasetPreviewModalProps> = ({ open, onClose, dataset }) => {
     if (!dataset) {
         return null;
     }
@@ -175,21 +183,41 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
                         <pre>{JSON.stringify(jsonData, null, 2)}</pre>
                     </Sheet>
                 ) : dataset?.format === "shapefile" || dataset?.format === "raster" || dataset?.format === "geotif" ? (
-                    <SimpleMap
-                        layers={[
+                    <GeoExplorerProvider
+                        config={
                             {
-                                workspace: "incore",
-                                layerId: dataset.id,
-                                boundingBox: dataset.boundingBox
-                            }
-                        ]}
-                        mapOptions={{
-                            minZoom: 1
+                                basemaps: [
+                                    {
+                                        layer_id: "OSM",
+                                        display_name: "OpenStreetMap",
+                                        tile_url_template: "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                        thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
+                                    }
+                                ],
+                                simple_layers: [
+                                    mapIncoreDatasetToGeoExplorerDataset(dataset, `${config.hostname}/geoserver`)
+                                ],
+                                temporal_layers: [],
+                                // naive approach to center the map on the visualization bounding box
+                                mapConfig: {
+                                    boundingBox: dataset?.boundingBox
+                                }
+                            } as GeoExplorerConfig
+                        }
+                        accessToken={getOidcUser()?.access_token}
+                        isProtectedResource={(url) => /geoserver/.test(url)}
+                        components={{
+                            DataInventory: () => null
                         }}
-                        navigation
-                        onLoad={() => {}}
-                        initialBounds={dataset.boundingBox ? dataset.boundingBox : config.DEFAULT_MAP_BOUNDS}
-                    />
+                        onReady={({ store }) => {
+                            store.dispatch(addLayer({ layer_id: dataset.id }));
+                            store.dispatch(selectMapLayer({ layer_id: dataset.id }));
+                            store.dispatch(setShowLayerSettings({ show: true }));
+                            store.dispatch(setSidebarOpen({ open: false }));
+                        }}
+                    >
+                        <GeoExplorer key={dataset.id} />
+                    </GeoExplorerProvider>
                 ) : (
                     <Typography level="body-md" sx={{ padding: 2 }}>
                         {dataset?.format} is not supported for table view.
@@ -199,4 +227,4 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
         </Modal>
     );
 };
-export default TableDataModal;
+export default DatasetPreviewModal;
