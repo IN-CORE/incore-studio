@@ -165,11 +165,10 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
             <ProjectHeader project={project} />
             <Divider />
             <Grid container spacing={5} sx={{ mt: 3, ml: 0 }}>
-                <Grid sm={3}>
+                <Grid sm={2}>
                     <ProjectSidebar id={project.id} />
                 </Grid>
-                {/* Left Column: Workflow, Hazard and Visualization Cards */}
-                <Grid sm={9}>
+                <Grid sm={10}>
                     <Stack
                         spacing={3}
                         direction={{ xs: "column", sm: "column", md: "column", lg: "row" }}
@@ -177,7 +176,16 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                         justifyContent="space-between"
                         divider={<Divider orientation={isLgUp ? "vertical" : "horizontal"} />}
                     >
-                        <Box sx={{ width: "100%", mt: 1 }}>
+                        {/* workflow section */}
+                        <Box
+                            sx={{
+                                width: "100%",
+                                mt: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                height: 450
+                            }}
+                        >
                             <DashboardItemTitleBar
                                 title="Workflows"
                                 link={`/project/${project.id}/workflows`}
@@ -192,92 +200,104 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     }
                                 ]}
                             />
-                            <Stack direction="column" spacing={3} sx={{ width: "100%" }}>
-                                <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" />}>
-                                    <Stack direction="row" spacing={2}>
-                                        <Typography
-                                            level="title-md"
-                                            sx={{
-                                                font: "SF Pro, sans-serif",
-                                                fontWeight: 510,
-                                                fontStyle: "medium",
-                                                fontSize: "18px",
-                                                lineHeight: "24px",
-                                                letterSpacing: "0.17px",
-                                                color: "#00000099"
-                                            }}
-                                        >
-                                            Workflow Count:
-                                        </Typography>
-                                        <Typography
-                                            level="title-md"
-                                            sx={{
-                                                font: "SF Pro, sans-serif",
-                                                fontWeight: 510,
-                                                fontStyle: "medium",
-                                                fontSize: "18px",
-                                                lineHeight: "24px",
-                                                letterSpacing: "0.17px"
-                                            }}
-                                        >
-                                            {workflowCount}
-                                        </Typography>
+                            <Box sx={{ flex: 1 }}>
+                                <Stack direction="column" spacing={3} sx={{ width: "100%" }}>
+                                    <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" />}>
+                                        <Stack direction="row" spacing={2}>
+                                            <Typography
+                                                level="title-md"
+                                                sx={{
+                                                    font: "SF Pro, sans-serif",
+                                                    fontWeight: 510,
+                                                    fontStyle: "medium",
+                                                    fontSize: "18px",
+                                                    lineHeight: "24px",
+                                                    letterSpacing: "0.17px",
+                                                    color: "#00000099"
+                                                }}
+                                            >
+                                                Workflow Count:
+                                            </Typography>
+                                            <Typography
+                                                level="title-md"
+                                                sx={{
+                                                    font: "SF Pro, sans-serif",
+                                                    fontWeight: 510,
+                                                    fontStyle: "medium",
+                                                    fontSize: "18px",
+                                                    lineHeight: "24px",
+                                                    letterSpacing: "0.17px"
+                                                }}
+                                            >
+                                                {workflowCount}
+                                            </Typography>
+                                        </Stack>
+                                        <Stack direction="row" spacing={2}>
+                                            <Typography
+                                                level="title-md"
+                                                sx={{
+                                                    font: "SF Pro, sans-serif",
+                                                    fontWeight: 510,
+                                                    fontStyle: "medium",
+                                                    fontSize: "18px",
+                                                    lineHeight: "24px",
+                                                    letterSpacing: "0.17px",
+                                                    color: "#00000099"
+                                                }}
+                                            >
+                                                Execution: Count:
+                                            </Typography>
+                                            <Typography
+                                                level="title-md"
+                                                sx={{
+                                                    font: "SF Pro, sans-serif",
+                                                    fontWeight: 510,
+                                                    fontStyle: "medium",
+                                                    fontSize: "18px",
+                                                    lineHeight: "24px",
+                                                    letterSpacing: "0.17px"
+                                                }}
+                                            >
+                                                {executionCount}
+                                            </Typography>
+                                        </Stack>
                                     </Stack>
-                                    <Stack direction="row" spacing={2}>
-                                        <Typography
-                                            level="title-md"
-                                            sx={{
-                                                font: "SF Pro, sans-serif",
-                                                fontWeight: 510,
-                                                fontStyle: "medium",
-                                                fontSize: "18px",
-                                                lineHeight: "24px",
-                                                letterSpacing: "0.17px",
-                                                color: "#00000099"
-                                            }}
-                                        >
-                                            Execution: Count:
-                                        </Typography>
-                                        <Typography
-                                            level="title-md"
-                                            sx={{
-                                                font: "SF Pro, sans-serif",
-                                                fontWeight: 510,
-                                                fontStyle: "medium",
-                                                fontSize: "18px",
-                                                lineHeight: "24px",
-                                                letterSpacing: "0.17px"
-                                            }}
-                                        >
-                                            {executionCount}
-                                        </Typography>
-                                    </Stack>
+                                    <ItemCountTable
+                                        tableHeaders={["Workflow", "Execution Count"]}
+                                        itemRows={execByWorkflow}
+                                    />
                                 </Stack>
-                                <ItemCountTable
-                                    tableHeaders={["Workflow", "Execution Count"]}
-                                    itemRows={execByWorkflow}
-                                />
-                                <Box sx={{ textAlign: "center", width: "100%" }}>
-                                    <Button
-                                        variant="outlined"
-                                        fullWidth
-                                        sx={{
-                                            borderColor: "primary.subtle",
-                                            color: "primary.subtle",
-                                            backgroundColor: "white"
-                                        }}
-                                        onClick={() => navigate(`/project/${project.id}/workflows`)}
-                                    >
-                                        View All Workflows
-                                    </Button>
-                                </Box>
-                            </Stack>
+                            </Box>
+                            <Box sx={{ textAlign: "center", mt: "auto" }}>
+                                <Button
+                                    variant="outlined"
+                                    fullWidth
+                                    sx={{
+                                        borderColor: "primary.subtle",
+                                        color: "primary.subtle",
+                                        backgroundColor: "white"
+                                    }}
+                                    onClick={() => navigate(`/project/${project.id}/workflows`)}
+                                >
+                                    View All Workflows
+                                </Button>
+                            </Box>
                             <CreateWorkflowDialog
                                 open={openCreateWorkflowDialog}
                                 onClose={handleCloseCreateWorkflowDialog}
                             />
                         </Box>
-                        <Box sx={{ width: "100%", mt: 1 }}>
+
+                        {/* visualization section */}
+                        <Box
+                            sx={{
+                                width: "100%",
+                                mt: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                height: 450
+                            }}
+                        >
                             <DashboardItemTitleBar
                                 title="Visualizations"
                                 link={`/project/${project.id}/visualizations`}
@@ -292,50 +312,52 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     }
                                 ]}
                             />
-                            <Stack direction="column" spacing={3} sx={{ width: "100%" }}>
-                                <Stack direction={{ sm: "column", md: "column", lg: "row" }} spacing={2}>
-                                    {getTwoMostRecentVisualizations().map((vis, index) => (
-                                        <Sheet
-                                            key={index}
-                                            sx={{
-                                                p: 2,
-                                                textAlign: "center",
-                                                width: "100%",
-                                                minHeight: "200px",
-                                                maxHeight: "300px",
-                                                overflow: "auto"
-                                            }}
-                                            variant="outlined"
-                                        >
-                                            <Typography level="title-md" sx={{ mb: 1 }}>
-                                                {vis.name}
-                                            </Typography>
-                                            <Typography level="body-sm" sx={{ mb: 2 }}>
-                                                {vis.description || "No description available."}
-                                            </Typography>
-                                        </Sheet>
-                                    ))}
+                            <Box sx={{ flex: 1 }}>
+                                <Stack direction="column" spacing={3} sx={{ width: "100%" }}>
+                                    <Stack direction={{ sm: "column", md: "column", lg: "row" }} spacing={2}>
+                                        {getTwoMostRecentVisualizations().map((vis, index) => (
+                                            <Sheet
+                                                key={index}
+                                                sx={{
+                                                    p: 2,
+                                                    textAlign: "center",
+                                                    width: "100%",
+                                                    minHeight: "200px",
+                                                    maxHeight: "300px",
+                                                    overflow: "auto"
+                                                }}
+                                                variant="outlined"
+                                            >
+                                                <Typography level="title-md" sx={{ mb: 1 }}>
+                                                    {vis.name}
+                                                </Typography>
+                                                <Typography level="body-sm" sx={{ mb: 2 }}>
+                                                    {vis.description || "No description available."}
+                                                </Typography>
+                                            </Sheet>
+                                        ))}
+                                    </Stack>
+                                    <Typography level="body-sm" sx={{ p: 2 }}>
+                                        {getTwoMostRecentVisualizations().length === 0
+                                            ? "No recent visualizations available."
+                                            : "Shows up to 2 most recent visualizations."}
+                                    </Typography>
                                 </Stack>
-                                <Typography level="body-sm" sx={{ p: 2 }}>
-                                    {getTwoMostRecentVisualizations().length === 0
-                                        ? "No recent visualizations available."
-                                        : "Shows up to 2 most recent visualizations."}
-                                </Typography>
-                                <Box sx={{ textAlign: "center", width: "100%" }}>
-                                    <Button
-                                        variant="outlined"
-                                        fullWidth
-                                        sx={{
-                                            borderColor: "primary.subtle",
-                                            color: "primary.subtle",
-                                            backgroundColor: "white"
-                                        }}
-                                        onClick={() => navigate(`/project/${project.id}/visualizations`)}
-                                    >
-                                        View All Visualizations
-                                    </Button>
-                                </Box>
-                            </Stack>
+                            </Box>
+                            <Box sx={{ textAlign: "center", mt: "auto" }}>
+                                <Button
+                                    variant="outlined"
+                                    fullWidth
+                                    sx={{
+                                        borderColor: "primary.subtle",
+                                        color: "primary.subtle",
+                                        backgroundColor: "white"
+                                    }}
+                                    onClick={() => navigate(`/project/${project.id}/visualizations`)}
+                                >
+                                    View All Visualizations
+                                </Button>
+                            </Box>
                             <CreateVisualizationDialog
                                 projectId={project.id}
                                 open={openCreateVisDialog}
@@ -351,7 +373,16 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                         justifyContent="space-between"
                         divider={<Divider orientation={isLgUp ? "vertical" : "horizontal"} />}
                     >
-                        <Box sx={{ width: "100%" }}>
+                        {/* Hazard section */}
+                        <Box
+                            sx={{
+                                width: "100%",
+                                mt: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                height: 600
+                            }}
+                        >
                             <DashboardItemTitleBar
                                 title="Hazards"
                                 link={`/project/${project.id}/hazards`}
@@ -372,81 +403,118 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     }
                                 ]}
                             />
-                            <Grid container spacing={2} sx={{ mt: 2 }}>
-                                <Grid xs={12} sm={12} md={6}>
-                                    <Stack spacing={3} direction="column" sx={{ height: "100%" }}>
-                                        <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
-                                            <Stack
-                                                direction="row"
-                                                justifyContent="center"
-                                                spacing={2}
-                                                sx={{ width: "100%", mb: 2 }}
+                            <Box sx={{ flex: 1 }}>
+                                <Grid container spacing={2} sx={{ mt: 2 }}>
+                                    <Grid xs={12} sm={12} md={6}>
+                                        <Stack spacing={3} direction="column" sx={{ height: "100%" }}>
+                                            <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
+                                                <Stack
+                                                    direction="row"
+                                                    justifyContent="center"
+                                                    spacing={2}
+                                                    sx={{ width: "100%", mb: 2 }}
+                                                >
+                                                    <Typography level="title-lg" sx={{ mb: 2 }}>
+                                                        IN-CORE Service Usage
+                                                    </Typography>
+                                                    <Tooltip
+                                                        color="neutral"
+                                                        title={
+                                                            <Typography
+                                                                level="body-xs"
+                                                                sx={{ whiteSpace: "pre-line", color: "white", p: 1 }}
+                                                            >
+                                                                {
+                                                                    "Only tracks what you create in your space.\n Not what you add to the project."
+                                                                }
+                                                            </Typography>
+                                                        }
+                                                        arrow
+                                                    >
+                                                        <HelpOutlineRoundedIcon sx={{ fontSize: "20px" }} />
+                                                    </Tooltip>
+                                                </Stack>
+                                                <Stack spacing={3}>
+                                                    <Stack
+                                                        sx={{
+                                                            alignItems: "center",
+                                                            justifyContent: "space-between"
+                                                        }}
+                                                        direction={{ xs: "column", sm: "row" }}
+                                                        spacing={2}
+                                                    >
+                                                        <Typography level="title-md">Entities</Typography>
+                                                        <Typography level="body-xs">
+                                                            {userUsageStats.hazards.entities.text}
+                                                        </Typography>
+                                                    </Stack>
+                                                    <Stack
+                                                        sx={{
+                                                            alignItems: "center",
+                                                            justifyContent: "space-between"
+                                                        }}
+                                                        direction={{ xs: "column", sm: "row" }}
+                                                        spacing={2}
+                                                    >
+                                                        <Typography level="title-md">Disk</Typography>
+                                                        <Typography level="body-xs">
+                                                            {userUsageStats.hazards.disk.text}
+                                                        </Typography>
+                                                    </Stack>
+                                                </Stack>
+                                            </Sheet>
+                                            <Sheet
+                                                sx={{ p: 2, textAlign: "center", height: "100%" }}
+                                                variant="outlined"
                                             >
                                                 <Typography level="title-lg" sx={{ mb: 2 }}>
-                                                    IN-CORE Service Usage
+                                                    Hazards Format
                                                 </Typography>
-                                                <Tooltip
-                                                    color="neutral"
-                                                    title={
-                                                        <Typography
-                                                            level="body-xs"
-                                                            sx={{ whiteSpace: "pre-line", color: "white", p: 1 }}
+                                                <Stack direction="column" spacing={2} sx={{ width: "100%", mb: 2 }}>
+                                                    {[
+                                                        { label: "Model Based", value: hazardStats.model.toString() },
+                                                        {
+                                                            label: "Dataset Based",
+                                                            value: hazardStats.dataset.toString()
+                                                        }
+                                                    ].map((hazard, index) => (
+                                                        <Stack
+                                                            direction="row"
+                                                            justifyContent="space-between"
+                                                            alignItems="center"
+                                                            key={index}
                                                         >
-                                                            {
-                                                                "Only tracks what you create in your space.\n Not what you add to the project."
-                                                            }
-                                                        </Typography>
-                                                    }
-                                                    arrow
-                                                >
-                                                    <HelpOutlineRoundedIcon sx={{ fontSize: "20px" }} />
-                                                </Tooltip>
-                                            </Stack>
-                                            <Stack spacing={3}>
-                                                <Stack
-                                                    sx={{
-                                                        alignItems: "center",
-                                                        justifyContent: "space-between"
-                                                    }}
-                                                    direction={{ xs: "column", sm: "row" }}
-                                                    spacing={2}
-                                                >
-                                                    <Typography level="title-md">Entities</Typography>
-                                                    <Typography level="body-xs">
-                                                        {userUsageStats.hazards.entities.text}
-                                                    </Typography>
+                                                            <Typography level="body-md">{hazard.label}</Typography>
+                                                            <Chip>
+                                                                <Typography level="body-md">{hazard.value}</Typography>
+                                                            </Chip>
+                                                        </Stack>
+                                                    ))}
                                                 </Stack>
-                                                <Stack
-                                                    sx={{
-                                                        alignItems: "center",
-                                                        justifyContent: "space-between"
-                                                    }}
-                                                    direction={{ xs: "column", sm: "row" }}
-                                                    spacing={2}
-                                                >
-                                                    <Typography level="title-md">Disk</Typography>
-                                                    <Typography level="body-xs">
-                                                        {userUsageStats.hazards.disk.text}
-                                                    </Typography>
-                                                </Stack>
-                                            </Stack>
-                                        </Sheet>
-                                        <Sheet sx={{ p: 2, textAlign: "center", height: "100%" }} variant="outlined">
-                                            <Typography level="title-lg" sx={{ mb: 2 }}>
-                                                Hazards Format
-                                            </Typography>
-                                            <Stack direction="column" spacing={2} sx={{ width: "100%", mb: 2 }}>
-                                                {[
-                                                    { label: "Model Based", value: hazardStats.model.toString() },
-                                                    { label: "Dataset Based", value: hazardStats.dataset.toString() }
-                                                ].map((hazard, index) => (
+                                            </Sheet>
+                                        </Stack>
+                                    </Grid>
+                                    <Grid xs={12} sm={12} md={6}>
+                                        <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
+                                            <Stack
+                                                sx={{
+                                                    width: "100%",
+                                                    minHeight: isXsUp ? "200px" : "100px",
+                                                    maxHeight: "300px",
+                                                    overflow: "auto"
+                                                }}
+                                                spacing={2}
+                                                direction="column"
+                                            >
+                                                <Typography level="title-lg">Hazard Count By Types</Typography>
+                                                {hazardCounts.map((hazard, index) => (
                                                     <Stack
                                                         direction="row"
                                                         justifyContent="space-between"
                                                         alignItems="center"
                                                         key={index}
                                                     >
-                                                        <Typography level="body-md">{hazard.label}</Typography>
+                                                        <Typography level="title-md">{hazard.label}</Typography>
                                                         <Chip>
                                                             <Typography level="body-md">{hazard.value}</Typography>
                                                         </Chip>
@@ -454,38 +522,23 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 ))}
                                             </Stack>
                                         </Sheet>
-                                    </Stack>
+                                    </Grid>
                                 </Grid>
-                                <Grid xs={12} sm={12} md={6}>
-                                    <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
-                                        <Stack
-                                            sx={{
-                                                width: "100%",
-                                                minHeight: isXsUp ? "200px" : "100px",
-                                                maxHeight: "300px",
-                                                overflow: "auto"
-                                            }}
-                                            spacing={2}
-                                            direction="column"
-                                        >
-                                            <Typography level="title-lg">Hazard Count By Types</Typography>
-                                            {hazardCounts.map((hazard, index) => (
-                                                <Stack
-                                                    direction="row"
-                                                    justifyContent="space-between"
-                                                    alignItems="center"
-                                                    key={index}
-                                                >
-                                                    <Typography level="title-md">{hazard.label}</Typography>
-                                                    <Chip>
-                                                        <Typography level="body-md">{hazard.value}</Typography>
-                                                    </Chip>
-                                                </Stack>
-                                            ))}
-                                        </Stack>
-                                    </Sheet>
-                                </Grid>
-                            </Grid>
+                            </Box>
+                            <Box sx={{ textAlign: "center", mt: "auto" }}>
+                                <Button
+                                    variant="outlined"
+                                    fullWidth
+                                    sx={{
+                                        borderColor: "primary.subtle",
+                                        color: "primary.subtle",
+                                        backgroundColor: "white"
+                                    }}
+                                    onClick={() => navigate(`/project/${project.id}/hazards`)}
+                                >
+                                    View All Hazards
+                                </Button>
+                            </Box>
                             <AddFromServiceDialog
                                 projectId={project.id}
                                 resourceType="hazard"
@@ -504,7 +557,17 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 }}
                             />
                         </Box>
-                        <Box sx={{ width: "100%" }}>
+
+                        {/* Dataset section */}
+                        <Box
+                            sx={{
+                                width: "100%",
+                                mt: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                height: 600
+                            }}
+                        >
                             <DashboardItemTitleBar
                                 title="Datasets"
                                 link={`/project/${project.id}/datasets`}
@@ -525,75 +588,91 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                     }
                                 ]}
                             />
-                            <Grid container spacing={2} sx={{ mt: 2 }}>
-                                <Grid sm={6}>
-                                    <Stack spacing={3} direction="column">
-                                        <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
-                                            <Stack
-                                                direction="row"
-                                                justifyContent="center"
-                                                spacing={2}
-                                                sx={{ width: "100%", mb: 2 }}
-                                            >
-                                                <Typography level="title-lg" sx={{ mb: 2 }}>
-                                                    IN-CORE Service Usage
-                                                </Typography>
-                                                <Tooltip
-                                                    color="neutral"
-                                                    title={
-                                                        <Typography
-                                                            level="body-xs"
-                                                            sx={{ whiteSpace: "pre-line", color: "white", p: 1 }}
-                                                        >
-                                                            {
-                                                                "Only tracks what you create in your space.\n Not what you add to the project."
-                                                            }
+                            <Box sx={{ flex: 1 }}>
+                                <Grid container spacing={2} sx={{ mt: 2 }}>
+                                    <Grid sm={6}>
+                                        <Stack spacing={3} direction="column">
+                                            <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
+                                                <Stack
+                                                    direction="row"
+                                                    justifyContent="center"
+                                                    spacing={2}
+                                                    sx={{ width: "100%", mb: 2 }}
+                                                >
+                                                    <Typography level="title-lg" sx={{ mb: 2 }}>
+                                                        IN-CORE Service Usage
+                                                    </Typography>
+                                                    <Tooltip
+                                                        color="neutral"
+                                                        title={
+                                                            <Typography
+                                                                level="body-xs"
+                                                                sx={{ whiteSpace: "pre-line", color: "white", p: 1 }}
+                                                            >
+                                                                {
+                                                                    "Only tracks what you create in your space.\n Not what you add to the project."
+                                                                }
+                                                            </Typography>
+                                                        }
+                                                        arrow
+                                                    >
+                                                        <HelpOutlineRoundedIcon sx={{ fontSize: "20px" }} />
+                                                    </Tooltip>
+                                                </Stack>
+                                                <Stack direction="column" spacing={2}>
+                                                    <Stack
+                                                        direction="row"
+                                                        justifyContent="space-between"
+                                                        sx={{
+                                                            alignItems: "center"
+                                                        }}
+                                                    >
+                                                        <Typography level="title-md">Entities</Typography>
+                                                        <Typography level="body-xs">
+                                                            {userUsageStats.datasets.entities.text}
                                                         </Typography>
-                                                    }
-                                                    arrow
-                                                >
-                                                    <HelpOutlineRoundedIcon sx={{ fontSize: "20px" }} />
-                                                </Tooltip>
-                                            </Stack>
-                                            <Stack direction="column" spacing={2}>
-                                                <Stack
-                                                    direction="row"
-                                                    justifyContent="space-between"
-                                                    sx={{
-                                                        alignItems: "center"
-                                                    }}
-                                                >
-                                                    <Typography level="title-md">Entities</Typography>
-                                                    <Typography level="body-xs">
-                                                        {userUsageStats.datasets.entities.text}
-                                                    </Typography>
+                                                    </Stack>
+                                                    <Stack
+                                                        direction="row"
+                                                        justifyContent="space-between"
+                                                        sx={{
+                                                            alignItems: "center"
+                                                        }}
+                                                    >
+                                                        <Typography level="title-md">Disk</Typography>
+                                                        <Typography level="body-xs">
+                                                            {userUsageStats.datasets.disk.text}
+                                                        </Typography>
+                                                    </Stack>
                                                 </Stack>
-                                                <Stack
-                                                    direction="row"
-                                                    justifyContent="space-between"
-                                                    sx={{
-                                                        alignItems: "center"
-                                                    }}
-                                                >
-                                                    <Typography level="title-md">Disk</Typography>
-                                                    <Typography level="body-xs">
-                                                        {userUsageStats.datasets.disk.text}
-                                                    </Typography>
-                                                </Stack>
-                                            </Stack>
-                                        </Sheet>
-                                    </Stack>
+                                            </Sheet>
+                                        </Stack>
+                                    </Grid>
+                                    <Grid sm={12}>
+                                        <ItemCountTable
+                                            tableHeaders={["Dataset Type", "Count"]}
+                                            itemRows={getDatasetsCountsByType(project.datasets).map((dataset) => ({
+                                                itemName: dataset.label,
+                                                count: dataset.value
+                                            }))}
+                                        />
+                                    </Grid>
                                 </Grid>
-                                <Grid sm={12}>
-                                    <ItemCountTable
-                                        tableHeaders={["Dataset Type", "Count"]}
-                                        itemRows={getDatasetsCountsByType(project.datasets).map((dataset) => ({
-                                            itemName: dataset.label,
-                                            count: dataset.value
-                                        }))}
-                                    />
-                                </Grid>
-                            </Grid>
+                            </Box>
+                            <Box sx={{ textAlign: "center", mt: "auto" }}>
+                                <Button
+                                    variant="outlined"
+                                    fullWidth
+                                    sx={{
+                                        borderColor: "primary.subtle",
+                                        color: "primary.subtle",
+                                        backgroundColor: "white"
+                                    }}
+                                    onClick={() => navigate(`/project/${project.id}/datasets`)}
+                                >
+                                    View All Datasets
+                                </Button>
+                            </Box>
                             <AddFromServiceDialog
                                 projectId={project.id}
                                 resourceType="dataset"
@@ -619,68 +698,87 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                         sx={{ width: "100%", height: "auto", mb: 5 }}
                         justifyContent="space-between"
                     >
-                        <Box sx={{ width: "100%" }}>
-                            <Grid container spacing={5}>
-                                <Grid sm={6}>
-                                    <DashboardItemTitleBar
-                                        title="DFR3 Mappings"
-                                        link={`/project/${project.id}/dfr3mappings`}
-                                        icon={<DFR3Icon sx={{ color: "#0000008A" }} />}
-                                        total={project.dfr3Mappings.length.toString()}
-                                        btnList={[
-                                            {
-                                                label: "Create DFR3 Mapping",
-                                                icon: <AddRoundedIcon />,
-                                                sx: { backgroundColor: "primary.main" },
-                                                onClick: () => setOpenAddDFR3MappingFromServiceDialog(true)
-                                            }
-                                        ]}
-                                    />
-                                    <Stack
-                                        spacing={3}
-                                        direction="column"
-                                        sx={{ justifyContent: "center", textAlign: "center" }}
-                                    >
-                                        <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
-                                            <Stack direction="row" spacing={2} sx={{ mb: 2, justifyContent: "center" }}>
-                                                <Typography level="title-lg" sx={{ mb: 2 }}>
-                                                    IN-CORE Service Usage
-                                                </Typography>
-                                                <Tooltip
-                                                    color="neutral"
-                                                    title={
-                                                        <Typography
-                                                            level="body-xs"
-                                                            sx={{ whiteSpace: "pre-line", color: "white", p: 1 }}
-                                                        >
-                                                            {
-                                                                "Only tracks what you create in your space.\n Not what you add to the project."
-                                                            }
-                                                        </Typography>
-                                                    }
-                                                    arrow
-                                                >
-                                                    <HelpOutlineRoundedIcon sx={{ fontSize: "20px" }} />
-                                                </Tooltip>
-                                            </Stack>
-                                            <Stack
-                                                direction="row"
-                                                spacing={2}
-                                                sx={{
-                                                    width: "100%",
-                                                    alignItems: "center",
-                                                    justifyContent: "space-between"
-                                                }}
+                        {/* DFR3 Mappings section */}
+                        <Box
+                            sx={{
+                                width: "100%",
+                                mt: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                height: 220
+                            }}
+                        >
+                            <Box sx={{ flex: 1 }}>
+                                <DashboardItemTitleBar
+                                    title="DFR3 Mappings"
+                                    link={`/project/${project.id}/dfr3mappings`}
+                                    icon={<DFR3Icon sx={{ color: "#0000008A" }} />}
+                                    total={project.dfr3Mappings.length.toString()}
+                                    btnList={[
+                                        {
+                                            label: "Create DFR3 Mapping",
+                                            icon: <AddRoundedIcon />,
+                                            sx: { backgroundColor: "primary.main" },
+                                            onClick: () => setOpenAddDFR3MappingFromServiceDialog(true)
+                                        }
+                                    ]}
+                                />
+                                <Stack
+                                    spacing={3}
+                                    direction="column"
+                                    sx={{ justifyContent: "center", textAlign: "center" }}
+                                >
+                                    <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
+                                        <Stack direction="row" spacing={2} sx={{ mb: 2, justifyContent: "center" }}>
+                                            <Typography level="title-lg" sx={{ mb: 2 }}>
+                                                IN-CORE Service Usage
+                                            </Typography>
+                                            <Tooltip
+                                                color="neutral"
+                                                title={
+                                                    <Typography
+                                                        level="body-xs"
+                                                        sx={{ whiteSpace: "pre-line", color: "white", p: 1 }}
+                                                    >
+                                                        {
+                                                            "Only tracks what you create in your space.\n Not what you add to the project."
+                                                        }
+                                                    </Typography>
+                                                }
+                                                arrow
                                             >
-                                                <Typography level="title-md">Entities</Typography>
-                                                <Typography level="body-xs">
-                                                    {userUsageStats.dfr3.entities.text}
-                                                </Typography>
-                                            </Stack>
-                                        </Sheet>
-                                    </Stack>
-                                </Grid>
-                            </Grid>
+                                                <HelpOutlineRoundedIcon sx={{ fontSize: "20px" }} />
+                                            </Tooltip>
+                                        </Stack>
+                                        <Stack
+                                            direction="row"
+                                            spacing={2}
+                                            sx={{
+                                                width: "100%",
+                                                alignItems: "center",
+                                                justifyContent: "space-between"
+                                            }}
+                                        >
+                                            <Typography level="title-md">Entities</Typography>
+                                            <Typography level="body-xs">{userUsageStats.dfr3.entities.text}</Typography>
+                                        </Stack>
+                                    </Sheet>
+                                </Stack>
+                            </Box>
+                            <Box sx={{ textAlign: "center", mt: "auto" }}>
+                                <Button
+                                    variant="outlined"
+                                    fullWidth
+                                    sx={{
+                                        borderColor: "primary.subtle",
+                                        color: "primary.subtle",
+                                        backgroundColor: "white"
+                                    }}
+                                    onClick={() => navigate(`/project/${project.id}/dfr3mappings`)}
+                                >
+                                    View All DFR3 Mappings
+                                </Button>
+                            </Box>
                             <AddFromServiceDialog
                                 projectId={project.id}
                                 resourceType="DFR3 Mapping"
@@ -691,6 +789,15 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                 onAddClick={addDFR3MappingFunc}
                             />
                         </Box>
+                        <Box
+                            sx={{
+                                width: "100%",
+                                mt: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                height: 220
+                            }}
+                        />
                     </Stack>
                 </Grid>
             </Grid>

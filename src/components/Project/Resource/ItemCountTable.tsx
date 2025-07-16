@@ -9,7 +9,7 @@ interface ItemCountTableProps {
 
 const ItemCountTable: React.FC<ItemCountTableProps> = ({ tableHeaders, itemRows }) => {
     return (
-        <Sheet sx={{ maxHeight: 300, overflow: "auto" }}>
+        <Sheet sx={{ maxHeight: 300, overflow: "auto", backgroundColor: "#FFFFFF" }}>
             <Table stickyHeader>
                 <thead>
                     <tr>
