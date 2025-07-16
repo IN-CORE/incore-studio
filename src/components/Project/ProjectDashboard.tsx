@@ -88,17 +88,17 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
     };
 
     const getTwoMostRecentVisualizations = () => {
-        const visualizations = project?.visualizations || [];
-        if (project) {
-            // Sort visualizations by creation date (assuming 'createdAt' is a field in the visualization object)
-            // Create a copy before sorting to avoid mutating immutable data
-            const sorted = [...project.visualizations].sort((a, b) => {
-                const dateA = new Date(a.date || 0);
-                const dateB = new Date(b.date || 0);
-                return dateB.getTime() - dateA.getTime(); // Sort in descending order
-            });
-        }
-        return visualizations.slice(-2);
+        if (!project || !project.visualizations) return [];
+
+        // Create a copy before sorting to avoid mutating immutable data
+        const sorted = [...project.visualizations].sort((a, b) => {
+            const dateA = new Date(a.date || 0).getTime();
+            const dateB = new Date(b.date || 0).getTime();
+            return dateB - dateA; // newest first
+        });
+
+        // Return the two most recent
+        return sorted.slice(0, 2);
     };
 
     // create workflow
@@ -164,7 +164,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
             <ProjectBreadcrumb project={{ href: `/project/${project.id}`, label: project.name }} />
             <ProjectHeader project={project} />
             <Divider />
-            <Grid container spacing={5} sx={{ mt: 3, ml: 0 }}>
+            <Grid container spacing={2} sx={{ mt: 3, ml: 0 }}>
                 <Grid sm={2}>
                     <ProjectSidebar id={project.id} />
                 </Grid>
@@ -604,7 +604,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                             <Box sx={{ flex: 1 }}>
                                 <Grid container spacing={2} sx={{ mt: 2 }}>
                                     <Grid sm={6}>
-                                        <Stack spacing={3} direction="column">
+                                        <Stack spacing={2} direction="column">
                                             <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
                                                 <Stack
                                                     direction="row"
@@ -632,7 +632,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         <HelpOutlineRoundedIcon sx={{ fontSize: "20px" }} />
                                                     </Tooltip>
                                                 </Stack>
-                                                <Stack direction="column" spacing={2}>
+                                                <Stack direction="column" spacing={1}>
                                                     <Stack
                                                         direction="row"
                                                         justifyContent="space-between"
