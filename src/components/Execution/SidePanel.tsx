@@ -38,12 +38,12 @@ import {
     addHazardToProject,
     getProject
 } from "@app/reducer/projectSlice";
-import CompatibleTypeTooltip from "./CompatibleTypeTooltip";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
 import { extractStatus } from "@app/utils";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
+import CompatibleTypeTooltip from "./CompatibleTypeTooltip";
 import OutputFileDisplay from "./OutputFileDisplay";
 
 const selector = (state: ReactFlowAppState) => ({
@@ -155,6 +155,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     );
     const [selectedHazardType, setSelectedHazardType] = React.useState<string | null>(null);
     const [selectedDFR3HazardType, setSelectedDFR3HazardType] = React.useState<string | null>(null);
+    const [selectedDFR3MappingType, setSelectedDFR3MappingType] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         setDatasetSelect(getInputDatasetInitialState());
@@ -165,6 +166,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         setDatasetSelect(getInputDatasetInitialState());
         setSelectedDFR3HazardType(null);
         setSelectedHazardType(null);
+        setSelectedDFR3MappingType(null);
     };
 
     const handleResetParameters = () => {
@@ -435,7 +437,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                     direction="row"
                                                     spacing={1}
                                                     alignItems="center"
-                                                    justifyContent={"space-between"}
+                                                    justifyContent="space-between"
                                                     mb={1}
                                                 >
                                                     <Stack direction="row" spacing={1} alignItems="center">
@@ -540,8 +542,14 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                     } else if (inputDataset.label.includes("DFR3")) {
                                                                         const pjDFR3Htype = projectDFR3Mapping.find(
                                                                             (dfr3Mapping) => dfr3Mapping.id === value
-                                                                        )?.hazardType;
-                                                                        setSelectedDFR3HazardType(pjDFR3Htype ?? null);
+                                                                        );
+
+                                                                        setSelectedDFR3HazardType(
+                                                                            pjDFR3Htype?.hazardType ?? null
+                                                                        );
+                                                                        setSelectedDFR3MappingType(
+                                                                            pjDFR3Htype?.mappingType ?? null
+                                                                        );
                                                                     }
                                                                     updateDatasetSelect(
                                                                         inputDataset.execFileEntryId,
@@ -586,6 +594,25 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         )}
                                                             </Select>
                                                         </Box>
+                                                        {createMode && (
+                                                            <Tooltip title="Add from Service" placement="bottom">
+                                                                <IconButton
+                                                                    onClick={() => {
+                                                                        inputDataset.label.includes("Hazard")
+                                                                            ? setOpenAddHazardFromServiceDialog(true)
+                                                                            : inputDataset.label.includes("DFR3")
+                                                                              ? setOpenAddDFR3MappingFromServiceDialog(
+                                                                                    true
+                                                                                )
+                                                                              : setOpenAddDatasetFromServiceDialog(
+                                                                                    true
+                                                                                );
+                                                                    }}
+                                                                >
+                                                                    <AddIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        )}
                                                     </Stack>
                                                 )}
                                             </Box>
@@ -760,16 +787,22 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                             {createMode && (
                                 <Box mt={4}>
                                     {/* Check if the hazardtypes match when the user clicks submit. if they dont then show some error message */}
-                                    {selectedHazardType !== selectedDFR3HazardType && (
-                                        <Typography color="danger" sx={{ mb: 2 }}>
-                                            The selected hazard type do not match for DFR3 Mapping and Hazard. Please
-                                            ensure they are the same.
-                                        </Typography>
-                                    )}
+                                    {selectedDFR3MappingType === "fragility" ? (
+                                        selectedHazardType !== selectedDFR3HazardType ? (
+                                            <Typography color="danger" sx={{ mb: 2 }}>
+                                                The selected hazard type do not match for DFR3 Mapping and Hazard.
+                                                Please ensure they are the same.
+                                            </Typography>
+                                        ) : null
+                                    ) : null}
                                     <Button
                                         type="submit"
                                         variant="solid"
-                                        disabled={selectedHazardType !== selectedDFR3HazardType}
+                                        disabled={
+                                            selectedDFR3MappingType === "fragility"
+                                                ? selectedHazardType !== selectedDFR3HazardType
+                                                : false
+                                        }
                                         sx={{ backgroundColor: "primary.main", color: "white" }}
                                     >
                                         Save this configuration
