@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import config from "@app/app.config";
-import { getHeaders } from "@app/utils";
+import { getHeaders, extractStatus } from "@app/utils";
 import axios from "axios";
 
 import {
@@ -43,15 +43,15 @@ import {
     addDFR3MappingToProject,
     addHazardToProject,
     getProject,
-    getProjectVisualizations
+    getProjectVisualizations,
+    setSelectedVisualization
 } from "@app/reducer/projectSlice";
-import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
-import CompatibleTypeTooltip from "./CompatibleTypeTooltip";
+import { VisualizationView } from "@app/components/Project/Resource/VisualizationView";
 
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import useStore, { type ReactFlowAppState } from "@app/components/Workflow/reactFlowStore";
-import { extractStatus } from "@app/utils";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
+import CompatibleTypeTooltip from "./CompatibleTypeTooltip";
 import OutputFileDisplay from "./OutputFileDisplay";
 
 const selector = (state: ReactFlowAppState) => ({
@@ -63,9 +63,9 @@ const getInitialParametersState = (
     sidePanelData: ExecutionSidePandelData,
     dependencyGraph: DependencyGraph | null,
     createExecution: ExecutionCreate,
-    createMode: boolean = false
+    createMode = false
 ): { [key: string]: string | boolean } => {
-    let initialState: { [key: string]: string | boolean } = {};
+    const initialState: { [key: string]: string | boolean } = {};
     sidePanelData.currentAnalysis.inputParameters.forEach((inputParameter) => {
         initialState[inputParameter.execFileEntryId] =
             createExecution.parameters[inputParameter.execFileEntryId] ?? inputParameter.value;
@@ -109,7 +109,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     // const inputRef = React.useRef<HTMLInputElement>(null);
 
     const getInputDatasetInitialState = (): { [key: string]: string } => {
-        let initialState: { [key: string]: string } = {};
+        const initialState: { [key: string]: string } = {};
         sidePanelData.currentAnalysis.inputDatasets.forEach((inputDataset) => {
             if (inputDataset.fromExisting === null) {
                 if (inputDataset.label.includes("Hazard") || inputDataset.label.includes("DFR3")) {
@@ -240,10 +240,9 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
     };
 
     // View visualization
-    const [selectedVisualization, setSelectedVisualization] = React.useState<Visualization>();
-    const [openVisualziationView, setOpenVisualziationView] = React.useState(true);
-    const handleCloseVisualziationView = () => {
-        setOpenVisualziationView(false);
+    const [openVisualizationView, setOpenVisualizationView] = React.useState(false);
+    const handleCloseVisualizationView = () => {
+        setOpenVisualizationView(false);
     };
 
     const downloadFile = async (datasetId: string) => {
@@ -274,15 +273,13 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
         if (dependencyGraph && dependencyGraph[sidePanelData.currentAnalysis.depGName]) {
             if (
                 inputDataset.includes("Hazard") &&
-                dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs["hazard"]
+                dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs.hazard
             ) {
                 return (
                     <Tooltip
                         title={
                             <CompatibleTypeTooltip
-                                compatibleTypes={
-                                    dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs["hazard"]
-                                }
+                                compatibleTypes={dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs.hazard}
                             />
                         }
                         placement="right"
@@ -293,16 +290,17 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         </IconButton>
                     </Tooltip>
                 );
-            } else if (
+            }
+            if (
                 inputDataset.includes("DFR3") &&
-                dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs["dfr3_mapping_set"]
+                dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs.dfr3_mapping_set
             ) {
                 return (
                     <Tooltip
                         title={
                             <CompatibleTypeTooltip
                                 compatibleTypes={
-                                    dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs["dfr3_mapping_set"]
+                                    dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs.dfr3_mapping_set
                                 }
                             />
                         }
@@ -314,7 +312,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         </IconButton>
                     </Tooltip>
                 );
-            } else if (dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs[inputDataset]) {
+            }
+            if (dependencyGraph[sidePanelData.currentAnalysis.depGName].inputs[inputDataset]) {
                 return (
                     <Tooltip
                         title={
@@ -416,10 +415,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         tabFlex={1}
                         sx={{
                             [`& .${tabClasses.root}`]: {
-                                fontSize: "md",
-                                fontWeight: "lg",
-                                height: "48px",
-                                [`&[aria-selected="true"]`]: {
+                                "fontSize": "md",
+                                "fontWeight": "lg",
+                                "height": "48px",
+                                '&[aria-selected="true"]': {
                                     color: "#172B4D"
                                 },
                                 [`&.${tabClasses.focusVisible}`]: {
@@ -443,7 +442,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                         <form
                             onSubmit={(event) => {
                                 event.preventDefault();
-                                let actualDatasets: { [key: string]: string } = {};
+                                const actualDatasets: { [key: string]: string } = {};
                                 let actualParameters: { [key: string]: string | boolean | null } = {};
                                 sidePanelData.currentAnalysis.inputDatasets.forEach((inputDataset) => {
                                     if (inputDataset.fromExisting === null) {
@@ -595,11 +594,11 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 ) => {
                                                                     // add hazards dfr3 and datasets as datasets. When submitting, we split out the datasets from hazards and dfr3mappings
                                                                     if (inputDataset.label.includes("Hazard")) {
-                                                                        let pjHtype = projectHazard.find(
+                                                                        const pjHtype = projectHazard.find(
                                                                             (hazard) => hazard.id === value
                                                                         )?.type;
                                                                         // update hazard_type parameter in the parameters
-                                                                        let hazard_type_exec_id =
+                                                                        const hazard_type_exec_id =
                                                                             sidePanelData.currentAnalysis.inputParameters.find(
                                                                                 (inpP) => inpP.label === "hazard_type"
                                                                             )?.execFileEntryId;
@@ -609,7 +608,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                         );
                                                                         setSelectedHazardType(pjHtype ?? null);
                                                                     } else if (inputDataset.label.includes("DFR3")) {
-                                                                        let pjDFR3Htype = projectDFR3Mapping.find(
+                                                                        const pjDFR3Htype = projectDFR3Mapping.find(
                                                                             (dfr3Mapping) => dfr3Mapping.id === value
                                                                         )?.hazardType;
                                                                         setSelectedDFR3HazardType(pjDFR3Htype ?? null);
@@ -789,7 +788,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                                 }}
                                                                 placeholder="Select true or false"
                                                             >
-                                                                <Option value={true}>True</Option>
+                                                                <Option value>True</Option>
                                                                 <Option value={false}>False</Option>
                                                             </Select>
                                                         ) : (
@@ -972,7 +971,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                     </Tooltip>
                                                 </Box>
                                             </Stack>
-                                            <OutputFileDisplay datasetId={outputDataset.datasetId} projectId={id} />
+                                            <OutputFileDisplay datasetId={outputDataset.datasetId} />
                                         </Box>
                                     ))}
                                 </Stack>
@@ -1047,8 +1046,8 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                         <IconButton
                                                             aria-label="View visualization"
                                                             onClick={() => {
-                                                                setSelectedVisualization(visualization);
-                                                                setOpenVisualziationView(true);
+                                                                appDispatch(setSelectedVisualization(visualization.id));
+                                                                setOpenVisualizationView(true);
                                                             }}
                                                         >
                                                             <VisibilityRoundedIcon />
@@ -1056,13 +1055,10 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                                     </Tooltip>
                                                 </Box>
                                             </Stack>
-                                            {selectedVisualization && (
-                                                <VisualizationView
-                                                    visualization={selectedVisualization}
-                                                    open={openVisualziationView}
-                                                    onClose={handleCloseVisualziationView}
-                                                />
-                                            )}
+                                            <VisualizationView
+                                                open={openVisualizationView}
+                                                onClose={handleCloseVisualizationView}
+                                            />
                                         </Box>
                                     ))
                                 )}

@@ -174,7 +174,7 @@ const TableDataModal: React.FC<TableDataModalProps> = ({ open, onClose, dataset 
                     <Sheet sx={{ padding: 2, overflow: "auto" }}>
                         <pre>{JSON.stringify(jsonData, null, 2)}</pre>
                     </Sheet>
-                ) : dataset?.format === "shapefile" ? (
+                ) : dataset?.format === "shapefile" || dataset?.format === "raster" || dataset?.format === "geotif" ? (
                     <SimpleMap
                         layers={[
                             {
