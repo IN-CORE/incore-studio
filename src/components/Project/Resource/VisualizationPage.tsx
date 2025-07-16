@@ -210,10 +210,10 @@ const VisualizationPage = (): JSX.Element => {
                         <ProjectHeader project={project} />
                         <Divider />
                         <Grid container spacing={5} mt={3} ml={0}>
-                            <Grid sm={2}>
+                            <Grid sm={3}>
                                 <ProjectSidebar id={project.id} />
                             </Grid>
-                            <Grid sm={10}>
+                            <Grid sm={9}>
                                 <ResourceFilterBar
                                     title="Visualizations"
                                     icon={<VisualizationIcon sx={{ verticalAlign: "middle" }} />}

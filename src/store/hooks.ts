@@ -124,12 +124,25 @@ export const useOutputDatasetsSynchronizationPolling = (
             // fetch all workflow files
             try {
                 const wfFiles = await fetchWorkflowFiles(wfids);
-                const outputDatasetIDs = await getOutputDatasetIDsFromWorkflows(wfFiles);
+                const { outputDatasetIDs, ioStats } = await getOutputDatasetIDsFromWorkflows(wfFiles);
                 let datasetIdsNotInProject = outputDatasetIDs.filter((id) => !projectDatasets.find((d) => d.id === id));
                 // filter out ids with "-"
                 datasetIdsNotInProject = datasetIdsNotInProject.filter((id) => !id.includes("-"));
+                // filter out ids from ioStats that are in datasetIdsNotInProject
+                Object.keys(ioStats).forEach((id) => {
+                    if (!datasetIdsNotInProject.includes(id)) {
+                        delete ioStats[id];
+                    }
+                });
+
                 if (datasetIdsNotInProject.length > 0) {
                     const newDatasets = await fetchDatasetsFromService(datasetIdsNotInProject);
+                    // Add ioStats to datasets
+                    newDatasets.forEach((dataset) => {
+                        if (ioStats[dataset.id]) {
+                            dataset.workflowMetadata = ioStats[dataset.id];
+                        }
+                    });
                     appDispatch(addDatasetToProject({ projectId, datasets: newDatasets }));
                 }
             } catch (error) {
