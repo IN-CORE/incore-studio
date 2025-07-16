@@ -33,7 +33,7 @@ import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 
 import TableDataModal from "@app/components/TableDataModal";
-import TableDatasetView from "./TableDatasetView";
+import TableDatasetView from "@app/components/Project/Resource/TableDatasetView";
 
 const DatasetPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path

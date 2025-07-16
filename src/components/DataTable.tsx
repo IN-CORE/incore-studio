@@ -16,7 +16,7 @@ const DataTable: React.FC<DataTableProps> = ({ rows = [], columns = [], loading,
                 rows={rows}
                 columns={columns}
                 loading={loading}
-                hideFooterPagination={!disablePagination}
+                hideFooterPagination={disablePagination}
                 pageSizeOptions={disablePagination ? [] : [10, 25, 50, 100]}
                 initialState={
                     disablePagination ? undefined : { pagination: { paginationModel: { pageSize: 10, page: 0 } } }

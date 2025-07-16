@@ -55,6 +55,7 @@ const TableDatasetView: React.FC<{
                     format: dataset.format
                 }))}
                 loading={loading}
+                disablePagination
             />
         </Box>
     );
