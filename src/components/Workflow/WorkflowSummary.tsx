@@ -127,7 +127,7 @@ const LayoutedWorkflow = ({
                 fitView
                 attributionPosition="bottom-left"
             >
-                <Background variant={BackgroundVariant.Dots} style={{ backgroundColor: "#F8FAFC" }} />
+                <Background variant={BackgroundVariant.Dots} bgColor="#F8FAFC" />
                 <Controls position="top-right" />
                 <Panel position="bottom-right">
                     <Stack direction="row" spacing={2}>

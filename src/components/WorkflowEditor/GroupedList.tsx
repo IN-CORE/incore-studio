@@ -3,11 +3,11 @@ import React from "react";
 import { Checkbox, List, ListItem, Stack, Typography } from "@mui/joy";
 import StorageIcon from "@mui/icons-material/Storage";
 import Done from "@mui/icons-material/Done";
-import CheckboxLabel from "./CheckboxLabel";
 
 import { type NewAnalysisNode } from "@app/components/Workflow/nodes";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { setHoveredAnalysis, clearHoveredAnalysis } from "@app/reducer/workflowSlice";
+import CheckboxLabel from "./CheckboxLabel";
 
 interface Option {
     analysisName: string;
@@ -54,7 +54,7 @@ const GroupedList = ({
     const dependencyGraph = useAppSelector((state) => state.workflow.dependencyGraph);
 
     const groupByAnalysisName = () => {
-        let grouped = new Map<string, Option[]>();
+        const grouped = new Map<string, Option[]>();
         optionsList.forEach((option) => {
             if (!grouped.has(option.analysisName)) {
                 grouped.set(option.analysisName, [option]);

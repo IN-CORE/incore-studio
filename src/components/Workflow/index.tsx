@@ -212,7 +212,7 @@ const LayoutedWorkflow = ({ sidePanelOpen }: { sidePanelOpen: boolean }) => {
                 deleteKeyCode={null}
                 fitView
             >
-                <Background variant={BackgroundVariant.Dots} />
+                <Background variant={BackgroundVariant.Dots} bgColor="#F5F5F5" />
                 <MiniMap />
                 <Controls />
                 <Panel position="top-right">
@@ -318,7 +318,7 @@ const LayoutedExecutionWorkflow = ({ sidePanelOpen }: { sidePanelOpen: boolean }
                 deleteKeyCode={null}
                 fitView
             >
-                <Background variant={BackgroundVariant.Dots} />
+                <Background variant={BackgroundVariant.Dots} bgColor="#F5F5F5" />
                 <MiniMap />
                 <Controls />
             </ReactFlow>
