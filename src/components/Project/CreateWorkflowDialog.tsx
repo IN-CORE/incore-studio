@@ -14,7 +14,7 @@ import {
     Textarea,
     Typography
 } from "@mui/joy";
-import { createNewWorkflow, getDatawolfUser } from "@app/reducer/workflowSlice";
+import { createNewWorkflow, getDatawolfUser, saveWorkflow } from "@app/reducer/workflowSlice";
 import { addWorkflowToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { useNavigate } from "react-router-dom";
@@ -23,12 +23,14 @@ import { handleBlur } from "@app/utils";
 interface CreateWorkflowDialogProps {
     open: boolean;
     onClose: () => void;
+    editMode?: boolean; // Optional prop to indicate if it's in edit mode
 }
 
 export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
-    const { open, onClose } = props;
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
+    const { open, onClose, editMode } = props;
+    const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
+    const [name, setName] = useState(currentWorkflow?.title || "");
+    const [description, setDescription] = useState(currentWorkflow?.description || "");
     const datawolfUser = useAppSelector((state) => state.workflow.datawolfUser);
     const project = useAppSelector((state) => state.project.project);
     const auth = useAuth();
@@ -41,6 +43,31 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
             appDispatch(getDatawolfUser({ email: auth?.user?.profile?.email }));
         }
     }, [datawolfUser]);
+
+    const handleEdit = async () => {
+        try {
+            if (currentWorkflow !== null) {
+                const updatedWorkflow = {
+                    ...currentWorkflow,
+                    title: name,
+                    description: description
+                };
+                const result = await appDispatch(
+                    saveWorkflow({
+                        workflowID: currentWorkflow.id ? currentWorkflow.id : "",
+                        workflow: updatedWorkflow
+                    })
+                );
+
+                if (!result) {
+                    console.error("Error updating Workflow");
+                }
+            }
+            onClose();
+        } catch (error) {
+            console.error("Error editing workflow:", error);
+        }
+    };
 
     const handleCreateNew = async () => {
         try {
@@ -113,7 +140,7 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
                     }}
                 >
                     <Typography level="h4" sx={{ mb: 1 }}>
-                        Create New Workflow
+                        {editMode ? "Edit Workflow" : "Create New Workflow"}
                     </Typography>
                     <Stack spacing={2} sx={{ mt: 2 }}>
                         <FormControl required>
@@ -161,9 +188,9 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
                             variant="solid"
                             sx={{ backgroundColor: "primary.main" }}
                             disabled={!name || !description} // Ensure required fields are filled
-                            onClick={handleCreateNew}
+                            onClick={editMode ? handleEdit : handleCreateNew}
                         >
-                            Create Workflow
+                            {editMode ? "Save Changes" : "Create Workflow"}
                         </Button>
                     </Stack>
                 </Box>

@@ -18,6 +18,8 @@ import {
 } from "@mui/joy";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import Snackbar from "@mui/joy/Snackbar";
 
 import { useShallow } from "zustand/react/shallow";
@@ -41,6 +43,7 @@ import InvalidWorkflowFilePage from "@app/components/InvalidWorkflowFilePage";
 import SidePanel from "@app/components/WorkflowEditor/SidePanel";
 import InformationPanel from "@app/components/WorkflowEditor/InformationPanel";
 import FinalizeWorkflowDialog from "@app/components/FinalizeWorkflowDialog";
+import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflowDialog";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -78,6 +81,7 @@ const WorkflowEditor = (): JSX.Element => {
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
     const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
+    const [openEditWorkflowDialog, setOpenEditWorkflowDialog] = React.useState<boolean>(false);
 
     const [openFinalize, setOpenFinalize] = React.useState(false);
     const [confirmFinalize, setConfirmFinalize] = React.useState(false);
@@ -241,6 +245,39 @@ const WorkflowEditor = (): JSX.Element => {
                                             >
                                                 {currentWorkflow?.title}
                                             </Typography>
+                                            <Tooltip
+                                                title={
+                                                    <Box
+                                                        sx={{
+                                                            p: 1,
+                                                            maxHeight: "200px",
+                                                            overflowY: "auto",
+                                                            width: "200px",
+                                                            textWrap: "wrap",
+                                                            wordBreak: "break-word",
+                                                            textAlign: "justify"
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            level="h4"
+                                                            sx={{
+                                                                fontWeight: 400,
+                                                                fontSize: "14px",
+                                                                lineHeight: "20px",
+                                                                color: "#42526EB2"
+                                                            }}
+                                                        >
+                                                            {currentWorkflow?.description === ""
+                                                                ? "Description not provided"
+                                                                : currentWorkflow?.description}
+                                                        </Typography>
+                                                    </Box>
+                                                }
+                                                placement="bottom-end"
+                                                variant="plain"
+                                            >
+                                                <DescriptionRoundedIcon sx={{ fontSize: "18px" }} />
+                                            </Tooltip>
                                             <Typography
                                                 level="h4"
                                                 sx={{
@@ -260,22 +297,35 @@ const WorkflowEditor = (): JSX.Element => {
                                                     minute: "2-digit"
                                                 })}
                                             </Typography>
+                                            <Tooltip
+                                                title="Edit Name and Description"
+                                                variant="plain"
+                                                color="neutral"
+                                                sx={{ color: "#172B4D" }}
+                                                placement="right"
+                                            >
+                                                <IconButton
+                                                    aria-label="Edit Name and Description"
+                                                    onClick={() => setOpenEditWorkflowDialog(true)}
+                                                    disabled={saveWorkflowLoading}
+                                                >
+                                                    <EditRoundedIcon
+                                                        sx={{
+                                                            "color": saveWorkflowLoading ? "#42526E80" : "black",
+                                                            "&:hover": { color: "primary.main" },
+                                                            "fontSize": "18px"
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            </Tooltip>
                                         </Stack>
-                                        <Typography
-                                            level="h4"
-                                            sx={{
-                                                fontWeight: 400,
-                                                fontSize: "14px",
-                                                lineHeight: "20px",
-                                                color: "#42526EB2"
-                                            }}
-                                        >
-                                            {currentWorkflow?.description === ""
-                                                ? "Description not provided"
-                                                : currentWorkflow?.description}
-                                        </Typography>
                                     </Box>
                                 </Stack>
+                                <CreateWorkflowDialog
+                                    open={openEditWorkflowDialog}
+                                    onClose={() => setOpenEditWorkflowDialog(false)}
+                                    editMode={true}
+                                />
                             </Box>
                             <Box>
                                 <Stack direction="row" spacing={2}>

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Datasets by Execution page to view all the datasets belonging to a visualization in one place [#222](https://github.com/IN-CORE/incore-studio/issues/222)
 - Leverage geo-explorer for map visualization in IN-CORE Studio [#182](https://github.com/IN-CORE/incore-studio/issues/182)
 - Add NSI Building Inventory tool. [#211](https://github.com/IN-CORE/incore-studio/issues/211)
+- Edit Name and Description capability on workflow editor. [#228](https://github.com/IN-CORE/incore-studio/issues/228)
 
 ### Fixed
 
@@ -29,14 +30,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Improve resource card layout [#65](https://github.com/IN-CORE/incore-studio/issues/65)
-<<<<<<< HEAD
 - Improve performance by switching from Webpack to ESBuild [#200](https://github.com/IN-CORE/incore-studio/issues/200)
-=======
 - Disable unused buttons from navbar [#215](https://github.com/IN-CORE/incore-studio/issues/215)
 - Project Dashboard look and feel [#216](https://github.com/IN-CORE/incore-studio/issues/216)
 - Execution Page UI and Analysis Node Look and feel [#223](https://github.com/IN-CORE/incore-studio/issues/223)
 - UI improvements for Workflow Page [#217](https://github.com/IN-CORE/incore-studio/issues/217)
->>>>>>> develop
 
 ## [Beta-1] - 05-01-2025
 

@@ -12,7 +12,7 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
-import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflow";
+import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflowDialog";
 
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 import Snackbar from "@mui/joy/Snackbar";
