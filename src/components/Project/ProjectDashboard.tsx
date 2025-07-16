@@ -91,7 +91,8 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
         const visualizations = project?.visualizations || [];
         if (project) {
             // Sort visualizations by creation date (assuming 'createdAt' is a field in the visualization object)
-            visualizations.sort((a, b) => {
+            // Create a copy before sorting to avoid mutating immutable data
+            const sorted = [...project.visualizations].sort((a, b) => {
                 const dateA = new Date(a.date || 0);
                 const dateB = new Date(b.date || 0);
                 return dateB.getTime() - dateA.getTime(); // Sort in descending order
@@ -377,7 +378,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                         <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
                                             <Stack
                                                 direction="row"
-                                                justifyContent={"center"}
+                                                justifyContent="center"
                                                 spacing={2}
                                                 sx={{ width: "100%", mb: 2 }}
                                             >
@@ -530,7 +531,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                         <Sheet sx={{ p: 2, textAlign: "center" }} variant="outlined">
                                             <Stack
                                                 direction="row"
-                                                justifyContent={"center"}
+                                                justifyContent="center"
                                                 spacing={2}
                                                 sx={{ width: "100%", mb: 2 }}
                                             >
@@ -557,7 +558,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                             <Stack direction="column" spacing={2}>
                                                 <Stack
                                                     direction="row"
-                                                    justifyContent={"space-between"}
+                                                    justifyContent="space-between"
                                                     sx={{
                                                         alignItems: "center"
                                                     }}
@@ -569,7 +570,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 </Stack>
                                                 <Stack
                                                     direction="row"
-                                                    justifyContent={"space-between"}
+                                                    justifyContent="space-between"
                                                     sx={{
                                                         alignItems: "center"
                                                     }}
