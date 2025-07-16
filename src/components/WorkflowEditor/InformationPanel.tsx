@@ -32,7 +32,7 @@ const InformationPanel = () => {
                 <Typography
                     level="h4"
                     sx={{
-                        fontWeight: 590,
+                        fontWeight: 600,
                         fontSize: "18px",
                         lineHeight: "22px",
                         color: "#172B4D"
@@ -54,7 +54,22 @@ const InformationPanel = () => {
                 sx={{ flexGrow: 1, overflow: "auto", scrollBehavior: "smooth", maxHeight: "100%" }}
             >
                 <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
-                    <TrendingUpRoundedIcon sx={{ color: "#EF6C00", marginRight: "10px" }} />
+                    <Box
+                        sx={{
+                            p: "1px",
+                            height: "20px",
+                            width: "20px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            pointerEvents: "none",
+                            borderRadius: "3px",
+                            backgroundColor: "#EF6C00",
+                            marginRight: "10px"
+                        }}
+                    >
+                        <TrendingUpRoundedIcon sx={{ color: "white", fontSize: "16px" }} />
+                    </Box>
                     <Typography
                         level="h3"
                         sx={{
@@ -85,6 +100,7 @@ const InformationPanel = () => {
                         </Tooltip>
                     )}
                 </Box>
+                <Divider role="presentation" sx={{ my: 1 }} />
                 <Box sx={{ marginTop: "10px", padding: "5px" }}>
                     <Typography
                         level="title-lg"
@@ -95,23 +111,41 @@ const InformationPanel = () => {
                         Description
                     </Typography>
                     <Typography
-                        level="body-lg"
+                        level="body-md"
                         sx={{
-                            color: "#172B4D"
+                            color: "#172B4D",
+                            display: "block",
+                            width: "100%",
+                            textAlign: "justify",
+                            marginTop: "10px"
                         }}
                     >
                         {currentTool ? currentTool?.description : "No Description available."}
                     </Typography>
                 </Box>
+                <Divider role="presentation" sx={{ my: 1 }} />
                 <Box>
-                    <Stack spacing={0} direction="row" alignItems="center">
-                        <StorageIcon
+                    <Stack spacing={1} direction="row" alignItems="center">
+                        <Box
                             sx={{
-                                color: "#007DFF",
-                                marginRight: "5px",
-                                fontSize: "15px"
+                                p: "1px",
+                                height: "20px",
+                                width: "20px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                pointerEvents: "none",
+                                borderRadius: "3px",
+                                backgroundColor: "#007DFF"
                             }}
-                        />
+                        >
+                            <StorageIcon
+                                sx={{
+                                    color: "white",
+                                    fontSize: "16px"
+                                }}
+                            />
+                        </Box>
                         <Typography level="title-lg" sx={{ color: "#172B4D" }}>
                             Inputs
                         </Typography>
@@ -121,9 +155,9 @@ const InformationPanel = () => {
                             {currentTool?.inputs.map((input) => {
                                 if (input.title !== "stdout") {
                                     return (
-                                        <ListItem key={input.title}>
+                                        <ListItem key={input.title} sx={{ mb: 1 }}>
                                             <Stack
-                                                direction={"row"}
+                                                direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between"
                                                 spacing={1}
@@ -136,14 +170,14 @@ const InformationPanel = () => {
                                                     }}
                                                 >
                                                     {input.title}
-                                                </Typography>
-                                                <Typography
-                                                    level="body-sm"
-                                                    sx={{
-                                                        color: "red"
-                                                    }}
-                                                >
-                                                    {input.allowNull ? "Optional" : "Required"}
+                                                    {input.allowNull ? null : (
+                                                        <Typography
+                                                            component="span"
+                                                            sx={{ color: "red", marginLeft: 0.5 }}
+                                                        >
+                                                            *
+                                                        </Typography>
+                                                    )}
                                                 </Typography>
                                             </Stack>
                                             <Typography
@@ -161,9 +195,9 @@ const InformationPanel = () => {
                             {currentTool?.parameters.map((parameter) => {
                                 if (parameter.title === "hazard_id" || parameter.title === "dfr3_mapping_set") {
                                     return (
-                                        <ListItem key={parameter.title}>
+                                        <ListItem key={parameter.title} sx={{ mb: 1 }}>
                                             <Stack
-                                                direction={"row"}
+                                                direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between"
                                                 spacing={1}
@@ -176,14 +210,14 @@ const InformationPanel = () => {
                                                     }}
                                                 >
                                                     {parameter.title === "hazard_id" ? "Hazard" : "DFR3 Mapping"}
-                                                </Typography>
-                                                <Typography
-                                                    level="body-sm"
-                                                    sx={{
-                                                        color: "red"
-                                                    }}
-                                                >
-                                                    {parameter.allowNull ? "Optional" : "Required"}
+                                                    {parameter.allowNull ? null : (
+                                                        <Typography
+                                                            component="span"
+                                                            sx={{ color: "red", marginLeft: 0.5 }}
+                                                        >
+                                                            *
+                                                        </Typography>
+                                                    )}
                                                 </Typography>
                                             </Stack>
                                             <Typography
@@ -201,15 +235,29 @@ const InformationPanel = () => {
                         </List>
                     </Box>
                 </Box>
+                <Divider role="presentation" sx={{ my: 1 }} />
                 <Box>
-                    <Stack spacing={0} direction="row" alignItems="center">
-                        <StorageIcon
+                    <Stack spacing={1} direction="row" alignItems="center">
+                        <Box
                             sx={{
-                                color: "#AB47BC",
-                                marginRight: "5px",
-                                fontSize: "15px"
+                                p: "1px",
+                                height: "20px",
+                                width: "20px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                pointerEvents: "none",
+                                borderRadius: "3px",
+                                backgroundColor: "#AB47BC"
                             }}
-                        />
+                        >
+                            <StorageIcon
+                                sx={{
+                                    color: "white",
+                                    fontSize: "16px"
+                                }}
+                            />
+                        </Box>
                         <Typography level="title-lg" sx={{ color: "#172B4D" }}>
                             Outputs
                         </Typography>
@@ -219,9 +267,9 @@ const InformationPanel = () => {
                             {currentTool?.outputs.map((output) => {
                                 if (output.title !== "stdout") {
                                     return (
-                                        <ListItem key={output.title}>
+                                        <ListItem key={output.title} sx={{ mb: 1 }}>
                                             <Stack
-                                                direction={"row"}
+                                                direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between"
                                                 spacing={1}
@@ -251,15 +299,29 @@ const InformationPanel = () => {
                         </List>
                     </Box>
                 </Box>
+                <Divider role="presentation" sx={{ my: 1 }} />
                 <Box>
-                    <Stack spacing={0} direction="row" alignItems="center">
-                        <TuneRoundedIcon
+                    <Stack spacing={1} direction="row" alignItems="center">
+                        <Box
                             sx={{
-                                color: "#EF6C00",
-                                marginRight: "5px",
-                                fontSize: "15px"
+                                p: "1px",
+                                height: "20px",
+                                width: "20px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                pointerEvents: "none",
+                                borderRadius: "3px",
+                                backgroundColor: "#EF6C00"
                             }}
-                        />
+                        >
+                            <TuneRoundedIcon
+                                sx={{
+                                    color: "white",
+                                    fontSize: "16px"
+                                }}
+                            />
+                        </Box>
                         <Typography level="title-lg" sx={{ color: "#172B4D" }}>
                             Parameters
                         </Typography>
@@ -267,11 +329,16 @@ const InformationPanel = () => {
                     <Box sx={{ padding: "5px" }}>
                         <List marker="disc">
                             {currentTool?.parameters.map((parameter) => {
-                                if (parameter.title !== "hazard_id" && parameter.title !== "dfr3_mapping_set") {
+                                if (
+                                    parameter.title !== "hazard_id" &&
+                                    parameter.title !== "dfr3_mapping_set" &&
+                                    parameter.title !== "Analysis" &&
+                                    parameter.title !== "IN-CORE Service"
+                                ) {
                                     return (
-                                        <ListItem key={parameter.title}>
+                                        <ListItem key={parameter.title} sx={{ mb: 1 }}>
                                             <Stack
-                                                direction={"row"}
+                                                direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between"
                                                 spacing={1}
@@ -284,14 +351,14 @@ const InformationPanel = () => {
                                                     }}
                                                 >
                                                     {parameter.title}
-                                                </Typography>
-                                                <Typography
-                                                    level="body-sm"
-                                                    sx={{
-                                                        color: "red"
-                                                    }}
-                                                >
-                                                    {parameter.allowNull ? "Optional" : "Required"}
+                                                    {parameter.allowNull ? null : (
+                                                        <Typography
+                                                            component="span"
+                                                            sx={{ color: "red", marginLeft: 0.5 }}
+                                                        >
+                                                            *
+                                                        </Typography>
+                                                    )}
                                                 </Typography>
                                             </Stack>
                                             <Typography

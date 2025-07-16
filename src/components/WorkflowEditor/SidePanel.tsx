@@ -1,9 +1,10 @@
 import React from "react";
 
-import { Box, Button, Input, Divider, Sheet, Stack, IconButton, Tooltip, Typography } from "@mui/joy";
+import { Alert, Box, Button, Input, Divider, Sheet, Stack, IconButton, Tooltip, Typography } from "@mui/joy";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
+import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { type Edge, MarkerType } from "@xyflow/react";
 
@@ -141,8 +142,8 @@ const SidePanel = () => {
             ) as NewAnalysisNode;
             if (currAnalysisNode) {
                 if (sidePanelData.type === "previous") {
-                    let srcHandle = existingNode.data.outputHandles.find((handle) => handle.label === nodeLink.from);
-                    let edg = edges.find(
+                    const srcHandle = existingNode.data.outputHandles.find((handle) => handle.label === nodeLink.from);
+                    const edg = edges.find(
                         (ed) =>
                             ed.source === existingNode.id &&
                             ed.target === currAnalysisNode.id &&
@@ -152,10 +153,10 @@ const SidePanel = () => {
                         return edg;
                     }
                 } else {
-                    let targetHandle = currAnalysisNode.data.outputHandles.find(
+                    const targetHandle = currAnalysisNode.data.outputHandles.find(
                         (handle) => handle.label === nodeLink.from
                     );
-                    let edg = edges.find(
+                    const edg = edges.find(
                         (ed) =>
                             ed.source === currAnalysisNode.id &&
                             ed.sourceHandle === targetHandle?.id &&
@@ -182,7 +183,7 @@ const SidePanel = () => {
             link: { from: string; to: string };
         }[]
     > => {
-        let restructuredData = new Map<
+        const restructuredData = new Map<
             string,
             {
                 analysisName: string;
@@ -204,7 +205,7 @@ const SidePanel = () => {
                                     analysisName: analysis.data.name,
                                     analysisProperty: link.from,
                                     analysisNode: analysis,
-                                    link: link
+                                    link
                                 });
                             } else {
                                 restructuredData.set(link.to, [
@@ -212,7 +213,7 @@ const SidePanel = () => {
                                         analysisName: analysis.data.name,
                                         analysisProperty: link.from,
                                         analysisNode: analysis,
-                                        link: link
+                                        link
                                     }
                                 ]);
                             }
@@ -229,7 +230,7 @@ const SidePanel = () => {
                                     analysisName: analysis.data.name,
                                     analysisProperty: link.to,
                                     analysisNode: analysis,
-                                    link: link
+                                    link
                                 });
                             } else {
                                 restructuredData.set(link.from, [
@@ -237,7 +238,7 @@ const SidePanel = () => {
                                         analysisName: analysis.data.name,
                                         analysisProperty: link.to,
                                         analysisNode: analysis,
-                                        link: link
+                                        link
                                     }
                                 ]);
                             }
@@ -260,7 +261,7 @@ const SidePanel = () => {
             link: { from: string; to: string };
         }[]
     > => {
-        let restructuredData = new Map<
+        const restructuredData = new Map<
             string,
             {
                 analysisName: string;
@@ -277,14 +278,14 @@ const SidePanel = () => {
                                 restructuredData.get(link.to)?.push({
                                     analysisName: analysis,
                                     analysisProperty: link.from,
-                                    link: link
+                                    link
                                 });
                             } else {
                                 restructuredData.set(link.to, [
                                     {
                                         analysisName: analysis,
                                         analysisProperty: link.from,
-                                        link: link
+                                        link
                                     }
                                 ]);
                             }
@@ -300,14 +301,14 @@ const SidePanel = () => {
                                 restructuredData.get(link.from)?.push({
                                     analysisName: analysis,
                                     analysisProperty: link.to,
-                                    link: link
+                                    link
                                 });
                             } else {
                                 restructuredData.set(link.from, [
                                     {
                                         analysisName: analysis,
                                         analysisProperty: link.to,
-                                        link: link
+                                        link
                                     }
                                 ]);
                             }
@@ -349,13 +350,13 @@ const SidePanel = () => {
                 <Typography
                     level="h4"
                     sx={{
-                        fontWeight: 590,
+                        fontWeight: 600,
                         fontSize: "18px",
                         lineHeight: "22px",
                         color: "#172B4D"
                     }}
                 >
-                    Configure: {sidePanelData.type} analysis
+                    Configure the {sidePanelData.type} analysis
                 </Typography>
                 <Tooltip title="Close" placement="top">
                     <IconButton onClick={() => clearItems()}>
@@ -371,7 +372,22 @@ const SidePanel = () => {
                 sx={{ flexGrow: 1, overflow: "auto", scrollBehavior: "smooth", maxHeight: "100%" }}
             >
                 <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
-                    <TrendingUpRoundedIcon sx={{ color: "#EF6C00", marginRight: "10px" }} />
+                    <Box
+                        sx={{
+                            p: "1px",
+                            height: "20px",
+                            width: "20px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            pointerEvents: "none",
+                            borderRadius: "3px",
+                            backgroundColor: "#EF6C00",
+                            marginRight: "10px"
+                        }}
+                    >
+                        <TrendingUpRoundedIcon sx={{ color: "white", fontSize: "16px" }} />
+                    </Box>
                     <Typography
                         level="h3"
                         sx={{
@@ -386,19 +402,20 @@ const SidePanel = () => {
                             : sidePanelData.currentAnalysis.name}
                     </Typography>
                 </Box>
+                <Divider role="presentation" sx={{ my: 1 }} />
                 {dependencyGraph !== null && (
                     <Box sx={{ padding: "2px" }}>
                         <Typography
                             level="h4"
                             sx={{
-                                fontWeight: 590,
-                                fontSize: "16px",
+                                fontWeight: 600,
+                                fontSize: "18px",
                                 lineHeight: "24px",
                                 paragraph: "28px",
                                 color: "#172B4D",
                                 letter: "5%",
                                 textTransform: "uppercase",
-                                mb: "10px"
+                                mb: "15px"
                             }}
                         >
                             {`Connect ${sidePanelData.type === "previous" ? "From" : "To"} existing analysis`}
@@ -421,7 +438,7 @@ const SidePanel = () => {
                                 return (
                                     <GroupedList
                                         key={`${key}`}
-                                        existing={true}
+                                        existing
                                         previous={sidePanelData.type === "previous"}
                                         propertyName={key}
                                         optionsList={value}
@@ -435,26 +452,39 @@ const SidePanel = () => {
                                 );
                             }
                         )}
+                        {Array.from(
+                            getGroupedEntries(
+                                sidePanelData.type === "previous",
+                                nodes.map((node) => node as NewAnalysisNode)
+                            ).entries()
+                        ).length === 0 && (
+                            <Alert startDecorator={<ErrorOutlineRoundedIcon />} color="primary">
+                                <Typography level="body-md" sx={{ color: "#172B4D" }}>
+                                    No existing analyses found to connect.
+                                </Typography>
+                            </Alert>
+                        )}
                     </Box>
                 )}
+                <Divider role="presentation" sx={{ my: 1 }} />
                 {dependencyGraph !== null && (
                     <Box sx={{ padding: "2px" }}>
                         <Typography
                             level="h4"
                             sx={{
-                                fontWeight: 590,
-                                fontSize: "16px",
+                                fontWeight: 600,
+                                fontSize: "18px",
                                 lineHeight: "24px",
                                 paragraph: "28px",
                                 color: "#172B4D",
                                 letter: "5%",
                                 textTransform: "uppercase",
-                                mb: "10px"
+                                mb: "15px"
                             }}
                         >
                             {`Connect ${sidePanelData.type === "previous" ? "From" : "To"} New analysis`}
                         </Typography>
-                        <Box sx={{ mb: "10px" }}>
+                        <Box sx={{ mb: "20px" }}>
                             <Input
                                 startDecorator={<SearchRoundedIcon />}
                                 endDecorator={
@@ -473,34 +503,45 @@ const SidePanel = () => {
                                 }}
                             />
                         </Box>
-                        {Array.from(
-                            getGroupedEntriesForNew(sidePanelData.type === "previous", availableAnalyses).entries()
-                        ).map(
-                            ([key, value]: [
-                                string,
-                                {
-                                    analysisName: string;
-                                    analysisProperty: string;
-                                    link: { from: string; to: string };
-                                }[]
-                            ]) => {
-                                return (
-                                    <GroupedList
-                                        key={`${key}`}
-                                        existing={false}
-                                        previous={sidePanelData.type === "previous"}
-                                        propertyName={key}
-                                        optionsList={value}
-                                        selectedAnalysis={selectedAnalysis}
-                                        nodeLink={nodeLink}
-                                        setSelectedAnalysis={setSelectedAnalysis}
-                                        setNodeLink={setNodeLink}
-                                        checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
-                                        checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
-                                    />
-                                );
-                            }
-                        )}
+                        <Stack spacing={3} direction="column">
+                            {Array.from(
+                                getGroupedEntriesForNew(sidePanelData.type === "previous", availableAnalyses).entries()
+                            ).map(
+                                ([key, value]: [
+                                    string,
+                                    {
+                                        analysisName: string;
+                                        analysisProperty: string;
+                                        link: { from: string; to: string };
+                                    }[]
+                                ]) => {
+                                    return (
+                                        <GroupedList
+                                            key={`${key}`}
+                                            existing={false}
+                                            previous={sidePanelData.type === "previous"}
+                                            propertyName={key}
+                                            optionsList={value}
+                                            selectedAnalysis={selectedAnalysis}
+                                            nodeLink={nodeLink}
+                                            setSelectedAnalysis={setSelectedAnalysis}
+                                            setNodeLink={setNodeLink}
+                                            checkEdgetoCurrHandleExists={checkEdgetoCurrHandleExists}
+                                            checkEdgetoTargetHandleExists={checkEdgetoTargetHandleExists}
+                                        />
+                                    );
+                                }
+                            )}
+                            {Array.from(
+                                getGroupedEntriesForNew(sidePanelData.type === "previous", availableAnalyses).entries()
+                            ).length === 0 && (
+                                <Alert startDecorator={<ErrorOutlineRoundedIcon />} color="primary">
+                                    <Typography level="body-md" sx={{ color: "#172B4D" }}>
+                                        No new analyses found to connect.
+                                    </Typography>
+                                </Alert>
+                            )}
+                        </Stack>
                     </Box>
                 )}
                 <Button

@@ -18,7 +18,6 @@ import {
 } from "@mui/joy";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
-import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 import Snackbar from "@mui/joy/Snackbar";
 
 import { useShallow } from "zustand/react/shallow";
@@ -161,41 +160,6 @@ const WorkflowEditor = (): JSX.Element => {
         }
     };
 
-    const handleExportJSONClick = () => {
-        if (currentWorkflow !== null && workflowID !== null) {
-            const newWorkflowFile = createWorkflowFileFromNodesAndEdgesV2({
-                nodes,
-                edges,
-                creator: datawolfUser,
-                datawolfWorkflowFileID: workflowID,
-                title: currentWorkflow !== null ? currentWorkflow.title : "Untitled Workflow",
-                description: currentWorkflow !== null ? currentWorkflow.description : "",
-                created: currentWorkflow !== null ? currentWorkflow.created : new Date().toISOString(),
-                tools: datawolfTools
-            });
-
-            // Convert the object to a JSON string
-            const jsonString = JSON.stringify(newWorkflowFile);
-
-            // Create a Blob from the JSON string
-            const blob = new Blob([jsonString], { type: "application/json" });
-
-            // Create a link element
-            const link = document.createElement("a");
-
-            // Create a URL for the Blob and set it as the href attribute
-            link.href = URL.createObjectURL(blob);
-
-            // Set the download attribute to specify the file name
-            link.download = "data.json";
-
-            // Append the link to the document, click it, and remove it
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    };
-
     const getSaveWorkflowFile = (): DatawolfWorkflowFile => {
         return createWorkflowFileFromNodesAndEdgesV2({
             nodes,
@@ -226,7 +190,7 @@ const WorkflowEditor = (): JSX.Element => {
         if (confirmFinalize && wfID && id) {
             handleSaveClick();
             appDispatch(finalizeWorkflow({ projectId: id, workflowId: wfID }));
-            navigate(`/project/${id}/workflows/${wfID}/execution/create`);
+            navigate(`/project/${id}/workflows/${wfID}`);
         }
     }, [confirmFinalize]);
 
@@ -240,7 +204,6 @@ const WorkflowEditor = (): JSX.Element => {
                         workflowError={workflowError}
                         createdWorkflowError={createdWorkflowError}
                         currentWorkflowTitle={currentWorkflow?.title}
-                        handleBackClick={handleBackClick}
                     />
                 ) : (
                     <Typography level="h4" color="danger">
@@ -316,23 +279,12 @@ const WorkflowEditor = (): JSX.Element => {
                             </Box>
                             <Box>
                                 <Stack direction="row" spacing={2}>
-                                    <Tooltip
-                                        title="Export Workflow JSON"
-                                        variant="plain"
-                                        color="neutral"
-                                        sx={{ color: "#172B4D" }}
-                                    >
-                                        <IconButton aria-label="Export" variant="plain" onClick={handleExportJSONClick}>
-                                            <FileDownloadRoundedIcon sx={{ color: "#172B4D" }} />
-                                        </IconButton>
-                                    </Tooltip>
                                     <Button
                                         variant="solid"
                                         sx={{ backgroundColor: "primary.main" }}
-                                        onClick={() => setSelectAnalysisModalOpen(true)}
-                                        startDecorator={<AddRoundedIcon />}
+                                        onClick={handleSaveClick}
                                     >
-                                        Add another analysis
+                                        Save
                                     </Button>
                                     <Button
                                         variant="outlined"
@@ -341,13 +293,6 @@ const WorkflowEditor = (): JSX.Element => {
                                             color: "primary.subtle",
                                             backgroundColor: "white"
                                         }}
-                                        onClick={handleSaveClick}
-                                    >
-                                        Save
-                                    </Button>
-                                    <Button
-                                        variant="solid"
-                                        sx={{ backgroundColor: "primary.main" }}
                                         onClick={() => {
                                             if (
                                                 project?.workflows.find((wf: Workflow) => wf.id === wfID)?.isFinalized
@@ -361,6 +306,18 @@ const WorkflowEditor = (): JSX.Element => {
                                         {project?.workflows.find((wf: Workflow) => wf.id === wfID)?.isFinalized
                                             ? "Create Execution"
                                             : "Finalize Workflow"}
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        sx={{
+                                            borderColor: "primary.subtle",
+                                            color: "primary.subtle",
+                                            backgroundColor: "white"
+                                        }}
+                                        onClick={() => setSelectAnalysisModalOpen(true)}
+                                        startDecorator={<AddRoundedIcon />}
+                                    >
+                                        Add another analysis
                                     </Button>
                                 </Stack>
                                 <Snackbar

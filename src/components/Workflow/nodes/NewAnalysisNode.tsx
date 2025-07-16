@@ -12,10 +12,10 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import StorageIcon from "@mui/icons-material/Storage";
-import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
-import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
+import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
+import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
 
 import { useShallow } from "zustand/react/shallow";
 
@@ -45,7 +45,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const { zoom } = useViewport();
     const updateNodeInternals = useUpdateNodeInternals();
     const appDispatch = useAppDispatch();
-    const hoveredAnalysisID = useAppSelector((state) => state.workflow.hoveredAnalysis);
+    // const hoveredAnalysisID = useAppSelector((state) => state.workflow.hoveredAnalysis);
     const informationPanelData = useAppSelector((state) => state.workflow.informationPanelData);
     const sidePanelData = useAppSelector((state) => state.workflow.sidePanelData);
     // const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
@@ -238,31 +238,21 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
     const calculateHandlePosition = (index: number, total: number) => {
         return (index + 1) * (100 / (total + 1));
     };
-    const MIN_HEIGHT = data.inputHandles.length * 20 + 60;
-
-    const NodeHeading = (
-        <Box sx={{ display: "flex", alignItems: "center", my: "4px", width: "100%" }}>
-            <TrendingUpIcon sx={{ color: "#EF6C00", marginRight: "5px" }} />
-            <Typography
-                level="h4"
-                sx={{
-                    fontWeight: 400,
-                    fontSize: "16px",
-                    lineHeight: "24px",
-                    color: "#EF6C00"
-                }}
-            >
-                Analysis Type
-            </Typography>
-        </Box>
-    );
+    const MIN_HEIGHT =
+        (data.inputHandles.length * 20 > data.outputHandles.length * 20
+            ? data.inputHandles.length * 20
+            : data.outputHandles.length * 20) + 60;
 
     return (
         <Box
             sx={{
-                border: selected || hoveredAnalysisID === id ? "4px solid #FB8C00" : "2px solid black",
+                boxShadow: "lg",
                 borderRadius: "3px",
                 padding: "6px 14px 6px 14px",
+                border:
+                    data.isExecution && currentExecution === null && executionParametersAndInputsChecked[id]
+                        ? "3px solid " + theme.palette.success[600]
+                        : "none",
                 backgroundColor: selected ? "#FFF1D9" : "white",
                 height: "auto",
                 minHeight: `${MIN_HEIGHT}px`,
@@ -284,7 +274,7 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         width: zoom > 1.2 ? "auto" : "20px",
                         borderRadius: "3px",
                         backgroundColor: "#E3F2FD",
-                        borderColor: "#007DFF",
+                        borderColor: "#E3F2FD",
                         position: "absolute",
                         top: `${calculateHandlePosition(index, data.inputHandles.length)}%`,
                         left: -2,
@@ -309,14 +299,26 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         }}
                     >
                         {zoom > 1.2 ? inpt.label : ""}
-                        <StorageIcon
+                        <Box
                             sx={{
-                                color: "#007DFF",
-                                marginLeft: zoom > 1.2 ? "5px" : 0,
-                                pointerEvents: "none",
-                                fontSize: "15px"
+                                display: "flex",
+                                alignItems: "center",
+                                justifyItems: "center",
+                                backgroundColor: "#007DFF",
+                                borderRadius: "1px",
+                                padding: "1px",
+                                marginLeft: zoom > 1.2 ? "5px" : 0
                             }}
-                        />
+                        >
+                            <StorageIcon
+                                sx={{
+                                    // color: "#AB47BC",
+                                    color: "white",
+                                    pointerEvents: "none",
+                                    fontSize: "15px"
+                                }}
+                            />
+                        </Box>
                     </Box>
                 </Handle>
             ))}
@@ -328,23 +330,43 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                 confirmationDialogText="This action will remove the analysis node and all its connections."
                 confirmationDialogAction="Remove Analysis"
             />
-            {data.isExecution ? NodeHeading : zoom > 1 && NodeHeading}
+            {/* {data.isExecution ? NodeHeading : zoom > 1 && NodeHeading} */}
             <Stack direction="column" spacing={4} sx={{ my: "6px", height: "100%", width: "100%" }}>
                 <Box
                     sx={{
                         display: "flex",
                         alignItems: "center",
-                        my: "4px",
                         width: "100%",
                         justifyContent: "space-between"
                     }}
                 >
                     <Stack direction="row" spacing={2} alignItems="center">
+                        <Box
+                            sx={{
+                                p: "1px",
+                                height: "20px",
+                                width: "20px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                pointerEvents: "none",
+                                borderRadius: "3px",
+                                marginRight: "5px",
+                                backgroundColor: "#EF6C00"
+                            }}
+                        >
+                            <TrendingUpIcon
+                                sx={{
+                                    color: "white",
+                                    fontSize: "16px"
+                                }}
+                            />
+                        </Box>
                         <Typography level="h2" sx={{ fontWeight: 600, fontSize: zoom > 1 ? "20px" : "24px" }}>
                             {data.label}
                         </Typography>
                         {!data.isExecution && (
-                            <Tooltip title="View Information" placement="right">
+                            <Tooltip title="Help" placement="right">
                                 <IconButton
                                     onClick={() => {
                                         if (sidePanelData.open) {
@@ -358,67 +380,68 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                                         );
                                     }}
                                 >
-                                    <HelpRoundedIcon sx={{ fontSize: "20px" }} />
+                                    <HelpOutlineRoundedIcon sx={{ fontSize: "18px" }} />
                                 </IconButton>
                             </Tooltip>
                         )}
                     </Stack>
                     {data.isExecution ? (
-                        <Box sx={{ position: "absolute", right: "5px", top: "5px" }}>
-                            <Tooltip
-                                title="Configure"
+                        <Tooltip
+                            title="Configure"
+                            variant="plain"
+                            color="neutral"
+                            placement="right"
+                            sx={{ color: "#172B4D" }}
+                        >
+                            <IconButton
                                 variant="plain"
-                                color="neutral"
-                                placement="right"
-                                sx={{ color: "#172B4D" }}
+                                onClick={() =>
+                                    appDispatch(
+                                        setExecutionSidePanelData({
+                                            open: true,
+                                            currentAnalysis: {
+                                                name: data.label,
+                                                depGName: data.name,
+                                                id,
+                                                inputDatasets: getInputDatasets(),
+                                                inputParameters: getInputParameters(),
+                                                outputDatasets: getOutputDatasets()
+                                            }
+                                        })
+                                    )
+                                }
                             >
-                                <IconButton
-                                    variant="plain"
-                                    onClick={() =>
-                                        appDispatch(
-                                            setExecutionSidePanelData({
-                                                open: true,
-                                                currentAnalysis: {
-                                                    name: data.label,
-                                                    depGName: data.name,
-                                                    id,
-                                                    inputDatasets: getInputDatasets(),
-                                                    inputParameters: getInputParameters(),
-                                                    outputDatasets: getOutputDatasets()
-                                                }
-                                            })
-                                        )
-                                    }
-                                >
-                                    <SettingsRoundedIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
+                                <MoreHorizRoundedIcon />
+                            </IconButton>
+                        </Tooltip>
                     ) : (
-                        <Box sx={{ position: "absolute", right: "5px", top: "5px" }}>
-                            <Tooltip
-                                title="Delete"
-                                variant="plain"
-                                color="neutral"
-                                placement="right"
-                                sx={{ color: "#172B4D" }}
-                            >
-                                <IconButton variant="plain" onClick={() => setConfirmDeleteModalOpen(true)}>
-                                    <CancelRoundedIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
-                    )}
-                    {data.isExecution && currentExecution === null && (
-                        <>
-                            {executionParametersAndInputsChecked[id] ? (
-                                <CheckCircleRoundedIcon sx={{ color: theme.palette.success[400] }} />
-                            ) : (
-                                <CheckCircleOutlineRoundedIcon />
-                            )}
-                        </>
+                        <Tooltip
+                            title="Delete"
+                            variant="plain"
+                            color="neutral"
+                            placement="right"
+                            sx={{ color: "#172B4D" }}
+                        >
+                            <IconButton variant="plain" onClick={() => setConfirmDeleteModalOpen(true)}>
+                                <CancelRoundedIcon sx={{ fontSize: "18px" }} />
+                            </IconButton>
+                        </Tooltip>
                     )}
                 </Box>
+                {data.isExecution && currentExecution === null && (
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <Typography level="body-sm" sx={{ fontWeight: 300, color: "#172B4D" }}>
+                            {executionParametersAndInputsChecked[id]
+                                ? "Analysis is configured"
+                                : "Analysis is not configured"}
+                        </Typography>
+                        {executionParametersAndInputsChecked[id] ? (
+                            <CheckCircleRoundedIcon sx={{ color: theme.palette.success[600], fontSize: "15px" }} />
+                        ) : (
+                            <CancelOutlinedIcon sx={{ fontSize: "15px" }} />
+                        )}
+                    </Stack>
+                )}
                 {!data.isExecution && (
                     <Stack direction="row" spacing={2} justifyContent="space-between">
                         <Button
@@ -486,11 +509,12 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                         width: zoom > 1.2 ? "auto" : "20px",
                         borderRadius: "3px",
                         backgroundColor: "#F3E5F5",
-                        borderColor: "#AB47BC",
+                        borderColor: "#F3E5F5",
                         position: "absolute",
                         top: `${calculateHandlePosition(index, data.outputHandles.length)}%`,
                         right: -2,
-                        transform: "translate(100%, -50%)"
+                        transform: "translate(100%, -50%)",
+                        alignItems: "center"
                     }}
                     id={outpt.id}
                     key={outpt.label}
@@ -510,14 +534,26 @@ export function NewAnalysisNode({ id, data, selected }: NodeProps<NewAnalysisNod
                             color: "#AB47BC"
                         }}
                     >
-                        <StorageIcon
+                        <Box
                             sx={{
-                                color: "#AB47BC",
-                                marginRight: zoom > 1.2 ? "5px" : 0,
-                                pointerEvents: "none",
-                                fontSize: "15px"
+                                display: "flex",
+                                alignItems: "center",
+                                justifyItems: "center",
+                                backgroundColor: "#AB47BC",
+                                borderRadius: "1px",
+                                padding: "1px",
+                                marginRight: zoom > 1.2 ? "5px" : 0
                             }}
-                        />
+                        >
+                            <StorageIcon
+                                sx={{
+                                    // color: "#AB47BC",
+                                    color: "white",
+                                    pointerEvents: "none",
+                                    fontSize: "15px"
+                                }}
+                            />
+                        </Box>
                         {zoom > 1.2 ? outpt.label : ""}
                     </Box>
                 </Handle>
