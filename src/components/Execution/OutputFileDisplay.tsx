@@ -81,8 +81,8 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId }) => {
                         {dataset === null
                             ? datasetId
                             : dataset.fileDescriptors !== undefined && dataset.fileDescriptors.length > 0
-                            ? dataset.fileDescriptors[0].filename
-                            : datasetId}
+                              ? dataset.fileDescriptors[0].filename
+                              : datasetId}
                     </Typography>
                 </Sheet>
                 {dataset && (dataset.format === "table" || dataset.format === "json") && (
