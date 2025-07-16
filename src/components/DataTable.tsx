@@ -6,7 +6,7 @@ interface DataTableProps {
     rows?: GridRowsProp;
     columns?: GridColDef[];
     loading: boolean;
-    disablePagination?: boolean; // ✅ NEW FLAG
+    disablePagination?: boolean;
 }
 
 const DataTable: React.FC<DataTableProps> = ({ rows = [], columns = [], loading, disablePagination = false }) => {
