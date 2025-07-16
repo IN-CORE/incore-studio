@@ -1,17 +1,25 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { Box, Dropdown, IconButton, Link, Menu, MenuButton, MenuItem, Typography, SvgIconProps } from "@mui/joy";
-import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
+import { Box, Chip, Dropdown, Button, IconButton, Link, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
+import { useTheme } from "@mui/joy/styles"; // or from '@mui/material/styles' if you're using MUI theme
+import useMediaQuery from "@mui/material/useMediaQuery"; // works with Joy UI too
+
+import { SxProps } from "@mui/system";
+import { SvgIconProps } from "@mui/material";
+import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 
 interface DashboardItemTitleBarProps {
     title: string;
     link: string;
     icon: React.ReactElement<SvgIconProps>;
-    optionsList?: { label: string; onClick: () => void }[];
+    total: string;
+    btnList?: { label: string; icon: React.ReactElement<SvgIconProps>; sx: SxProps; onClick: () => void }[];
 }
 
-const DashboardItemTitleBar: React.FC<DashboardItemTitleBarProps> = ({ title, optionsList, icon, link }) => {
+const DashboardItemTitleBar: React.FC<DashboardItemTitleBarProps> = ({ title, icon, link, btnList, total }) => {
+    const theme = useTheme();
+    const isLgUp = useMediaQuery(theme.breakpoints.up("lg"));
     return (
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             {/* Grouped Icon and Title */}
@@ -22,24 +30,44 @@ const DashboardItemTitleBar: React.FC<DashboardItemTitleBarProps> = ({ title, op
                         {title}
                     </Typography>
                 </Link>
+                <Chip sx={{ ml: 2 }}>{total}</Chip>
             </Box>
-            {optionsList && (
-                <Dropdown>
-                    <MenuButton
-                        slots={{ root: IconButton }}
-                        slotProps={{ root: { variant: "outlined", color: "neutral" } }}
-                    >
-                        <MoreVertRoundedIcon />
-                    </MenuButton>
-                    <Menu>
-                        {optionsList.map((option, index) => (
-                            <MenuItem key={index} onClick={option.onClick}>
-                                {option.label}
-                            </MenuItem>
+            <>
+                {isLgUp && btnList ? (
+                    <Box display="flex" gap={1}>
+                        {btnList.map((btn, index) => (
+                            <Button
+                                key={index}
+                                variant="solid"
+                                startDecorator={btn.icon}
+                                sx={btn.sx}
+                                onClick={btn.onClick}
+                            >
+                                {btn.label}
+                            </Button>
                         ))}
-                    </Menu>
-                </Dropdown>
-            )}
+                    </Box>
+                ) : (
+                    btnList && (
+                        <Dropdown>
+                            <MenuButton
+                                slots={{ root: IconButton }}
+                                slotProps={{ root: { variant: "outlined", color: "neutral" } }}
+                            >
+                                <MoreHorizRoundedIcon />
+                            </MenuButton>
+                            <Menu>
+                                {btnList.map((option, index) => (
+                                    <MenuItem key={index} onClick={option.onClick}>
+                                        {option.icon}
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </Menu>
+                        </Dropdown>
+                    )
+                )}
+            </>
         </Box>
     );
 };

@@ -162,11 +162,11 @@ const HazardPage = (): JSX.Element => {
                         />
                         <ProjectHeader project={project} />
                         <Divider />
-                        <Grid container spacing={5} mt={3} ml={0}>
-                            <Grid sm={3}>
+                        <Grid container spacing={2} mt={3} ml={0}>
+                            <Grid sm={2}>
                                 <ProjectSidebar id={project.id} />
                             </Grid>
-                            <Grid sm={9}>
+                            <Grid sm={10}>
                                 <ResourceFilterBar
                                     title="Hazards"
                                     icon={<HazardIcon sx={{ verticalAlign: "middle" }} />}

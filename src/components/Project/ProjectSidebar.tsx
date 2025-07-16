@@ -25,7 +25,7 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
     const location = useLocation(); // Get current route location
 
     const menuItems: MenuItem[] = [
-        { label: "Project Dashboard", path: `/project/${id}`, icon: <DashboardIcon />, subMenu: [] },
+        { label: "Dashbord", path: `/project/${id}`, icon: <DashboardIcon />, subMenu: [] },
         { label: "Workflows", path: `/project/${id}/workflows`, icon: <WorkflowIcon />, subMenu: [] },
         { label: "Hazards", path: `/project/${id}/hazards`, icon: <HazardIcon />, subMenu: [] },
         {
@@ -34,7 +34,7 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
             icon: <DatasetIcon />,
             subMenu: [
                 {
-                    label: "Datasets by Execution",
+                    label: "By Execution",
                     path: `/project/${id}/datasets/execution`,
                     subMenu: []
                 }
@@ -59,13 +59,16 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
                     <Link
                         to={item.path}
                         style={{
-                            padding: isChild ? "0.2em" : "1em",
+                            paddingLeft: isChild ? "0.1em" : "0.2em",
+                            paddingRight: isChild ? "0.1em" : "0.2em",
+                            paddingTop: isChild ? "0.2em" : "0.5em",
+                            paddingBottom: "0.5em",
                             display: "flex",
                             alignItems: "center",
                             textDecoration: "none",
                             fontWeight: isActive ? 600 : 400,
                             color: "inherit",
-                            marginLeft: isChild ? "2em" : 0
+                            marginLeft: isChild ? "1.5em" : 0
                         }}
                         component={RouterLink}
                     >
@@ -88,8 +91,8 @@ export const ProjectSidebar = ({ id }: { id: string }) => {
         );
     };
     return (
-        <Box mt={-2}>
-            <Box sx={{ minHeight: 352, mt: 2 }}>
+        <Box mt={-2} pr={2}>
+            <Box sx={{ minHeight: 352, mt: 2, borderRight: "1px solid #E0E0E0" }}>
                 <SimpleTreeView
                     aria-label="project sidebar"
                     defaultExpandedItems={["Datasets"]}
