@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { Box, Button, Card, CardActions, CardContent, Typography } from "@mui/joy";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
@@ -8,9 +8,9 @@ const InvalidWorkflowFilePage: React.FC<{
     workflowError: string | null;
     createdWorkflowError: string | null;
     currentWorkflowTitle: string | undefined;
-    handleBackClick: () => void;
-}> = ({ workflowError, createdWorkflowError, currentWorkflowTitle, handleBackClick }) => {
-    const { wfID } = useParams<{ wfID: string }>();
+}> = ({ workflowError, createdWorkflowError, currentWorkflowTitle }) => {
+    const { id, wfID } = useParams<{ wfID: string; id: string }>();
+    const navigate = useNavigate();
     return (
         <Box
             sx={{
@@ -74,7 +74,7 @@ const InvalidWorkflowFilePage: React.FC<{
                         variant="solid"
                         startDecorator={<ArrowBackIosRoundedIcon />}
                         sx={{ backgroundColor: "primary.main" }}
-                        onClick={handleBackClick}
+                        onClick={() => navigate(`/project/${id}/workflows`)}
                     >
                         Back
                     </Button>

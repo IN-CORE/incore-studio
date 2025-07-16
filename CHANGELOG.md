@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Improve resource card layout [#65](https://github.com/IN-CORE/incore-studio/issues/65)
 - Disable unused buttons from navbar [#215](https://github.com/IN-CORE/incore-studio/issues/215)
+- UI improvements for Workflow Page [#217](https://github.com/IN-CORE/incore-studio/issues/217)
 
 ## [Beta-1] - 05-01-2025
 
