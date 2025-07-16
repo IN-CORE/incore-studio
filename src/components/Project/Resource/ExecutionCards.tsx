@@ -39,16 +39,13 @@ const ExecutionCardsComponent: React.FC<{
     return (
         <Grid container spacing={3}>
             {executions.length === 0 && (
-                <Grid xs={12}>
-                    <Stack direction="column" spacing={3}>
+                <>
+                    <Grid xs={12}>
                         <Alert startDecorator={<ErrorOutlineRoundedIcon />} color="primary">
                             No executions found.
                         </Alert>
-                        <FinalizeWorkflowDialog
-                            open={openFinalize}
-                            onClose={() => setOpenFinalize(false)}
-                            confirmFinalize={() => setConfirmFinalize(true)}
-                        />
+                    </Grid>
+                    <Grid xs={12} textAlign={"center"}>
                         <Button
                             variant="solid"
                             sx={{ backgroundColor: "primary.main" }}
@@ -63,8 +60,13 @@ const ExecutionCardsComponent: React.FC<{
                         >
                             Create New Execution
                         </Button>
-                    </Stack>
-                </Grid>
+                        <FinalizeWorkflowDialog
+                            open={openFinalize}
+                            onClose={() => setOpenFinalize(false)}
+                            confirmFinalize={() => setConfirmFinalize(true)}
+                        />
+                    </Grid>
+                </>
             )}
             {executions.length !== 0 &&
                 executions.map((execution) => {

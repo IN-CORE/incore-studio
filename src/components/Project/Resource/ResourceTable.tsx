@@ -4,7 +4,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown, Link, Checkbox } from "@mui/joy";
 import { formatHeaderName, parseDateTime } from "@app/utils";
 import { IncoreDialog } from "@app/components/IncoreDialog";
-import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 import AddParentDatasetDialog from "@app/components/Project/Resource/AddParentDatasetDialog";
 
 interface TableProps {
@@ -14,7 +13,6 @@ interface TableProps {
     deleteFunc?: any;
     resourceType?: string;
     viewFunc?: any;
-    addVisualizationFunc?: any;
     onSelectionChange?: (selectedItems: (Dataset | Hazard | Visualization | Workflow | DFR3Mapping)[]) => void;
     selectedItems?: (Hazard | Visualization | Dataset | Workflow)[];
 }
@@ -38,7 +36,6 @@ export const ResourceTable = ({
     data,
     deleteFunc,
     viewFunc,
-    addVisualizationFunc,
     resourceType,
     onSelectionChange,
     selectedItems = []
@@ -66,22 +63,6 @@ export const ResourceTable = ({
             setSelectedItem(null);
         }
         setOpenDeleteDialog(false);
-    };
-
-    // add to visualization
-    const [openVisDialog, setOpenVisDialog] = useState(false);
-    const handleCloseVisDialog = () => {
-        setOpenVisDialog(false);
-    };
-    const handleAddVisualization = (visualizationId: string, styleName?: string) => {
-        if (selectedItem && projectId) {
-            addVisualizationFunc(projectId, visualizationId, selectedItem, styleName);
-            setSelectedItem(null);
-        }
-        setOpenVisDialog(false);
-    };
-    const handleOpenVisDialog = () => {
-        setOpenVisDialog(true);
     };
 
     // Update Source Dataset if they want to add a dataset to visualization
@@ -175,17 +156,13 @@ export const ResourceTable = ({
                                     </Link>
                                 </MenuItem>
                             )}
-                            {addVisualizationFunc && (
+                            {isDatasetTable(resource) && !resource.sourceDataset && (
                                 <MenuItem
                                     onClick={() => {
-                                        if (isDatasetTable(resource) && !resource.sourceDataset) {
-                                            setOpenAddParentDatasetDialog(true);
-                                        } else {
-                                            setOpenVisDialog(true);
-                                        }
+                                        setOpenAddParentDatasetDialog(true);
                                     }}
                                 >
-                                    Add to Visualization
+                                    Join With Parent Dataset
                                 </MenuItem>
                             )}
                             {viewFunc && (
@@ -213,18 +190,11 @@ export const ResourceTable = ({
 
     return (
         <>
-            <VisualizationDialog
-                projectId={projectId}
-                open={openVisDialog}
-                onClose={handleCloseVisDialog}
-                onAddVisualization={handleAddVisualization}
-            />
             <AddParentDatasetDialog
                 projectId={projectId}
                 open={openAddParentDatasetDialog}
                 onClose={handleCloseAddParentDatasetDialog}
                 resource={selectedItem}
-                handleOpenVisDialog={handleOpenVisDialog}
             />
             <IncoreDialog
                 open={openDeleteDialog}

@@ -177,6 +177,7 @@ interface ProjectState {
     deletedWorkflowIds: string[];
     projectVisualizations: Visualization[];
     deletedVisualizationIds: string[];
+    selectedVisualization: Visualization;
     loading: boolean;
     error: string | null;
     success: string | null;
@@ -268,6 +269,12 @@ interface IncoreLayer {
     layerId: string;
     styleName?: string;
     boundingBox?: [number, number, number, number];
+    layerType?: string;
+    datasetCategoryType?: string;
+    displayName?: string;
+    description?: string;
+    unit?: string;
+    visible?: boolean;
 }
 
 interface Visualization {
@@ -275,6 +282,8 @@ interface Visualization {
     type: string;
     name: string;
     description?: string;
+    zoom?: number;
+    layerOrder?: string[];
     date?: string;
     boundingBox?: [number, number, number, number];
     layers?: IncoreLayer[];
@@ -286,6 +295,8 @@ interface VisualizationIn {
     type: string;
     name: string;
     description?: string;
+    zoom?: number;
+    layerOrder?: string[];
     boundingBox?: number[];
     layers?: IncoreLayer[];
     vegaJson?: string;

@@ -48,7 +48,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
     const [searchAnalysisTerm, setSearchAnalysisTerm] = React.useState<string>("");
     const [availableAnalyses, setAvailableAnalyses] = React.useState<string[]>([]);
     const [groupedAnalyses, setGroupedAnalyses] = React.useState<Record<string, string[]>>({});
-    const [selectedTag, setSelectedTag] = React.useState<string>("all");
+    const [selectedTag, setSelectedTag] = React.useState<string>("All");
     const [currentAnalysesList, setCurrentAnalysesList] = React.useState<string[]>([]);
     const [currentAnalysisCount, setCurrentAnalysisCount] = React.useState<number>(0);
 
@@ -64,17 +64,14 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
 
     React.useEffect(() => {
         if (datawolfTools.length !== 0 && dependencyGraph !== null) {
-            let toolNames = datawolfTools.map((tool) => tool.title).sort();
-            toolNames = toolNames
-                .filter((tool) => dependencyGraph[tool] !== undefined)
-                .filter(
-                    (tool) =>
-                        dependencyGraph[tool].pretty_name.toLowerCase().search(searchAnalysisTerm.toLowerCase()) !== -1
-                );
+            let toolNames = datawolfTools
+                .filter((tool) => dependencyGraph[tool.title] !== undefined)
+                .map((tool) => tool.title)
+                .sort();
             // get unique tags for all tools from dependencyGraph
             const tags = new Set<string>();
             for (const tool of toolNames) {
-                if (dependencyGraph[tool].tags) {
+                if (dependencyGraph[tool].tags.length !== 0) {
                     dependencyGraph[tool].tags.forEach((tag: string) => tags.add(tag));
                 }
             }
@@ -86,10 +83,12 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                 groupedTools[tag] = [];
             });
             toolNames.forEach((tool) => {
-                if (dependencyGraph[tool].tags) {
+                if (dependencyGraph[tool].tags.length !== 0) {
                     dependencyGraph[tool].tags.forEach((tag: string) => groupedTools[tag].push(tool));
                 }
             });
+            // add all tools to a special "all" group
+            groupedTools["All"] = toolNames;
             // sort grouped tools
             Object.keys(groupedTools).forEach((tag) => {
                 groupedTools[tag].sort((a, b) => {
@@ -104,24 +103,50 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                     return 0;
                 });
             });
+
             setGroupedAnalyses(groupedTools);
             setAvailableAnalyses(toolNames);
-            setCurrentAnalysesList(selectedTag === "all" ? toolNames : groupedTools[selectedTag]);
-            setCurrentAnalysisCount(selectedTag === "all" ? toolNames.length : groupedTools[selectedTag].length);
+            setCurrentAnalysesList(groupedTools[selectedTag]);
+            setCurrentAnalysisCount(groupedTools[selectedTag].length);
         }
-    }, [datawolfTools, searchAnalysisTerm]);
+    }, [datawolfTools]);
+
+    React.useEffect(() => {
+        if (dependencyGraph !== null && groupedAnalyses[selectedTag]) {
+            const newAvailableAnalyses = groupedAnalyses[selectedTag].filter((analysis) =>
+                dependencyGraph[analysis].pretty_name.toLowerCase().includes(searchAnalysisTerm.toLowerCase())
+            );
+            setCurrentAnalysesList(newAvailableAnalyses);
+            setCurrentAnalysisCount(newAvailableAnalyses.length);
+        }
+    }, [selectedTag]);
+
+    React.useEffect(() => {
+        if (dependencyGraph !== null && groupedAnalyses[selectedTag]) {
+            if (searchAnalysisTerm.length === 0) {
+                setCurrentAnalysesList(groupedAnalyses[selectedTag]);
+                setCurrentAnalysisCount(groupedAnalyses[selectedTag].length);
+            } else {
+                const filteredAnalyses = groupedAnalyses[selectedTag].filter((analysis) =>
+                    dependencyGraph[analysis].pretty_name.toLowerCase().includes(searchAnalysisTerm.toLowerCase())
+                );
+                setCurrentAnalysesList(filteredAnalyses);
+                setCurrentAnalysisCount(filteredAnalyses.length);
+            }
+        }
+    }, [searchAnalysisTerm]);
 
     return (
         <Modal
             aria-labelledby="modal-title"
             aria-describedby="modal-desc"
             open={selectAnalysisModalOpen}
-            onClose={() => setSelectAnalysisModalOpen(false)}
+            onClose={clearItems}
             sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
         >
             <Card
                 sx={{
-                    width: "75%",
+                    width: "50%",
                     maxHeight: "75%",
                     backgroundColor: "white",
                     padding: "24px"
@@ -129,7 +154,22 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                 size="lg"
             >
                 <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
-                    <TrendingUpRoundedIcon sx={{ color: "#EF6C00", marginRight: "10px" }} />
+                    <Box
+                        sx={{
+                            p: "1px",
+                            height: "20px",
+                            width: "20px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            pointerEvents: "none",
+                            borderRadius: "3px",
+                            backgroundColor: "#EF6C00",
+                            marginRight: "10px"
+                        }}
+                    >
+                        <TrendingUpRoundedIcon sx={{ color: "white", fontSize: "16px" }} />
+                    </Box>
                     <Typography
                         level="title-lg"
                         sx={{
@@ -146,15 +186,35 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                 </Box>
                 <CardContent>
                     <Stack direction="column" spacing={3}>
-                        <Stack direction="row" spacing={1} sx={{ width: "100%" }}>
-                            <FormControl sx={{ width: "50%" }}>
+                        <Stack direction="column" spacing={2} sx={{ width: "100%" }}>
+                            <FormControl>
+                                <FormLabel sx={{ color: "#172B4D" }}>Search by Name</FormLabel>
+                                <Input
+                                    startDecorator={<SearchRoundedIcon />}
+                                    endDecorator={
+                                        searchAnalysisTerm.length > 0 ? (
+                                            <IconButton variant="plain" onClick={() => setSearchAnalysisTerm("")}>
+                                                <CloseRoundedIcon />
+                                            </IconButton>
+                                        ) : null
+                                    }
+                                    placeholder="Search Analysis"
+                                    value={searchAnalysisTerm}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
+                                            setSearchAnalysisTerm(e.target.value.toLowerCase());
+                                        }
+                                    }}
+                                />
+                            </FormControl>
+                            <FormControl>
                                 <FormLabel sx={{ color: "#172B4D" }}>Filter by Category</FormLabel>
                                 <Select
                                     placeholder="Select Category"
                                     value={selectedTag}
                                     onChange={(_, newTag: string | null) => {
-                                        setSelectedTag(newTag ?? "all");
-                                        if (newTag !== "all" && newTag !== null) {
+                                        setSelectedTag(newTag ?? "All");
+                                        if (newTag !== null) {
                                             setCurrentAnalysesList(groupedAnalyses[newTag]);
                                             setCurrentAnalysisCount(groupedAnalyses[newTag].length);
                                         } else {
@@ -175,33 +235,12 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                         }
                                     }}
                                 >
-                                    <Option value="all">All</Option>
                                     {Object.keys(groupedAnalyses).map((tag) => (
-                                        <Option key={tag} value={tag}>
+                                        <Option sx={{ textTransform: "capitalize" }} key={tag} value={tag}>
                                             {tag}
                                         </Option>
                                     ))}
                                 </Select>
-                            </FormControl>
-                            <FormControl sx={{ width: "50%" }}>
-                                <FormLabel sx={{ color: "#172B4D" }}>Search by Name</FormLabel>
-                                <Input
-                                    startDecorator={<SearchRoundedIcon />}
-                                    endDecorator={
-                                        searchAnalysisTerm.length > 0 ? (
-                                            <IconButton variant="plain" onClick={() => setSearchAnalysisTerm("")}>
-                                                <CloseRoundedIcon />
-                                            </IconButton>
-                                        ) : null
-                                    }
-                                    placeholder="Search Analysis"
-                                    value={searchAnalysisTerm}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        if (/^[A-Za-z0-9 _-]*$/.test(e.target.value)) {
-                                            setSearchAnalysisTerm(e.target.value.toLowerCase());
-                                        }
-                                    }}
-                                />
                             </FormControl>
                         </Stack>
                         <Box>
@@ -210,7 +249,7 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                                 {selectedTag === "Pyincore Utility" ? "Utility Tools" : "Analyses"} found
                             </Typography>
                         </Box>
-                        <Box sx={{ height: "400px", overflow: "auto", padding: "10px" }}>
+                        <Box sx={{ height: "200px", overflow: "auto", padding: "10px" }}>
                             <List
                                 sx={{
                                     "--List-gap": "8px",
@@ -293,6 +332,18 @@ const AddAnalysisModal = ({ selectAnalysisModalOpen, setSelectAnalysisModalOpen 
                     </Stack>
                 </CardContent>
                 <CardActions>
+                    <Button
+                        onClick={clearItems}
+                        variant="outlined"
+                        sx={{
+                            borderColor: "primary.subtle",
+                            color: "primary.subtle",
+                            backgroundColor: "white",
+                            ml: "auto"
+                        }}
+                    >
+                        Cancel
+                    </Button>
                     <Button
                         variant="solid"
                         sx={{ backgroundColor: "primary.main" }}
