@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Implement Adding of parent dataset id to a dataset of table format. [#179](https://github.com/IN-CORE/incore-studio/issues/179)
+- Datasets by Execution page to view all the datasets belonging to a visualization in one place [#222](https://github.com/IN-CORE/incore-studio/issues/222)
+- Leverage geo-explorer for map visualization in IN-CORE Studio [#182](https://github.com/IN-CORE/incore-studio/issues/182)
+- Add NSI Building Inventory tool. [#211](https://github.com/IN-CORE/incore-studio/issues/211)
 
 ### Fixed
 
@@ -28,6 +31,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improve resource card layout [#65](https://github.com/IN-CORE/incore-studio/issues/65)
 - Disable unused buttons from navbar [#215](https://github.com/IN-CORE/incore-studio/issues/215)
 - Project Dashboard look and feel [#216](https://github.com/IN-CORE/incore-studio/issues/216)
+- Execution Page UI and Analysis Node Look and feel [#223](https://github.com/IN-CORE/incore-studio/issues/223)
+- UI improvements for Workflow Page [#217](https://github.com/IN-CORE/incore-studio/issues/217)
 
 ## [Beta-1] - 05-01-2025
 

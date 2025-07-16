@@ -124,14 +124,25 @@ export const useOutputDatasetsSynchronizationPolling = (
             // fetch all workflow files
             try {
                 const wfFiles = await fetchWorkflowFiles(wfids);
-                const outputDatasetIDs = await getOutputDatasetIDsFromWorkflows(wfFiles);
-                let datasetIdsNotInProject = outputDatasetIDs.filter(
-                    (id) => !projectDatasets.find((dataset) => dataset.id === id)
-                );
+                const { outputDatasetIDs, ioStats } = await getOutputDatasetIDsFromWorkflows(wfFiles);
+                let datasetIdsNotInProject = outputDatasetIDs.filter((id) => !projectDatasets.find((d) => d.id === id));
                 // filter out ids with "-"
                 datasetIdsNotInProject = datasetIdsNotInProject.filter((id) => !id.includes("-"));
+                // filter out ids from ioStats that are in datasetIdsNotInProject
+                Object.keys(ioStats).forEach((id) => {
+                    if (!datasetIdsNotInProject.includes(id)) {
+                        delete ioStats[id];
+                    }
+                });
+
                 if (datasetIdsNotInProject.length > 0) {
                     const newDatasets = await fetchDatasetsFromService(datasetIdsNotInProject);
+                    // Add ioStats to datasets
+                    newDatasets.forEach((dataset) => {
+                        if (ioStats[dataset.id]) {
+                            dataset.workflowMetadata = ioStats[dataset.id];
+                        }
+                    });
                     appDispatch(addDatasetToProject({ projectId, datasets: newDatasets }));
                 }
             } catch (error) {
@@ -341,7 +352,7 @@ export const useWorkflowAndExecutionCount = (projectWorkflows: Workflow[]) => {
 
     React.useEffect(() => {
         setWorkflowCount(projectWorkflows.length);
-        let execByWorkflowTemp: { itemName: string; count: number }[] = [];
+        const execByWorkflowTemp: { itemName: string; count: number }[] = [];
         const wfIds = projectWorkflows.map((wf) => wf.id);
         const fetchExecutionCount = async () => {
             try {
@@ -351,7 +362,7 @@ export const useWorkflowAndExecutionCount = (projectWorkflows: Workflow[]) => {
                     })
                 );
                 const responses = await Promise.all(requests);
-                let execCount = responses.reduce((acc, response) => {
+                const execCount = responses.reduce((acc, response) => {
                     const dataLength = Array.isArray(response.data) ? response.data.length : 0;
                     return acc + dataLength;
                 }, 0);

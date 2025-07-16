@@ -3,6 +3,7 @@ import config from "@app/app.config";
 
 import axios from "axios";
 import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
+import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
 
 export function getOidcUser() {
     const oidcStorage = sessionStorage.getItem(
@@ -300,13 +301,42 @@ export function getStatusColor(status?: string) {
     }
 }
 
+export const getDatasetIOType = (executionKey: string, workflow: DatawolfWorkflowFile): "INPUT" | "OUTPUT" | "IO" => {
+    let inputCommonKeysCount = 0;
+    let outputCommonKeys = 0;
+    for (const step of workflow.steps) {
+        Object.entries(step.inputs).forEach(([, inputValue]) => {
+            if (inputValue === executionKey) {
+                inputCommonKeysCount++;
+            }
+        });
+        Object.entries(step.outputs).forEach(([, outputValue]) => {
+            if (outputValue === executionKey) {
+                outputCommonKeys++;
+            }
+        });
+    }
+    if (inputCommonKeysCount > 0 && outputCommonKeys > 0) {
+        return "IO";
+    } else if (inputCommonKeysCount > 0) {
+        return "INPUT";
+    } else if (outputCommonKeys > 0) {
+        return "OUTPUT";
+    }
+    return "INPUT";
+};
+
 export const getOutputDatasetIDsFromExecutionFile = (
     execution: DatawolfExecutionFile,
     workflow: DatawolfWorkflowFile
-): string[] => {
+): {
+    outputDatasetIDs: string[];
+    ioStats: { [key: string]: { executionId: string; workflowId: string; role: string } };
+} => {
     const outputDatasetIDs: string[] = [];
+    const ioStats: { [key: string]: { executionId: string; workflowId: string; role: string } } = {};
     if (!execution || !workflow || !workflow.steps) {
-        return outputDatasetIDs;
+        return { outputDatasetIDs, ioStats };
     }
 
     workflow.steps.forEach((step) => {
@@ -324,11 +354,26 @@ export const getOutputDatasetIDsFromExecutionFile = (
         });
     });
 
-    return outputDatasetIDs;
+    Object.entries(execution.datasets).forEach(([executionKey, executionValue]) => {
+        const ioType = getDatasetIOType(executionKey, workflow);
+        ioStats[executionValue] = {
+            executionId: execution.id ?? "",
+            workflowId: workflow.id ?? "",
+            role: ioType
+        };
+    });
+
+    return { outputDatasetIDs, ioStats };
 };
 
-export const getOutputDatasetIDsFromWorkflows = async (workflows: DatawolfWorkflowFile[]): Promise<string[]> => {
+export const getOutputDatasetIDsFromWorkflows = async (
+    workflows: DatawolfWorkflowFile[]
+): Promise<{
+    outputDatasetIDs: string[];
+    ioStats: { [key: string]: { executionId: string; workflowId: string; role: string }[] };
+}> => {
     const outputDatasetIDs: string[] = [];
+    const ioStats: { [key: string]: { executionId: string; workflowId: string; role: string }[] } = {};
     for (const workflow of workflows) {
         try {
             const executions = await axios.get(`${config.datawolfApi}/workflows/${workflow.id ?? ""}/executions`, {
@@ -336,7 +381,19 @@ export const getOutputDatasetIDsFromWorkflows = async (workflows: DatawolfWorkfl
             });
             if (executions.data) {
                 for (const execution of executions.data) {
-                    outputDatasetIDs.push(...getOutputDatasetIDsFromExecutionFile(execution, workflow));
+                    const { outputDatasetIDs: ids, ioStats: ioSt } = getOutputDatasetIDsFromExecutionFile(
+                        execution,
+                        workflow
+                    );
+                    outputDatasetIDs.push(...ids);
+                    // Merge ioStats
+                    Object.entries(ioSt).forEach(([key, value]) => {
+                        if (!ioStats[key]) {
+                            ioStats[key] = [value];
+                        } else {
+                            ioStats[key].push(value);
+                        }
+                    });
                 }
             }
         } catch (error: any) {
@@ -354,7 +411,68 @@ export const getOutputDatasetIDsFromWorkflows = async (workflows: DatawolfWorkfl
             console.error("Unexpected error:", error.message);
         }
     }
-    return outputDatasetIDs;
+    return { outputDatasetIDs, ioStats };
+};
+
+const extractDatasetIDsFromExecution = (execution: DatawolfExecutionFile): string[] => {
+    const datasetIDs: string[] = [];
+    if (!execution || !execution.datasets) {
+        return datasetIDs;
+    }
+
+    Object.entries(execution.datasets).forEach(([, value]) => {
+        if (value && value !== "ERROR" && value !== "" && value !== "-") {
+            datasetIDs.push(value);
+        }
+    });
+
+    return datasetIDs;
+};
+
+export const getAllDatasetsByExecutions = async (workflows: Workflow[]): Promise<DatasetsByExecutions> => {
+    const allExecutions: DatasetsByExecutions = {};
+    for (const workflow of workflows) {
+        try {
+            const response = await axios.get(`${config.datawolfApi}/workflows/${workflow.id ?? ""}/executions`, {
+                headers: getHeaders()
+            });
+            if (response.data) {
+                // Extract dataset IDs from each execution
+                response.data.forEach((execution: DatawolfExecutionFile) => {
+                    if (execution.id) {
+                        const datasetIds = extractDatasetIDsFromExecution(execution);
+                        allExecutions[execution.id] = {
+                            executionName: execution.title ?? "Unnamed Execution",
+                            executionTime: execution.date ?? "",
+                            datasetIds,
+                            workflowId: workflow.id ?? "",
+                            workflowName: workflow.title ?? "Unnamed Workflow"
+                        };
+                    }
+                });
+            }
+        } catch (error: any) {
+            // Handle axios-specific errors
+            if (axios.isAxiosError(error)) {
+                console.error(
+                    "Error fetching executions:",
+                    error.response
+                        ? `Error: ${error.response.status} - ${error.response.data}`
+                        : `Network or unknown error: ${error.message}`
+                );
+            }
+
+            // Handle unexpected errors
+            console.error("Unexpected error:", error.message);
+        }
+    }
+    // sort the executions by executionTime in descending order
+    const sortedAllExecutions: DatasetsByExecutions = Object.fromEntries(
+        Object.entries(allExecutions).sort(
+            ([, a], [, b]) => new Date(b.executionTime).getTime() - new Date(a.executionTime).getTime()
+        )
+    );
+    return sortedAllExecutions;
 };
 
 export function downloadMetadata(data: any): void {
@@ -781,4 +899,71 @@ export function csvToArray(str: string, delimiter = ",", includeHeader = true): 
     const rowsArr = rows.filter(Boolean).map((row) => row.split(delimiter));
 
     return includeHeader ? [headers, ...rowsArr] : rowsArr;
+}
+
+export function inferLayerType(datasetType: string): "point" | "line" | "polygon" | "raster" {
+    const rasterSchemas = new Set([
+        "ergo:probabilisticEarthquakeRaster",
+        "ncsa:probabilisticEarthquakeRaster",
+        "ergo:deterministicEarthquakeRaster",
+        "ncsa:deterministicEarthquakeRaster",
+        "incore:probabilisticTsunamiRaster",
+        "ncsa:probabilisticTsunamiRaster",
+        "incore:deterministicTsunamiRaster",
+        "ncsa:deterministicTsunamiRaster",
+        "incore:probabilisticHurricaneRaster",
+        "ncsa:probabilisticHurricaneRaster",
+        "incore:deterministicHurricaneRaster",
+        "ncsa:deterministicHurricaneRaster",
+        "incore:hurricaneGridSnapshot",
+        "ncsa:hurricaneGridSnapshot",
+        "incore:deterministicFloodRaster",
+        "ncsa:deterministicFloodRaster",
+        "incore:probabilisticFloodRaster",
+        "ncsa:probabilisticFloodRaster",
+        "earthquake",
+        "tsunami",
+        "hurricane",
+        "flood"
+    ]);
+
+    const polygonSchemas = new Set(["incore:tornadoWindfield", "ncsa:boundary", "tornado"]);
+
+    const lineSchemas = new Set([
+        "ergo:buriedPipelineTopology",
+        "ergo:pipeline",
+        "ncsa:lifelineElecInventory",
+        "ncsa:lifelineWaterInventory",
+        "ncsa:powerLineTopo"
+    ]);
+
+    if (rasterSchemas.has(datasetType)) {
+        return "raster";
+    }
+
+    if (lineSchemas.has(datasetType)) {
+        return "line";
+    }
+
+    if (polygonSchemas.has(datasetType)) {
+        return "polygon";
+    }
+
+    return "point";
+}
+
+export function mapIncoreDatasetToGeoExplorerDataset(dataset: Dataset, ogcServiceUrl: string): GeoExplorerDataset {
+    return {
+        layer_id: dataset.id,
+        layer_type: inferLayerType(dataset.dataType), // returns "point" | "line" | "polygon" | "raster"
+        display_name: dataset.title,
+        description: dataset.description,
+        default_style_name: undefined, // populate if available
+        ogc_service_url: ogcServiceUrl,
+        timestamps: [], // if available, populate from metadata
+        labels: {
+            dataset_category: dataset.dataType
+        },
+        workspace: "incore"
+    };
 }

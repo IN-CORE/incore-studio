@@ -3,13 +3,7 @@ import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import {
-    getProject,
-    getProjectDatasets,
-    deleteProjectDatasets,
-    addLayerToVisualization,
-    addDatasetToProject
-} from "@app/reducer/projectSlice";
+import { getProject, getProjectDatasets, deleteProjectDatasets, addDatasetToProject } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -92,29 +86,6 @@ const DatasetPage = (): JSX.Element => {
         appDispatch(deleteProjectDatasets({ projectId, datasetIds: [dataset.id] }));
     };
 
-    // add to visualization function
-    const addDatasetVisualizationFunc = (
-        projectId: string,
-        visualizationId: string,
-        dataset: Dataset,
-        styleName?: string
-    ) => {
-        if (dataset.format === "shapefile" || dataset.format === "table") {
-            const layers = [
-                {
-                    workspace: "incore",
-                    layerId: dataset.id,
-                    ...(styleName && { styleName }) // Only include styleName if it's provided
-                }
-            ];
-
-            // Dispatch the action with the new layers array
-            appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
-        } else {
-            alert("Only shapefiles and tables can be added to a visualization for now!");
-        }
-    };
-
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
@@ -187,10 +158,10 @@ const DatasetPage = (): JSX.Element => {
                         <ProjectHeader project={project} />
                         <Divider />
                         <Grid container spacing={5} mt={3} ml={0}>
-                            <Grid sm={2}>
+                            <Grid sm={3}>
                                 <ProjectSidebar id={project.id} />
                             </Grid>
-                            <Grid sm={10}>
+                            <Grid sm={9}>
                                 <ResourceFilterBar
                                     title="Datasets"
                                     icon={<DatasetIcon sx={{ verticalAlign: "middle" }} />}
@@ -229,11 +200,10 @@ const DatasetPage = (): JSX.Element => {
                                 />
                                 {isTableView ? (
                                     <ResourceTable
-                                        columns={["title", "description", "type", "date", "owner"]}
+                                        columns={["title", "description", "format", "type", "date", "owner"]}
                                         data={projectDatasets}
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
-                                        addVisualizationFunc={addDatasetVisualizationFunc}
                                         viewFunc={(dataset: Dataset) => {
                                             setOpenTableDataModal(true);
                                             setSelectedDataset(dataset);
@@ -247,7 +217,6 @@ const DatasetPage = (): JSX.Element => {
                                         cardPerRow={4}
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
-                                        addVisualizationFunc={addDatasetVisualizationFunc}
                                         viewFunc={(dataset: Dataset) => {
                                             setOpenTableDataModal(true);
                                             setSelectedDataset(dataset);

@@ -1,6 +1,10 @@
 import React from "react";
-import { Box, List, ListItem, Typography, Link } from "@mui/joy";
+import { Box, Stack, Typography, Link } from "@mui/joy";
 import { Link as RouterLink, useLocation } from "react-router-dom";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
+import { TreeItem } from "@mui/x-tree-view/TreeItem";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 import DFR3Icon from "@mui/icons-material/ShowChart";
@@ -10,67 +14,95 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 
 import { theme } from "@app/theme";
 
+interface MenuItem {
+    label: string;
+    path: string;
+    icon?: React.ReactElement;
+    subMenu: MenuItem[];
+}
+
 export const ProjectSidebar = ({ id }: { id: string }) => {
     const location = useLocation(); // Get current route location
 
-    const menuItems = [
-        { label: "Project Dashboard", path: `/project/${id}`, icon: <DashboardIcon /> },
-        { label: "Workflows", path: `/project/${id}/workflows`, icon: <WorkflowIcon /> },
-        { label: "Hazards", path: `/project/${id}/hazards`, icon: <HazardIcon /> },
-        { label: "Datasets", path: `/project/${id}/datasets`, icon: <DatasetIcon /> },
+    const menuItems: MenuItem[] = [
+        { label: "Project Dashboard", path: `/project/${id}`, icon: <DashboardIcon />, subMenu: [] },
+        { label: "Workflows", path: `/project/${id}/workflows`, icon: <WorkflowIcon />, subMenu: [] },
+        { label: "Hazards", path: `/project/${id}/hazards`, icon: <HazardIcon />, subMenu: [] },
+        {
+            label: "Datasets",
+            path: `/project/${id}/datasets`,
+            icon: <DatasetIcon />,
+            subMenu: [
+                {
+                    label: "Datasets by Execution",
+                    path: `/project/${id}/datasets/execution`,
+                    subMenu: []
+                }
+            ]
+        },
         {
             label: "Visualizations",
             path: `/project/${id}/visualizations`,
-            icon: <VisualizationIcon />
+            icon: <VisualizationIcon />,
+            subMenu: []
         },
-        { label: "DFR3 Mappings", path: `/project/${id}/dfr3Mappings`, icon: <DFR3Icon /> }
+        { label: "DFR3 Mappings", path: `/project/${id}/dfr3Mappings`, icon: <DFR3Icon />, subMenu: [] }
     ];
 
+    const getTreeItem = (item: MenuItem, isChild: boolean) => {
+        const isActive = location.pathname === item.path;
+        return (
+            <TreeItem
+                key={item.path}
+                itemId={item.label}
+                label={
+                    <Link
+                        to={item.path}
+                        style={{
+                            padding: isChild ? "0.2em" : "1em",
+                            display: "flex",
+                            alignItems: "center",
+                            textDecoration: "none",
+                            fontWeight: isActive ? 600 : 400,
+                            color: "inherit",
+                            marginLeft: isChild ? "2em" : 0
+                        }}
+                        component={RouterLink}
+                    >
+                        <Stack direction="row" spacing={1} alignItems="center">
+                            {item.icon &&
+                                React.cloneElement(item.icon, {
+                                    sx: {
+                                        color: isActive ? theme.colorSchemes.light.palette.primary[700] : "black"
+                                    }
+                                })}
+                            <Typography level="body-md" textColor={isActive ? "primary.main" : "black"}>
+                                {item.label}
+                            </Typography>
+                        </Stack>
+                    </Link>
+                }
+            >
+                {item.subMenu?.map((subItem) => getTreeItem(subItem, true))}
+            </TreeItem>
+        );
+    };
     return (
         <Box mt={-2}>
-            <List>
-                {menuItems.map((item, index) => {
-                    const isSelected = location.pathname === item.path;
-                    const iconWithColor = React.cloneElement(item.icon, {
-                        sx: {
-                            color: isSelected ? theme.colorSchemes.light.palette.primary[700] : "black"
-                        }
-                    });
-
-                    return (
-                        <ListItem
-                            key={index}
-                            sx={{
-                                "padding": "1em",
-                                "display": "flex",
-                                "alignItems": "center",
-                                "backgroundColor": isSelected ? "#E9F2FF" : "transparent",
-                                "fontWeight": isSelected ? 500 : 400,
-                                "&:hover": {
-                                    backgroundColor: "neutral.background"
-                                }
-                            }}
-                        >
-                            <Link
-                                to={item.path}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    textDecoration: "none",
-                                    color: "inherit",
-                                    width: "100%"
-                                }}
-                                startDecorator={iconWithColor}
-                                component={RouterLink}
-                            >
-                                <Typography level="body-md" textColor={isSelected ? "primary.main" : "black"}>
-                                    {item.label}
-                                </Typography>
-                            </Link>
-                        </ListItem>
-                    );
-                })}
-            </List>
+            <Box sx={{ minHeight: 352, mt: 2 }}>
+                <SimpleTreeView
+                    aria-label="project sidebar"
+                    defaultExpandedItems={["Datasets"]}
+                    slots={{
+                        collapseIcon: ExpandMoreIcon,
+                        expandIcon: ChevronRightIcon,
+                        endIcon: () => <div style={{ width: 24 }} />
+                    }}
+                    sx={{ flexGrow: 1, maxWidth: 400 }}
+                >
+                    {menuItems.map((item) => getTreeItem(item, false))}
+                </SimpleTreeView>
+            </Box>
         </Box>
     );
 };

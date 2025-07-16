@@ -164,11 +164,11 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
             <ProjectHeader project={project} />
             <Divider />
             <Grid container spacing={5} sx={{ mt: 3, ml: 0 }}>
-                <Grid sm={2}>
+                <Grid sm={3}>
                     <ProjectSidebar id={project.id} />
                 </Grid>
                 {/* Left Column: Workflow, Hazard and Visualization Cards */}
-                <Grid sm={10}>
+                <Grid sm={9}>
                     <Stack
                         spacing={3}
                         direction={{ xs: "column", sm: "column", md: "column", lg: "row" }}
