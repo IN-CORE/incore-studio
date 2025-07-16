@@ -16,7 +16,6 @@ import React, { useState } from "react";
 import { parseDateTime } from "@app/utils";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IncoreDialog } from "@app/components/IncoreDialog";
-import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 import AddParentDatasetDialog from "@app/components/Project/Resource/AddParentDatasetDialog";
 
 import CheckIcon from "@mui/icons-material/Check";
@@ -38,21 +37,11 @@ export const ResourceCards: React.FC<{
     resources: Hazard[] | Visualization[] | Dataset[] | Workflow[];
     cardPerRow?: number;
     deleteFunc?: any;
-    addVisualizationFunc?: any;
     viewFunc?: any;
     projectId: string;
     onSelectionChange?: (selectedItems: (Hazard | Visualization | Dataset | Workflow)[]) => void;
     selectedItems?: (Hazard | Visualization | Dataset | Workflow)[];
-}> = ({
-    resources,
-    cardPerRow,
-    deleteFunc,
-    addVisualizationFunc,
-    projectId,
-    viewFunc,
-    onSelectionChange,
-    selectedItems = []
-}) => {
+}> = ({ resources, cardPerRow, deleteFunc, projectId, viewFunc, onSelectionChange, selectedItems = [] }) => {
     const [selectedItem, setSelectedItem] = useState<Hazard | Visualization | Dataset | Workflow | null>(null);
     const handleOpenMenu = (item: Hazard | Visualization | Dataset | Workflow) => {
         setSelectedItem(item);
@@ -73,22 +62,6 @@ export const ResourceCards: React.FC<{
             setSelectedItem(null);
         }
         setOpenDeleteDialog(false);
-    };
-
-    // add to visualization
-    const [openVisDialog, setOpenVisDialog] = useState(false);
-    const handleCloseVisDialog = () => {
-        setOpenVisDialog(false);
-    };
-    const handleAddVisualization = (visualizationId: string, styleName?: string) => {
-        if (selectedItem && projectId) {
-            addVisualizationFunc(projectId, visualizationId, selectedItem, styleName);
-            setSelectedItem(null);
-        }
-        setOpenVisDialog(false);
-    };
-    const handleOpenVisDialog = () => {
-        setOpenVisDialog(true);
     };
 
     // Update Source Dataset if they want to add a dataset to visualization
@@ -128,18 +101,11 @@ export const ResourceCards: React.FC<{
 
     return (
         <Grid container spacing={3}>
-            <VisualizationDialog
-                projectId={projectId}
-                open={openVisDialog}
-                onClose={handleCloseVisDialog}
-                onAddVisualization={handleAddVisualization}
-            />
             <AddParentDatasetDialog
                 projectId={projectId}
                 open={openAddParentDatasetDialog}
                 onClose={handleCloseAddParentDatasetDialog}
                 resource={selectedItem}
-                handleOpenVisDialog={handleOpenVisDialog}
             />
             <IncoreDialog
                 open={openDeleteDialog}
@@ -219,20 +185,16 @@ export const ResourceCards: React.FC<{
                                         <MoreVertIcon />
                                     </MenuButton>
                                     <Menu onClose={handleCloseMenu} placement="bottom-start">
-                                        {addVisualizationFunc && (
+                                        {isDatasetTable(resource) && !resource.sourceDataset && (
                                             <MenuItem
                                                 onMouseDown={(e) => {
                                                     e.stopPropagation();
                                                 }}
                                                 onClick={() => {
-                                                    if (isDatasetTable(resource) && !resource.sourceDataset) {
-                                                        setOpenAddParentDatasetDialog(true);
-                                                    } else {
-                                                        setOpenVisDialog(true);
-                                                    }
+                                                    setOpenAddParentDatasetDialog(true);
                                                 }}
                                             >
-                                                Add to Visualization
+                                                Join With Parent Dataset
                                             </MenuItem>
                                         )}
                                         <MenuItem

@@ -19,6 +19,7 @@ const initialState: ProjectState = {
     deletedWorkflowIds: <string[]>[],
     projectVisualizations: <Visualization[]>[],
     deletedVisualizationIds: <string[]>[],
+    selectedVisualization: <Visualization>{},
     loading: false,
     error: null,
     success: null
@@ -84,6 +85,37 @@ export const updateProjectDatasetsParent = createAsyncThunk(
             headers: { ...getHeaders(), "Content-Type": "application/x-www-form-urlencoded" }
         });
         return response.data;
+    }
+);
+
+export const updateProjectDatasetsRoles = createAsyncThunk(
+    "projects/updateProjectDatasetsRoles",
+    async ({ projectId, data }: { projectId: string; data: { [key: string]: WorkflowMetadata[] } }) => {
+        const results = await Promise.all(
+            Object.entries(data).map(async ([datasetId, ds]) => {
+                const params = new URLSearchParams();
+                params.append("workflowMetadata", JSON.stringify(ds));
+
+                try {
+                    const response = await axios.patch<Dataset>(
+                        `${PROJECT_API_URL}/${projectId}/datasets/${datasetId}`,
+                        params,
+                        {
+                            headers: {
+                                ...getHeaders(),
+                                "Content-Type": "application/x-www-form-urlencoded"
+                            }
+                        }
+                    );
+                    return response.data;
+                } catch (error) {
+                    console.error(`Failed to patch dataset ${datasetId}:`, error);
+                    throw error;
+                }
+            })
+        );
+
+        return results.map((result) => result);
     }
 );
 
@@ -339,7 +371,10 @@ export const getProjectVisualizations = createAsyncThunk(
 export const fetchInfiniteProjectVisualizations = async ({
     pageParam = 1,
     projectId
-}: any): Promise<{ data: Visualization[]; nextPage: number }> => {
+}: any): Promise<{
+    data: Visualization[];
+    nextPage: number;
+}> => {
     const response = await axios.get(`${PROJECT_API_URL}/${projectId}/visualizations`, {
         headers: getHeaders(),
         params: {
@@ -490,6 +525,74 @@ export const addLayerToVisualization = createAsyncThunk(
     }
 );
 
+export const deleteLayerToVisualization = createAsyncThunk(
+    "projects/deleteLayerToVisualization",
+    async ({
+        projectId,
+        visualizationId,
+        layerIds
+    }: {
+        projectId: string;
+        visualizationId: string;
+        layerIds: string[];
+    }) => {
+        const response = await axios.delete(
+            `${PROJECT_API_URL}/${projectId}/visualizations/${visualizationId}/layers`,
+            {
+                headers: getHeaders(),
+                data: layerIds
+            }
+        );
+        return response.data;
+    }
+);
+
+export const patchVisualization = createAsyncThunk(
+    "projects/patchVisualization",
+    async ({
+        projectId,
+        visualizationId,
+        patchData
+    }: {
+        projectId: string;
+        visualizationId: string;
+        patchData: {
+            name?: string;
+            description?: string;
+            type?: string;
+            boundingBox?: number[];
+            zoom?: number;
+            vegaJson?: string;
+            layerOrder?: string;
+            layers?: string;
+        };
+    }) => {
+        const formData = new URLSearchParams();
+        Object.entries(patchData).forEach(([key, value]) => {
+            if (value !== undefined) {
+                if (key === "boundingBox" && Array.isArray(value)) {
+                    value.forEach((v) => formData.append("boundingBox", String(v)));
+                } else {
+                    formData.append(key, Array.isArray(value) ? JSON.stringify(value) : String(value));
+                }
+            }
+        });
+
+        const response = await axios.patch(
+            `${PROJECT_API_URL}/${projectId}/visualizations/${visualizationId}`,
+            formData,
+            {
+                headers: {
+                    ...getHeaders(),
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }
+        );
+
+        return response.data;
+    }
+);
+
 export const finalizeWorkflow = createAsyncThunk(
     "projects/finalizeWorkflow",
     async ({ projectId, workflowId }: { projectId: string; workflowId: string }) => {
@@ -504,7 +607,12 @@ const projectSlice = createSlice({
     name: "projects",
     initialState,
     reducers: {
-        // TODO define synchronous actions here if needed
+        setSelectedVisualization: (state, action: { payload: string }) => {
+            const target = state.projectVisualizations.find((v) => v.id === action.payload);
+            if (target) {
+                state.selectedVisualization = target;
+            }
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -573,6 +681,21 @@ const projectSlice = createSlice({
             .addCase(updateProjectDatasetsParent.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || "Failed to update the project datasets parent";
+            })
+            // Handle UPDATE_PROJECT_DATASETS_ROLES
+            .addCase(updateProjectDatasetsRoles.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = null;
+            })
+            .addCase(updateProjectDatasetsRoles.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectDatasets = action.payload;
+                state.success = "Datasets updated successfully";
+            })
+            .addCase(updateProjectDatasetsRoles.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to update datasets";
             })
             // Edit project
             .addCase(editProject.pending, (state) => {
@@ -830,6 +953,27 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to create the project visualizations";
             })
+            .addCase(patchVisualization.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = null;
+            })
+            .addCase(patchVisualization.fulfilled, (state, action) => {
+                state.loading = false;
+                const updated = action.payload;
+                // Replace the item in the list
+                const index = state.projectVisualizations.findIndex((v) => v.id === updated.id);
+                if (index !== -1) {
+                    state.projectVisualizations[index] = updated;
+                }
+                // update selected item
+                state.selectedVisualization = updated;
+                state.success = "Successfully updated the project visualization";
+            })
+            .addCase(patchVisualization.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to update the visualizations";
+            })
             .addCase(addLayerToVisualization.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -845,7 +989,24 @@ const projectSlice = createSlice({
             })
             .addCase(addLayerToVisualization.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || "Failed to create the project visualizations";
+                state.error = action.error.message || "Failed to add layers to the project visualizations";
+            })
+            .addCase(deleteLayerToVisualization.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = null;
+            })
+            .addCase(deleteLayerToVisualization.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projectVisualizations = action.payload?.visualizations;
+                if (state.project) {
+                    state.project.visualizations = action.payload?.visualizations;
+                }
+                state.success = "Successfully delete layers from the project visualizations";
+            })
+            .addCase(deleteLayerToVisualization.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to delete layers from the project visualizations.";
             })
             // Handle DELETE_PROJECT
             .addCase(deleteProject.pending, (state) => {
@@ -880,3 +1041,5 @@ const projectSlice = createSlice({
 });
 
 export default projectSlice.reducer;
+
+export const { setSelectedVisualization } = projectSlice.actions;

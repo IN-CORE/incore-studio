@@ -87,18 +87,13 @@ export const VisualizationDialog: React.FC<VisualizationDialogProps> = ({
                 type: visualizationType,
                 description,
                 ...(boundingBox !== "" && { boundingBox: boundingBox.split(",").map(Number) }),
-                ...(visualizationType === "MAP" && { layers: [] }) // Add empty layers array if type is "MAP"
+                ...(visualizationType === "MAP" && { layers: [], layerOrder: [] }) // Add empty layers array if
+                // type is "MAP"
             }
         ];
         appDispatch(createProjectVisualization({ projectId, visualizations }));
         resetCreation();
     };
-
-    // TODO think of better way to get all visualizations
-    // useEffect(() => {
-    //     // temporary fix to get all visualizations
-    //     appDispatch(getProjectVisualizations({ projectId, skip: 0, limit: 100000 }));
-    // }, [projectId]);
 
     return (
         <Modal open={open} onClose={onClose}>

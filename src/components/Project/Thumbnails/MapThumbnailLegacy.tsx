@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getGeoServerImageUrlAsDataUrl } from "@app/utils";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/joy";
 
 export const MapThumbnail = ({ id }: { id: string }) => {
     const [imageUrls, setImageUrls] = useState<{ basemapUrl: string; wmsUrl: string } | null>(null);

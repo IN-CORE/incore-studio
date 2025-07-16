@@ -3,13 +3,7 @@ import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import {
-    addHazardToProject,
-    addLayerToVisualization,
-    deleteProjectHazards,
-    getProject,
-    getProjectHazards
-} from "@app/reducer/projectSlice";
+import { addHazardToProject, deleteProjectHazards, getProject, getProjectHazards } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -95,24 +89,6 @@ const HazardPage = (): JSX.Element => {
         appDispatch(deleteProjectHazards({ projectId, hazardIds: [hazard.id] }));
     };
 
-    // add to visualization function
-    const addHazardVisualizationFunc = (
-        projectId: string,
-        visualizationId: string,
-        hazard: Hazard,
-        styleName?: string
-    ) => {
-        // Create layers array by mapping over each datasetId in hazard.HazardDatasets
-        const layers = hazard.hazardDatasets.map((hazardDataset: HazardDataset) => ({
-            workspace: "incore",
-            layerId: hazardDataset.datasetId,
-            ...(styleName && { styleName }) // Only include styleName if it's provided
-        }));
-
-        // Dispatch the action with the new layers array
-        appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
-    };
-
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
@@ -186,7 +162,7 @@ const HazardPage = (): JSX.Element => {
                         />
                         <ProjectHeader project={project} />
                         <Divider />
-                        <Grid container spacing={5} mt={3} ml={0}>
+                        <Grid container spacing={2} mt={3} ml={0}>
                             <Grid sm={2}>
                                 <ProjectSidebar id={project.id} />
                             </Grid>
@@ -234,7 +210,6 @@ const HazardPage = (): JSX.Element => {
                                         data={projectHazards}
                                         projectId={project.id}
                                         deleteFunc={deleteHazardFunc}
-                                        addVisualizationFunc={addHazardVisualizationFunc}
                                         onSelectionChange={(selected) => setSelectedHazards(selected as Hazard[])}
                                         selectedItems={selectedHazards}
                                         viewFunc={(hazard: Hazard) => {
@@ -248,7 +223,6 @@ const HazardPage = (): JSX.Element => {
                                         cardPerRow={4}
                                         projectId={project.id}
                                         deleteFunc={deleteHazardFunc}
-                                        addVisualizationFunc={addHazardVisualizationFunc}
                                         onSelectionChange={(selected) => setSelectedHazards(selected as Hazard[])}
                                         selectedItems={selectedHazards}
                                         viewFunc={(hazard: Hazard) => {

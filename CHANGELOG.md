@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Implement Adding of parent dataset id to a dataset of table format. [#179](https://github.com/IN-CORE/incore-studio/issues/179)
 - Preview support for DFR3Mapping, Dataset, and Hazard when selecting resources from services [#180](https://github.com/IN-CORE/incore-studio/issues/180)
+- Datasets by Execution page to view all the datasets belonging to a visualization in one place [#222](https://github.com/IN-CORE/incore-studio/issues/222)
+- Leverage geo-explorer for map visualization in IN-CORE Studio [#182](https://github.com/IN-CORE/incore-studio/issues/182)
+- Add NSI Building Inventory tool. [#211](https://github.com/IN-CORE/incore-studio/issues/211)
 
 ### Fixed
 
@@ -19,12 +22,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Execution count not showing up issue. [#172](https://github.com/IN-CORE/incore-studio/issues/172)
 - Adapt progress bar to fit smaller screen [#171](https://github.com/IN-CORE/incore-studio/issues/171)
 - Issue where user cannot submit jobs if dfr3 mapping and hazards don't match [#193](https://github.com/IN-CORE/incore-studio/issues/193)
+- Finalized workflows not being saved first issue. [#204](https://github.com/IN-CORE/incore-studio/issues/204)
 - The items in project dashboard to be default sorted by date in descending order. [#206](https://github.com/IN-CORE/incore-studio/issues/206)
+- Switch from webpack to esbuild and find alternative to serve app with SPA routes [#200](https://github.com/IN-CORE/incore-studio/issues/200)
 
 ### Changed
 
 - Improve resource card layout [#65](https://github.com/IN-CORE/incore-studio/issues/65)
+<<<<<<< HEAD
 - Improve performance by switching from Webpack to ESBuild [#200](https://github.com/IN-CORE/incore-studio/issues/200)
+=======
+- Disable unused buttons from navbar [#215](https://github.com/IN-CORE/incore-studio/issues/215)
+- Project Dashboard look and feel [#216](https://github.com/IN-CORE/incore-studio/issues/216)
+- Execution Page UI and Analysis Node Look and feel [#223](https://github.com/IN-CORE/incore-studio/issues/223)
+- UI improvements for Workflow Page [#217](https://github.com/IN-CORE/incore-studio/issues/217)
+>>>>>>> develop
 
 ## [Beta-1] - 05-01-2025
 

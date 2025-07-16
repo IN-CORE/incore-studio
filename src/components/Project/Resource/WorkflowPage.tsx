@@ -144,7 +144,7 @@ const WorkflowPage = (): JSX.Element => {
                         />
                         <ProjectHeader project={project} />
                         <Divider />
-                        <Grid container spacing={5} mt={3} ml={0}>
+                        <Grid container spacing={2} mt={3} ml={0}>
                             <Grid sm={2}>
                                 <ProjectSidebar id={project.id} />
                             </Grid>

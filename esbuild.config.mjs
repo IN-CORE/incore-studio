@@ -3,8 +3,23 @@ import { sassPlugin } from "esbuild-sass-plugin";
 import autoprefixer from "autoprefixer";
 import postcss from "postcss";
 import copy from "esbuild-plugin-copy";
+import fs from "fs";
 
 const isDev = process.argv.includes("--watch");
+
+const baseHref = isDev ? "/" : "/studio/";
+
+const replaceBaseHrefPlugin = {
+  name: "replace-base-href",
+  setup(build) {
+    build.onEnd(() => {
+      const htmlPath = "build/index.html";
+      let html = fs.readFileSync(htmlPath, "utf8");
+      html = html.replace(/__BASE_HREF__/g, baseHref);
+      fs.writeFileSync(htmlPath, html);
+    });
+  },
+};
 
 const commonConfig = {
     entryPoints: [
@@ -56,7 +71,8 @@ const commonConfig = {
                 from: ["src/index.html"],
                 to: ["./index.html"]
             }
-        })
+        }),
+        replaceBaseHrefPlugin
     ],
     publicPath: isDev ?  "/": "/studio/",
     logLevel: "info",
@@ -68,11 +84,11 @@ const run = async () => {
 
     if (isDev) {
         await ctx.watch();
-        await ctx.serve({
-            servedir: "build",
-            port: 3000
-        });
-        console.log("Serving at http://localhost:3000 (watch mode enabled)");
+        // await ctx.serve({
+        //     servedir: "build",
+        //     port: 3000
+        // });
+        console.log("watch mode enabled.");
     } else {
         await ctx.rebuild();
         await ctx.dispose();
