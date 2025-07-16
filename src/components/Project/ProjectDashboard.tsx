@@ -434,7 +434,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                         <HelpOutlineRoundedIcon sx={{ fontSize: "20px" }} />
                                                     </Tooltip>
                                                 </Stack>
-                                                <Stack spacing={3}>
+                                                <Stack spacing={1}>
                                                     <Stack
                                                         sx={{
                                                             alignItems: "center",
@@ -470,7 +470,7 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 <Typography level="title-lg" sx={{ mb: 2 }}>
                                                     Hazards Format
                                                 </Typography>
-                                                <Stack direction="column" spacing={2} sx={{ width: "100%", mb: 2 }}>
+                                                <Stack direction="column" spacing={1} sx={{ width: "100%", mb: 2 }}>
                                                     {[
                                                         { label: "Model Based", value: hazardStats.model.toString() },
                                                         {
@@ -507,19 +507,32 @@ const ProjectDashboardComponent: React.FC = (): JSX.Element => {
                                                 direction="column"
                                             >
                                                 <Typography level="title-lg">Hazard Count By Types</Typography>
-                                                {hazardCounts.map((hazard, index) => (
-                                                    <Stack
-                                                        direction="row"
-                                                        justifyContent="space-between"
-                                                        alignItems="center"
-                                                        key={index}
-                                                    >
-                                                        <Typography level="title-md">{hazard.label}</Typography>
-                                                        <Chip>
-                                                            <Typography level="body-md">{hazard.value}</Typography>
-                                                        </Chip>
-                                                    </Stack>
-                                                ))}
+
+                                                {[
+                                                    "Earthquake",
+                                                    "Tornado",
+                                                    "Flood",
+                                                    "Hurricane",
+                                                    "Tsunami",
+                                                    "Hurricane Windfield"
+                                                ].map((hazardType) => {
+                                                    const found = hazardCounts.find((h) => h.label === hazardType);
+                                                    const value = found ? found.value : 0;
+
+                                                    return (
+                                                        <Stack
+                                                            key={hazardType}
+                                                            direction="row"
+                                                            justifyContent="space-between"
+                                                            alignItems="center"
+                                                        >
+                                                            <Typography level="title-md">{hazardType}</Typography>
+                                                            <Chip>
+                                                                <Typography level="body-md">{value}</Typography>
+                                                            </Chip>
+                                                        </Stack>
+                                                    );
+                                                })}
                                             </Stack>
                                         </Sheet>
                                     </Grid>
