@@ -118,6 +118,7 @@ const VisualizationPage = (): JSX.Element => {
     const datasets = useSelector((state: RootState) => state.project.projectDatasets);
     const hazards = useSelector((state: RootState) => state.project.projectHazards);
     const visualization = useSelector((state: RootState) => state.project.selectedVisualization);
+
     useEffect(() => {
         const fetchAndBuildLayers = async () => {
             const datasetIdsFromHazards = hazards
@@ -251,17 +252,7 @@ const VisualizationPage = (): JSX.Element => {
                                             temporal_layers: [],
                                             // naive approach to center the map on the visualization bounding box
                                             mapConfig: {
-                                                center: visualization?.boundingBox
-                                                    ? [
-                                                          (visualization.boundingBox[0] +
-                                                              visualization.boundingBox[2]) /
-                                                              2, // center longitude
-                                                          (visualization.boundingBox[1] +
-                                                              visualization.boundingBox[3]) /
-                                                              2 // center latitude
-                                                      ]
-                                                    : (config.DEFAULT_MAP_CENTER as [number, number]),
-                                                zoom: visualization?.zoom ?? config.DEFAULT_MAP_ZOOM
+                                                boundingBox: visualization?.boundingBox
                                             }
                                         } as GeoExplorerConfig
                                     }

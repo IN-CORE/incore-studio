@@ -84,13 +84,15 @@ export const HazardPreviewModal: React.FC<HazardPreviewModalProps> = ({ open, on
                             temporal_layers: [],
                             // naive approach to center the map on the first layer's bounding box
                             mapConfig: {
-                                center: hazardDatasets[0]?.boundingBox
-                                    ? [
-                                          (hazardDatasets[0]?.boundingBox[0] + hazardDatasets[0]?.boundingBox[2]) / 2, // center longitude
-                                          (hazardDatasets[0]?.boundingBox[1] + hazardDatasets[0]?.boundingBox[3]) / 2 // center latitude
-                                      ]
-                                    : (config.DEFAULT_MAP_CENTER as [number, number]),
-                                zoom: config.DEFAULT_MAP_ZOOM
+                                boundingBox:
+                                    hazardDatasets.length > 0
+                                        ? [
+                                              Math.min(...hazardDatasets.map((ds) => ds.boundingBox?.[0] ?? 0)),
+                                              Math.min(...hazardDatasets.map((ds) => ds.boundingBox?.[1] ?? 0)),
+                                              Math.max(...hazardDatasets.map((ds) => ds.boundingBox?.[2] ?? 0)),
+                                              Math.max(...hazardDatasets.map((ds) => ds.boundingBox?.[3] ?? 0))
+                                          ]
+                                        : (config.DEFAULT_MAP_BOUNDS as [number, number, number, number])
                             }
                         } as GeoExplorerConfig
                     }
@@ -105,7 +107,7 @@ export const HazardPreviewModal: React.FC<HazardPreviewModalProps> = ({ open, on
                         });
                     }}
                 >
-                    <GeoExplorer />
+                    <GeoExplorer key={hazardDatasets.map((ds) => ds.id).join(",")} />
                 </GeoExplorerProvider>
             </ModalDialog>
         </Modal>

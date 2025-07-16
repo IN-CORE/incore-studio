@@ -200,18 +200,15 @@ const DatasetPreviewModal: React.FC<DatasetDatasetPreviewModalProps> = ({ open, 
                                 temporal_layers: [],
                                 // naive approach to center the map on the visualization bounding box
                                 mapConfig: {
-                                    center: dataset?.boundingBox
-                                        ? [
-                                              (dataset.boundingBox[0] + dataset.boundingBox[2]) / 2, // center longitude
-                                              (dataset.boundingBox[1] + dataset.boundingBox[3]) / 2 // center latitude
-                                          ]
-                                        : (config.DEFAULT_MAP_CENTER as [number, number]),
-                                    zoom: config.DEFAULT_MAP_ZOOM
+                                    boundingBox: dataset?.boundingBox
                                 }
                             } as GeoExplorerConfig
                         }
                         accessToken={getOidcUser()?.access_token}
                         isProtectedResource={(url) => /geoserver/.test(url)}
+                        components={{
+                            DataInventory: () => null
+                        }}
                         onReady={({ store }) => {
                             store.dispatch(addLayer({ layer_id: dataset.id }));
                             store.dispatch(selectMapLayer({ layer_id: dataset.id }));
@@ -219,7 +216,7 @@ const DatasetPreviewModal: React.FC<DatasetDatasetPreviewModalProps> = ({ open, 
                             store.dispatch(setSidebarOpen({ open: false }));
                         }}
                     >
-                        <GeoExplorer />
+                        <GeoExplorer key={dataset.id} />
                     </GeoExplorerProvider>
                 ) : (
                     <Typography level="body-md" sx={{ padding: 2 }}>
