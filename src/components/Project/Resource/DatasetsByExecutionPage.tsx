@@ -136,24 +136,36 @@ const DatasetPage = (): JSX.Element => {
                                             paddingBlock: "1rem"
                                         }
                                     }}
+                                    mt={2}
                                 >
                                     <AccordionGroup
                                         sx={(theme) => ({
                                             [`& .${accordionClasses.root}`]: {
                                                 "marginTop": "0.5rem",
                                                 "transition": "0.2s ease",
+
+                                                // Default collapsed style → full border
+                                                "border": `1px solid ${theme.vars.palette.divider}`,
+                                                "borderRadius": theme.radius.md,
+
                                                 "& button:not([aria-expanded='true'])": {
                                                     transition: "0.2s ease"
                                                 }
                                             },
+
+                                            // Expanded accordion → background + only bottom border
                                             [`& .${accordionClasses.root}.${accordionClasses.expanded}`]: {
-                                                borderRadius: "md",
-                                                borderBottom: "1px solid",
-                                                borderColor: "background.level2"
+                                                backgroundColor: theme.vars.palette.background.level1,
+                                                border: "none", // remove full border
+                                                borderBottom: `1px solid ${theme.vars.palette.divider}`, // only bottom border
+                                                borderRadius: 0 // remove rounded corners when expanded
                                             },
+
                                             '& [aria-expanded="true"]': {
                                                 boxShadow: `inset 0 -1px 0 ${theme.vars.palette.divider}`
                                             },
+
+                                            // Scroll container behavior
                                             "maxHeight": "calc(100vh - 400px)",
                                             "overflowY": "auto"
                                         })}
@@ -165,14 +177,14 @@ const DatasetPage = (): JSX.Element => {
                                                         direction="row"
                                                         sx={{ width: "100%" }}
                                                         spacing={1}
-                                                        justifyContent={"space-between"}
+                                                        justifyContent="space-between"
                                                     >
-                                                        <Stack direction="row" alignItems={"center"} spacing={1}>
+                                                        <Stack direction="row" alignItems="center" spacing={1}>
                                                             <Typography
                                                                 level="h4"
                                                                 sx={{
-                                                                    fontWeight: 590,
-                                                                    fontSize: "18px",
+                                                                    fontWeight: 300,
+                                                                    fontSize: "16px",
                                                                     lineHeight: "24px",
                                                                     paragraph: "28px",
                                                                     color: "#172B4D",
@@ -184,20 +196,38 @@ const DatasetPage = (): JSX.Element => {
                                                             <Typography
                                                                 level="h4"
                                                                 sx={{
-                                                                    fontWeight: 300,
+                                                                    fontWeight: 600,
                                                                     fontSize: "16px",
                                                                     lineHeight: "24px",
-                                                                    paragraph: "24px",
+                                                                    paragraph: "28px",
                                                                     color: "#172B4D",
                                                                     letter: "5%"
                                                                 }}
                                                             >
                                                                 {executionData.executionName}
                                                             </Typography>
+                                                            <Chip variant="soft" sx={{ backgroundColor: "#F8F9FA" }}>
+                                                                <Typography
+                                                                    level="body-md"
+                                                                    sx={{
+                                                                        fontWeight: 600,
+                                                                        fontSize: "12px"
+                                                                    }}
+                                                                >
+                                                                    {
+                                                                        project.datasets.filter((dataset) =>
+                                                                            executionData.datasetIds.includes(
+                                                                                dataset.id
+                                                                            )
+                                                                        ).length
+                                                                    }
+                                                                </Typography>
+                                                            </Chip>
                                                         </Stack>
                                                         <Chip
                                                             startDecorator={<WorkflowIcon sx={{ fontSize: "20px" }} />}
                                                             variant="soft"
+                                                            sx={{ backgroundColor: "#FFFFFF" }}
                                                         >
                                                             <Typography
                                                                 level="body-md"
