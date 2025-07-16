@@ -142,8 +142,8 @@ const SidePanel = () => {
             ) as NewAnalysisNode;
             if (currAnalysisNode) {
                 if (sidePanelData.type === "previous") {
-                    let srcHandle = existingNode.data.outputHandles.find((handle) => handle.label === nodeLink.from);
-                    let edg = edges.find(
+                    const srcHandle = existingNode.data.outputHandles.find((handle) => handle.label === nodeLink.from);
+                    const edg = edges.find(
                         (ed) =>
                             ed.source === existingNode.id &&
                             ed.target === currAnalysisNode.id &&
@@ -153,10 +153,10 @@ const SidePanel = () => {
                         return edg;
                     }
                 } else {
-                    let targetHandle = currAnalysisNode.data.outputHandles.find(
+                    const targetHandle = currAnalysisNode.data.outputHandles.find(
                         (handle) => handle.label === nodeLink.from
                     );
-                    let edg = edges.find(
+                    const edg = edges.find(
                         (ed) =>
                             ed.source === currAnalysisNode.id &&
                             ed.sourceHandle === targetHandle?.id &&
@@ -183,7 +183,7 @@ const SidePanel = () => {
             link: { from: string; to: string };
         }[]
     > => {
-        let restructuredData = new Map<
+        const restructuredData = new Map<
             string,
             {
                 analysisName: string;
@@ -205,7 +205,7 @@ const SidePanel = () => {
                                     analysisName: analysis.data.name,
                                     analysisProperty: link.from,
                                     analysisNode: analysis,
-                                    link: link
+                                    link
                                 });
                             } else {
                                 restructuredData.set(link.to, [
@@ -213,7 +213,7 @@ const SidePanel = () => {
                                         analysisName: analysis.data.name,
                                         analysisProperty: link.from,
                                         analysisNode: analysis,
-                                        link: link
+                                        link
                                     }
                                 ]);
                             }
@@ -230,7 +230,7 @@ const SidePanel = () => {
                                     analysisName: analysis.data.name,
                                     analysisProperty: link.to,
                                     analysisNode: analysis,
-                                    link: link
+                                    link
                                 });
                             } else {
                                 restructuredData.set(link.from, [
@@ -238,7 +238,7 @@ const SidePanel = () => {
                                         analysisName: analysis.data.name,
                                         analysisProperty: link.to,
                                         analysisNode: analysis,
-                                        link: link
+                                        link
                                     }
                                 ]);
                             }
@@ -261,7 +261,7 @@ const SidePanel = () => {
             link: { from: string; to: string };
         }[]
     > => {
-        let restructuredData = new Map<
+        const restructuredData = new Map<
             string,
             {
                 analysisName: string;
@@ -278,14 +278,14 @@ const SidePanel = () => {
                                 restructuredData.get(link.to)?.push({
                                     analysisName: analysis,
                                     analysisProperty: link.from,
-                                    link: link
+                                    link
                                 });
                             } else {
                                 restructuredData.set(link.to, [
                                     {
                                         analysisName: analysis,
                                         analysisProperty: link.from,
-                                        link: link
+                                        link
                                     }
                                 ]);
                             }
@@ -301,14 +301,14 @@ const SidePanel = () => {
                                 restructuredData.get(link.from)?.push({
                                     analysisName: analysis,
                                     analysisProperty: link.to,
-                                    link: link
+                                    link
                                 });
                             } else {
                                 restructuredData.set(link.from, [
                                     {
                                         analysisName: analysis,
                                         analysisProperty: link.to,
-                                        link: link
+                                        link
                                     }
                                 ]);
                             }
@@ -350,7 +350,7 @@ const SidePanel = () => {
                 <Typography
                     level="h4"
                     sx={{
-                        fontWeight: 590,
+                        fontWeight: 600,
                         fontSize: "18px",
                         lineHeight: "22px",
                         color: "#172B4D"
@@ -438,7 +438,7 @@ const SidePanel = () => {
                                 return (
                                     <GroupedList
                                         key={`${key}`}
-                                        existing={true}
+                                        existing
                                         previous={sidePanelData.type === "previous"}
                                         propertyName={key}
                                         optionsList={value}

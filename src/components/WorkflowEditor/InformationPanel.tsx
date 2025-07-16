@@ -32,7 +32,7 @@ const InformationPanel = () => {
                 <Typography
                     level="h4"
                     sx={{
-                        fontWeight: 590,
+                        fontWeight: 600,
                         fontSize: "18px",
                         lineHeight: "22px",
                         color: "#172B4D"
@@ -157,7 +157,7 @@ const InformationPanel = () => {
                                     return (
                                         <ListItem key={input.title} sx={{ mb: 1 }}>
                                             <Stack
-                                                direction={"row"}
+                                                direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between"
                                                 spacing={1}
@@ -197,7 +197,7 @@ const InformationPanel = () => {
                                     return (
                                         <ListItem key={parameter.title} sx={{ mb: 1 }}>
                                             <Stack
-                                                direction={"row"}
+                                                direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between"
                                                 spacing={1}
@@ -269,7 +269,7 @@ const InformationPanel = () => {
                                     return (
                                         <ListItem key={output.title} sx={{ mb: 1 }}>
                                             <Stack
-                                                direction={"row"}
+                                                direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between"
                                                 spacing={1}
@@ -338,7 +338,7 @@ const InformationPanel = () => {
                                     return (
                                         <ListItem key={parameter.title} sx={{ mb: 1 }}>
                                             <Stack
-                                                direction={"row"}
+                                                direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between"
                                                 spacing={1}
