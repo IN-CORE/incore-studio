@@ -23,7 +23,7 @@ import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
-import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflow";
+import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflowDialog";
 import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
 import DashboardItemTitleBar from "@app/components/Project/Resource/DashboardItemTitleBar";
 import { useTheme } from "@mui/joy/styles";

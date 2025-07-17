@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Datasets by Execution page to view all the datasets belonging to a visualization in one place [#222](https://github.com/IN-CORE/incore-studio/issues/222)
 - Leverage geo-explorer for map visualization in IN-CORE Studio [#182](https://github.com/IN-CORE/incore-studio/issues/182)
 - Add NSI Building Inventory tool. [#211](https://github.com/IN-CORE/incore-studio/issues/211)
+- Edit Name and Description capability on workflow editor. [#228](https://github.com/IN-CORE/incore-studio/issues/228)
 
 ### Fixed
 
