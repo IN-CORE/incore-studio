@@ -14,7 +14,7 @@ import {
     Textarea,
     Typography
 } from "@mui/joy";
-import { createNewWorkflow, getDatawolfUser, saveWorkflow } from "@app/reducer/workflowSlice";
+import { createNewWorkflow, getDatawolfUser, saveWorkflow, getWorkflow } from "@app/reducer/workflowSlice";
 import { addWorkflowToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { useNavigate } from "react-router-dom";
@@ -24,10 +24,11 @@ interface CreateWorkflowDialogProps {
     open: boolean;
     onClose: () => void;
     editMode?: boolean; // Optional prop to indicate if it's in edit mode
+    wfid?: string; // Optional workflow ID for edit mode
 }
 
 export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
-    const { open, onClose, editMode } = props;
+    const { open, onClose, editMode, wfid } = props;
     const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
     const [name, setName] = useState(currentWorkflow?.title || "");
     const [description, setDescription] = useState(currentWorkflow?.description || "");
@@ -43,6 +44,12 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
             appDispatch(getDatawolfUser({ email: auth?.user?.profile?.email }));
         }
     }, [datawolfUser]);
+
+    React.useEffect(() => {
+        if (!currentWorkflow && wfid) {
+            appDispatch(getWorkflow({ workflowID: wfid }));
+        }
+    }, [currentWorkflow]);
 
     const handleEdit = async () => {
         try {
