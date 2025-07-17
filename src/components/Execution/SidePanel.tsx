@@ -410,7 +410,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                         <Typography
                                             level="h4"
                                             sx={{
-                                                fontWeight: 590,
+                                                fontWeight: 600,
                                                 fontSize: "20px",
                                                 lineHeight: "24px",
                                                 paragraph: "28px",
@@ -606,7 +606,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                         <Typography
                                             level="h4"
                                             sx={{
-                                                fontWeight: 590,
+                                                fontWeight: 600,
                                                 fontSize: "20px",
                                                 lineHeight: "24px",
                                                 paragraph: "28px",
@@ -798,7 +798,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                 <Typography
                                     level="h4"
                                     sx={{
-                                        fontWeight: 590,
+                                        fontWeight: 600,
                                         fontSize: "16px",
                                         lineHeight: "24px",
                                         paragraph: "28px",
@@ -833,7 +833,7 @@ const SidePanel: React.FC<{ createMode: boolean }> = ({ createMode }) => {
                                     <Typography
                                         level="h4"
                                         sx={{
-                                            fontWeight: 590,
+                                            fontWeight: 600,
                                             fontSize: "20px",
                                             lineHeight: "24px",
                                             paragraph: "28px",

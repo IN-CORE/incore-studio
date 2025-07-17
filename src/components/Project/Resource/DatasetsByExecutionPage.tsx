@@ -32,7 +32,7 @@ import PreviewRoundedIcon from "@mui/icons-material/PreviewRounded";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 
-import TableDataModal from "@app/components/TableDataModal";
+import DatasetPreviewModal from "@app/components/Preview/DatasetPreviewModal";
 import TableDatasetView from "@app/components/Project/Resource/TableDatasetView";
 
 const DatasetPage = (): JSX.Element => {
@@ -274,7 +274,7 @@ const DatasetPage = (): JSX.Element => {
                 )}
             </Box>
             {selectedDataset && (
-                <TableDataModal
+                <DatasetPreviewModal
                     open={openTableDataModal}
                     onClose={() => {
                         setOpenTableDataModal(false);

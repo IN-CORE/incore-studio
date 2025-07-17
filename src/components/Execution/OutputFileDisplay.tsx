@@ -8,7 +8,7 @@ import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 
 import config from "@app/app.config";
 import { getHeaders } from "@app/utils";
-import TableDataModal from "@app/components/TableDataModal";
+import DatasetPreviewModal from "@app/components/Preview/DatasetPreviewModal";
 
 interface OutputFileDisplayProps {
     datasetId: string;
@@ -118,7 +118,7 @@ const OutputFileDisplay: React.FC<OutputFileDisplayProps> = ({ datasetId }) => {
                 </Tooltip>
             </Stack>
             {dataset && (
-                <TableDataModal
+                <DatasetPreviewModal
                     open={openTableDataModal}
                     onClose={() => setOpenTableDataModal(false)}
                     dataset={dataset}

@@ -2,7 +2,7 @@ import React from "react";
 
 import { Box } from "@mui/joy";
 import { GridColDef } from "@mui/x-data-grid";
-import DataTable from "@app/components/DataTable";
+import DataTable from "@app/components/Preview/DataTable";
 
 const getRole = (
     workflowMetadata: { workflowId: string; executionId: string; role: string }[] | null,
