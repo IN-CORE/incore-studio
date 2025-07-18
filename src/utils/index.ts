@@ -964,6 +964,7 @@ export function mapIncoreDatasetToGeoExplorerDataset(dataset: Dataset, ogcServic
         labels: {
             dataset_category: dataset.dataType
         },
-        workspace: "incore"
+        workspace: "incore",
+        default_style_workspace: "studio"
     };
 }

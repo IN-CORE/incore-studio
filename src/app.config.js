@@ -24,42 +24,6 @@ config.keycloakConfig = {
 config.dataService = `${hostname}/data/api/datasets`;
 config.semanticService = `${hostname}/semantics/api/types`;
 
-// TODO replace this with dynamically pulling from GeoServer
-config.styles = {
-    "Inventory": [
-        "studio:building",
-        "studio:substations-label",
-        "studio:joplin-bldg-substations",
-        "studio:point-red",
-        "studio:point-green",
-        "studio:point-blue",
-        "studio:point-black",
-        "studio:point-white",
-        "studio:point-gray"
-    ],
-    "Damage Analysis": ["studio:bldg-dmg", "studio:galveston-bldg-dmg-fema", "studio:epf-dmg-summary"],
-    "Functionality": ["studio:bldg-func", "studio:joplin-bldg-func", "studio:bldg-mcs"],
-    "Population Dislocation": ["studio:joplin-pop-dis", "studio:galveston-pop-dis", "studio:slc-pop-dis"],
-    "Mean Damage": ["studio:mean-damage"],
-    "Economic Loss": ["studio:economic-loss"],
-    "Flood": ["studio:water-depth"],
-    "Hurricane": [
-        "studio:hurricane-wave-height",
-        "studio:hurricane-surge-level",
-        "studio:hurricane-inundation-duration",
-        "studio:hurricane-inundation-depth",
-        "studio:hurricane-wave-period",
-        "studio:hurricane-wave-direction",
-        "studio:hurricane-water-velocity",
-        "studio:hurricane-wind"
-    ],
-    "Tsunami": ["studio:tsunami"],
-    "Earthquake": ["studio:earthquake-pga-g"],
-    "Tornado": ["studio:tornado", "studio:tornado1"],
-    "Retrofit": ["studio:retrofit-rules", "studio:retrofit-rules-highlight"],
-    "Zone": ["studio:zone"]
-};
-
 config.defaultLayerStyles = {
     MapUtil: {
         earthquake: "studio:earthquake-pga-g",
