@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Project Dashboard look and feel [#216](https://github.com/IN-CORE/incore-studio/issues/216)
 - Execution Page UI and Analysis Node Look and feel [#223](https://github.com/IN-CORE/incore-studio/issues/223)
 - UI improvements for Workflow Page [#217](https://github.com/IN-CORE/incore-studio/issues/217)
+- Switch to studio workspace for styles [#234](https://github.com/IN-CORE/incore-studio/issues/234)
 
 ## [Beta-1] - 05-01-2025
 
