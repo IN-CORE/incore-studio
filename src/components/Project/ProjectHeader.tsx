@@ -51,14 +51,14 @@ export const ProjectHeader = ({ project }: { project: Project }) => {
                     {/* Region */}
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "5em" }}>
                         <PlaceIcon />
-                        <Typography>{project.region}</Typography>
+                        <Typography sx={{ textWrap: "wrap" }}>{project.region}</Typography>
                     </Box>
                     <Divider orientation="vertical" />
 
                     {/* Owner */}
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "5em" }}>
                         <PersonIcon />
-                        <Typography>{project.owner}</Typography>
+                        <Typography sx={{ textWrap: "wrap" }}>{project.owner}</Typography>
                     </Box>
                     <Divider orientation="vertical" />
 
