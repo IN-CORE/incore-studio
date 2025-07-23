@@ -16,7 +16,7 @@ export const CustomDataInventory = () => {
     return (
         <>
             {!isEditing && (
-                <Button onClick={handleToggle} variant={isEditing ? "contained" : "text"} color="primary">
+                <Button onClick={handleToggle} variant={isEditing ? "contained" : "text"} color="primary" sx={{fontWeight: 800}}>
                     Add New Layers to Visualization
                 </Button>
             )}

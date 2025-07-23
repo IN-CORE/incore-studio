@@ -28,8 +28,8 @@ import config from "@app/app.config";
 import {
     addLayer,
     GeoExplorerConfig,
-    GeoExplorerProvider,
-    setLayerStyleName,
+    GeoExplorerProvider, selectMapLayer,
+    setLayerStyleName, setShowLayerSettings, setSidebarOpen,
     toggleVisibility
 } from "@ncsa/geo-explorer";
 import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
@@ -68,7 +68,11 @@ const VisualizationPage = (): JSX.Element => {
         }
     }, [id, visualizationPageNumber, deletedVisualizationIds]);
 
-    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
+    const onApplyFilterSort = (params: {
+        filters: Record<string, string | number>;
+        sortBy: string;
+        order: string
+    }) => {
         if (id) {
             const { filters, sortBy, order } = params;
 
@@ -252,7 +256,7 @@ const VisualizationPage = (): JSX.Element => {
                                             temporal_layers: [],
                                             // naive approach to center the map on the visualization bounding box
                                             mapConfig: {
-                                                boundingBox: visualization?.boundingBox
+                                                boundingBox: visualization?.boundingBox ? visualization?.boundingBox : (config.DEFAULT_MAP_BOUNDS as [number, number, number, number])
                                             }
                                         } as GeoExplorerConfig
                                     }
@@ -262,6 +266,10 @@ const VisualizationPage = (): JSX.Element => {
                                         DataInventory: CustomDataInventory
                                     }}
                                     onReady={({ store }) => {
+                                        // reset to default state
+                                        store.dispatch(selectMapLayer({ layer_id: null}));
+                                        store.dispatch(setShowLayerSettings({ show: false }));
+                                        store.dispatch(setSidebarOpen({ open: true }));
                                         if (
                                             Array.isArray(visualization?.layers) &&
                                             Array.isArray(visualization?.layerOrder)
