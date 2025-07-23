@@ -75,13 +75,17 @@ export const createNewWorkflow = createAsyncThunk(
     async ({
         title,
         description,
-        creator
+        creator,
+        contributors,
+        steps
     }: {
         title: string;
         description: string;
         creator:
             | DatawolfCreator
             | { email: string | undefined; firstName: string | undefined; lastName: string | undefined };
+        contributors?: DatawolfCreator[];
+        steps?: DatawolfWorkflowFileStep[];
     }) => {
         const response = await axios.post(
             `${DATAWOLF_API_URL}/workflows`,
@@ -89,8 +93,8 @@ export const createNewWorkflow = createAsyncThunk(
                 title: title,
                 description: description,
                 creator: creator,
-                contributors: [],
-                steps: []
+                contributors: contributors || [],
+                steps: steps || []
             },
             { headers: getHeaders() }
         );

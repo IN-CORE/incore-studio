@@ -158,7 +158,7 @@ const WorkflowEditor = (): JSX.Element => {
     const handleBackClick = () => {
         if (isRecentSave()) {
             appDispatch(clearWorkflowState());
-            navigate(-1);
+            navigate(`/project/${id}/workflows/${wfID}`);
         } else {
             setSaveWorkflowModalConfirmation(true);
         }
@@ -423,7 +423,7 @@ const WorkflowEditor = (): JSX.Element => {
                         onClose={() => setSaveWorkflowModalConfirmation(false)}
                         onConfirm={() => {
                             appDispatch(clearWorkflowState());
-                            navigate(-1);
+                            navigate(`/project/${id}/workflows/${wfID}`);
                         }}
                         confirmationDialogTitle="Save Changes Before Leaving?"
                         confirmationDialogText="Your changes may not be saved. Do you want to save them before leaving?"
