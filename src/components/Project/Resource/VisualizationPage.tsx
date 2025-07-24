@@ -254,7 +254,6 @@ const VisualizationPage = (): JSX.Element => {
                                             ],
                                             simple_layers: geoExplorerLayers, // set in the custom layer list component
                                             temporal_layers: [],
-                                            // naive approach to center the map on the visualization bounding box
                                             mapConfig: {
                                                 boundingBox: visualization?.boundingBox ? visualization?.boundingBox : (config.DEFAULT_MAP_BOUNDS as [number, number, number, number])
                                             }
