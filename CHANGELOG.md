@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Leverage geo-explorer for map visualization in IN-CORE Studio [#182](https://github.com/IN-CORE/incore-studio/issues/182)
 - Add NSI Building Inventory tool. [#211](https://github.com/IN-CORE/incore-studio/issues/211)
 - Edit Name and Description capability on workflow editor. [#228](https://github.com/IN-CORE/incore-studio/issues/228)
+- Duplicate workflow feature on workflow summary page [#67](https://github.com/IN-CORE/incore-studio/issues/67)
 
 ### Fixed
 
