@@ -200,7 +200,9 @@ const DatasetPreviewModal: React.FC<DatasetDatasetPreviewModalProps> = ({ open, 
                                 temporal_layers: [],
                                 // naive approach to center the map on the visualization bounding box
                                 mapConfig: {
-                                    boundingBox: dataset?.boundingBox
+                                    boundingBox:
+                                        dataset?.boundingBox ??
+                                        (config.DEFAULT_MAP_BOUNDS as [number, number, number, number])
                                 }
                             } as GeoExplorerConfig
                         }
@@ -210,6 +212,7 @@ const DatasetPreviewModal: React.FC<DatasetDatasetPreviewModalProps> = ({ open, 
                             DataInventory: () => null
                         }}
                         onReady={({ store }) => {
+                            // reset to default state
                             store.dispatch(addLayer({ layer_id: dataset.id }));
                             store.dispatch(selectMapLayer({ layer_id: dataset.id }));
                             store.dispatch(setShowLayerSettings({ show: true }));

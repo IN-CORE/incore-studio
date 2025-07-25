@@ -28,8 +28,11 @@ import config from "@app/app.config";
 import {
     addLayer,
     GeoExplorerConfig,
-    GeoExplorerProvider, selectMapLayer,
-    setLayerStyleName, setShowLayerSettings, setSidebarOpen,
+    GeoExplorerProvider,
+    selectMapLayer,
+    setLayerStyleName,
+    setShowLayerSettings,
+    setSidebarOpen,
     toggleVisibility
 } from "@ncsa/geo-explorer";
 import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
@@ -68,11 +71,7 @@ const VisualizationPage = (): JSX.Element => {
         }
     }, [id, visualizationPageNumber, deletedVisualizationIds]);
 
-    const onApplyFilterSort = (params: {
-        filters: Record<string, string | number>;
-        sortBy: string;
-        order: string
-    }) => {
+    const onApplyFilterSort = (params: { filters: Record<string, string | number>; sortBy: string; order: string }) => {
         if (id) {
             const { filters, sortBy, order } = params;
 
@@ -255,7 +254,9 @@ const VisualizationPage = (): JSX.Element => {
                                             simple_layers: geoExplorerLayers, // set in the custom layer list component
                                             temporal_layers: [],
                                             mapConfig: {
-                                                boundingBox: visualization?.boundingBox ? visualization?.boundingBox : (config.DEFAULT_MAP_BOUNDS as [number, number, number, number])
+                                                boundingBox:
+                                                    visualization?.boundingBox ??
+                                                    (config.DEFAULT_MAP_BOUNDS as [number, number, number, number])
                                             }
                                         } as GeoExplorerConfig
                                     }
@@ -266,7 +267,7 @@ const VisualizationPage = (): JSX.Element => {
                                     }}
                                     onReady={({ store }) => {
                                         // reset to default state
-                                        store.dispatch(selectMapLayer({ layer_id: null}));
+                                        store.dispatch(selectMapLayer({ layer_id: null }));
                                         store.dispatch(setShowLayerSettings({ show: false }));
                                         store.dispatch(setSidebarOpen({ open: true }));
                                         if (
