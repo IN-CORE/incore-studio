@@ -29,7 +29,10 @@ import {
     addLayer,
     GeoExplorerConfig,
     GeoExplorerProvider,
+    selectMapLayer,
     setLayerStyleName,
+    setShowLayerSettings,
+    setSidebarOpen,
     toggleVisibility
 } from "@ncsa/geo-explorer";
 import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
@@ -250,9 +253,10 @@ const VisualizationPage = (): JSX.Element => {
                                             ],
                                             simple_layers: geoExplorerLayers, // set in the custom layer list component
                                             temporal_layers: [],
-                                            // naive approach to center the map on the visualization bounding box
                                             mapConfig: {
-                                                boundingBox: visualization?.boundingBox
+                                                boundingBox:
+                                                    visualization?.boundingBox ??
+                                                    (config.DEFAULT_MAP_BOUNDS as [number, number, number, number])
                                             }
                                         } as GeoExplorerConfig
                                     }
@@ -262,6 +266,10 @@ const VisualizationPage = (): JSX.Element => {
                                         DataInventory: CustomDataInventory
                                     }}
                                     onReady={({ store }) => {
+                                        // reset to default state
+                                        store.dispatch(selectMapLayer({ layer_id: null }));
+                                        store.dispatch(setShowLayerSettings({ show: false }));
+                                        store.dispatch(setSidebarOpen({ open: true }));
                                         if (
                                             Array.isArray(visualization?.layers) &&
                                             Array.isArray(visualization?.layerOrder)
