@@ -12,7 +12,7 @@ import ResourceFilterBar from "@app/components/Project/Resource/ResourceFilterBa
 import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
-import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflow";
+import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflowDialog";
 
 import WorkflowIcon from "@mui/icons-material/AccountTree";
 import Snackbar from "@mui/joy/Snackbar";
@@ -74,7 +74,7 @@ const WorkflowPage = (): JSX.Element => {
     };
 
     // Table view vs Card view
-    const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
+    const [isTableView, setIsTableView] = useState(true); // Toggle state for view mode
     const onViewChangeClick = () => {
         setIsTableView((prev) => !prev); // Toggle between table and card view
     };
@@ -144,7 +144,7 @@ const WorkflowPage = (): JSX.Element => {
                         />
                         <ProjectHeader project={project} />
                         <Divider />
-                        <Grid container spacing={5} mt={3} ml={0}>
+                        <Grid container spacing={2} mt={3} ml={0}>
                             <Grid sm={2}>
                                 <ProjectSidebar id={project.id} />
                             </Grid>

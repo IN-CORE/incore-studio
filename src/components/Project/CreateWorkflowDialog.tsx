@@ -14,7 +14,8 @@ import {
     Textarea,
     Typography
 } from "@mui/joy";
-import { createNewWorkflow, getDatawolfUser } from "@app/reducer/workflowSlice";
+import { v4 as uuidv4 } from "uuid";
+import { createNewWorkflow, getDatawolfUser, saveWorkflow, getWorkflow } from "@app/reducer/workflowSlice";
 import { addWorkflowToProject } from "@app/reducer/projectSlice";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { useNavigate } from "react-router-dom";
@@ -23,12 +24,16 @@ import { handleBlur } from "@app/utils";
 interface CreateWorkflowDialogProps {
     open: boolean;
     onClose: () => void;
+    editMode?: boolean; // Optional prop to indicate if it's in edit mode
+    duplicateMode?: boolean; // Optional prop to indicate if it's in duplicate mode
+    wfid?: string; // Optional workflow ID for edit mode
 }
 
 export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
-    const { open, onClose } = props;
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
+    const { open, onClose, editMode, wfid, duplicateMode } = props;
+    const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
+    const [name, setName] = useState(currentWorkflow?.title || "");
+    const [description, setDescription] = useState(currentWorkflow?.description || "");
     const datawolfUser = useAppSelector((state) => state.workflow.datawolfUser);
     const project = useAppSelector((state) => state.project.project);
     const auth = useAuth();
@@ -41,6 +46,103 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
             appDispatch(getDatawolfUser({ email: auth?.user?.profile?.email }));
         }
     }, [datawolfUser]);
+
+    React.useEffect(() => {
+        if (!currentWorkflow && wfid) {
+            appDispatch(getWorkflow({ workflowID: wfid }));
+        }
+    }, [currentWorkflow]);
+
+    const handleDuplicate = async () => {
+        try {
+            if (currentWorkflow !== null) {
+                const newSteps = currentWorkflow.steps.map((step) => ({
+                    ...step,
+                    id: uuidv4()
+                }));
+                const result = await appDispatch(
+                    createNewWorkflow({
+                        title: `Copy of ${currentWorkflow.title}`,
+                        description: currentWorkflow.description,
+                        creator:
+                            datawolfUser === null
+                                ? {
+                                      email:
+                                          auth?.user?.profile?.preferred_username === "" ||
+                                          auth?.user?.profile?.preferred_username === null ||
+                                          auth?.user?.profile?.preferred_username === undefined
+                                              ? auth?.user?.profile?.email
+                                              : auth?.user?.profile?.preferred_username,
+                                      firstName: auth?.user?.profile?.given_name,
+                                      lastName: auth?.user?.profile?.family_name
+                                  }
+                                : datawolfUser,
+                        contributors: currentWorkflow.contributors || [],
+                        steps: newSteps
+                    })
+                );
+                const newWorkflowId = result?.payload?.id;
+
+                if (newWorkflowId && project !== null) {
+                    let created = "";
+                    let dateString = result.payload.created;
+                    // Check if milliseconds are missing
+                    if (!dateString.includes(".")) {
+                        // Insert ".000" before the timezone (+0000 or -0000)
+                        created = dateString.replace(/([+-]\d{4})$/, ".000$1");
+                    }
+                    let workflowObj = [
+                        {
+                            ...result.payload,
+                            created: created,
+                            type: "workflow"
+                        }
+                    ];
+                    // Add the new workflow to the project
+                    const addWorkflowResult = await appDispatch(
+                        addWorkflowToProject({ projectId: project.id, workflows: workflowObj })
+                    );
+
+                    if (addWorkflowResult?.payload?.workflows) {
+                        // Navigate to the workflow editor page
+                        navigate(`/project/${project.id}/workflows/${newWorkflowId}/workflow-editor`);
+                    } else {
+                        console.error("Error adding Workflow to project");
+                    }
+                } else {
+                    console.error("Error creating Workflow");
+                }
+                onClose();
+            }
+        } catch (error) {
+            console.error("Error duplicating workflow:", error);
+        }
+    };
+
+    const handleEdit = async () => {
+        try {
+            if (currentWorkflow !== null) {
+                const updatedWorkflow = {
+                    ...currentWorkflow,
+                    title: name,
+                    description: description
+                };
+                const result = await appDispatch(
+                    saveWorkflow({
+                        workflowID: currentWorkflow.id ? currentWorkflow.id : "",
+                        workflow: updatedWorkflow
+                    })
+                );
+
+                if (!result) {
+                    console.error("Error updating Workflow");
+                }
+            }
+            onClose();
+        } catch (error) {
+            console.error("Error editing workflow:", error);
+        }
+    };
 
     const handleCreateNew = async () => {
         try {
@@ -113,7 +215,7 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
                     }}
                 >
                     <Typography level="h4" sx={{ mb: 1 }}>
-                        Create New Workflow
+                        {editMode ? "Edit Workflow" : duplicateMode ? "Duplicate Workflow" : "Create New Workflow"}
                     </Typography>
                     <Stack spacing={2} sx={{ mt: 2 }}>
                         <FormControl required>
@@ -146,9 +248,6 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
                     </Stack>
 
                     <Stack direction="row" spacing={1} sx={{ mt: 3, justifyContent: "flex-end" }}>
-                        <Button variant="solid" sx={{ backgroundColor: "primary.main" }} onClick={onClose}>
-                            Cancel
-                        </Button>
                         <Button
                             variant="outlined"
                             sx={{
@@ -156,10 +255,17 @@ export const CreateWorkflowDialog = (props: CreateWorkflowDialogProps) => {
                                 color: "primary.subtle",
                                 backgroundColor: "white"
                             }}
-                            disabled={!name || !description} // Ensure required fields are filled
-                            onClick={handleCreateNew}
+                            onClick={onClose}
                         >
-                            Create Workflow
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="solid"
+                            sx={{ backgroundColor: "primary.main" }}
+                            disabled={!name || !description} // Ensure required fields are filled
+                            onClick={editMode ? handleEdit : duplicateMode ? handleDuplicate : handleCreateNew}
+                        >
+                            {editMode ? "Save Changes" : duplicateMode ? "Duplicate Workflow" : "Create Workflow"}
                         </Button>
                     </Stack>
                 </Box>

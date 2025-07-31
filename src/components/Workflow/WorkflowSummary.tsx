@@ -16,6 +16,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useSummaryStore, type SummaryReactFlowStoreState } from "./reactFlowStore";
 
 import { summaryNodeTypes, type SummaryNode } from "./nodes";
+import { CreateWorkflowDialog } from "../Project/CreateWorkflowDialog";
 import { edgeTypes } from "./edges";
 import { getLayoutedElements } from "./layout";
 
@@ -42,6 +43,7 @@ const LayoutedWorkflow = ({
     const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges } = useSummaryStore(useShallow(selector));
     const [layoutApplied, setLayoutApplied] = React.useState(false); // State to check if layout has been applied
     const [nodesReady, setNodesReady] = React.useState(false);
+    const [duplicateWorkflowCreateOpen, setDuplicateWorkflowCreateOpen] = React.useState(false);
 
     // Function to check if all nodes have non-zero dimensions
     const checkNodesReady = (nodes: SummaryNode[]) => {
@@ -127,7 +129,7 @@ const LayoutedWorkflow = ({
                 fitView
                 attributionPosition="bottom-left"
             >
-                <Background variant={BackgroundVariant.Dots} style={{ backgroundColor: "#F8FAFC" }} />
+                <Background variant={BackgroundVariant.Dots} bgColor="#F8FAFC" />
                 <Controls position="top-right" />
                 <Panel position="bottom-right">
                     <Stack direction="row" spacing={2}>
@@ -136,6 +138,7 @@ const LayoutedWorkflow = ({
                             sx={{ borderColor: "primary.subtle", color: "primary.subtle", backgroundColor: "white" }}
                             size="md"
                             endDecorator={<ContentCopyRoundedIcon />}
+                            onClick={() => setDuplicateWorkflowCreateOpen(true)}
                         >
                             Duplicate the workflow
                         </Button>
@@ -151,6 +154,12 @@ const LayoutedWorkflow = ({
                     </Stack>
                 </Panel>
             </ReactFlow>
+            <CreateWorkflowDialog
+                open={duplicateWorkflowCreateOpen}
+                onClose={() => setDuplicateWorkflowCreateOpen(false)}
+                duplicateMode={true}
+                wfid={wfId ?? undefined}
+            />
         </div>
     );
 };

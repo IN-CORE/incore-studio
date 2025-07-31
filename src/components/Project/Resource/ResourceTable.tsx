@@ -4,7 +4,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IconButton, Table, Menu, MenuItem, MenuButton, Dropdown, Link, Checkbox } from "@mui/joy";
 import { formatHeaderName, parseDateTime } from "@app/utils";
 import { IncoreDialog } from "@app/components/IncoreDialog";
-import { VisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
+import AddParentDatasetDialog from "@app/components/Project/Resource/AddParentDatasetDialog";
 
 interface TableProps {
     projectId: string;
@@ -13,7 +13,6 @@ interface TableProps {
     deleteFunc?: any;
     resourceType?: string;
     viewFunc?: any;
-    addVisualizationFunc?: any;
     onSelectionChange?: (selectedItems: (Dataset | Hazard | Visualization | Workflow | DFR3Mapping)[]) => void;
     selectedItems?: (Hazard | Visualization | Dataset | Workflow)[];
 }
@@ -27,13 +26,16 @@ const hasDate = (item: any): item is Workflow | Dataset => {
     return item.date;
 };
 
+function isDatasetTable(resource: any): resource is Dataset {
+    return "dataType" in resource && "format" in resource && (resource.format === "table" || resource.format === "csv");
+}
+
 export const ResourceTable = ({
     projectId,
     columns,
     data,
     deleteFunc,
     viewFunc,
-    addVisualizationFunc,
     resourceType,
     onSelectionChange,
     selectedItems = []
@@ -63,17 +65,10 @@ export const ResourceTable = ({
         setOpenDeleteDialog(false);
     };
 
-    // add to visualization
-    const [openVisDialog, setOpenVisDialog] = useState(false);
-    const handleCloseVisDialog = () => {
-        setOpenVisDialog(false);
-    };
-    const handleAddVisualization = (visualizationId: string, styleName?: string) => {
-        if (selectedItem && projectId) {
-            addVisualizationFunc(projectId, visualizationId, selectedItem, styleName);
-            setSelectedItem(null);
-        }
-        setOpenVisDialog(false);
+    // Update Source Dataset if they want to add a dataset to visualization
+    const [openAddParentDatasetDialog, setOpenAddParentDatasetDialog] = useState(false);
+    const handleCloseAddParentDatasetDialog = () => {
+        setOpenAddParentDatasetDialog(false);
     };
 
     // batch selection
@@ -128,7 +123,13 @@ export const ResourceTable = ({
                     }
 
                     return (
-                        <td key={`${resource.id.toString()}-${column}`}>
+                        <td
+                            key={`${resource.id.toString()}-${column}`}
+                            style={{
+                                wordBreak: "break-word",
+                                whiteSpace: "normal"
+                            }}
+                        >
                             {(resource as any)[column] || `No ${column} provided`}
                         </td>
                     );
@@ -155,13 +156,13 @@ export const ResourceTable = ({
                                     </Link>
                                 </MenuItem>
                             )}
-                            {addVisualizationFunc && (
+                            {isDatasetTable(resource) && !resource.sourceDataset && (
                                 <MenuItem
                                     onClick={() => {
-                                        setOpenVisDialog(true);
+                                        setOpenAddParentDatasetDialog(true);
                                     }}
                                 >
-                                    Add to Visualization
+                                    Join With Parent Dataset
                                 </MenuItem>
                             )}
                             {viewFunc && (
@@ -189,11 +190,11 @@ export const ResourceTable = ({
 
     return (
         <>
-            <VisualizationDialog
+            <AddParentDatasetDialog
                 projectId={projectId}
-                open={openVisDialog}
-                onClose={handleCloseVisDialog}
-                onAddVisualization={handleAddVisualization}
+                open={openAddParentDatasetDialog}
+                onClose={handleCloseAddParentDatasetDialog}
+                resource={selectedItem}
             />
             <IncoreDialog
                 open={openDeleteDialog}
@@ -213,7 +214,7 @@ export const ResourceTable = ({
                                 textAlign: "center",
                                 verticalAlign: "middle"
                             }}
-                        ></th>
+                        />
                         {columns.map((column) => (
                             <th key={column} style={{ backgroundColor: "white" }}>
                                 {formatHeaderName(column)}

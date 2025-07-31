@@ -3,13 +3,7 @@ import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import {
-    getProject,
-    getProjectDatasets,
-    deleteProjectDatasets,
-    addLayerToVisualization,
-    addDatasetToProject
-} from "@app/reducer/projectSlice";
+import { getProject, getProjectDatasets, deleteProjectDatasets, addDatasetToProject } from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -24,7 +18,7 @@ import Snackbar from "@mui/joy/Snackbar";
 import DatasetIcon from "@mui/icons-material/FormatListBulleted";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { CreateDatasetDialog } from "@app/components/Project/Resource/CreateDatasetDialog";
-import TableDataModal from "@app/components/TableDataModal";
+import DatasetPreviewModal from "@app/components/Preview/DatasetPreviewModal";
 import { IncoreDialog } from "@app/components/IncoreDialog";
 
 const DatasetPage = (): JSX.Element => {
@@ -80,7 +74,7 @@ const DatasetPage = (): JSX.Element => {
     };
 
     // Table view vs Card view
-    const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
+    const [isTableView, setIsTableView] = useState(true); // Toggle state for view mode
     const onViewChangeClick = () => {
         setIsTableView((prev) => !prev); // Toggle between table and card view
     };
@@ -90,29 +84,6 @@ const DatasetPage = (): JSX.Element => {
     // delete datasets
     const deleteDatasetFunc = (projectId: string, dataset: Dataset) => {
         appDispatch(deleteProjectDatasets({ projectId, datasetIds: [dataset.id] }));
-    };
-
-    // add to visualization function
-    const addDatasetVisualizationFunc = (
-        projectId: string,
-        visualizationId: string,
-        dataset: Dataset,
-        styleName?: string
-    ) => {
-        if (dataset.format === "shapefile") {
-            const layers = [
-                {
-                    workspace: "incore",
-                    layerId: dataset.id,
-                    ...(styleName && { styleName }) // Only include styleName if it's provided
-                }
-            ];
-
-            // Dispatch the action with the new layers array
-            appDispatch(addLayerToVisualization({ projectId, visualizationId, layers }));
-        } else {
-            alert("Only shapefiles can be added to a visualization for now!");
-        }
     };
 
     // snackbar
@@ -186,7 +157,7 @@ const DatasetPage = (): JSX.Element => {
                         />
                         <ProjectHeader project={project} />
                         <Divider />
-                        <Grid container spacing={5} mt={3} ml={0}>
+                        <Grid container spacing={2} mt={3} ml={0}>
                             <Grid sm={2}>
                                 <ProjectSidebar id={project.id} />
                             </Grid>
@@ -215,6 +186,10 @@ const DatasetPage = (): JSX.Element => {
                                         setOpenAddDatasetFromServiceDialog(false);
                                     }}
                                     onAddClick={addDatasetFunc}
+                                    previewFunc={(dataset) => {
+                                        setSelectedDataset(dataset as Dataset);
+                                        setOpenTableDataModal(true);
+                                    }}
                                 />
                                 <CreateDatasetDialog
                                     projectId={project.id}
@@ -225,11 +200,10 @@ const DatasetPage = (): JSX.Element => {
                                 />
                                 {isTableView ? (
                                     <ResourceTable
-                                        columns={["title", "description", "date", "owner"]}
+                                        columns={["title", "description", "format", "type", "date", "owner"]}
                                         data={projectDatasets}
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
-                                        addVisualizationFunc={addDatasetVisualizationFunc}
                                         viewFunc={(dataset: Dataset) => {
                                             setOpenTableDataModal(true);
                                             setSelectedDataset(dataset);
@@ -243,7 +217,6 @@ const DatasetPage = (): JSX.Element => {
                                         cardPerRow={4}
                                         projectId={project.id}
                                         deleteFunc={deleteDatasetFunc}
-                                        addVisualizationFunc={addDatasetVisualizationFunc}
                                         viewFunc={(dataset: Dataset) => {
                                             setOpenTableDataModal(true);
                                             setSelectedDataset(dataset);
@@ -267,7 +240,7 @@ const DatasetPage = (): JSX.Element => {
                 )}
             </Box>
             {selectedDataset && (
-                <TableDataModal
+                <DatasetPreviewModal
                     open={openTableDataModal}
                     onClose={() => {
                         setOpenTableDataModal(false);

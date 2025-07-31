@@ -1,0 +1,12 @@
+{
+    "household_dislocation_in_total": {
+        "dislocated": { "households": 4943, "percent_of_households": 18.963400598480778 },
+        "not_dislocated": { "households": 21123, "percent_of_households": 81.03659940151921 },
+        "total": { "households": 26066, "percent_of_households": 100 }
+    },
+    "population_dislocation_in_total": {
+        "dislocated": { "population": 10700, "percent_of_population": 19.06934469177167 },
+        "not_dislocated": { "population": 45411, "percent_of_population": 80.93065530822834 },
+        "total": { "population": 56111, "percent_of_population": 100 }
+    }
+}

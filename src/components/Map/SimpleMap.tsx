@@ -1,5 +1,5 @@
 import React from "react";
-import maplibre from "maplibre-gl";
+import maplibregl from "maplibre-gl";
 import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Checkbox } from "@mui/joy";
 import { ZoomOutMap as ZoomOutMapIcon } from "@mui/icons-material";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -53,18 +53,18 @@ const SimpleMap = ({
             if (center) {
                 mapInit.center = center;
             } else if (initialBounds) {
-                mapInit.bounds = new maplibre.LngLatBounds(
+                mapInit.bounds = new maplibregl.LngLatBounds(
                     [initialBounds[0], initialBounds[1]],
                     [initialBounds[2], initialBounds[3]]
                 );
             } else {
-                mapInit.bounds = new maplibre.LngLatBounds(
+                mapInit.bounds = new maplibregl.LngLatBounds(
                     [config.VALID_MAP_BOUNDS[0], config.VALID_MAP_BOUNDS[1]],
                     [config.VALID_MAP_BOUNDS[2], config.VALID_MAP_BOUNDS[3]]
                 );
             }
 
-            const map = new maplibre.Map({
+            const map = new maplibregl.Map({
                 ...(mapInit as maplibregl.MapOptions),
                 transformRequest: (url) => {
                     if (url.startsWith(`${config.hostname}/geoserver/`)) {
@@ -84,11 +84,11 @@ const SimpleMap = ({
             });
 
             if (attribution) {
-                map.addControl(new maplibre.AttributionControl({ compact: true }), "bottom-right");
+                map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
             }
 
             if (navigation) {
-                map.addControl(new maplibre.NavigationControl({ showCompass: false }), "bottom-left");
+                map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-left");
                 if (resetBoundsButtonRef.current) {
                     map.addControl(new MapControl(resetBoundsButtonRef.current), "bottom-left");
                 }
@@ -133,7 +133,7 @@ const SimpleMap = ({
         const map = mapRef.current;
         const existingLayers = new Set(map.getStyle()?.layers?.map((l) => l.id));
 
-        layers.forEach((layer) => {
+        layers.forEach((layer, index) => {
             const layerId = `incore-${layer.layerId}`;
             const layerName = `${layer.workspace}:${layer.layerId}`;
 
@@ -158,10 +158,15 @@ const SimpleMap = ({
                     id: layerId,
                     type: "raster",
                     source: layerId,
-                    layout: { visibility: activeLayers[layerId] ? "visible" : "none" }
+                    layout: {
+                        visibility: index === 0 ? "visible" : "none" // First layer visible
+                    }
                 });
 
-                setActiveLayers((prev) => ({ ...prev, [layerId]: prev[layerId] ?? false }));
+                setActiveLayers((prev) => ({
+                    ...prev,
+                    [layerId]: index === 0 // First layer enabled
+                }));
             }
         });
 
@@ -194,7 +199,6 @@ const SimpleMap = ({
                 [maxLng, maxLat]
             ],
             {
-                padding: 20,
                 animate: true,
                 duration: 1000
             }

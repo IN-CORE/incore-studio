@@ -193,7 +193,7 @@ const LayoutedWorkflow = ({ sidePanelOpen }: { sidePanelOpen: boolean }) => {
                     setNodesReady(true); // Trigger layout after delay
                 }
             }
-        }, 1000); // Adjust the delay as necessary based on render performance
+        }, 800); // Adjust the delay as necessary based on render performance
 
         return () => clearTimeout(timer);
     }, [nodes, layoutApplied]);
@@ -212,18 +212,24 @@ const LayoutedWorkflow = ({ sidePanelOpen }: { sidePanelOpen: boolean }) => {
                 deleteKeyCode={null}
                 fitView
             >
-                <Background variant={BackgroundVariant.Dots} />
+                <Background variant={BackgroundVariant.Dots} bgColor="#F5F5F5" />
                 <MiniMap />
                 <Controls />
                 <Panel position="top-right">
                     <Stack direction="row" spacing={3}>
                         <Button
-                            sx={{ backgroundColor: "primary.main" }}
+                            // sx={{ backgroundColor: "primary.main" }}
+                            variant="outlined"
+                            sx={{
+                                borderColor: "primary.subtle",
+                                color: "primary.subtle",
+                                backgroundColor: "white"
+                            }}
                             onClick={() => {
                                 onLayout();
                             }}
                         >
-                            Layout
+                            Format Workflow
                         </Button>
                     </Stack>
                 </Panel>
@@ -312,7 +318,7 @@ const LayoutedExecutionWorkflow = ({ sidePanelOpen }: { sidePanelOpen: boolean }
                 deleteKeyCode={null}
                 fitView
             >
-                <Background variant={BackgroundVariant.Dots} />
+                <Background variant={BackgroundVariant.Dots} bgColor="#F5F5F5" />
                 <MiniMap />
                 <Controls />
             </ReactFlow>

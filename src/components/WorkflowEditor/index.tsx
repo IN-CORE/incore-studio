@@ -18,7 +18,8 @@ import {
 } from "@mui/joy";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
-import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import Snackbar from "@mui/joy/Snackbar";
 
 import { useShallow } from "zustand/react/shallow";
@@ -42,6 +43,7 @@ import InvalidWorkflowFilePage from "@app/components/InvalidWorkflowFilePage";
 import SidePanel from "@app/components/WorkflowEditor/SidePanel";
 import InformationPanel from "@app/components/WorkflowEditor/InformationPanel";
 import FinalizeWorkflowDialog from "@app/components/FinalizeWorkflowDialog";
+import { CreateWorkflowDialog } from "@app/components/Project/CreateWorkflowDialog";
 
 const selector = (state: ReactFlowAppState) => ({
     nodes: state.nodes,
@@ -79,6 +81,7 @@ const WorkflowEditor = (): JSX.Element => {
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
     const [snackbarColor, setSnackbarColor] = React.useState<"success" | "danger" | "warning" | "neutral">("neutral");
+    const [openEditWorkflowDialog, setOpenEditWorkflowDialog] = React.useState<boolean>(false);
 
     const [openFinalize, setOpenFinalize] = React.useState(false);
     const [confirmFinalize, setConfirmFinalize] = React.useState(false);
@@ -93,13 +96,6 @@ const WorkflowEditor = (): JSX.Element => {
     const isRecentSave = () => {
         return Date.now() - lastSaved <= 5 * 60 * 1000; // 5 minutes in milliseconds
     };
-
-    React.useEffect(() => {
-        if (confirmFinalize && wfID && id) {
-            appDispatch(finalizeWorkflow({ projectId: id, workflowId: wfID }));
-            navigate(`/project/${id}/workflows/${wfID}/execution/create`);
-        }
-    }, [confirmFinalize]);
 
     React.useEffect(() => {
         if (saveWorkflowError) {
@@ -162,44 +158,9 @@ const WorkflowEditor = (): JSX.Element => {
     const handleBackClick = () => {
         if (isRecentSave()) {
             appDispatch(clearWorkflowState());
-            navigate(-1);
+            navigate(`/project/${id}/workflows/${wfID}`);
         } else {
             setSaveWorkflowModalConfirmation(true);
-        }
-    };
-
-    const handleExportJSONClick = () => {
-        if (currentWorkflow !== null && workflowID !== null) {
-            const newWorkflowFile = createWorkflowFileFromNodesAndEdgesV2({
-                nodes,
-                edges,
-                creator: datawolfUser,
-                datawolfWorkflowFileID: workflowID,
-                title: currentWorkflow !== null ? currentWorkflow.title : "Untitled Workflow",
-                description: currentWorkflow !== null ? currentWorkflow.description : "",
-                created: currentWorkflow !== null ? currentWorkflow.created : new Date().toISOString(),
-                tools: datawolfTools
-            });
-
-            // Convert the object to a JSON string
-            const jsonString = JSON.stringify(newWorkflowFile);
-
-            // Create a Blob from the JSON string
-            const blob = new Blob([jsonString], { type: "application/json" });
-
-            // Create a link element
-            const link = document.createElement("a");
-
-            // Create a URL for the Blob and set it as the href attribute
-            link.href = URL.createObjectURL(blob);
-
-            // Set the download attribute to specify the file name
-            link.download = "data.json";
-
-            // Append the link to the document, click it, and remove it
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
     };
 
@@ -228,6 +189,15 @@ const WorkflowEditor = (): JSX.Element => {
             updateLastSaved();
         } // else dispatch save workflow error
     };
+
+    React.useEffect(() => {
+        if (confirmFinalize && wfID && id) {
+            handleSaveClick();
+            appDispatch(finalizeWorkflow({ projectId: id, workflowId: wfID }));
+            navigate(`/project/${id}/workflows/${wfID}`);
+        }
+    }, [confirmFinalize]);
+
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "94vh" }}>
             {workflowLoading || createdWorkflowLoading ? (
@@ -238,7 +208,6 @@ const WorkflowEditor = (): JSX.Element => {
                         workflowError={workflowError}
                         createdWorkflowError={createdWorkflowError}
                         currentWorkflowTitle={currentWorkflow?.title}
-                        handleBackClick={handleBackClick}
                     />
                 ) : (
                     <Typography level="h4" color="danger">
@@ -276,6 +245,39 @@ const WorkflowEditor = (): JSX.Element => {
                                             >
                                                 {currentWorkflow?.title}
                                             </Typography>
+                                            <Tooltip
+                                                title={
+                                                    <Box
+                                                        sx={{
+                                                            p: 1,
+                                                            maxHeight: "200px",
+                                                            overflowY: "auto",
+                                                            width: "200px",
+                                                            textWrap: "wrap",
+                                                            wordBreak: "break-word",
+                                                            textAlign: "justify"
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            level="h4"
+                                                            sx={{
+                                                                fontWeight: 400,
+                                                                fontSize: "14px",
+                                                                lineHeight: "20px",
+                                                                color: "#42526EB2"
+                                                            }}
+                                                        >
+                                                            {currentWorkflow?.description === ""
+                                                                ? "Description not provided"
+                                                                : currentWorkflow?.description}
+                                                        </Typography>
+                                                    </Box>
+                                                }
+                                                placement="bottom-end"
+                                                variant="plain"
+                                            >
+                                                <DescriptionRoundedIcon sx={{ fontSize: "18px" }} />
+                                            </Tooltip>
                                             <Typography
                                                 level="h4"
                                                 sx={{
@@ -295,42 +297,44 @@ const WorkflowEditor = (): JSX.Element => {
                                                     minute: "2-digit"
                                                 })}
                                             </Typography>
+                                            <Tooltip
+                                                title="Edit Name and Description"
+                                                variant="plain"
+                                                color="neutral"
+                                                sx={{ color: "#172B4D" }}
+                                                placement="right"
+                                            >
+                                                <IconButton
+                                                    aria-label="Edit Name and Description"
+                                                    onClick={() => setOpenEditWorkflowDialog(true)}
+                                                    disabled={saveWorkflowLoading}
+                                                >
+                                                    <EditRoundedIcon
+                                                        sx={{
+                                                            "color": saveWorkflowLoading ? "#42526E80" : "black",
+                                                            "&:hover": { color: "primary.main" },
+                                                            "fontSize": "18px"
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            </Tooltip>
                                         </Stack>
-                                        <Typography
-                                            level="h4"
-                                            sx={{
-                                                fontWeight: 400,
-                                                fontSize: "14px",
-                                                lineHeight: "20px",
-                                                color: "#42526EB2"
-                                            }}
-                                        >
-                                            {currentWorkflow?.description === ""
-                                                ? "Description not provided"
-                                                : currentWorkflow?.description}
-                                        </Typography>
                                     </Box>
                                 </Stack>
+                                <CreateWorkflowDialog
+                                    open={openEditWorkflowDialog}
+                                    onClose={() => setOpenEditWorkflowDialog(false)}
+                                    editMode={true}
+                                />
                             </Box>
                             <Box>
                                 <Stack direction="row" spacing={2}>
-                                    <Tooltip
-                                        title="Export Workflow JSON"
-                                        variant="plain"
-                                        color="neutral"
-                                        sx={{ color: "#172B4D" }}
-                                    >
-                                        <IconButton aria-label="Export" variant="plain" onClick={handleExportJSONClick}>
-                                            <FileDownloadRoundedIcon sx={{ color: "#172B4D" }} />
-                                        </IconButton>
-                                    </Tooltip>
                                     <Button
                                         variant="solid"
                                         sx={{ backgroundColor: "primary.main" }}
-                                        onClick={() => setSelectAnalysisModalOpen(true)}
-                                        startDecorator={<AddRoundedIcon />}
+                                        onClick={handleSaveClick}
                                     >
-                                        Add another analysis
+                                        Save
                                     </Button>
                                     <Button
                                         variant="outlined"
@@ -339,13 +343,6 @@ const WorkflowEditor = (): JSX.Element => {
                                             color: "primary.subtle",
                                             backgroundColor: "white"
                                         }}
-                                        onClick={handleSaveClick}
-                                    >
-                                        Save
-                                    </Button>
-                                    <Button
-                                        variant="solid"
-                                        sx={{ backgroundColor: "primary.main" }}
                                         onClick={() => {
                                             if (
                                                 project?.workflows.find((wf: Workflow) => wf.id === wfID)?.isFinalized
@@ -359,6 +356,18 @@ const WorkflowEditor = (): JSX.Element => {
                                         {project?.workflows.find((wf: Workflow) => wf.id === wfID)?.isFinalized
                                             ? "Create Execution"
                                             : "Finalize Workflow"}
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        sx={{
+                                            borderColor: "primary.subtle",
+                                            color: "primary.subtle",
+                                            backgroundColor: "white"
+                                        }}
+                                        onClick={() => setSelectAnalysisModalOpen(true)}
+                                        startDecorator={<AddRoundedIcon />}
+                                    >
+                                        Add another analysis
                                     </Button>
                                 </Stack>
                                 <Snackbar
@@ -414,7 +423,7 @@ const WorkflowEditor = (): JSX.Element => {
                         onClose={() => setSaveWorkflowModalConfirmation(false)}
                         onConfirm={() => {
                             appDispatch(clearWorkflowState());
-                            navigate(-1);
+                            navigate(`/project/${id}/workflows/${wfID}`);
                         }}
                         confirmationDialogTitle="Save Changes Before Leaving?"
                         confirmationDialogText="Your changes may not be saved. Do you want to save them before leaving?"

@@ -15,10 +15,11 @@ import {
     Typography
 } from "@mui/joy";
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
-import { getDatawolfUser } from "@app/reducer/workflowSlice";
+import { getDatawolfUser, getWorkflow } from "@app/reducer/workflowSlice";
+import { updateProjectDatasetsRoles } from "@app/reducer/projectSlice";
 import { createNewExecution, clearSidePanelData } from "@app/reducer/executionSlice";
 import { useNavigate } from "react-router-dom";
-import { handleBlur } from "@app/utils";
+import { handleBlur, getDatasetIOType } from "@app/utils";
 
 interface CreateExecutionDialogProps {
     open: boolean;
@@ -41,6 +42,8 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
     const datawolfUser = useAppSelector((state) => state.workflow.datawolfUser);
     const createExecution = useAppSelector((state) => state.execution.createExecution);
     const currentExecution = useAppSelector((state) => state.execution.currentExecution);
+    const currentWorkflow = useAppSelector((state) => state.workflow.currentWorkflow);
+    const projectDatasets = useAppSelector((state) => state.project.projectDatasets);
 
     React.useEffect(() => {
         if (datawolfUser === null) {
@@ -54,6 +57,9 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
                             : auth?.user?.profile?.preferred_username
                 })
             );
+        }
+        if (currentWorkflow === null && wfId) {
+            appDispatch(getWorkflow({ workflowID: wfId }));
         }
     }, []);
 
@@ -85,8 +91,82 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
                 );
                 newExecutionId = result?.payload;
             }
-
             if (newExecutionId) {
+                let modifiedDatasets: { [key: string]: WorkflowMetadata[] } = {};
+
+                if (currentWorkflow) {
+                    if (reRun && currentExecution) {
+                        Object.entries(currentExecution.datasets).forEach(([executionKey, executionValue]) => {
+                            const ioType = getDatasetIOType(executionKey, currentWorkflow);
+                            const dataset = projectDatasets.find((ds) => ds.id === executionValue);
+                            if (
+                                dataset &&
+                                dataset.workflowMetadata !== null &&
+                                dataset.workflowMetadata !== undefined
+                            ) {
+                                modifiedDatasets[dataset.id] = [
+                                    ...(dataset.workflowMetadata ?? []),
+                                    {
+                                        workflowId: currentWorkflow.id ?? "",
+                                        executionId: newExecutionId,
+                                        role: ioType
+                                    }
+                                ];
+                            } else if (
+                                dataset &&
+                                dataset.workflowMetadata === null &&
+                                dataset.workflowMetadata !== undefined
+                            ) {
+                                modifiedDatasets[dataset.id] = [
+                                    {
+                                        workflowId: currentWorkflow.id ?? "",
+                                        executionId: newExecutionId,
+                                        role: ioType
+                                    }
+                                ];
+                            }
+                        });
+                    } else if (createExecution) {
+                        Object.entries(createExecution.datasets).forEach(([executionKey, executionValue]) => {
+                            const ioType = getDatasetIOType(executionKey, currentWorkflow);
+                            const dataset = projectDatasets.find((ds) => ds.id === executionValue);
+                            if (
+                                dataset &&
+                                dataset.workflowMetadata !== null &&
+                                dataset.workflowMetadata !== undefined
+                            ) {
+                                modifiedDatasets[dataset.id] = [
+                                    ...(dataset.workflowMetadata ?? []),
+                                    {
+                                        workflowId: currentWorkflow.id ?? "",
+                                        executionId: newExecutionId,
+                                        role: ioType
+                                    }
+                                ];
+                            } else if (
+                                dataset &&
+                                dataset.workflowMetadata === null &&
+                                dataset.workflowMetadata !== undefined
+                            ) {
+                                modifiedDatasets[dataset.id] = [
+                                    {
+                                        workflowId: currentWorkflow.id ?? "",
+                                        executionId: newExecutionId,
+                                        role: ioType
+                                    }
+                                ];
+                            }
+                        });
+                    }
+
+                    appDispatch(
+                        updateProjectDatasetsRoles({
+                            projectId: id ?? "",
+                            data: modifiedDatasets
+                        })
+                    );
+                }
+
                 appDispatch(clearSidePanelData());
                 navigate(`/project/${id}/workflows/${wfId}`);
             } else {
@@ -144,11 +224,20 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
                     </Stack>
 
                     <Stack direction="row" spacing={1} sx={{ mt: 3, justifyContent: "flex-end" }}>
-                        <Button variant="plain" onClick={onClose}>
+                        <Button
+                            variant="outlined"
+                            sx={{
+                                borderColor: "primary.subtle",
+                                color: "primary.subtle",
+                                backgroundColor: "white"
+                            }}
+                            onClick={onClose}
+                        >
                             Cancel
                         </Button>
                         <Button
                             variant="solid"
+                            sx={{ backgroundColor: "primary.main" }}
                             disabled={!name || !description} // Ensure required fields are filled
                             onClick={handleCreateNew}
                         >

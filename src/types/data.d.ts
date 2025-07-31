@@ -177,6 +177,7 @@ interface ProjectState {
     deletedWorkflowIds: string[];
     projectVisualizations: Visualization[];
     deletedVisualizationIds: string[];
+    selectedVisualization: Visualization;
     loading: boolean;
     error: string | null;
     success: string | null;
@@ -190,6 +191,12 @@ interface FileDescriptor {
     size: number;
     dataURL: string;
     md5sum: string;
+}
+
+interface WorkflowMetadata {
+    workflowId: string;
+    executionId: string;
+    role: string;
 }
 
 interface Dataset {
@@ -207,6 +214,7 @@ interface Dataset {
     type: string;
     storedUrl: string;
     format: string;
+    workflowMetadata?: WorkflowMetadata[];
     sourceDataset?: string;
     boundingBox?: [number, number, number, number];
     networkDataset?: string | null;
@@ -261,6 +269,12 @@ interface IncoreLayer {
     layerId: string;
     styleName?: string;
     boundingBox?: [number, number, number, number];
+    layerType?: string;
+    datasetCategoryType?: string;
+    displayName?: string;
+    description?: string;
+    unit?: string;
+    visible?: boolean;
 }
 
 interface Visualization {
@@ -268,6 +282,8 @@ interface Visualization {
     type: string;
     name: string;
     description?: string;
+    zoom?: number;
+    layerOrder?: string[];
     date?: string;
     boundingBox?: [number, number, number, number];
     layers?: IncoreLayer[];
@@ -279,6 +295,8 @@ interface VisualizationIn {
     type: string;
     name: string;
     description?: string;
+    zoom?: number;
+    layerOrder?: string[];
     boundingBox?: number[];
     layers?: IncoreLayer[];
     vegaJson?: string;
@@ -480,4 +498,20 @@ interface EarthquakeMetadata {
         numPoints: string;
         amplifyHazard: string;
     };
+}
+
+interface DatasetsByExecutions {
+    [executionId: string]: {
+        executionName: string;
+        executionTime: string;
+        datasetIds: string[];
+        workflowId: string;
+        workflowName: string;
+    };
+}
+
+interface CGEChartData {
+    "beforeEvent": Record<string, number>;
+    "afterEvent": Record<string, number>;
+    "%_change": Record<string, number>;
 }

@@ -4,16 +4,20 @@ import Loading from "@app/components/Loading";
 const LazyHome = lazy(() => import("@app/components/Home"));
 const LazyWorkflowEditor = lazy(() => import("./components/WorkflowEditor"));
 const LazyProjectDatasetPage = lazy(() => import("@app/components/Project/Resource/DatasetPage"));
+const LazyProjectDatasetsByExecutionPage = lazy(
+    () => import("@app/components/Project/Resource/DatasetsByExecutionPage")
+);
 const LazyProjectDashboard = lazy(() => import("@app/components/Project/ProjectDashboard"));
 const LazyProjectHazardsPage = lazy(() => import("@app/components/Project/Resource/HazardPage"));
 const LazyProjectVisualizationsPage = lazy(() => import("@app/components/Project/Resource/VisualizationPage"));
 const LazyProjectWorkflowsPage = lazy(() => import("@app/components/Project/Resource/WorkflowPage"));
 const LazyProjectDFR3MappingPage = lazy(() => import("@app/components/Project/Resource/DFR3MappingPage"));
+const LazyProjectToolsPage = lazy(() => import("@app/components/Project/Resource/ToolsPage"));
 const LazyProjectWorkflowExecutionSummaryPage = lazy(
     () => import("@app/components/Project/Resource/WorkflowExecutionSummaryPage")
 );
 const LazyExecutionPage = lazy(() => import("@app/components/Execution"));
-
+const LazyMockVisualization = lazy(() => import("@app/components/Visualization/mocks/MockVisualization"));
 /**
  A mapping of routes to `RouteProps`.
  The required property for each route is `element`, which must be a valid React component.
@@ -40,6 +44,13 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
         element: (
             <Suspense fallback={<Loading />}>
                 <LazyProjectDatasetPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/datasets/execution": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyProjectDatasetsByExecutionPage />
             </Suspense>
         )
     },
@@ -96,6 +107,21 @@ const routes: { [key: string]: import("react-router-dom").RouteProps } = {
         element: (
             <Suspense fallback={<Loading />}>
                 <LazyProjectDFR3MappingPage />
+            </Suspense>
+        )
+    },
+    "/project/:id/tools": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyProjectToolsPage />
+            </Suspense>
+        )
+    },
+    // TODO remove me later
+    "mock-visualization": {
+        element: (
+            <Suspense fallback={<Loading />}>
+                <LazyMockVisualization />
             </Suspense>
         )
     }

@@ -3,7 +3,12 @@ import { Box, Typography, Container, Grid } from "@mui/joy";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@app/store";
-import { deleteProjectVisualizations, getProject, getProjectVisualizations } from "@app/reducer/projectSlice";
+import {
+    deleteProjectVisualizations,
+    getProject,
+    getProjectVisualizations,
+    setSelectedVisualization
+} from "@app/reducer/projectSlice";
 import { ProjectBreadcrumb } from "@app/components/Project/ProjectBreadcrumb";
 import { ProjectHeader } from "@app/components/Project/ProjectHeader";
 import { ResourceTable } from "@app/components/Project/Resource/ResourceTable";
@@ -13,12 +18,27 @@ import Divider from "@mui/joy/Divider";
 import { ResourceCards } from "@app/components/Project/Resource/ResourceCards";
 import { ProjectSidebar } from "@app/components/Project/ProjectSidebar";
 import { CreateVisualizationDialog } from "@app/components/Project/Resource/VisualizationDialog";
-import { VisualizationView } from "@app/components/Project/Resource/VisaualizationView";
+import { VisualizationView } from "@app/components/Project/Resource/VisualizationView";
 import { useAppDispatch } from "@app/store/hooks";
 
 import VisualizationIcon from "@mui/icons-material/Map";
 import Snackbar from "@mui/joy/Snackbar";
 import { IncoreDialog } from "@app/components/IncoreDialog";
+import config from "@app/app.config";
+import {
+    addLayer,
+    GeoExplorerConfig,
+    GeoExplorerProvider,
+    selectMapLayer,
+    setLayerStyleName,
+    setShowLayerSettings,
+    setSidebarOpen,
+    toggleVisibility
+} from "@ncsa/geo-explorer";
+import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
+import { CustomDataInventory } from "@app/components/Map/CustomDataInventory";
+import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
+import axios from "axios";
 
 const VisualizationPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -70,7 +90,7 @@ const VisualizationPage = (): JSX.Element => {
     };
 
     // Table view vs Card view
-    const [isTableView, setIsTableView] = useState(false); // Toggle state for view mode
+    const [isTableView, setIsTableView] = useState(true); // Toggle state for view mode
     const onViewChangeClick = () => {
         setIsTableView((prev) => !prev); // Toggle between table and card view
     };
@@ -92,11 +112,48 @@ const VisualizationPage = (): JSX.Element => {
     };
 
     // View visualization
-    const [selectedVisualization, setSelectedVisualization] = useState<Visualization>();
-    const [openVisualziationView, setOpenVisualziationView] = useState(true);
-    const handleCloseVisualziationView = () => {
-        setOpenVisualziationView(false);
+    const [openVisualizationView, setOpenVisualizationView] = useState(false);
+    const handleCloseVisualizationView = () => {
+        setOpenVisualizationView(false);
     };
+    // Populate the geo explorer provider
+    const [geoExplorerLayers, setGeoExplorerLayers] = useState<GeoExplorerDataset[]>([]);
+    const datasets = useSelector((state: RootState) => state.project.projectDatasets);
+    const hazards = useSelector((state: RootState) => state.project.projectHazards);
+    const visualization = useSelector((state: RootState) => state.project.selectedVisualization);
+
+    useEffect(() => {
+        const fetchAndBuildLayers = async () => {
+            const datasetIdsFromHazards = hazards
+                .flatMap((hazard) => hazard.hazardDatasets || [])
+                .map((ds) => ds.datasetId);
+
+            const datasetIdsFromProject = datasets
+                .filter((ds) => ds.format === "shapefile" || (ds.sourceDataset && ds.sourceDataset.trim() !== ""))
+                .map((ds) => ds.id);
+
+            const allDatasetIds = Array.from(new Set([...datasetIdsFromProject, ...datasetIdsFromHazards]));
+
+            const datasetResponses = await Promise.all(
+                allDatasetIds.map((id) =>
+                    axios
+                        .get(`${config.dataService}/${id}`, { headers: getHeaders() })
+                        .then((res) => res.data)
+                        .catch(() => null)
+                )
+            );
+
+            const validDatasets = datasetResponses.filter(Boolean);
+
+            const mapped = validDatasets.map((ds) =>
+                mapIncoreDatasetToGeoExplorerDataset(ds, `${config.hostname}/geoserver`)
+            );
+
+            setGeoExplorerLayers(mapped);
+        };
+
+        fetchAndBuildLayers();
+    }, [hazards, datasets]);
 
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
@@ -156,7 +213,7 @@ const VisualizationPage = (): JSX.Element => {
                         />
                         <ProjectHeader project={project} />
                         <Divider />
-                        <Grid container spacing={5} mt={3} ml={0}>
+                        <Grid container spacing={2} mt={3} ml={0}>
                             <Grid sm={2}>
                                 <ProjectSidebar id={project.id} />
                             </Grid>
@@ -182,22 +239,79 @@ const VisualizationPage = (): JSX.Element => {
                                     open={openCreateVisDialog}
                                     onClose={handleCloseCreateVisDialog}
                                 />
-                                {selectedVisualization && (
+                                <GeoExplorerProvider
+                                    config={
+                                        {
+                                            basemaps: [
+                                                {
+                                                    layer_id: "OSM",
+                                                    display_name: "OpenStreetMap",
+                                                    tile_url_template:
+                                                        "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                                    thumbnail_url: "https://a.tile.openstreetmap.org/0/0/0.png"
+                                                }
+                                            ],
+                                            simple_layers: geoExplorerLayers, // set in the custom layer list component
+                                            temporal_layers: [],
+                                            mapConfig: {
+                                                boundingBox:
+                                                    visualization?.boundingBox ??
+                                                    (config.DEFAULT_MAP_BOUNDS as [number, number, number, number])
+                                            }
+                                        } as GeoExplorerConfig
+                                    }
+                                    accessToken={getOidcUser()?.access_token}
+                                    isProtectedResource={(url) => /geoserver/.test(url)}
+                                    components={{
+                                        DataInventory: CustomDataInventory
+                                    }}
+                                    onReady={({ store }) => {
+                                        // reset to default state
+                                        store.dispatch(selectMapLayer({ layer_id: null }));
+                                        store.dispatch(setShowLayerSettings({ show: false }));
+                                        store.dispatch(setSidebarOpen({ open: true }));
+                                        if (
+                                            Array.isArray(visualization?.layers) &&
+                                            Array.isArray(visualization?.layerOrder)
+                                        ) {
+                                            const layerMap = new Map(
+                                                visualization.layers.map((layer) => [layer.layerId, layer])
+                                            );
+                                            [...visualization.layerOrder].reverse().forEach((layerId) => {
+                                                const layer = layerMap.get(layerId);
+                                                if (layer) {
+                                                    store.dispatch(addLayer({ layer_id: layer.layerId }));
+                                                    if (!layer.visible)
+                                                        store.dispatch(toggleVisibility({ layer_id: layer.layerId }));
+                                                    if (layer.styleName) {
+                                                        store.dispatch(
+                                                            store.dispatch(
+                                                                setLayerStyleName({
+                                                                    layer_id: layer.layerId,
+                                                                    style_name: layer.styleName
+                                                                })
+                                                            )
+                                                        );
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }}
+                                >
                                     <VisualizationView
-                                        visualization={selectedVisualization}
-                                        open={openVisualziationView}
-                                        onClose={handleCloseVisualziationView}
+                                        open={openVisualizationView}
+                                        onClose={handleCloseVisualizationView}
                                     />
-                                )}
+                                </GeoExplorerProvider>
                                 {isTableView ? (
                                     <ResourceTable
-                                        columns={["name", "description", "date"]}
+                                        columns={["name", "description", "type", "date"]}
                                         data={projectVisualizations}
                                         projectId={project.id}
                                         deleteFunc={deleteVisualizationFunc}
                                         viewFunc={(visualization: Visualization) => {
-                                            setSelectedVisualization(visualization);
-                                            setOpenVisualziationView(true);
+                                            appDispatch(setSelectedVisualization(visualization.id));
+                                            setOpenVisualizationView(true);
                                         }}
                                         onSelectionChange={(selected) =>
                                             setSelectedVisualizations(selected as Visualization[])
@@ -211,8 +325,8 @@ const VisualizationPage = (): JSX.Element => {
                                         projectId={project.id}
                                         deleteFunc={deleteVisualizationFunc}
                                         viewFunc={(visualization: Visualization) => {
-                                            setSelectedVisualization(visualization);
-                                            setOpenVisualziationView(true);
+                                            appDispatch(setSelectedVisualization(visualization.id));
+                                            setOpenVisualizationView(true);
                                         }}
                                         onSelectionChange={(selected) =>
                                             setSelectedVisualizations(selected as Visualization[])

@@ -1,0 +1,65 @@
+[
+    {
+        "household_characteristics": "HH1 (less than $15,000)",
+        "household_dislocated": 632,
+        "total_households": 3552,
+        "percent_household_dislocated": 17.792792792792792,
+        "population_dislocated": 1157,
+        "total_population": 5884,
+        "percent_population_dislocated": 19.663494221617945
+    },
+    {
+        "household_characteristics": "HH2 ($15,000 to $35,000)",
+        "household_dislocated": 608,
+        "total_households": 3391,
+        "percent_household_dislocated": 17.929814214096137,
+        "population_dislocated": 1186,
+        "total_population": 6341,
+        "percent_population_dislocated": 18.703674499290333
+    },
+    {
+        "household_characteristics": "HH3 ($35,000 to $70,000)",
+        "household_dislocated": 2110,
+        "total_households": 10461,
+        "percent_household_dislocated": 20.17015581684351,
+        "population_dislocated": 4972,
+        "total_population": 25368,
+        "percent_population_dislocated": 19.599495427309996
+    },
+    {
+        "household_characteristics": "HH4 ($70,000 to $120,000)",
+        "household_dislocated": 305,
+        "total_households": 1796,
+        "percent_household_dislocated": 16.98218262806236,
+        "population_dislocated": 857,
+        "total_population": 5092,
+        "percent_population_dislocated": 16.83032207384132
+    },
+    {
+        "household_characteristics": "HH5 (More than $120,000)",
+        "household_dislocated": 308,
+        "total_households": 2248,
+        "percent_household_dislocated": 13.701067615658364,
+        "population_dislocated": 846,
+        "total_population": 6416,
+        "percent_population_dislocated": 13.1857855361596
+    },
+    {
+        "household_characteristics": "Unknown",
+        "household_dislocated": 980,
+        "total_households": 4618,
+        "percent_household_dislocated": 21.221307925508878,
+        "population_dislocated": 1682,
+        "total_population": 7010,
+        "percent_population_dislocated": 23.99429386590585
+    },
+    {
+        "household_characteristics": "Total",
+        "household_dislocated": 4943,
+        "total_households": 26066,
+        "percent_household_dislocated": 18.963400598480778,
+        "population_dislocated": 10700,
+        "total_population": 56111,
+        "percent_population_dislocated": 19.06934469177167
+    }
+]

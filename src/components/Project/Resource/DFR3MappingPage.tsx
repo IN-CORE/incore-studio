@@ -22,6 +22,7 @@ import DFR3Icon from "@mui/icons-material/ShowChart";
 import Snackbar from "@mui/joy/Snackbar";
 import { AddFromServiceDialog } from "@app/components/Project/Resource/AddFromServiceDialog";
 import { IncoreDialog } from "@app/components/IncoreDialog";
+import { DFR3PreviewModal } from "@app/components/Preview/DFR3PreviewModal";
 
 const DFR3MappingPage = (): JSX.Element => {
     const { id } = useParams(); // Get projectId from the URL path
@@ -121,6 +122,10 @@ const DFR3MappingPage = (): JSX.Element => {
         setOpenBatchDeleteDialog(false);
     };
 
+    // Preview
+    const [selectedDFR3Mapping, setSelectedDFR3Mapping] = useState<DFR3Mapping | null>(null);
+    const [openDFR3PreviewModal, setOpenDFR3PreviewModal] = useState(false); // State to control the visibility of the
+
     return (
         <Container sx={{ display: "flex", flexDirection: "column", height: "100vh" }} maxWidth="xl">
             <IncoreDialog
@@ -145,7 +150,7 @@ const DFR3MappingPage = (): JSX.Element => {
                         />
                         <ProjectHeader project={project} />
                         <Divider />
-                        <Grid container spacing={5} mt={3} ml={0}>
+                        <Grid container spacing={2} mt={3} ml={0}>
                             <Grid sm={2}>
                                 <ProjectSidebar id={project.id} />
                             </Grid>
@@ -183,6 +188,10 @@ const DFR3MappingPage = (): JSX.Element => {
                                         setOpenAddDFR3MappingFromServiceDialog(false);
                                     }}
                                     onAddClick={addDFR3MappingFunc}
+                                    previewFunc={(dfr3mapping) => {
+                                        setSelectedDFR3Mapping(dfr3mapping as DFR3Mapping);
+                                        setOpenDFR3PreviewModal(true);
+                                    }}
                                 />
                                 <ResourceTable
                                     columns={["name", "hazardType", "inventoryType", "mappingType", "date", "creator"]}
@@ -191,6 +200,10 @@ const DFR3MappingPage = (): JSX.Element => {
                                     deleteFunc={deleteDFR3MappingFunc}
                                     onSelectionChange={(selected) => setSelectedDFR3Mappings(selected as DFR3Mapping[])}
                                     selectedItems={selectedDFR3Mappings}
+                                    viewFunc={(dfr3mapping: DFR3Mapping) => {
+                                        setSelectedDFR3Mapping(dfr3mapping as DFR3Mapping);
+                                        setOpenDFR3PreviewModal(true);
+                                    }}
                                 />
                                 <Box mt={4} display="flex" justifyContent="center">
                                     <Pagination
@@ -206,6 +219,15 @@ const DFR3MappingPage = (): JSX.Element => {
                     </>
                 )}
             </Box>
+            {selectedDFR3Mapping && (
+                <DFR3PreviewModal
+                    open={openDFR3PreviewModal}
+                    onClose={() => {
+                        setOpenDFR3PreviewModal(false);
+                    }}
+                    dfr3mapping={selectedDFR3Mapping}
+                />
+            )}
             <Snackbar
                 anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 open={snackbarOpen}
