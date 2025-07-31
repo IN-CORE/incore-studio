@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.0.0] - 07-31-2025
 
 ### Added
 
@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Leverage geo-explorer for map visualization in IN-CORE Studio [#182](https://github.com/IN-CORE/incore-studio/issues/182)
 - Add NSI Building Inventory tool. [#211](https://github.com/IN-CORE/incore-studio/issues/211)
 - Edit Name and Description capability on workflow editor. [#228](https://github.com/IN-CORE/incore-studio/issues/228)
+- Duplicate workflow feature on workflow summary page [#67](https://github.com/IN-CORE/incore-studio/issues/67)
 
 ### Fixed
 
@@ -26,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Finalized workflows not being saved first issue. [#204](https://github.com/IN-CORE/incore-studio/issues/204)
 - The items in project dashboard to be default sorted by date in descending order. [#206](https://github.com/IN-CORE/incore-studio/issues/206)
 - Switch from webpack to esbuild and find alternative to serve app with SPA routes [#200](https://github.com/IN-CORE/incore-studio/issues/200)
+- Implement visualization initial view and auto-fitting maximum bounds of layers [#238](https://github.com/IN-CORE/incore-studio/issues/238)
 
 ### Changed
 

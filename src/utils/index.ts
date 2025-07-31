@@ -965,6 +965,7 @@ export function mapIncoreDatasetToGeoExplorerDataset(dataset: Dataset, ogcServic
             dataset_category: dataset.dataType
         },
         workspace: "incore",
-        default_style_workspace: "studio"
+        default_style_workspace: "studio",
+        boundingBox: dataset.boundingBox
     };
 }

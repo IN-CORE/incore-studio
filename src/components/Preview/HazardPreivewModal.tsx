@@ -3,7 +3,14 @@ import React, { useEffect, useState } from "react";
 import { Modal, ModalDialog, ModalClose, Box, Typography } from "@mui/joy";
 
 import config from "@app/app.config";
-import { addLayer, GeoExplorer, GeoExplorerConfig, GeoExplorerProvider } from "@ncsa/geo-explorer";
+import {
+    addLayer,
+    GeoExplorer,
+    GeoExplorerConfig,
+    GeoExplorerProvider,
+    setShowLayerSettings,
+    setSidebarOpen
+} from "@ncsa/geo-explorer";
 import { getHeaders, getOidcUser, mapIncoreDatasetToGeoExplorerDataset } from "@app/utils";
 import axios from "axios";
 import { Dataset as GeoExplorerDataset } from "@ncsa/geo-explorer/dist/types";
@@ -105,6 +112,9 @@ export const HazardPreviewModal: React.FC<HazardPreviewModalProps> = ({ open, on
                         hazardDatasets.forEach((hazardDataset) => {
                             store.dispatch(addLayer({ layer_id: hazardDataset.id }));
                         });
+                        // reset to default state
+                        store.dispatch(setShowLayerSettings({ show: false }));
+                        store.dispatch(setSidebarOpen({ open: true }));
                     }}
                 >
                     <GeoExplorer key={hazardDatasets.map((ds) => ds.id).join(",")} />
