@@ -108,11 +108,42 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
         onClose();
     };
 
+    // Calculate area of bounding box in square degrees (approximate)
+    const calculateBboxArea = (bbox: [number, number, number, number]): number => {
+        const [minLng, minLat, maxLng, maxLat] = bbox;
+        const width = maxLng - minLng;
+        const height = maxLat - minLat;
+        return width * height;
+    };
+
+    // Check if bounding box is too large (checking both area and individual dimensions)
+    const isBboxTooLarge = (bbox: [number, number, number, number]): boolean => {
+        const [minLng, minLat, maxLng, maxLat] = bbox;
+        const width = maxLng - minLng;
+        const height = maxLat - minLat;
+        const area = width * height;
+        
+        // Check individual dimensions (max 1 degree each)
+        const exceedsWidth = width > 1.0;
+        const exceedsHeight = height > 1.0;
+        
+        // Check total area (max 1 square degree = 1° × 1°)
+        const exceedsArea = area > 1.0;
+        
+        return exceedsWidth || exceedsHeight || exceedsArea;
+    };
+
     // Handle bbox selection from BoundingBoxDrawer
     const handleBboxSelected = (selectedBbox: [number, number, number, number]) => {
         console.log("NSI Modal: Received bbox", selectedBbox);
         setBbox(selectedBbox);
-        setConfirmOpen(true);
+        
+        // Check if the bounding box is too large
+        if (isBboxTooLarge(selectedBbox)) {
+            setConfirmOpen(true); // Still show the dialog but with warning message
+        } else {
+            setConfirmOpen(true); // Show normal confirmation
+        }
     };
 
     // Clear bbox when switching to FIPS
@@ -341,8 +372,27 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
             <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
                 <ModalDialog variant="outlined">
                     <Typography component="h2" fontSize="lg" fontWeight="bold" sx={{ mb: 1 }}>
-                        Confirm Bounding Box
+                        {bbox && isBboxTooLarge(bbox) ? "Error: Bounding Box Too Large" : "Confirm Bounding Box"}
                     </Typography>
+                    
+                    {bbox && isBboxTooLarge(bbox) && (
+                        <Box sx={{ 
+                            mb: 2, 
+                            p: 2, 
+                            backgroundColor: "#f8d7da", 
+                            border: "1px solid #f5c6cb", 
+                            borderRadius: "4px",
+                            borderLeft: "4px solid #dc3545"
+                        }}>
+                            <Typography level="body-sm" color="danger" fontWeight="bold" sx={{ mb: 1 }}>
+                                ❌ Selected bounding box exceeds the maximum allowed size
+                            </Typography>
+                            <Typography level="body-sm" color="neutral">
+                                The selected area exceeds the maximum allowed size. Please select an area where both width and height are no more than 1 degree, and the total area is no more than 1 square degree.
+                            </Typography>
+                        </Box>
+                    )}
+                    
                     {bbox ? (
                         <Box sx={{ mb: 2 }}>
                             <Typography level="body-sm">minx: {bbox[0].toFixed(6)}</Typography>
@@ -364,9 +414,13 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                 setBbox(null);
                             }}
                         >
-                            Cancel
+                            {bbox && isBboxTooLarge(bbox) ? "OK" : "Cancel"}
                         </Button>
-                        <Button onClick={() => setConfirmOpen(false)}>Confirm</Button>
+                        {!bbox || !isBboxTooLarge(bbox) ? (
+                            <Button onClick={() => setConfirmOpen(false)}>
+                                Confirm
+                            </Button>
+                        ) : null}
                     </Box>
                 </ModalDialog>
             </Modal>
