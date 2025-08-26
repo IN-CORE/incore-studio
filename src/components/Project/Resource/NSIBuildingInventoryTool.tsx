@@ -314,7 +314,7 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                 <Select value={selectionMethod} onChange={(_e, val) => setSelectionMethod(val as "fips" | "bbox")}
                                     placeholder="Select a method">
                                     <Option value="fips">FIPS Lookup</Option>
-                                    <Option value="bbox">Bounding Box (Experimental)</Option>
+                                    <Option value="bbox">Bounding Box</Option>
                                 </Select>
                                 {selectionMethod === "bbox" && (
                                     <FormHelperText sx={{ mt: 1, color: "warning.500" }}>
