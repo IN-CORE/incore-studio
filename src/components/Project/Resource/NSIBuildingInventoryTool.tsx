@@ -316,11 +316,7 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                     <Option value="fips">FIPS Lookup</Option>
                                     <Option value="bbox">Bounding Box</Option>
                                 </Select>
-                                {selectionMethod === "bbox" && (
-                                    <FormHelperText sx={{ mt: 1, color: "warning.500" }}>
-                                        ⚠️ Bounding box functionality is experimental and may not work with the current API. If it fails, please use FIPS lookup instead.
-                                    </FormHelperText>
-                                )}
+
                             </FormControl>
 
                             {selectionMethod === "fips" && (
