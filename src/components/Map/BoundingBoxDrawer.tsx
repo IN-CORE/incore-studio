@@ -13,8 +13,6 @@ interface BoundingBoxDrawerProps {
 const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, height = 300 }) => {
     const mapContainerRef = React.useRef<HTMLDivElement>(null);
     const mapRef = React.useRef<maplibregl.Map>();
-    const [isDrawing, setIsDrawing] = React.useState(false);
-    const [startPoint, setStartPoint] = React.useState<maplibregl.LngLat | null>(null);
     const [drawModeEnabled, setDrawModeEnabled] = React.useState(false);
     const [mouseDownTime, setMouseDownTime] = React.useState<number>(0);
 
@@ -35,7 +33,6 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
             });
 
             map.on("load", () => {
-                console.log("BoundingBoxDrawer map loaded");
                 mapRef.current = map;
             });
 
@@ -52,7 +49,6 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
     const drawBoundingBox = (start: maplibregl.LngLat, end: maplibregl.LngLat) => {
         const map = mapRef.current;
         if (!map) {
-            console.log("No map available for drawing");
             return;
         }
 
@@ -136,14 +132,10 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
             return;
         }
 
-        console.log("Mouse down - drawModeEnabled:", drawModeEnabled, "isDrawing:", isDrawingRef.current);
-
         // Prevent default map behavior
         e.preventDefault();
         e.originalEvent.stopPropagation();
 
-        setIsDrawing(true);
-        setStartPoint(e.lngLat);
         setMouseDownTime(Date.now());
 
         // Update refs synchronously
@@ -161,7 +153,6 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
         e.preventDefault();
         e.originalEvent.stopPropagation();
 
-        console.log("Mouse move - drawing bounding box");
         drawBoundingBox(startPointRef.current, e.lngLat);
     };
 
@@ -178,17 +169,12 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
 
         // Ignore mouse up if it happens too quickly after mouse down (less than 50ms)
         if (timeSinceMouseDown < 50) {
-            console.log("Mouse up too quick, ignoring");
             // Reset refs even if ignored
             isDrawingRef.current = false;
             startPointRef.current = null;
-            setIsDrawing(false);
-            setStartPoint(null);
             return;
         }
 
-        console.log("Mouse up - finalizing bounding box");
-        setIsDrawing(false);
         const endPoint = e.lngLat;
 
         // Only create bounding box if there's meaningful distance
@@ -204,8 +190,6 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
             clearBoundingBox();
         }
 
-        setStartPoint(null);
-
         // Reset refs
         isDrawingRef.current = false;
         startPointRef.current = null;
@@ -215,11 +199,9 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
     const enableBoundingBoxDrawing = () => {
         const map = mapRef.current;
         if (!map) {
-            console.log("No map available for enabling drawing");
             return;
         }
 
-        console.log("Enabling bounding box drawing mode");
         map.getCanvas().style.cursor = "crosshair";
 
         // Disable ALL map interactions to prevent any interference
@@ -234,15 +216,12 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
         map.on("mousedown", onMouseDown);
         map.on("mousemove", onMouseMove);
         map.on("mouseup", onMouseUp);
-
-        console.log("Drawing mode enabled - map interactions disabled, event listeners added");
     };
 
     const disableBoundingBoxDrawing = () => {
         const map = mapRef.current;
         if (!map) return;
 
-        console.log("Disabling bounding box drawing mode");
         map.getCanvas().style.cursor = "";
 
         // Re-enable ALL map interactions
@@ -260,14 +239,10 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
 
         // Clear any existing bounding box
         clearBoundingBox();
-
-        console.log("Drawing mode disabled - map interactions enabled, event listeners removed");
     };
 
     // Handle draw mode toggle
     React.useEffect(() => {
-        console.log("Draw mode effect triggered - drawModeEnabled:", drawModeEnabled);
-
         if (drawModeEnabled) {
             enableBoundingBoxDrawing();
         } else {
@@ -276,7 +251,6 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
 
         // Cleanup function to ensure proper cleanup when component unmounts or drawModeEnabled changes
         return () => {
-            console.log("Cleaning up drawing mode");
             disableBoundingBoxDrawing();
         };
     }, [drawModeEnabled]);
