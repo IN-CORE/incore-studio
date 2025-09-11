@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Add draw bounding box for NSI dataset tool [#246](https://github.com/IN-CORE/incore-studio/issues/246)
+
+
 ## [1.0.0] - 07-31-2025
 
 ### Added
