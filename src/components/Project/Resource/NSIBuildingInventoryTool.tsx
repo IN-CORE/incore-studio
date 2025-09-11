@@ -102,17 +102,20 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                 fips_list: selectedFips ? [selectedFips] : []
             };
 
-            console.log('FIPS Lookup - Submitting with FIPS code:', selectedFips);
-            console.log('FIPS Lookup - Full payload:', payload);
+            console.log("FIPS Lookup - Submitting with FIPS code:", selectedFips);
+            console.log("FIPS Lookup - Full payload:", payload);
 
             try {
-                axios.post(`${config.toolsApi}/bldg-inventory?projectid=${projectId}`, payload, {
-                    headers: getHeaders()
-                }).then(response => {
-                    console.log('FIPS Lookup - API call successful:', response.data);
-                }).catch(error => {
-                    console.error("FIPS Lookup - Error creating building inventory dataset:", error);
-                });
+                axios
+                    .post(`${config.toolsApi}/bldg-inventory?projectid=${projectId}`, payload, {
+                        headers: getHeaders()
+                    })
+                    .then((response) => {
+                        console.log("FIPS Lookup - API call successful:", response.data);
+                    })
+                    .catch((error) => {
+                        console.error("FIPS Lookup - Error creating building inventory dataset:", error);
+                    });
                 handleSnackbar?.("success");
                 setProcessingDialogOpen(true);
             } catch (error) {
@@ -122,7 +125,7 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
         } else if (selectionMethod === "bbox" && bbox) {
             // Handle bounding box-based submission
             const [minLng, minLat, maxLng, maxLat] = bbox;
-            
+
             // Create the dataset object with bounding box coordinates
             // Note: API expects [minY, minX, maxY, maxX] format (lat, lng, lat, lng)
             const dataset = {
@@ -131,7 +134,7 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                 bounding_box: [minLat, minLng, maxLat, maxLng] // [minY, minX, maxY, maxX] format
             };
 
-            console.log('Sending bounding box to API:', dataset);
+            console.log("Sending bounding box to API:", dataset);
 
             // Try to use the data service endpoint for bounding box (similar to test file)
             try {
@@ -141,34 +144,38 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                     bounding_box: [minLat, minLng, maxLat, maxLng] // [minY, minX, maxY, maxX] format
                 };
 
-                            // Create FormData for the API call (matching test file exactly)
+                // Create FormData for the API call (matching test file exactly)
                 const formData = new FormData();
-                formData.append('dataset', JSON.stringify(dataset));
-                formData.append('type', 'application/json');
+                formData.append("dataset", JSON.stringify(dataset));
+                formData.append("type", "application/json");
 
                 // Try the data service endpoint first (similar to test file structure)
-                const response = await axios.post(`${config.dataService}/tools/bldg-inventory?projectid=${projectId}`, formData, {
-                    headers: {
-                        ...getHeaders(),
-                        'Content-Type': 'multipart/form-data'
+                const response = await axios.post(
+                    `${config.dataService}/tools/bldg-inventory?projectid=${projectId}`,
+                    formData,
+                    {
+                        headers: {
+                            ...getHeaders(),
+                            "Content-Type": "multipart/form-data"
+                        }
                     }
-                });
-                console.log('API call successful:', response.data);
-                
+                );
+                console.log("API call successful:", response.data);
+
                 // Add the created dataset to the project so it shows up in the Dataset page
                 if (response.data && response.data.id && projectId) {
                     appDispatch(addDatasetToProject({ projectId, datasets: [response.data] }));
                 }
-                
+
                 handleSnackbar?.("success");
                 setProcessingDialogOpen(true);
             } catch (error) {
-                console.error('Bounding box API call failed:', error);
-                
+                console.error("Bounding box API call failed:", error);
+
                 // If the data service endpoint fails, show a message that bounding box is not yet supported
-                console.log('Bounding box functionality is not yet available in the current API');
+                console.log("Bounding box functionality is not yet available in the current API");
                 handleSnackbar?.("failure");
-                
+
                 // Don't close the modal, let user switch to FIPS or try again
                 return;
             }
@@ -196,14 +203,14 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
         const width = maxLng - minLng;
         const height = maxLat - minLat;
         const area = width * height;
-        
+
         // Check individual dimensions (max 1 degree each)
         const exceedsWidth = width > 1.0;
         const exceedsHeight = height > 1.0;
-        
+
         // Check total area (max 1 square degree = 1° × 1°)
         const exceedsArea = area > 1.0;
-        
+
         return exceedsWidth || exceedsHeight || exceedsArea;
     };
 
@@ -211,7 +218,7 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
     const handleBboxSelected = (selectedBbox: [number, number, number, number]) => {
         console.log("NSI Modal: Received bbox", selectedBbox);
         setBbox(selectedBbox);
-        
+
         // Check if the bounding box is too large
         if (isBboxTooLarge(selectedBbox)) {
             setConfirmOpen(true); // Still show the dialog but with warning message
@@ -231,25 +238,28 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
     return (
         <>
             <Modal open={open} onClose={onClose}>
-                <ModalDialog 
-                    variant="outlined" 
-                    sx={{ 
+                <ModalDialog
+                    variant="outlined"
+                    sx={{
                         maxWidth: selectionMethod === "bbox" ? "90vw" : "60vw",
                         width: selectionMethod === "bbox" ? "90vw" : "60vw",
                         display: "flex",
                         flexDirection: "row",
                         gap: 2,
+                        padding: 5,
                         alignItems: "flex-start"
                     }}
                 >
                     <ModalClose sx={{ zIndex: 20 }} />
-                    
+
                     {/* Left side - Form content */}
-                    <Box sx={{ 
-                        padding: 1, 
-                        flex: "1 1 400px",
-                        minWidth: "400px"
-                    }}>
+                    <Box
+                        sx={{
+                            padding: 1,
+                            flex: "1 1 400px",
+                            minWidth: "400px"
+                        }}
+                    >
                         <Typography
                             id="create-nsi-dataset-dialog-title"
                             component="h2"
@@ -260,9 +270,10 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                             Generate Building Inventory Dataset
                         </Typography>
                         <Typography level="body-sm" color="neutral" sx={{ mb: 2 }}>
-                            This tool will generate an IN-CORE building inventory dataset based on NSI (National Structure
-                            Inventory) for a FIPS code. The dataset is configured to work with fragility curves for IN-CORE.
-                            Currently, the tool supports the following hazards: Earthquake, Tsunami, Flood, Hurricane wind.
+                            This tool will generate an IN-CORE building inventory dataset based on NSI (National
+                            Structure Inventory) for a FIPS code. The dataset is configured to work with fragility
+                            curves for IN-CORE. Currently, the tool supports the following hazards: Earthquake, Tsunami,
+                            Flood, Hurricane wind.
                         </Typography>
                         <form
                             onSubmit={async (e) => {
@@ -303,7 +314,9 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                         }
                                     }}
                                 />
-                                <FormHelperText sx={{ mb: 1 }}>Provide a brief description of the dataset.</FormHelperText>
+                                <FormHelperText sx={{ mb: 1 }}>
+                                    Provide a brief description of the dataset.
+                                </FormHelperText>
                                 <Typography level="body-xs" color="neutral">
                                     Only Alpha-numeric characters, Underscores and Hyphens are allowed.
                                 </Typography>
@@ -311,12 +324,14 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
 
                             <FormControl required sx={{ mb: 2 }}>
                                 <FormLabel>Selection Method</FormLabel>
-                                <Select value={selectionMethod} onChange={(_e, val) => setSelectionMethod(val as "fips" | "bbox")}
-                                    placeholder="Select a method">
+                                <Select
+                                    value={selectionMethod}
+                                    onChange={(_e, val) => setSelectionMethod(val as "fips" | "bbox")}
+                                    placeholder="Select a method"
+                                >
                                     <Option value="fips">FIPS Lookup</Option>
                                     <Option value="bbox">Bounding Box</Option>
                                 </Select>
-
                             </FormControl>
 
                             {selectionMethod === "fips" && (
@@ -338,8 +353,8 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                                 typeof newValue === "object" && newValue !== null && "fips" in newValue
                                                     ? (newValue as FipsEntry).fips
                                                     : typeof newValue === "string"
-                                                      ? newValue
-                                                      : null
+                                                    ? newValue
+                                                    : null
                                             )
                                         }
                                         inputValue={inputValue}
@@ -353,8 +368,8 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                         }
                                     />
                                     <FormHelperText sx={{ mb: 1 }}>
-                                        Search by FIPS code, state, or county name. (Only California, Oregon, and Tennessee are
-                                        available.)
+                                        Search by FIPS code, state, or county name. (Only California, Oregon, and
+                                        Tennessee are available.)
                                     </FormHelperText>
                                     {showError && (
                                         <Typography fontSize="sm" color="danger">
@@ -368,24 +383,57 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                 <Box sx={{ mb: 2 }}>
                                     <FormLabel>Bounding Box</FormLabel>
                                     <Typography level="body-sm" color="neutral" sx={{ mb: 1 }}>
-                                        Use the map on the right to draw a bounding box. Check "Draw Bounding Box" and click-drag to create a selection.
+                                        Use the map on the right to draw a bounding box. Check "Draw Bounding Box" and
+                                        click-drag to create a selection.
                                     </Typography>
                                     {/* Live bbox readout for confirmation while drawing */}
                                     {bbox ? (
-                                        <Box sx={{ mt: 1, p: 1, border: "1px solid #ddd", borderRadius: 4, backgroundColor: "#f5f5f5" }}>
-                                            <Typography level="body-sm" fontWeight="bold">Selected Bounding Box:</Typography>
-                                            <Typography level="body-xs">minx: {bbox[0].toFixed(6)}, miny: {bbox[1].toFixed(6)}</Typography>
-                                            <Typography level="body-xs">maxx: {bbox[2].toFixed(6)}, maxy: {bbox[3].toFixed(6)}</Typography>
+                                        <Box
+                                            sx={{
+                                                mt: 1,
+                                                p: 1,
+                                                border: "1px solid #ddd",
+                                                borderRadius: 4,
+                                                backgroundColor: "#f5f5f5"
+                                            }}
+                                        >
+                                            <Typography level="body-sm" fontWeight="bold">
+                                                Selected Bounding Box:
+                                            </Typography>
+                                            <Typography level="body-xs">
+                                                minx: {bbox[0].toFixed(6)}, miny: {bbox[1].toFixed(6)}
+                                            </Typography>
+                                            <Typography level="body-xs">
+                                                maxx: {bbox[2].toFixed(6)}, maxy: {bbox[3].toFixed(6)}
+                                            </Typography>
                                         </Box>
                                     ) : (
-                                        <Box sx={{ mt: 1, p: 1, border: "1px solid #ddd", borderRadius: 4, backgroundColor: "#f5f5f5" }}>
-                                            <Typography level="body-sm" color="neutral">No bounding box selected yet. Draw one on the map.</Typography>
+                                        <Box
+                                            sx={{
+                                                mt: 1,
+                                                p: 1,
+                                                border: "1px solid #ddd",
+                                                borderRadius: 4,
+                                                backgroundColor: "#f5f5f5"
+                                            }}
+                                        >
+                                            <Typography level="body-sm" color="neutral">
+                                                No bounding box selected yet. Draw one on the map.
+                                            </Typography>
                                         </Box>
                                     )}
                                 </Box>
                             )}
 
-                            <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, flexDirection: "column", alignItems: "flex-end" }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                    gap: 1,
+                                    flexDirection: "column",
+                                    alignItems: "flex-end"
+                                }}
+                            >
                                 {selectionMethod === "bbox" && !bbox && (
                                     <Typography level="body-xs" color="neutral" sx={{ mb: 1 }}>
                                         Please draw a bounding box on the map to continue
@@ -404,10 +452,7 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                                     >
                                         Cancel
                                     </Button>
-                                    <Button 
-                                        type="submit"
-                                        disabled={selectionMethod === "bbox" && !bbox}
-                                    >
+                                    <Button type="submit" disabled={selectionMethod === "bbox" && !bbox}>
                                         Submit
                                     </Button>
                                 </Box>
@@ -417,44 +462,46 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
 
                     {/* Right side - Map (only when bbox is selected) */}
                     {selectionMethod === "bbox" && (
-                        <Box sx={{
-                            flex: "0 0 400px",
-                            height: "500px",
-                            backgroundColor: "white",
-                            border: "2px solid #1976d2",
-                            borderRadius: "8px",
-                            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-                            position: "relative"
-                        }}>
-                            <Box sx={{
-                                position: "absolute",
-                                top: "-30px",
-                                left: "0",
-                                right: "0",
-                                textAlign: "center",
-                                zIndex: 1002
-                            }}>
-                                <Typography level="body-sm" sx={{
-                                    backgroundColor: "#1976d2",
-                                    color: "white",
-                                    px: 2,
-                                    py: 0.5,
-                                    borderRadius: "4px 4px 0 0",
-                                    display: "inline-block"
-                                }}>
+                        <Box
+                            sx={{
+                                flex: "0 0 400px",
+                                height: "500px",
+                                backgroundColor: "white",
+                                border: "2px solid #1976d2",
+                                borderRadius: "8px",
+                                boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+                                position: "relative"
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    top: "-30px",
+                                    left: "0",
+                                    right: "0",
+                                    textAlign: "center",
+                                    zIndex: 1002
+                                }}
+                            >
+                                <Typography
+                                    level="body-sm"
+                                    sx={{
+                                        backgroundColor: "#1976d2",
+                                        color: "white",
+                                        px: 2,
+                                        py: 0.5,
+                                        borderRadius: "4px 4px 0 0",
+                                        display: "inline-block"
+                                    }}
+                                >
                                     Bounding Box Selection
                                 </Typography>
                             </Box>
-                            <BoundingBoxDrawer 
-                                onBboxSelected={handleBboxSelected}
-                                height={500}
-                            />
+                            <BoundingBoxDrawer onBboxSelected={handleBboxSelected} height={500} />
                         </Box>
                     )}
                 </ModalDialog>
             </Modal>
-
-
 
             {/* Confirmation dialog for bbox */}
             <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
@@ -462,25 +509,29 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                     <Typography component="h2" fontSize="lg" fontWeight="bold" sx={{ mb: 1 }}>
                         {bbox && isBboxTooLarge(bbox) ? "Error: Bounding Box Too Large" : "Confirm Bounding Box"}
                     </Typography>
-                    
+
                     {bbox && isBboxTooLarge(bbox) && (
-                        <Box sx={{ 
-                            mb: 2, 
-                            p: 2, 
-                            backgroundColor: "#f8d7da", 
-                            border: "1px solid #f5c6cb", 
-                            borderRadius: "4px",
-                            borderLeft: "4px solid #dc3545"
-                        }}>
+                        <Box
+                            sx={{
+                                mb: 2,
+                                p: 2,
+                                backgroundColor: "#f8d7da",
+                                border: "1px solid #f5c6cb",
+                                borderRadius: "4px",
+                                borderLeft: "4px solid #dc3545"
+                            }}
+                        >
                             <Typography level="body-sm" color="danger" fontWeight="bold" sx={{ mb: 1 }}>
                                 ❌ Selected bounding box exceeds the maximum allowed size
                             </Typography>
                             <Typography level="body-sm" color="neutral">
-                                The selected area exceeds the maximum allowed size. Please select an area where both width and height are no more than 1 degree, and the total area is no more than 1 square degree.
+                                The selected area exceeds the maximum allowed size. Please select an area where both
+                                width and height are no more than 1 degree, and the total area is no more than 1 square
+                                degree.
                             </Typography>
                         </Box>
                     )}
-                    
+
                     {bbox ? (
                         <Box sx={{ mb: 2 }}>
                             <Typography level="body-sm">minx: {bbox[0].toFixed(6)}</Typography>
@@ -505,9 +556,7 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                             {bbox && isBboxTooLarge(bbox) ? "OK" : "Cancel"}
                         </Button>
                         {!bbox || !isBboxTooLarge(bbox) ? (
-                            <Button onClick={() => setConfirmOpen(false)}>
-                                Confirm
-                            </Button>
+                            <Button onClick={() => setConfirmOpen(false)}>Confirm</Button>
                         ) : null}
                     </Box>
                 </ModalDialog>
@@ -519,24 +568,23 @@ const FipsLookupModal: React.FC<FipsLookupModalProps> = ({ open, onClose, projec
                     <Typography component="h2" fontSize="lg" fontWeight="bold" sx={{ mb: 2 }}>
                         Dataset Creation in Progress
                     </Typography>
-                    
+
                     <Box sx={{ mb: 3 }}>
                         <Typography level="body-sm" sx={{ mb: 2 }}>
-                            Your building inventory dataset is being created. This process may take several minutes to complete.
+                            Your building inventory dataset is being created. This process may take several minutes to
+                            complete.
                         </Typography>
                         <Typography level="body-sm" color="neutral" sx={{ mb: 2 }}>
-                            You can check the progress by visiting the <strong>Dataset</strong> page in the left sidebar. 
-                            The dataset will appear there once the creation process is finished.
+                            You can check the progress by visiting the <strong>Dataset</strong> page in the left
+                            sidebar. The dataset will appear there once the creation process is finished.
                         </Typography>
                         <Typography level="body-sm" color="warning" fontWeight="bold">
                             ⚠️ Please do not close this browser tab while the dataset is being created.
                         </Typography>
                     </Box>
-                    
+
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Button onClick={() => setProcessingDialogOpen(false)}>
-                            OK, I Understand
-                        </Button>
+                        <Button onClick={() => setProcessingDialogOpen(false)}>OK, I Understand</Button>
                     </Box>
                 </ModalDialog>
             </Modal>

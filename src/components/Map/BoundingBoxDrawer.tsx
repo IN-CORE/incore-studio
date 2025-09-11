@@ -17,7 +17,7 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
     const [startPoint, setStartPoint] = React.useState<maplibregl.LngLat | null>(null);
     const [drawModeEnabled, setDrawModeEnabled] = React.useState(false);
     const [mouseDownTime, setMouseDownTime] = React.useState<number>(0);
-    
+
     // Use refs for synchronous access to drawing state
     const isDrawingRef = React.useRef(false);
     const startPointRef = React.useRef<maplibregl.LngLat | null>(null);
@@ -34,10 +34,10 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
                 minZoom: 2
             });
 
-                    map.on('load', () => {
-            console.log('BoundingBoxDrawer map loaded');
-            mapRef.current = map;
-        });
+            map.on("load", () => {
+                console.log("BoundingBoxDrawer map loaded");
+                mapRef.current = map;
+            });
 
             return () => {
                 if (mapRef.current) {
@@ -52,10 +52,10 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
     const drawBoundingBox = (start: maplibregl.LngLat, end: maplibregl.LngLat) => {
         const map = mapRef.current;
         if (!map) {
-            console.log('No map available for drawing');
+            console.log("No map available for drawing");
             return;
         }
-        
+
         const coordinates = [
             [start.lng, start.lat],
             [end.lng, start.lat],
@@ -63,49 +63,49 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
             [start.lng, end.lat],
             [start.lng, start.lat] // Close the polygon
         ];
-        
+
         // Remove existing bounding box source and layer - matching test IDs
-        if (map.getSource('bounding-box')) {
-            if (map.getLayer('bounding-box-fill')) {
-                map.removeLayer('bounding-box-fill');
+        if (map.getSource("bounding-box")) {
+            if (map.getLayer("bounding-box-fill")) {
+                map.removeLayer("bounding-box-fill");
             }
-            if (map.getLayer('bounding-box-layer')) {
-                map.removeLayer('bounding-box-layer');
+            if (map.getLayer("bounding-box-layer")) {
+                map.removeLayer("bounding-box-layer");
             }
-            map.removeSource('bounding-box');
+            map.removeSource("bounding-box");
         }
-        
+
         // Add new bounding box
-        map.addSource('bounding-box', {
-            type: 'geojson',
+        map.addSource("bounding-box", {
+            type: "geojson",
             data: {
-                type: 'Feature',
+                type: "Feature",
                 geometry: {
-                    type: 'Polygon',
+                    type: "Polygon",
                     coordinates: [coordinates]
                 },
                 properties: {}
             }
         });
-        
+
         map.addLayer({
-            id: 'bounding-box-layer',
-            type: 'line',
-            source: 'bounding-box',
+            id: "bounding-box-layer",
+            type: "line",
+            source: "bounding-box",
             paint: {
-                'line-color': '#ff0000',
-                'line-width': 4,
-                'line-opacity': 1.0
+                "line-color": "#ff0000",
+                "line-width": 4,
+                "line-opacity": 1.0
             }
         });
-        
+
         map.addLayer({
-            id: 'bounding-box-fill',
-            type: 'fill',
-            source: 'bounding-box',
+            id: "bounding-box-fill",
+            type: "fill",
+            source: "bounding-box",
             paint: {
-                'fill-color': '#ff0000',
-                'fill-opacity': 0.1
+                "fill-color": "#ff0000",
+                "fill-opacity": 0.1
             }
         });
     };
@@ -114,10 +114,10 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
         const map = mapRef.current;
         if (!map) return;
 
-        if (map.getSource('bounding-box')) {
-            map.removeLayer('bounding-box-fill');
-            map.removeLayer('bounding-box-layer');
-            map.removeSource('bounding-box');
+        if (map.getSource("bounding-box")) {
+            map.removeLayer("bounding-box-fill");
+            map.removeLayer("bounding-box-layer");
+            map.removeSource("bounding-box");
         }
     };
 
@@ -126,7 +126,7 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
         const minLat = Math.min(start.lat, end.lat);
         const maxLng = Math.max(start.lng, end.lng);
         const maxLat = Math.max(start.lat, end.lat);
-        
+
         onBboxSelected([minLng, minLat, maxLng, maxLat]);
     };
 
@@ -135,17 +135,17 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
         if (!drawModeEnabled) {
             return;
         }
-        
-        console.log('Mouse down - drawModeEnabled:', drawModeEnabled, 'isDrawing:', isDrawingRef.current);
-        
+
+        console.log("Mouse down - drawModeEnabled:", drawModeEnabled, "isDrawing:", isDrawingRef.current);
+
         // Prevent default map behavior
         e.preventDefault();
         e.originalEvent.stopPropagation();
-        
+
         setIsDrawing(true);
         setStartPoint(e.lngLat);
         setMouseDownTime(Date.now());
-        
+
         // Update refs synchronously
         isDrawingRef.current = true;
         startPointRef.current = e.lngLat;
@@ -156,29 +156,29 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
         if (!isDrawingRef.current || !startPointRef.current) {
             return;
         }
-        
+
         // Prevent default map behavior
         e.preventDefault();
         e.originalEvent.stopPropagation();
-        
-        console.log('Mouse move - drawing bounding box');
+
+        console.log("Mouse move - drawing bounding box");
         drawBoundingBox(startPointRef.current, e.lngLat);
     };
 
     const onMouseUp = (e: maplibregl.MapMouseEvent) => {
         const timeSinceMouseDown = Date.now() - mouseDownTime;
-        
+
         if (!isDrawingRef.current || !startPointRef.current) {
             return;
         }
-        
+
         // Prevent default map behavior
         e.preventDefault();
         e.originalEvent.stopPropagation();
-        
+
         // Ignore mouse up if it happens too quickly after mouse down (less than 50ms)
         if (timeSinceMouseDown < 50) {
-            console.log('Mouse up too quick, ignoring');
+            console.log("Mouse up too quick, ignoring");
             // Reset refs even if ignored
             isDrawingRef.current = false;
             startPointRef.current = null;
@@ -186,25 +186,26 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
             setStartPoint(null);
             return;
         }
-        
-        console.log('Mouse up - finalizing bounding box');
+
+        console.log("Mouse up - finalizing bounding box");
         setIsDrawing(false);
         const endPoint = e.lngLat;
-        
+
         // Only create bounding box if there's meaningful distance
         const distance = Math.sqrt(
-            Math.pow(endPoint.lng - startPointRef.current.lng, 2) + 
-            Math.pow(endPoint.lat - startPointRef.current.lat, 2)
+            Math.pow(endPoint.lng - startPointRef.current.lng, 2) +
+                Math.pow(endPoint.lat - startPointRef.current.lat, 2)
         );
-        
-        if (distance > 0.001) { // Minimum distance threshold
+
+        if (distance > 0.001) {
+            // Minimum distance threshold
             finalizeBoundingBox(startPointRef.current, endPoint);
         } else {
             clearBoundingBox();
         }
-        
+
         setStartPoint(null);
-        
+
         // Reset refs
         isDrawingRef.current = false;
         startPointRef.current = null;
@@ -214,13 +215,13 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
     const enableBoundingBoxDrawing = () => {
         const map = mapRef.current;
         if (!map) {
-            console.log('No map available for enabling drawing');
+            console.log("No map available for enabling drawing");
             return;
         }
 
-        console.log('Enabling bounding box drawing mode');
-        map.getCanvas().style.cursor = 'crosshair';
-        
+        console.log("Enabling bounding box drawing mode");
+        map.getCanvas().style.cursor = "crosshair";
+
         // Disable ALL map interactions to prevent any interference
         map.dragPan.disable();
         map.dragRotate.disable();
@@ -228,22 +229,22 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
         map.boxZoom.disable();
         map.keyboard.disable();
         map.doubleClickZoom.disable();
-        
+
         // Add event listeners for drawing
-        map.on('mousedown', onMouseDown);
-        map.on('mousemove', onMouseMove);
-        map.on('mouseup', onMouseUp);
-        
-        console.log('Drawing mode enabled - map interactions disabled, event listeners added');
+        map.on("mousedown", onMouseDown);
+        map.on("mousemove", onMouseMove);
+        map.on("mouseup", onMouseUp);
+
+        console.log("Drawing mode enabled - map interactions disabled, event listeners added");
     };
 
     const disableBoundingBoxDrawing = () => {
         const map = mapRef.current;
         if (!map) return;
 
-        console.log('Disabling bounding box drawing mode');
-        map.getCanvas().style.cursor = '';
-        
+        console.log("Disabling bounding box drawing mode");
+        map.getCanvas().style.cursor = "";
+
         // Re-enable ALL map interactions
         map.dragPan.enable();
         map.dragRotate.enable();
@@ -251,55 +252,57 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
         map.boxZoom.enable();
         map.keyboard.enable();
         map.doubleClickZoom.enable();
-        
+
         // Remove event listeners
-        map.off('mousedown', onMouseDown);
-        map.off('mousemove', onMouseMove);
-        map.off('mouseup', onMouseUp);
-        
+        map.off("mousedown", onMouseDown);
+        map.off("mousemove", onMouseMove);
+        map.off("mouseup", onMouseUp);
+
         // Clear any existing bounding box
         clearBoundingBox();
-        
-        console.log('Drawing mode disabled - map interactions enabled, event listeners removed');
+
+        console.log("Drawing mode disabled - map interactions enabled, event listeners removed");
     };
 
     // Handle draw mode toggle
     React.useEffect(() => {
-        console.log('Draw mode effect triggered - drawModeEnabled:', drawModeEnabled);
-        
+        console.log("Draw mode effect triggered - drawModeEnabled:", drawModeEnabled);
+
         if (drawModeEnabled) {
             enableBoundingBoxDrawing();
         } else {
             disableBoundingBoxDrawing();
         }
-        
+
         // Cleanup function to ensure proper cleanup when component unmounts or drawModeEnabled changes
         return () => {
-            console.log('Cleaning up drawing mode');
+            console.log("Cleaning up drawing mode");
             disableBoundingBoxDrawing();
         };
     }, [drawModeEnabled]);
 
     return (
         <Box sx={{ position: "relative" }}>
-            <Box 
-                ref={mapContainerRef} 
-                sx={{ 
-                    height: height, 
+            <Box
+                ref={mapContainerRef}
+                sx={{
+                    height: height,
                     border: "1px solid #ddd",
                     position: "relative"
-                }} 
+                }}
             />
-            <Box sx={{ 
-                position: "absolute", 
-                top: 8, 
-                right: 8, 
-                zIndex: 2, 
-                backgroundColor: "#fff", 
-                p: 1, 
-                border: "1px solid #ddd", 
-                borderRadius: 4 
-            }}>
+            <Box
+                sx={{
+                    position: "absolute",
+                    top: 12,
+                    right: 8,
+                    zIndex: 2,
+                    backgroundColor: "#fff",
+                    p: 1,
+                    border: "1px solid #ddd",
+                    borderRadius: 4
+                }}
+            >
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Checkbox
                         size="sm"
@@ -315,4 +318,4 @@ const BoundingBoxDrawer: React.FC<BoundingBoxDrawerProps> = ({ onBboxSelected, h
     );
 };
 
-export default BoundingBoxDrawer; 
+export default BoundingBoxDrawer;
