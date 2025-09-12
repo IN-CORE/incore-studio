@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.1.0] - 08-11-2025
 
+### Added
+
+- Add draw bounding box for NSI dataset tool [#246](https://github.com/IN-CORE/incore-studio/issues/246)
+
 ### Fixed
+
 - Add missing NSI tool to the sidebar [#244](https://github.com/IN-CORE/incore-studio/issues/244)
 
 ## [1.0.0] - 07-31-2025
