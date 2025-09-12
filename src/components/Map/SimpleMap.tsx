@@ -18,6 +18,7 @@ interface Props {
     attribution?: boolean;
     navigation?: boolean;
     onLoad: (map: maplibregl.Map) => void;
+    showLayerSwitcher?: boolean;
 }
 
 const SimpleMap = ({
@@ -28,7 +29,8 @@ const SimpleMap = ({
     init_zoom,
     attribution,
     navigation,
-    onLoad
+    onLoad,
+    showLayerSwitcher = true
 }: Props): JSX.Element => {
     const mapContainerRef = React.useRef<HTMLDivElement>(null);
     const mapRef = React.useRef<maplibregl.Map>();
@@ -254,37 +256,39 @@ const SimpleMap = ({
             ) : null}
 
             {/* Layer Switcher UI */}
-            <Box
-                sx={{
-                    position: "absolute",
-                    top: 10,
-                    left: 10,
-                    width: "fit-content",
-                    zIndex: 1,
-                    padding: 2,
-                    backgroundColor: "#fff",
-                    border: "0.5px solid #999"
-                }}
-            >
-                <Accordion variant="plain" defaultExpanded>
-                    <AccordionSummary>
-                        <Typography level="body-md">Layers</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails sx={{ marginTop: "0.5em" }}>
-                        {layers.map((layer) => (
-                            <Box key={layer.layerId} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                                <Checkbox
-                                    checked={!!activeLayers[`incore-${layer.layerId}`]}
-                                    onChange={() => toggleLayer(`incore-${layer.layerId}`)}
-                                    size="sm"
-                                    sx={{ mr: 1 }}
-                                />
-                                <Typography>{`${layer.workspace}:${layer.layerId}`}</Typography>
-                            </Box>
-                        ))}
-                    </AccordionDetails>
-                </Accordion>
-            </Box>
+            {showLayerSwitcher && layers.length > 0 ? (
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: 10,
+                        left: 10,
+                        width: "fit-content",
+                        zIndex: 1,
+                        padding: 2,
+                        backgroundColor: "#fff",
+                        border: "0.5px solid #999"
+                    }}
+                >
+                    <Accordion variant="plain" defaultExpanded>
+                        <AccordionSummary>
+                            <Typography level="body-md">Layers</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ marginTop: "0.5em" }}>
+                            {layers.map((layer) => (
+                                <Box key={layer.layerId} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                                    <Checkbox
+                                        checked={!!activeLayers[`incore-${layer.layerId}`]}
+                                        onChange={() => toggleLayer(`incore-${layer.layerId}`)}
+                                        size="sm"
+                                        sx={{ mr: 1 }}
+                                    />
+                                    <Typography>{`${layer.workspace}:${layer.layerId}`}</Typography>
+                                </Box>
+                            ))}
+                        </AccordionDetails>
+                    </Accordion>
+                </Box>
+            ) : null}
         </Box>
     );
 };
