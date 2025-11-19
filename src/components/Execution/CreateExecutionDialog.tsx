@@ -68,14 +68,33 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
             let newExecutionId: string | undefined = undefined;
             if (reRun && currentExecution && wfId) {
                 // If reRun is true, we need to create a new execution based on the current one
+                console.log(currentExecution.parameters);
+                console.log(createExecution.parameters);
+                console.log(currentExecution.datasets);
+                console.log(createExecution.datasets);
+                console.log("--------------------------------");
+                console.log(
+                    Object.fromEntries(
+                        Object.entries(currentExecution.parameters).filter(([key]) => key in createExecution.parameters)
+                    )
+                );
+                console.log(
+                    Object.fromEntries(
+                        Object.entries(currentExecution.datasets).filter(([key]) => key in createExecution.datasets)
+                    )
+                );
                 const newExecution = {
                     title: name,
                     creatorId: datawolfUser?.id ?? "",
                     description,
                     workflowId: wfId,
                     deleted: false,
-                    parameters: currentExecution.parameters,
-                    datasets: currentExecution.datasets
+                    parameters: Object.fromEntries(
+                        Object.entries(currentExecution.parameters).filter(([key]) => key in createExecution.parameters)
+                    ),
+                    datasets: Object.fromEntries(
+                        Object.entries(currentExecution.datasets).filter(([key]) => key in createExecution.datasets)
+                    )
                 };
                 const result = await appDispatch(createNewExecution(newExecution));
                 resetReRun();
