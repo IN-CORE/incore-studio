@@ -74,8 +74,12 @@ const CreateExecutionDialog = (props: CreateExecutionDialogProps) => {
                     description,
                     workflowId: wfId,
                     deleted: false,
-                    parameters: currentExecution.parameters,
-                    datasets: currentExecution.datasets
+                    parameters: Object.fromEntries(
+                        Object.entries(currentExecution.parameters).filter(([key]) => key in createExecution.parameters)
+                    ),
+                    datasets: Object.fromEntries(
+                        Object.entries(currentExecution.datasets).filter(([key]) => key in createExecution.datasets)
+                    )
                 };
                 const result = await appDispatch(createNewExecution(newExecution));
                 resetReRun();
