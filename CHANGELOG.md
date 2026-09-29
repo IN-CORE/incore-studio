@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Security
+
+- Update react-router to 7.18.4, clearing 14 advisories [#260](https://github.com/IN-CORE/incore-studio/issues/260)
+
 ### Changed
 
 - Upgrade Node.js to 24; minimum supported version is now Node 20 [#260](https://github.com/IN-CORE/incore-studio/issues/260)
