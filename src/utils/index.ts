@@ -1,4 +1,4 @@
-import { User } from "oidc-client";
+import { User } from "oidc-client-ts";
 import config from "@app/app.config";
 
 import axios from "axios";

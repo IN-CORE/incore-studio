@@ -10,10 +10,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Security
 
 - Update react-router to 7.18.4, clearing 14 advisories [#260](https://github.com/IN-CORE/incore-studio/issues/260)
+- Remove unused `npm` and `i` dependencies, which pulled in a large vulnerable tree [#260](https://github.com/IN-CORE/incore-studio/issues/260)
 
 ### Changed
 
 - Upgrade Node.js to 24; minimum supported version is now Node 20 [#260](https://github.com/IN-CORE/incore-studio/issues/260)
+- Replace the deprecated `oidc-client` with `oidc-client-ts`, already used by `react-oidc-context` [#260](https://github.com/IN-CORE/incore-studio/issues/260)
+
+### Removed
+
+- Unused `npm`, `i` and `oidc-react` dependencies [#260](https://github.com/IN-CORE/incore-studio/issues/260)
 
 
 ## [1.2.0] - 12-12-2025
