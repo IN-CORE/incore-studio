@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Upgrade Node.js to 24; minimum supported version is now Node 20 [#260](https://github.com/IN-CORE/incore-studio/issues/260)
+- Upgrade Node.js to 24; minimum supported version is now Node 22 [#260](https://github.com/IN-CORE/incore-studio/issues/260)
 
 
 ## [1.2.0] - 12-12-2025
