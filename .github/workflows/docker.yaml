@@ -169,7 +169,7 @@ jobs:
           cache-to: type=gha
           tags: ${{ env.IMAGES }}
           build-args: |
-            BRANCH: ${{ env.BRANCH }}
+            BRANCH=${{ env.BRANCH }}
             VERSION=${{ env.VERSION }}
             BUILDNUMBER=${{ github.run_number }}
             GITSHA1=${{ github.sha  }}
