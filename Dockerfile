@@ -3,7 +3,7 @@ ARG NPM_TOKEN=""
 # ----------------------------------------------------------------------
 # First stage, compile application
 # ----------------------------------------------------------------------
-FROM --platform=$BUILDPLATFORM node:18 AS builder
+FROM --platform=$BUILDPLATFORM node:24 AS builder
 
 WORKDIR /usr/src/app
 
